@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/shengdoushi/base58"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account/internal/mpc"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account/internal/network"
 	"github.com/sonrhq/core/x/identity/types"
-
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
 	"github.com/taurusgroup/multi-party-sig/pkg/pool"
@@ -36,6 +36,9 @@ type WalletAccount interface {
 	// GetAssertionMethod returns the verification method for the account
 	GetAssertionMethod() *types.VerificationMethod
 
+	// GetSignerData returns the signer data for the account
+	GetSignerData() authsigning.SignerData
+
 	// Info returns the account information
 	Info() *v1.AccountInfo
 
@@ -47,7 +50,7 @@ type WalletAccount interface {
 	ListConfigs() ([]*cmp.Config, error)
 
 	// PubKey returns secp256k1 public key
-	PubKey() (*secp256k1.PubKey, error)
+	PubKey() (cryptotypes.PubKey, error)
 
 	// Signs a transaction
 	Sign(bz []byte) ([]byte, error)
@@ -139,6 +142,17 @@ func (w *walletAccountImpl) GetAssertionMethod() *types.VerificationMethod {
 	}
 }
 
+// Returning the signer data for the account.
+func (w *walletAccountImpl) GetSignerData() authsigning.SignerData {
+	pubkey, _ := w.PubKey()
+	return authsigning.SignerData{
+		ChainID:       "sonr",
+		AccountNumber: 0,
+		Sequence:      0,
+		PubKey:        pubkey,
+	}
+}
+
 // Returning the account information.
 func (w *walletAccountImpl) Info() *v1.AccountInfo {
 	return &v1.AccountInfo{
@@ -165,7 +179,7 @@ func (w *walletAccountImpl) ListConfigs() ([]*cmp.Config, error) {
 }
 
 // Returning the secp256k1 public key.
-func (w *walletAccountImpl) PubKey() (*secp256k1.PubKey, error) {
+func (w *walletAccountImpl) PubKey() (cryptotypes.PubKey, error) {
 	return w.accountConfig.Shares[0].GetPubKeySecp256k1()
 }
 

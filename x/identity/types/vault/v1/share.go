@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	"github.com/sonrhq/core/x/identity/types"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
@@ -47,14 +47,23 @@ func (s *ShareConfig) GetCMPConfig() (*cmp.Config, error) {
 }
 
 // Converting the public key from the ShareConfig to a secp256k1.PubKey.
-func (s *ShareConfig) GetPubKeySecp256k1() (*secp256k1.PubKey, error) {
+func (s *ShareConfig) GetPubKeySecp256k1() (*types.PubKey, error) {
 	if len(s.PublicKey) != 33 {
 		return nil, errors.New("invalid public key length")
 	}
-	return &secp256k1.PubKey{Key: s.PublicKey}, nil
+	return &types.PubKey{Key: s.PublicKey}, nil
 }
 
 // A method that returns the party ID of the share config.
 func (s *ShareConfig) PartyID() party.ID {
 	return party.ID(s.SelfId)
+}
+
+// Getting the public point from the first share.
+func (a *ShareConfig) PublicPoint() (curve.Point, error) {
+	conf, err := a.GetCMPConfig()
+	if err != nil {
+		return nil, err
+	}
+	return conf.PublicPoint(), nil
 }

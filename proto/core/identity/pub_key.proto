@@ -1,0 +1,8 @@
+syntax = "proto3";
+package sonrhq.core.identity;
+
+option go_package = "github.com/sonrhq/core/x/identity/types";
+
+message PubKey {
+  bytes key = 1;
+}
