@@ -181,7 +181,7 @@ func (w *walletAccountImpl) ListConfigs() ([]*cmp.Config, error) {
 
 // Returning the secp256k1 public key.
 func (w *walletAccountImpl) PubKey() (cryptotypes.PubKey, error) {
-	return w.accountConfig.Shares[0].GetPubKeySecp256k1()
+	return w.accountConfig.GetCryptoPubKey()
 }
 
 // Signing a transaction.

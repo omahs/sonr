@@ -47,7 +47,7 @@ func (s *ShareConfig) GetCMPConfig() (*cmp.Config, error) {
 }
 
 // Converting the public key from the ShareConfig to a secp256k1.PubKey.
-func (s *ShareConfig) GetPubKeySecp256k1() (*types.PubKey, error) {
+func (s *ShareConfig) GetCryptoPubKey() (*types.PubKey, error) {
 	if len(s.PublicKey) != 33 {
 		return nil, errors.New("invalid public key length")
 	}

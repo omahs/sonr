@@ -2,8 +2,10 @@ package v1
 
 import (
 	"strings"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	types "github.com/sonrhq/core/x/identity/types"
 
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
@@ -17,10 +19,13 @@ func NewAccountConfigFromShares(name string, index uint32, addrPrefix string, sh
 		return nil, err
 	}
 	return &AccountConfig{
-		Name:    strings.ToLower(name),
-		Index:   index,
-		Address: addr,
-		Shares:  shares,
+		Name:         strings.ToLower(name),
+		Index:        index,
+		Address:      addr,
+		PublicKey:    shares[0].PublicKey,
+		Shares:       shares,
+		Bech32Prefix: addrPrefix,
+		CreatedAt:    time.Now().Unix(),
 	}, nil
 }
 
@@ -48,9 +53,10 @@ func (a *AccountConfig) PartyIDs() []party.ID {
 
 // Getting the public point from the first share.
 func (a *AccountConfig) PublicPoint() (curve.Point, error) {
-	conf, err := a.Shares[0].GetCMPConfig()
-	if err != nil {
-		return nil, err
-	}
-	return conf.PublicPoint(), nil
+	return a.Shares[0].PublicPoint()
+}
+
+// GetCryptoPubKey returns the public key of the first share.
+func (a *AccountConfig) GetCryptoPubKey() (*types.PubKey, error) {
+	return a.Shares[0].GetCryptoPubKey()
 }
