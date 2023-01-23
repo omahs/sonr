@@ -146,6 +146,7 @@ func (w *walletAccountImpl) GetAssertionMethod() *types.VerificationMethod {
 func (w *walletAccountImpl) GetSignerData() authsigning.SignerData {
 	pubkey, _ := w.PubKey()
 	return authsigning.SignerData{
+		Address:       w.accountConfig.Address,
 		ChainID:       "sonr",
 		AccountNumber: 0,
 		Sequence:      0,
