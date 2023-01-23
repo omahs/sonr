@@ -117,7 +117,7 @@ func (w *walletAccountImpl) Bip32Derive(accName string, idx uint32, addrPrefix s
 	return NewAccountFromConfig(accConf)
 }
 
-// Returning the verification method for the account.
+// GetAssertionMethod Returns the verification method for the account.
 func (w *walletAccountImpl) GetAssertionMethod() *types.VerificationMethod {
 	return &types.VerificationMethod{
 		ID:                  fmt.Sprintf("%s#%s", types.ConvertAccAddressToDid(w.accountConfig.Address), w.accountConfig.Name),
