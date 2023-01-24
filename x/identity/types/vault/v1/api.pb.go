@@ -31,139 +31,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// ChallengRequest is the request to generate a challenge.
-type ChallengeRequest struct {
-	// Optional RP ID to use for the challenge.
-	RpId string `protobuf:"bytes,1,opt,name=rp_id,json=rpId,proto3" json:"rp_id,omitempty"`
-	// Username to use for the AlsoKnownAs field in the didDoc
-	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
-}
-
-func (m *ChallengeRequest) Reset()         { *m = ChallengeRequest{} }
-func (m *ChallengeRequest) String() string { return proto.CompactTextString(m) }
-func (*ChallengeRequest) ProtoMessage()    {}
-func (*ChallengeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{0}
-}
-func (m *ChallengeRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ChallengeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ChallengeRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ChallengeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ChallengeRequest.Merge(m, src)
-}
-func (m *ChallengeRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *ChallengeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ChallengeRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ChallengeRequest proto.InternalMessageInfo
-
-func (m *ChallengeRequest) GetRpId() string {
-	if m != nil {
-		return m.RpId
-	}
-	return ""
-}
-
-func (m *ChallengeRequest) GetUsername() string {
-	if m != nil {
-		return m.Username
-	}
-	return ""
-}
-
-// ChallengeResponse is the response to a Challenge request.
-type ChallengeResponse struct {
-	SessionId       string   `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	CreationOptions string   `protobuf:"bytes,2,opt,name=creation_options,json=creationOptions,proto3" json:"creation_options,omitempty"`
-	RpName          string   `protobuf:"bytes,3,opt,name=rp_name,json=rpName,proto3" json:"rp_name,omitempty"`
-	RpOrigins       []string `protobuf:"bytes,4,rep,name=rp_origins,json=rpOrigins,proto3" json:"rp_origins,omitempty"`
-	RpIcon          string   `protobuf:"bytes,5,opt,name=rp_icon,json=rpIcon,proto3" json:"rp_icon,omitempty"`
-}
-
-func (m *ChallengeResponse) Reset()         { *m = ChallengeResponse{} }
-func (m *ChallengeResponse) String() string { return proto.CompactTextString(m) }
-func (*ChallengeResponse) ProtoMessage()    {}
-func (*ChallengeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{1}
-}
-func (m *ChallengeResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ChallengeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ChallengeResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ChallengeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ChallengeResponse.Merge(m, src)
-}
-func (m *ChallengeResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *ChallengeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ChallengeResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ChallengeResponse proto.InternalMessageInfo
-
-func (m *ChallengeResponse) GetSessionId() string {
-	if m != nil {
-		return m.SessionId
-	}
-	return ""
-}
-
-func (m *ChallengeResponse) GetCreationOptions() string {
-	if m != nil {
-		return m.CreationOptions
-	}
-	return ""
-}
-
-func (m *ChallengeResponse) GetRpName() string {
-	if m != nil {
-		return m.RpName
-	}
-	return ""
-}
-
-func (m *ChallengeResponse) GetRpOrigins() []string {
-	if m != nil {
-		return m.RpOrigins
-	}
-	return nil
-}
-
-func (m *ChallengeResponse) GetRpIcon() string {
-	if m != nil {
-		return m.RpIcon
-	}
-	return ""
-}
-
-// RegisterRequest is the request to register a new account.
+// NewWalletRequest is the request to register a new account.
 type NewWalletRequest struct {
 	SessionId          string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	CredentialResponse string `protobuf:"bytes,2,opt,name=credential_response,json=credentialResponse,proto3" json:"credential_response,omitempty"`
@@ -175,7 +43,7 @@ func (m *NewWalletRequest) Reset()         { *m = NewWalletRequest{} }
 func (m *NewWalletRequest) String() string { return proto.CompactTextString(m) }
 func (*NewWalletRequest) ProtoMessage()    {}
 func (*NewWalletRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{2}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{0}
 }
 func (m *NewWalletRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -232,7 +100,7 @@ func (m *NewWalletRequest) GetThreshold() int32 {
 	return 0
 }
 
-// RegisterResponse is the response to a Register request.
+// NewWalletResponse is the response to a Register request.
 type NewWalletResponse struct {
 	Success     bool               `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Address     string             `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
@@ -243,7 +111,7 @@ func (m *NewWalletResponse) Reset()         { *m = NewWalletResponse{} }
 func (m *NewWalletResponse) String() string { return proto.CompactTextString(m) }
 func (*NewWalletResponse) ProtoMessage()    {}
 func (*NewWalletResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{3}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{1}
 }
 func (m *NewWalletResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -293,138 +161,6 @@ func (m *NewWalletResponse) GetDidDocument() *types.DidDocument {
 	return nil
 }
 
-// AuthorizeRequest is the request to generate a challenge.
-type AuthorizeRequest struct {
-	// Optional RP ID to use for the challenge.
-	RpId string `protobuf:"bytes,1,opt,name=rp_id,json=rpId,proto3" json:"rp_id,omitempty"`
-	// Username to use for the AlsoKnownAs field in the didDoc
-	DidDocument *types.DidDocument `protobuf:"bytes,2,opt,name=did_document,json=didDocument,proto3" json:"did_document,omitempty"`
-}
-
-func (m *AuthorizeRequest) Reset()         { *m = AuthorizeRequest{} }
-func (m *AuthorizeRequest) String() string { return proto.CompactTextString(m) }
-func (*AuthorizeRequest) ProtoMessage()    {}
-func (*AuthorizeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{4}
-}
-func (m *AuthorizeRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AuthorizeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AuthorizeRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AuthorizeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AuthorizeRequest.Merge(m, src)
-}
-func (m *AuthorizeRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *AuthorizeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_AuthorizeRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AuthorizeRequest proto.InternalMessageInfo
-
-func (m *AuthorizeRequest) GetRpId() string {
-	if m != nil {
-		return m.RpId
-	}
-	return ""
-}
-
-func (m *AuthorizeRequest) GetDidDocument() *types.DidDocument {
-	if m != nil {
-		return m.DidDocument
-	}
-	return nil
-}
-
-// AuthorizeResponse is the response to a Challenge request.
-type AuthorizeResponse struct {
-	SessionId      string   `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	RequestOptions string   `protobuf:"bytes,2,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
-	RpName         string   `protobuf:"bytes,3,opt,name=rp_name,json=rpName,proto3" json:"rp_name,omitempty"`
-	RpOrigins      []string `protobuf:"bytes,4,rep,name=rp_origins,json=rpOrigins,proto3" json:"rp_origins,omitempty"`
-	RpIcon         string   `protobuf:"bytes,5,opt,name=rp_icon,json=rpIcon,proto3" json:"rp_icon,omitempty"`
-}
-
-func (m *AuthorizeResponse) Reset()         { *m = AuthorizeResponse{} }
-func (m *AuthorizeResponse) String() string { return proto.CompactTextString(m) }
-func (*AuthorizeResponse) ProtoMessage()    {}
-func (*AuthorizeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{5}
-}
-func (m *AuthorizeResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AuthorizeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AuthorizeResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AuthorizeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AuthorizeResponse.Merge(m, src)
-}
-func (m *AuthorizeResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *AuthorizeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_AuthorizeResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AuthorizeResponse proto.InternalMessageInfo
-
-func (m *AuthorizeResponse) GetSessionId() string {
-	if m != nil {
-		return m.SessionId
-	}
-	return ""
-}
-
-func (m *AuthorizeResponse) GetRequestOptions() string {
-	if m != nil {
-		return m.RequestOptions
-	}
-	return ""
-}
-
-func (m *AuthorizeResponse) GetRpName() string {
-	if m != nil {
-		return m.RpName
-	}
-	return ""
-}
-
-func (m *AuthorizeResponse) GetRpOrigins() []string {
-	if m != nil {
-		return m.RpOrigins
-	}
-	return nil
-}
-
-func (m *AuthorizeResponse) GetRpIcon() string {
-	if m != nil {
-		return m.RpIcon
-	}
-	return ""
-}
-
 // CreateAccountRequest is the request to CreateAccount a new key from the private key.
 type CreateAccountRequest struct {
 	Prefix             string `protobuf:"bytes,1,opt,name=prefix,proto3" json:"prefix,omitempty"`
@@ -437,7 +173,7 @@ func (m *CreateAccountRequest) Reset()         { *m = CreateAccountRequest{} }
 func (m *CreateAccountRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateAccountRequest) ProtoMessage()    {}
 func (*CreateAccountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{6}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{2}
 }
 func (m *CreateAccountRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -506,7 +242,7 @@ func (m *CreateAccountResponse) Reset()         { *m = CreateAccountResponse{} }
 func (m *CreateAccountResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateAccountResponse) ProtoMessage()    {}
 func (*CreateAccountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{7}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{3}
 }
 func (m *CreateAccountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -573,7 +309,7 @@ func (m *ListAccountsRequest) Reset()         { *m = ListAccountsRequest{} }
 func (m *ListAccountsRequest) String() string { return proto.CompactTextString(m) }
 func (*ListAccountsRequest) ProtoMessage()    {}
 func (*ListAccountsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{8}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{4}
 }
 func (m *ListAccountsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -625,7 +361,7 @@ func (m *ListAccountsResponse) Reset()         { *m = ListAccountsResponse{} }
 func (m *ListAccountsResponse) String() string { return proto.CompactTextString(m) }
 func (*ListAccountsResponse) ProtoMessage()    {}
 func (*ListAccountsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{9}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{5}
 }
 func (m *ListAccountsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -672,7 +408,7 @@ func (m *DeleteAccountRequest) Reset()         { *m = DeleteAccountRequest{} }
 func (m *DeleteAccountRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteAccountRequest) ProtoMessage()    {}
 func (*DeleteAccountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{10}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{6}
 }
 func (m *DeleteAccountRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -733,7 +469,7 @@ func (m *DeleteAccountResponse) Reset()         { *m = DeleteAccountResponse{} }
 func (m *DeleteAccountResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteAccountResponse) ProtoMessage()    {}
 func (*DeleteAccountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{11}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{7}
 }
 func (m *DeleteAccountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -794,7 +530,7 @@ func (m *SignTransactionRequest) Reset()         { *m = SignTransactionRequest{}
 func (m *SignTransactionRequest) String() string { return proto.CompactTextString(m) }
 func (*SignTransactionRequest) ProtoMessage()    {}
 func (*SignTransactionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{12}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{8}
 }
 func (m *SignTransactionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -856,7 +592,7 @@ func (m *SignTransactionResponse) Reset()         { *m = SignTransactionResponse
 func (m *SignTransactionResponse) String() string { return proto.CompactTextString(m) }
 func (*SignTransactionResponse) ProtoMessage()    {}
 func (*SignTransactionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{13}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{9}
 }
 func (m *SignTransactionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -923,7 +659,7 @@ func (m *RefreshRequest) Reset()         { *m = RefreshRequest{} }
 func (m *RefreshRequest) String() string { return proto.CompactTextString(m) }
 func (*RefreshRequest) ProtoMessage()    {}
 func (*RefreshRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{14}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{10}
 }
 func (m *RefreshRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -977,7 +713,7 @@ func (m *RefreshResponse) Reset()         { *m = RefreshResponse{} }
 func (m *RefreshResponse) String() string { return proto.CompactTextString(m) }
 func (*RefreshResponse) ProtoMessage()    {}
 func (*RefreshResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_60fa6b2c9b5ad747, []int{15}
+	return fileDescriptor_60fa6b2c9b5ad747, []int{11}
 }
 func (m *RefreshResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1028,12 +764,8 @@ func (m *RefreshResponse) GetDidDocument() *types.DidDocument {
 }
 
 func init() {
-	proto.RegisterType((*ChallengeRequest)(nil), "sonrhq.protocol.vault.v1.ChallengeRequest")
-	proto.RegisterType((*ChallengeResponse)(nil), "sonrhq.protocol.vault.v1.ChallengeResponse")
 	proto.RegisterType((*NewWalletRequest)(nil), "sonrhq.protocol.vault.v1.NewWalletRequest")
 	proto.RegisterType((*NewWalletResponse)(nil), "sonrhq.protocol.vault.v1.NewWalletResponse")
-	proto.RegisterType((*AuthorizeRequest)(nil), "sonrhq.protocol.vault.v1.AuthorizeRequest")
-	proto.RegisterType((*AuthorizeResponse)(nil), "sonrhq.protocol.vault.v1.AuthorizeResponse")
 	proto.RegisterType((*CreateAccountRequest)(nil), "sonrhq.protocol.vault.v1.CreateAccountRequest")
 	proto.RegisterType((*CreateAccountResponse)(nil), "sonrhq.protocol.vault.v1.CreateAccountResponse")
 	proto.RegisterType((*ListAccountsRequest)(nil), "sonrhq.protocol.vault.v1.ListAccountsRequest")
@@ -1049,74 +781,61 @@ func init() {
 func init() { proto.RegisterFile("protocol/vault/v1/api.proto", fileDescriptor_60fa6b2c9b5ad747) }
 
 var fileDescriptor_60fa6b2c9b5ad747 = []byte{
-	// 1072 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x97, 0xcf, 0x6f, 0x1b, 0x45,
-	0x14, 0xc7, 0x33, 0x76, 0x7e, 0xf9, 0xc5, 0xe4, 0xc7, 0x24, 0x6d, 0x2c, 0x13, 0x4c, 0xb2, 0xa5,
-	0xca, 0x0f, 0x94, 0xdd, 0x24, 0x3d, 0xc1, 0x2d, 0x24, 0x42, 0x0a, 0x42, 0xa9, 0x64, 0x10, 0x08,
-	0x2e, 0x66, 0xbb, 0x3b, 0xb1, 0x47, 0x5a, 0xcf, 0x6c, 0x67, 0x76, 0xe3, 0x96, 0xd2, 0x03, 0x5c,
-	0x10, 0x07, 0x44, 0x25, 0x2e, 0x1c, 0x90, 0x80, 0x1b, 0x07, 0xc4, 0xbf, 0x01, 0x37, 0x2a, 0x71,
-	0xe1, 0x88, 0x12, 0x0e, 0xfc, 0x19, 0x68, 0x67, 0x67, 0xd7, 0xf6, 0x7a, 0xed, 0xb8, 0xa8, 0x51,
-	0x6f, 0x9e, 0xd9, 0xf7, 0xe6, 0x7d, 0xe6, 0xcd, 0x77, 0xde, 0x1b, 0xc3, 0xcb, 0xbe, 0xe0, 0x01,
-	0x77, 0xb8, 0x67, 0x9d, 0xdb, 0xa1, 0x17, 0x58, 0xe7, 0xfb, 0x96, 0xed, 0x53, 0x53, 0xcd, 0xe2,
-	0x8a, 0xe4, 0x4c, 0xb4, 0xee, 0x9b, 0x89, 0x8d, 0xa9, 0x6c, 0xcc, 0xf3, 0xfd, 0xea, 0xaa, 0xc3,
-	0x05, 0xb1, 0xa8, 0x4b, 0x58, 0x40, 0x83, 0x87, 0x96, 0x4b, 0xdd, 0xd8, 0xa8, 0xba, 0xd6, 0xe4,
-	0xbc, 0xe9, 0x91, 0x68, 0x11, 0xcb, 0x66, 0x8c, 0x07, 0x76, 0x40, 0x39, 0x93, 0xfa, 0x6b, 0x6d,
-	0x30, 0x5a, 0x9b, 0xbb, 0xc4, 0xd3, 0xdf, 0x8d, 0x23, 0x58, 0x3c, 0x6a, 0xd9, 0x9e, 0x47, 0x58,
-	0x93, 0xd4, 0xc9, 0xfd, 0x90, 0xc8, 0x00, 0x2f, 0xc3, 0x94, 0xf0, 0x1b, 0xd4, 0xad, 0xa0, 0x75,
-	0xb4, 0x55, 0xaa, 0x4f, 0x0a, 0xff, 0xc4, 0xc5, 0x55, 0x98, 0x0d, 0x25, 0x11, 0xcc, 0x6e, 0x93,
-	0x4a, 0x41, 0xcd, 0xa7, 0x63, 0xe3, 0x57, 0x04, 0x4b, 0x3d, 0xab, 0x48, 0x9f, 0x33, 0x49, 0xf0,
-	0x2b, 0x00, 0x92, 0x48, 0x49, 0x39, 0xeb, 0xae, 0x55, 0xd2, 0x33, 0x27, 0x2e, 0xde, 0x86, 0x45,
-	0x47, 0x10, 0x05, 0xdb, 0xe0, 0xbe, 0x62, 0xd6, 0x0b, 0x2f, 0x24, 0xf3, 0x77, 0xe3, 0x69, 0xbc,
-	0x0a, 0x33, 0xc2, 0x6f, 0xa8, 0xd0, 0x45, 0x65, 0x31, 0x2d, 0xfc, 0x53, 0xbb, 0xad, 0x42, 0x08,
-	0xbf, 0xc1, 0x05, 0x6d, 0x52, 0x26, 0x2b, 0x93, 0xeb, 0xc5, 0x28, 0x84, 0xf0, 0xef, 0xc6, 0x13,
-	0xda, 0x8f, 0x3a, 0x9c, 0x55, 0xa6, 0x12, 0xbf, 0x13, 0x87, 0x33, 0xe3, 0x3b, 0x04, 0x8b, 0xa7,
-	0xa4, 0xf3, 0x61, 0x84, 0x1c, 0x24, 0xdb, 0xbe, 0x82, 0xd7, 0x82, 0x65, 0x47, 0x10, 0x95, 0x7f,
-	0xdb, 0x6b, 0x08, 0xbd, 0x4b, 0x8d, 0x8c, 0xbb, 0x9f, 0xd2, 0xfd, 0xdf, 0x84, 0x69, 0x5f, 0x90,
-	0x33, 0xfa, 0x20, 0x81, 0x8e, 0x47, 0x78, 0x0d, 0x4a, 0x41, 0x4b, 0x10, 0xd9, 0xe2, 0x9e, 0x5b,
-	0x99, 0x5c, 0x47, 0x5b, 0x53, 0xf5, 0xee, 0x84, 0xf1, 0x35, 0x82, 0xa5, 0x1e, 0x34, 0xbd, 0x56,
-	0x05, 0x66, 0x64, 0xe8, 0x38, 0x44, 0x4a, 0x05, 0x36, 0x5b, 0x4f, 0x86, 0xd1, 0x17, 0xdb, 0x75,
-	0x45, 0xf4, 0x25, 0x46, 0x49, 0x86, 0xf8, 0x18, 0xca, 0x2e, 0x75, 0x1b, 0x2e, 0x77, 0xc2, 0x36,
-	0x61, 0x81, 0xa2, 0x98, 0x3b, 0xd8, 0x30, 0xb5, 0xc4, 0x22, 0x3d, 0x99, 0x89, 0x9e, 0xcc, 0x63,
-	0xea, 0x1e, 0x6b, 0xc3, 0xfa, 0x9c, 0xdb, 0x1d, 0x18, 0x6d, 0x58, 0x3c, 0x0c, 0x83, 0x16, 0x17,
-	0xf4, 0xd3, 0xd1, 0x02, 0xc9, 0x86, 0x2b, 0xfc, 0xaf, 0x70, 0xbf, 0x20, 0x58, 0xea, 0x89, 0x37,
-	0x9e, 0x94, 0x36, 0x61, 0x41, 0xc4, 0x68, 0x19, 0x25, 0xcd, 0xeb, 0xe9, 0x6b, 0x13, 0xd2, 0x4f,
-	0x08, 0x56, 0x8e, 0x22, 0xb5, 0x92, 0x43, 0xc7, 0xe1, 0x21, 0x4b, 0xc5, 0xd4, 0x3d, 0x7c, 0xd4,
-	0x77, 0xf8, 0x1b, 0x50, 0xb6, 0x63, 0xcb, 0x46, 0xcf, 0x55, 0x9a, 0xd3, 0x73, 0x8a, 0x65, 0x88,
-	0xd0, 0x8a, 0x43, 0x85, 0xd6, 0x9f, 0x9d, 0xc9, 0x4c, 0x76, 0x8c, 0x3f, 0x10, 0xdc, 0xc8, 0x30,
-	0x6a, 0xc7, 0x79, 0x28, 0xe8, 0x74, 0x96, 0xeb, 0x05, 0xea, 0x5e, 0xb7, 0x96, 0xf0, 0xdb, 0x30,
-	0xc7, 0x48, 0xa7, 0xa1, 0x37, 0xab, 0x48, 0xe7, 0x0e, 0x6e, 0x9b, 0xc3, 0x6a, 0x9e, 0xa9, 0x79,
-	0x4f, 0xd8, 0x19, 0xaf, 0x03, 0x23, 0x1d, 0x3d, 0x36, 0x08, 0x2c, 0xbf, 0x4b, 0x65, 0xa0, 0x87,
-	0x32, 0xc9, 0xf9, 0x90, 0xc4, 0xa1, 0x31, 0x13, 0x57, 0xc8, 0x26, 0xee, 0x23, 0x58, 0xe9, 0x0f,
-	0xa3, 0xdd, 0x0e, 0x61, 0x56, 0x6f, 0x21, 0xba, 0x8d, 0xc5, 0xf1, 0xf7, 0x90, 0xba, 0x19, 0x5f,
-	0x21, 0x58, 0x39, 0x26, 0x1e, 0x19, 0xd0, 0xcd, 0x73, 0xde, 0xc3, 0x80, 0xde, 0x8a, 0x03, 0x7a,
-	0x33, 0x7e, 0x43, 0x70, 0x23, 0xc3, 0x72, 0x65, 0xd5, 0x79, 0x2e, 0x97, 0x1d, 0x9f, 0xc2, 0x82,
-	0xab, 0x02, 0xbb, 0xa9, 0x26, 0x8a, 0xcf, 0xa2, 0x89, 0x79, 0xed, 0x9d, 0xe8, 0xe2, 0x33, 0xb8,
-	0xf9, 0x1e, 0x6d, 0xb2, 0xf7, 0x85, 0xcd, 0xa4, 0xed, 0x44, 0x57, 0xfe, 0xba, 0xd2, 0x8a, 0x61,
-	0xd2, 0xb5, 0x03, 0x5b, 0xe1, 0x96, 0xeb, 0xea, 0xb7, 0x11, 0xc2, 0xea, 0x40, 0xf4, 0x21, 0x17,
-	0x6d, 0x0d, 0x4a, 0x92, 0x36, 0x99, 0x1d, 0x84, 0x22, 0x2e, 0x01, 0xe5, 0x7a, 0x77, 0x22, 0x6f,
-	0xf1, 0xe8, 0x28, 0x54, 0x57, 0xe4, 0x42, 0x5f, 0xf0, 0x64, 0x68, 0x7c, 0x02, 0xf3, 0x75, 0x72,
-	0x16, 0xb5, 0x8f, 0xeb, 0xba, 0x07, 0x9f, 0x23, 0x58, 0x48, 0x43, 0xbc, 0x98, 0xd2, 0x71, 0xf0,
-	0x6f, 0x09, 0xa6, 0x3e, 0x88, 0x34, 0x80, 0x7f, 0x40, 0x50, 0x4a, 0x1f, 0x1b, 0x78, 0x67, 0xb8,
-	0x52, 0xb2, 0xef, 0x9a, 0xea, 0xeb, 0x63, 0xd9, 0xc6, 0x1b, 0x34, 0xde, 0xf8, 0xe2, 0xcf, 0x7f,
-	0xbe, 0x2d, 0xdc, 0xc1, 0xfb, 0x56, 0xe4, 0x64, 0x65, 0x9e, 0x51, 0x4e, 0x62, 0x6f, 0x3d, 0x52,
-	0x9d, 0xf0, 0xb1, 0xf5, 0x28, 0x79, 0x0d, 0x3d, 0xc6, 0x4f, 0x10, 0x94, 0xd2, 0x16, 0x3e, 0x8a,
-	0x30, 0xfb, 0x04, 0x19, 0x45, 0x38, 0xf0, 0x26, 0x30, 0x76, 0x14, 0xe1, 0x6b, 0x6f, 0xa2, 0x1d,
-	0xe3, 0xd5, 0x5c, 0x48, 0x46, 0x3a, 0xbb, 0x9d, 0x18, 0xe2, 0x1b, 0x04, 0xa5, 0xb4, 0xad, 0x8e,
-	0x42, 0xca, 0xf6, 0xfa, 0x51, 0x48, 0x03, 0x7d, 0xda, 0xd8, 0x56, 0x48, 0xb7, 0x22, 0xa4, 0x5a,
-	0x2e, 0x92, 0x9d, 0x32, 0xfc, 0x88, 0xe0, 0xa5, 0xbe, 0xae, 0x84, 0xcd, 0x11, 0xc7, 0x93, 0xd3,
-	0x62, 0xab, 0xd6, 0xd8, 0xf6, 0x9a, 0xce, 0x54, 0x74, 0x5b, 0x11, 0xdd, 0xad, 0xfc, 0x53, 0x55,
-	0x6e, 0xbb, 0xba, 0x16, 0xe1, 0xef, 0x11, 0x94, 0x7b, 0x1b, 0x00, 0xde, 0x1d, 0x1e, 0x31, 0xa7,
-	0x1f, 0x55, 0xcd, 0x71, 0xcd, 0x35, 0xdf, 0xae, 0xe2, 0xdb, 0x8c, 0xf8, 0x8c, 0x5c, 0x3e, 0x8f,
-	0xca, 0x20, 0xa1, 0x93, 0x2a, 0x83, 0x7d, 0x75, 0x7b, 0x54, 0x06, 0xf3, 0x9a, 0xcd, 0xa8, 0x0c,
-	0xe6, 0x36, 0x84, 0xab, 0x33, 0x18, 0x17, 0xe4, 0x34, 0x83, 0x3f, 0x23, 0x58, 0xc8, 0xd4, 0x44,
-	0xbc, 0x37, 0x3c, 0x68, 0x7e, 0xf1, 0xae, 0xee, 0x3f, 0x83, 0x87, 0x06, 0xdd, 0x53, 0xa0, 0x3b,
-	0x11, 0xe8, 0xed, 0x5c, 0xd0, 0xa8, 0xda, 0xee, 0x06, 0x3d, 0x58, 0x5f, 0x22, 0x98, 0xd1, 0x45,
-	0x0e, 0x6f, 0x0d, 0x0f, 0xd8, 0x5f, 0x6a, 0xab, 0xdb, 0x63, 0x58, 0x6a, 0xa4, 0x4d, 0x85, 0xb4,
-	0x11, 0x21, 0xad, 0xe5, 0x22, 0x89, 0xd8, 0xe1, 0xad, 0x77, 0x7e, 0xbf, 0xa8, 0xa1, 0xa7, 0x17,
-	0x35, 0xf4, 0xf7, 0x45, 0x0d, 0x3d, 0xb9, 0xac, 0x4d, 0x3c, 0xbd, 0xac, 0x4d, 0xfc, 0x75, 0x59,
-	0x9b, 0xf8, 0x78, 0xaf, 0x49, 0x83, 0x56, 0x78, 0xcf, 0x74, 0x78, 0xdb, 0x8a, 0xe3, 0x5a, 0xea,
-	0x5f, 0xe1, 0x83, 0xee, 0xff, 0xc2, 0xe0, 0xa1, 0x4f, 0x64, 0xfa, 0x5f, 0xef, 0xde, 0xb4, 0x8a,
-	0x71, 0xe7, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x56, 0xa9, 0xdc, 0x6e, 0x75, 0x0e, 0x00, 0x00,
+	// 863 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x96, 0x41, 0x6f, 0x1b, 0x45,
+	0x14, 0xc7, 0x33, 0x76, 0xda, 0xd4, 0xcf, 0x26, 0x81, 0x69, 0xda, 0x5a, 0x26, 0x98, 0x66, 0xa1,
+	0x6a, 0x08, 0xf2, 0x6e, 0x12, 0x6e, 0xdc, 0x0a, 0x11, 0x52, 0x11, 0xca, 0x61, 0x41, 0x20, 0xb8,
+	0x98, 0xe9, 0xce, 0xc4, 0x1e, 0x69, 0x3d, 0xe3, 0xee, 0xcc, 0xc6, 0xad, 0xc4, 0x05, 0x2e, 0x88,
+	0x03, 0x52, 0x25, 0x2e, 0x1c, 0x38, 0xc0, 0x8d, 0x0f, 0xc0, 0x77, 0x80, 0x1b, 0x95, 0xb8, 0x70,
+	0x44, 0x09, 0x1f, 0x04, 0xcd, 0xec, 0xac, 0x1d, 0xaf, 0x77, 0x5b, 0x07, 0x11, 0x71, 0xf3, 0xcc,
+	0xbc, 0xf1, 0xfb, 0xcd, 0x7f, 0xde, 0xfb, 0xcf, 0xc2, 0xcb, 0xe3, 0x44, 0x6a, 0x19, 0xc9, 0x38,
+	0x38, 0x21, 0x69, 0xac, 0x83, 0x93, 0xfd, 0x80, 0x8c, 0xb9, 0x6f, 0x67, 0x71, 0x5b, 0x49, 0x91,
+	0x0c, 0x1f, 0xfa, 0x79, 0x8c, 0x6f, 0x63, 0xfc, 0x93, 0xfd, 0xce, 0xad, 0x48, 0x26, 0x2c, 0xe0,
+	0x94, 0x09, 0xcd, 0xf5, 0xe3, 0x80, 0x72, 0x9a, 0x05, 0x75, 0xb6, 0x06, 0x52, 0x0e, 0x62, 0x66,
+	0xfe, 0x24, 0x20, 0x42, 0x48, 0x4d, 0x34, 0x97, 0x42, 0xb9, 0xd5, 0xee, 0x62, 0xb6, 0x91, 0xa4,
+	0x2c, 0x76, 0xeb, 0xde, 0xf7, 0x08, 0x5e, 0x3c, 0x62, 0x93, 0x4f, 0x48, 0x1c, 0x33, 0x1d, 0xb2,
+	0x87, 0x29, 0x53, 0x1a, 0xbf, 0x02, 0xa0, 0x98, 0x52, 0x5c, 0x8a, 0x3e, 0xa7, 0x6d, 0x74, 0x1b,
+	0xed, 0x34, 0xc2, 0x86, 0x9b, 0xb9, 0x4f, 0x71, 0x00, 0xd7, 0xa3, 0x84, 0x59, 0x12, 0x12, 0xf7,
+	0x13, 0xa6, 0xc6, 0x52, 0x28, 0xd6, 0xae, 0xd9, 0x38, 0x3c, 0x5b, 0x0a, 0xdd, 0x0a, 0xbe, 0x09,
+	0x57, 0xc7, 0x09, 0x3b, 0xe6, 0x8f, 0xda, 0x75, 0x1b, 0xe3, 0x46, 0x78, 0x0b, 0x1a, 0x7a, 0x98,
+	0x30, 0x35, 0x94, 0x31, 0x6d, 0xaf, 0xde, 0x46, 0x3b, 0x57, 0xc2, 0xd9, 0x84, 0xf7, 0x2d, 0x82,
+	0x97, 0xce, 0xa1, 0xb9, 0xff, 0x6a, 0xc3, 0x9a, 0x4a, 0xa3, 0x88, 0x29, 0x65, 0xc1, 0xae, 0x85,
+	0xf9, 0xd0, 0xac, 0x10, 0x4a, 0x13, 0xb3, 0x92, 0xa1, 0xe4, 0x43, 0x7c, 0x08, 0x2d, 0xca, 0x69,
+	0x9f, 0xca, 0x28, 0x1d, 0x31, 0xa1, 0x2d, 0x45, 0xf3, 0x60, 0xdb, 0x77, 0x62, 0x1b, 0x65, 0xfd,
+	0x5c, 0x59, 0xff, 0x90, 0xd3, 0x43, 0x17, 0x18, 0x36, 0xe9, 0x6c, 0xe0, 0xfd, 0x84, 0x60, 0xf3,
+	0xdd, 0x84, 0x11, 0xcd, 0xee, 0x45, 0x91, 0x4c, 0xc5, 0x54, 0xae, 0xd9, 0xf1, 0xd0, 0xdc, 0xf1,
+	0xb6, 0xa1, 0x45, 0xb2, 0xc8, 0xbe, 0x20, 0xa3, 0x5c, 0xa0, 0xa6, 0x9b, 0x3b, 0x22, 0x23, 0x56,
+	0x25, 0x65, 0xbd, 0x52, 0xca, 0xf9, 0xab, 0x59, 0x2d, 0x5c, 0x8d, 0xf7, 0x3b, 0x82, 0x1b, 0x05,
+	0x46, 0xb7, 0x71, 0x1d, 0x6a, 0xee, 0x2e, 0x5b, 0x61, 0x8d, 0xd3, 0xcb, 0x56, 0x0b, 0xbf, 0x07,
+	0x4d, 0xc1, 0x26, 0x7d, 0x77, 0x58, 0x4b, 0xda, 0x3c, 0xb8, 0xe3, 0x57, 0xd5, 0xb7, 0xef, 0x78,
+	0xef, 0x8b, 0x63, 0x19, 0x82, 0x60, 0x13, 0x37, 0xf6, 0x18, 0x5c, 0xff, 0x80, 0x2b, 0xed, 0x86,
+	0x2a, 0xd7, 0xbc, 0x42, 0x38, 0xb4, 0xa4, 0x70, 0xb5, 0xa2, 0x70, 0x9f, 0xc2, 0xe6, 0x7c, 0x1a,
+	0xb7, 0xed, 0x1e, 0x5c, 0x73, 0x47, 0x30, 0xf5, 0x56, 0x5f, 0xfe, 0x0c, 0xd3, 0x6d, 0xde, 0x37,
+	0x08, 0x36, 0x0f, 0x59, 0xcc, 0x16, 0xea, 0xe6, 0x3f, 0x3e, 0xc3, 0x42, 0xbd, 0xd5, 0x17, 0xea,
+	0xcd, 0xfb, 0x15, 0xc1, 0x8d, 0x02, 0xcb, 0x73, 0xfb, 0xaa, 0x58, 0x0f, 0xb5, 0x7f, 0x55, 0x0f,
+	0x47, 0xb0, 0x41, 0x6d, 0x62, 0x3a, 0xad, 0x89, 0xfa, 0x45, 0x6a, 0x62, 0xdd, 0xed, 0xce, 0xeb,
+	0xe2, 0x0b, 0xb8, 0xf9, 0x21, 0x1f, 0x88, 0x8f, 0x12, 0x22, 0x14, 0x89, 0x8c, 0xe5, 0x5d, 0x96,
+	0xac, 0x18, 0x56, 0x29, 0xd1, 0xc4, 0xe2, 0xb6, 0x42, 0xfb, 0xdb, 0x4b, 0xe1, 0xd6, 0x42, 0xf6,
+	0x8a, 0x46, 0xdb, 0x82, 0x86, 0xe2, 0x03, 0x41, 0x74, 0x9a, 0x64, 0x16, 0xd0, 0x0a, 0x67, 0x13,
+	0x65, 0x7f, 0x6e, 0xae, 0x22, 0x32, 0x3d, 0x2c, 0x13, 0xd7, 0xe0, 0xf9, 0xd0, 0xfb, 0x1c, 0xd6,
+	0x43, 0x76, 0x6c, 0x0c, 0xf2, 0xb2, 0xfa, 0xe0, 0x4b, 0x04, 0x1b, 0xd3, 0x14, 0xff, 0x8f, 0x75,
+	0x1c, 0xfc, 0xb2, 0x06, 0x57, 0x3e, 0x36, 0x35, 0x80, 0x9f, 0x20, 0x68, 0x4c, 0x9f, 0x00, 0xbc,
+	0x5b, 0x5d, 0x29, 0xc5, 0x27, 0xac, 0xf3, 0xe6, 0x52, 0xb1, 0xd9, 0x01, 0xbd, 0xdd, 0xaf, 0xfe,
+	0xf8, 0xfb, 0xbb, 0xda, 0xeb, 0x6f, 0xa3, 0x5d, 0xef, 0xd5, 0xc0, 0xec, 0x0b, 0x0a, 0xaf, 0xa6,
+	0x60, 0x93, 0xde, 0x24, 0x83, 0xf8, 0x11, 0xc1, 0x0b, 0x73, 0x0e, 0x8b, 0xfd, 0xea, 0x54, 0x65,
+	0xcf, 0x45, 0x27, 0x58, 0x3a, 0xde, 0xe1, 0xf9, 0x16, 0x6f, 0xc7, 0xe0, 0xbd, 0x56, 0x8a, 0x67,
+	0xcb, 0x83, 0xf5, 0x5c, 0x5f, 0xe1, 0x1f, 0x10, 0xb4, 0xce, 0x9b, 0x19, 0xee, 0x55, 0x67, 0x2c,
+	0xf1, 0xd6, 0x8e, 0xbf, 0x6c, 0xb8, 0xe3, 0xeb, 0x59, 0xbe, 0xbb, 0x86, 0xcf, 0x2b, 0xe5, 0x8b,
+	0xb9, 0xd2, 0x39, 0x9d, 0xb2, 0x0a, 0xce, 0x79, 0xd0, 0xb3, 0x14, 0x2c, 0x33, 0xce, 0x67, 0x29,
+	0x58, 0x6a, 0x6e, 0xcf, 0x57, 0x30, 0x33, 0x97, 0xa9, 0x82, 0x3f, 0x23, 0xd8, 0x28, 0xf4, 0x37,
+	0xde, 0xab, 0x4e, 0x5a, 0x6e, 0x44, 0x9d, 0xfd, 0x0b, 0xec, 0x70, 0xa0, 0x7b, 0x16, 0x74, 0xd7,
+	0x80, 0xde, 0x29, 0x05, 0x35, 0xce, 0xd1, 0xd3, 0xe7, 0xb0, 0xbe, 0x46, 0xb0, 0xe6, 0x1a, 0x16,
+	0xef, 0x54, 0x27, 0x9c, 0xb7, 0x8d, 0xce, 0x1b, 0x4b, 0x44, 0x3a, 0xa4, 0xbb, 0x16, 0x69, 0xdb,
+	0x20, 0x6d, 0x95, 0x22, 0x25, 0xd9, 0x86, 0x77, 0xde, 0xff, 0xed, 0xb4, 0x8b, 0x9e, 0x9e, 0x76,
+	0xd1, 0x5f, 0xa7, 0x5d, 0xf4, 0xe4, 0xac, 0xbb, 0xf2, 0xf4, 0xac, 0xbb, 0xf2, 0xe7, 0x59, 0x77,
+	0xe5, 0xb3, 0xbd, 0x01, 0xd7, 0xc3, 0xf4, 0x81, 0x1f, 0xc9, 0x51, 0x90, 0xe5, 0x0d, 0xec, 0xd7,
+	0xec, 0xa3, 0xd9, 0xf7, 0xac, 0x7e, 0x3c, 0x66, 0x6a, 0xfa, 0x8d, 0xfa, 0xe0, 0xaa, 0xcd, 0xf1,
+	0xd6, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x29, 0x44, 0xb8, 0x6f, 0x2d, 0x0b, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1131,12 +850,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type VaultClient interface {
-	// Challenge generates a challenge for registration returns it.
-	Challenge(ctx context.Context, in *ChallengeRequest, opts ...grpc.CallOption) (*ChallengeResponse, error)
 	// NewWallet creates a new Webauthn credential and returns it.
 	NewWallet(ctx context.Context, in *NewWalletRequest, opts ...grpc.CallOption) (*NewWalletResponse, error)
-	// Authorize generates a challenge for login and returns it.
-	Authorize(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error)
 	// CreateAccount creates a new Bip32 child key and returns the configuration.
 	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*CreateAccountResponse, error)
 	// ListAccounts lists the accounts and returns the configuration.
@@ -1157,27 +872,9 @@ func NewVaultClient(cc grpc1.ClientConn) VaultClient {
 	return &vaultClient{cc}
 }
 
-func (c *vaultClient) Challenge(ctx context.Context, in *ChallengeRequest, opts ...grpc.CallOption) (*ChallengeResponse, error) {
-	out := new(ChallengeResponse)
-	err := c.cc.Invoke(ctx, "/sonrhq.protocol.vault.v1.Vault/Challenge", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *vaultClient) NewWallet(ctx context.Context, in *NewWalletRequest, opts ...grpc.CallOption) (*NewWalletResponse, error) {
 	out := new(NewWalletResponse)
 	err := c.cc.Invoke(ctx, "/sonrhq.protocol.vault.v1.Vault/NewWallet", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *vaultClient) Authorize(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error) {
-	out := new(AuthorizeResponse)
-	err := c.cc.Invoke(ctx, "/sonrhq.protocol.vault.v1.Vault/Authorize", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1231,12 +928,8 @@ func (c *vaultClient) Refresh(ctx context.Context, in *RefreshRequest, opts ...g
 
 // VaultServer is the server API for Vault service.
 type VaultServer interface {
-	// Challenge generates a challenge for registration returns it.
-	Challenge(context.Context, *ChallengeRequest) (*ChallengeResponse, error)
 	// NewWallet creates a new Webauthn credential and returns it.
 	NewWallet(context.Context, *NewWalletRequest) (*NewWalletResponse, error)
-	// Authorize generates a challenge for login and returns it.
-	Authorize(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error)
 	// CreateAccount creates a new Bip32 child key and returns the configuration.
 	CreateAccount(context.Context, *CreateAccountRequest) (*CreateAccountResponse, error)
 	// ListAccounts lists the accounts and returns the configuration.
@@ -1253,14 +946,8 @@ type VaultServer interface {
 type UnimplementedVaultServer struct {
 }
 
-func (*UnimplementedVaultServer) Challenge(ctx context.Context, req *ChallengeRequest) (*ChallengeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Challenge not implemented")
-}
 func (*UnimplementedVaultServer) NewWallet(ctx context.Context, req *NewWalletRequest) (*NewWalletResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewWallet not implemented")
-}
-func (*UnimplementedVaultServer) Authorize(ctx context.Context, req *AuthorizeRequest) (*AuthorizeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Authorize not implemented")
 }
 func (*UnimplementedVaultServer) CreateAccount(ctx context.Context, req *CreateAccountRequest) (*CreateAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
@@ -1282,24 +969,6 @@ func RegisterVaultServer(s grpc1.Server, srv VaultServer) {
 	s.RegisterService(&_Vault_serviceDesc, srv)
 }
 
-func _Vault_Challenge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ChallengeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VaultServer).Challenge(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sonrhq.protocol.vault.v1.Vault/Challenge",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VaultServer).Challenge(ctx, req.(*ChallengeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Vault_NewWallet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NewWalletRequest)
 	if err := dec(in); err != nil {
@@ -1314,24 +983,6 @@ func _Vault_NewWallet_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VaultServer).NewWallet(ctx, req.(*NewWalletRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Vault_Authorize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthorizeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VaultServer).Authorize(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sonrhq.protocol.vault.v1.Vault/Authorize",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VaultServer).Authorize(ctx, req.(*AuthorizeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1431,16 +1082,8 @@ var _Vault_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*VaultServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Challenge",
-			Handler:    _Vault_Challenge_Handler,
-		},
-		{
 			MethodName: "NewWallet",
 			Handler:    _Vault_NewWallet_Handler,
-		},
-		{
-			MethodName: "Authorize",
-			Handler:    _Vault_Authorize_Handler,
 		},
 		{
 			MethodName: "CreateAccount",
@@ -1465,103 +1108,6 @@ var _Vault_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "protocol/vault/v1/api.proto",
-}
-
-func (m *ChallengeRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ChallengeRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ChallengeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Username) > 0 {
-		i -= len(m.Username)
-		copy(dAtA[i:], m.Username)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.Username)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.RpId) > 0 {
-		i -= len(m.RpId)
-		copy(dAtA[i:], m.RpId)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.RpId)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ChallengeResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ChallengeResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ChallengeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.RpIcon) > 0 {
-		i -= len(m.RpIcon)
-		copy(dAtA[i:], m.RpIcon)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.RpIcon)))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.RpOrigins) > 0 {
-		for iNdEx := len(m.RpOrigins) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.RpOrigins[iNdEx])
-			copy(dAtA[i:], m.RpOrigins[iNdEx])
-			i = encodeVarintApi(dAtA, i, uint64(len(m.RpOrigins[iNdEx])))
-			i--
-			dAtA[i] = 0x22
-		}
-	}
-	if len(m.RpName) > 0 {
-		i -= len(m.RpName)
-		copy(dAtA[i:], m.RpName)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.RpName)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.CreationOptions) > 0 {
-		i -= len(m.CreationOptions)
-		copy(dAtA[i:], m.CreationOptions)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.CreationOptions)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.SessionId) > 0 {
-		i -= len(m.SessionId)
-		copy(dAtA[i:], m.SessionId)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.SessionId)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
 }
 
 func (m *NewWalletRequest) Marshal() (dAtA []byte, err error) {
@@ -1661,108 +1207,6 @@ func (m *NewWalletResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		}
 		i--
 		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AuthorizeRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AuthorizeRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AuthorizeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.DidDocument != nil {
-		{
-			size, err := m.DidDocument.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintApi(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.RpId) > 0 {
-		i -= len(m.RpId)
-		copy(dAtA[i:], m.RpId)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.RpId)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AuthorizeResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AuthorizeResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AuthorizeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.RpIcon) > 0 {
-		i -= len(m.RpIcon)
-		copy(dAtA[i:], m.RpIcon)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.RpIcon)))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.RpOrigins) > 0 {
-		for iNdEx := len(m.RpOrigins) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.RpOrigins[iNdEx])
-			copy(dAtA[i:], m.RpOrigins[iNdEx])
-			i = encodeVarintApi(dAtA, i, uint64(len(m.RpOrigins[iNdEx])))
-			i--
-			dAtA[i] = 0x22
-		}
-	}
-	if len(m.RpName) > 0 {
-		i -= len(m.RpName)
-		copy(dAtA[i:], m.RpName)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.RpName)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.RequestOptions) > 0 {
-		i -= len(m.RequestOptions)
-		copy(dAtA[i:], m.RequestOptions)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.RequestOptions)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.SessionId) > 0 {
-		i -= len(m.SessionId)
-		copy(dAtA[i:], m.SessionId)
-		i = encodeVarintApi(dAtA, i, uint64(len(m.SessionId)))
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -2246,54 +1690,6 @@ func encodeVarintApi(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *ChallengeRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.RpId)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	l = len(m.Username)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	return n
-}
-
-func (m *ChallengeResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.SessionId)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	l = len(m.CreationOptions)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	l = len(m.RpName)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	if len(m.RpOrigins) > 0 {
-		for _, s := range m.RpOrigins {
-			l = len(s)
-			n += 1 + l + sovApi(uint64(l))
-		}
-	}
-	l = len(m.RpIcon)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	return n
-}
-
 func (m *NewWalletRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2333,54 +1729,6 @@ func (m *NewWalletResponse) Size() (n int) {
 	}
 	if m.DidDocument != nil {
 		l = m.DidDocument.Size()
-		n += 1 + l + sovApi(uint64(l))
-	}
-	return n
-}
-
-func (m *AuthorizeRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.RpId)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	if m.DidDocument != nil {
-		l = m.DidDocument.Size()
-		n += 1 + l + sovApi(uint64(l))
-	}
-	return n
-}
-
-func (m *AuthorizeResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.SessionId)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	l = len(m.RequestOptions)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	l = len(m.RpName)
-	if l > 0 {
-		n += 1 + l + sovApi(uint64(l))
-	}
-	if len(m.RpOrigins) > 0 {
-		for _, s := range m.RpOrigins {
-			l = len(s)
-			n += 1 + l + sovApi(uint64(l))
-		}
-	}
-	l = len(m.RpIcon)
-	if l > 0 {
 		n += 1 + l + sovApi(uint64(l))
 	}
 	return n
@@ -2598,330 +1946,6 @@ func sovApi(x uint64) (n int) {
 }
 func sozApi(x uint64) (n int) {
 	return sovApi(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *ChallengeRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowApi
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ChallengeRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ChallengeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RpId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RpId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Username", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Username = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipApi(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthApi
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ChallengeResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowApi
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ChallengeResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ChallengeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SessionId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SessionId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreationOptions", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CreationOptions = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RpName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RpName = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RpOrigins", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RpOrigins = append(m.RpOrigins, string(dAtA[iNdEx:postIndex]))
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RpIcon", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RpIcon = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipApi(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthApi
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *NewWalletRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -3204,334 +2228,6 @@ func (m *NewWalletResponse) Unmarshal(dAtA []byte) error {
 			if err := m.DidDocument.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipApi(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthApi
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AuthorizeRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowApi
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AuthorizeRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AuthorizeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RpId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RpId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DidDocument", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.DidDocument == nil {
-				m.DidDocument = &types.DidDocument{}
-			}
-			if err := m.DidDocument.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipApi(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthApi
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AuthorizeResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowApi
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AuthorizeResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AuthorizeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SessionId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SessionId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RequestOptions", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RequestOptions = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RpName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RpName = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RpOrigins", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RpOrigins = append(m.RpOrigins, string(dAtA[iNdEx:postIndex]))
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RpIcon", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowApi
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthApi
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthApi
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RpIcon = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

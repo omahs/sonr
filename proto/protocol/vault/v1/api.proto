@@ -9,29 +9,7 @@ import "protocol/vault/v1/models.proto";
 
 option go_package = "github.com/sonrhq/core/x/identity/types/vault/v1";
 
-// ==================================================================
-// REGISTRATION
-// ==================================================================
-
-// ChallengRequest is the request to generate a challenge.
-message ChallengeRequest {
-  // Optional RP ID to use for the challenge.
-  string rp_id = 1;
-
-  // Username to use for the AlsoKnownAs field in the didDoc
-  string username = 2;
-}
-
-// ChallengeResponse is the response to a Challenge request.
-message ChallengeResponse {
-  string session_id = 1;
-  string creation_options = 2;
-  string rp_name = 3;
-  repeated string rp_origins = 4;
-  string rp_icon = 5;
-}
-
-// RegisterRequest is the request to register a new account.
+// NewWalletRequest is the request to register a new account.
 message NewWalletRequest {
   string session_id = 1;
   string credential_response = 2;
@@ -39,33 +17,11 @@ message NewWalletRequest {
   int32 threshold = 4; // optional
 }
 
-// RegisterResponse is the response to a Register request.
+// NewWalletResponse is the response to a Register request.
 message NewWalletResponse {
   bool success = 1;
   string address = 2;
   core.identity.DidDocument did_document = 3;
-}
-
-// ==================================================================
-// AUTHENTICATION
-// ==================================================================
-
-// AuthorizeRequest is the request to generate a challenge.
-message AuthorizeRequest {
-  // Optional RP ID to use for the challenge.
-  string rp_id = 1;
-
-  // Username to use for the AlsoKnownAs field in the didDoc
-  core.identity.DidDocument did_document = 2;
-}
-
-// AuthorizeResponse is the response to a Challenge request.
-message AuthorizeResponse {
-  string session_id = 1;
-  string request_options = 2;
-  string rp_name = 3;
-  repeated string rp_origins = 4;
-  string rp_icon = 5;
 }
 
 // CreateAccountRequest is the request to CreateAccount a new key from the private key.
@@ -143,23 +99,10 @@ message RefreshResponse {
 
 // Vault is the service used for managing a node's keypair.
 service Vault {
-  // Challenge generates a challenge for registration returns it.
-  rpc Challenge(ChallengeRequest) returns (ChallengeResponse) {
-    option (google.api.http).get = "/sonr/protocol/vault/challenge/{rp_id}/{username}";
-  }
-
   // NewWallet creates a new Webauthn credential and returns it.
   rpc NewWallet(NewWalletRequest) returns (NewWalletResponse) {
     option (google.api.http) = {
       post: "/sonr/protocol/vault/new-wallet"
-      body: "*"
-    };
-  }
-
-  // Authorize generates a challenge for login and returns it.
-  rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse) {
-    option (google.api.http) = {
-      post: "/sonr/protocol/vault/authorize"
       body: "*"
     };
   }

@@ -30,7 +30,7 @@ tasks:
   serve:
     desc: Serve the blockchain locally
     aliases:
-      - "serve"
+      - "srv"
     summary: |
       Serve Blockchain Locally
 

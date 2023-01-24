@@ -163,9 +163,7 @@ func (w *walletImpl) buildBroadcastTx(memo string, msgs ...sdk.Msg) ([]byte, err
 	txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("snr", sdk.NewInt(100))))
 	txBuilder.AddAuxSignerData(auxData)
 	txBuilder.SetGasLimit(200000)
-
 	return w.cctx.TxConfig.TxEncoder()(txBuilder.GetTx())
-
 }
 
 //

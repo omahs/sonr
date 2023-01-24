@@ -109,6 +109,7 @@ import (
 
 	identitymodule "github.com/sonrhq/core/x/identity"
 	identitymodulekeeper "github.com/sonrhq/core/x/identity/keeper"
+	"github.com/sonrhq/core/x/identity/protocol"
 	identitymoduletypes "github.com/sonrhq/core/x/identity/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
@@ -299,7 +300,11 @@ func New(
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
 	// Start IPFS Node
-	node, err := node.NewIPFS(context.Background())
+	ctx, err := protocol.NewContext(DefaultNodeHome)
+	if err != nil {
+		panic(err)
+	}
+	node, err := node.NewIPFS(context.Background(), nodeconfig.WithProtocolContext(ctx))
 	if err != nil {
 		panic(err)
 	}

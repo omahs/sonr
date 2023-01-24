@@ -40,7 +40,26 @@ func (s *AuthService) Challenge(ctx context.Context, req *authv1.ChallengeReques
 	return sess.GetChallengeResponse()
 }
 
-func (s *AuthService) Authorize(ctx context.Context, req *authv1.AuthorizeRequest) (*authv1.AuthorizeResponse, error) {
+func (s *AuthService) Register(ctx context.Context, req *authv1.RegisterRequest) (*authv1.RegisterResponse, error) {
+	sess, err := store.GetSession(req.Username, req.SessionId)
+	if err != nil {
+		return nil, err
+	}
+	return sess.RegisterCredential(req.RegistrationResponse)
+}
 
-	return nil, nil
+func (s *AuthService) Assertion(ctx context.Context, req *authv1.AssertRequest) (*authv1.AssertResponse, error) {
+	sess, err := store.NewSession(req.RpId, req.Identifier)
+	if err != nil {
+		return nil, err
+	}
+	return sess.GetAssertionOptions()
+}
+
+func (s *AuthService) Login(ctx context.Context, req *authv1.LoginRequest) (*authv1.LoginResponse, error) {
+	sess, err := store.GetSession(req.Identifier, req.SessionId)
+	if err != nil {
+		return nil, err
+	}
+	return sess.AuthorizeCredential(req.AssertionResponse)
 }

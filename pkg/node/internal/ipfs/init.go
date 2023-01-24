@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	nodeconfig "github.com/sonrhq/core/pkg/node/config"
 	orbitdb "berty.tech/go-orbit-db"
 	"berty.tech/go-orbit-db/iface"
 	files "github.com/ipfs/go-ipfs-files"
@@ -19,7 +18,9 @@ import (
 	klibp2p "github.com/ipfs/kubo/core/node/libp2p"
 	"github.com/ipfs/kubo/plugin/loader"
 	"github.com/ipfs/kubo/repo/fsrepo"
+	nodeconfig "github.com/sonrhq/core/pkg/node/config"
 	snrConfig "github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/x/identity/protocol"
 )
 
 // Initialize creates a new local IPFS node
@@ -31,7 +32,7 @@ func Initialize(ctx context.Context, c *snrConfig.Config) (snrConfig.IPFSNode, e
 		return nil, err
 	}
 	// Connect to the bootstrap nodes
-	err = n.Connect(n.config.BootstrapMultiaddrs...)
+	err = n.Connect(n.config.Context.BsMultiaddrs...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +74,7 @@ func (c *localIpfs) initialize() error {
 	}
 
 	// Create a Temporary Repo
-	repoPath, err := createHomeRepo()
+	repoPath, err := createHomeRepo(c.config.Context)
 	if err != nil {
 		return fmt.Errorf("error creating temporary repo: %s", err)
 	}
@@ -117,12 +118,7 @@ func setupPlugins(externalPluginsPath string) error {
 
 // It creates a temporary directory, initializes a new IPFS repo in that directory, and returns the
 // path to the repo
-func createHomeRepo() (string, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "", fmt.Errorf("failed to get home dir: %s", err)
-	}
-	repoPath := filepath.Join(homeDir, ".sonr", "ipfs")
+func createHomeRepo(ctx protocol.Context) (string, error) {
 	// Create a config with default options and a 2048 bit key
 	cfg, err := config.Init(io.Discard, 2048)
 	if err != nil {
@@ -138,11 +134,11 @@ func createHomeRepo() (string, error) {
 	cfg.Experimental.P2pHttpProxy = true
 
 	// Create the repo with the config
-	err = fsrepo.Init(repoPath, cfg)
+	err = fsrepo.Init(ctx.RepoPath, cfg)
 	if err != nil {
 		return "", fmt.Errorf("failed to init ephemeral node: %s", err)
 	}
-	return repoPath, nil
+	return ctx.RepoPath, nil
 }
 
 // Creates an IPFS node and returns its coreAPI

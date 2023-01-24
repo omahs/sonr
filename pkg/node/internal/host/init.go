@@ -78,7 +78,7 @@ func setupRoutingDiscovery(hn *hostImpl) error {
 	// Set Routing Discovery, Find Peers
 	var err error
 	routingDiscovery := dsc.NewRoutingDiscovery(hn.IpfsDHT)
-	routingDiscovery.Advertise(hn.ctx, hn.config.RendezvousString)
+	routingDiscovery.Advertise(hn.ctx, hn.config.Context.Rendevouz)
 
 	// Create Pub Sub
 	hn.PubSub, err = ps.NewGossipSub(hn.ctx, hn.host, ps.WithDiscovery(routingDiscovery))
@@ -87,7 +87,7 @@ func setupRoutingDiscovery(hn *hostImpl) error {
 	}
 
 	// Handle DHT Peers
-	hn.dhtPeerChan, err = routingDiscovery.FindPeers(hn.ctx, hn.config.RendezvousString)
+	hn.dhtPeerChan, err = routingDiscovery.FindPeers(hn.ctx, hn.config.Context.Rendevouz)
 	if err != nil {
 		return err
 	}

@@ -69,7 +69,7 @@ func Initialize(ctx context.Context, config *config.Config) (config.P2PNode, err
 	}
 
 	// Connect to Bootstrap Nodes
-	for _, pistr := range hn.config.BootstrapMultiaddrs {
+	for _, pistr := range hn.config.Context.BsMultiaddrs {
 		if err := hn.Connect(pistr); err != nil {
 			continue
 		} else {

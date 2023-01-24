@@ -10,7 +10,6 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/x/identity/types"
 )
 
 // `Node` is an interface that defines the methods that a node must implement to be used by the
@@ -33,7 +32,6 @@ type Node interface {
 	Close() error
 }
 
-
 // `IPFSNode` is an interface that defines the methods that a Highway node must implement.
 // @property Add - This is the function that adds a file to the IPFS network.
 // @property {error} Connect - Connects to a peer
@@ -50,14 +48,11 @@ type IPFSNode interface {
 	// Get the IPFS Core API
 	CoreAPI() icore.CoreAPI
 
-	// Get the IPFS PubSub API
-	GetCapabilityDelegation() *types.VerificationMethod
-
 	// Add a file to the network
 	Add(data []byte) (string, error)
 
 	// AddEncrypted adds a file to the network, encrypted with the given public key.
-	AddEncrypted(file []byte, pubKey []byte) (string, error)
+	Encrypt(file []byte, pubKey []byte) []byte
 
 	// AddPath adds a file to the network
 	AddPath(path string) (string, error)
@@ -66,7 +61,7 @@ type IPFSNode interface {
 	Get(hash string) ([]byte, error)
 
 	// GetDecrypted takes a cid and a public key and returns the decrypted file.
-	GetDecrypted(cidStr string, pubKey []byte) ([]byte, error)
+	Decrypt(bz []byte, pubKey []byte) ([]byte, bool)
 
 	// GetPath gets a file from the network
 	GetPath(hash string) (map[string]files.Node, error)

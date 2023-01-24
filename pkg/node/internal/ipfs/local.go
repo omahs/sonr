@@ -21,7 +21,6 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	cv1 "github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/node/config"
-	"github.com/sonrhq/core/x/identity/types"
 )
 
 // `localIpfs` is a struct that contains a `CoreAPI` and a `IpfsNode` and a `WalletShare` and a
@@ -123,12 +122,8 @@ func (n *localIpfs) Add(file []byte) (string, error) {
 }
 
 // AddEncrypted utilizes the NACL Secret box to encrypt data on behalf of a user
-func (n *localIpfs) AddEncrypted(file []byte, pubKey []byte) (string, error) {
-	boxer, err := n.newBoxer(pubKey)
-	if err != nil {
-		return "", err
-	}
-	return boxer.Seal(file)
+func (n *localIpfs) Encrypt(file []byte, pubKey []byte) []byte {
+	return n.config.Context.EncryptMessage(file, pubKey)
 }
 
 // AddPath adds all files/folders in a given path to the network
@@ -186,12 +181,8 @@ func (n *localIpfs) Get(cidStr string) ([]byte, error) {
 }
 
 // GetDecrypted decrypts a file from a cid hash using the pubKey
-func (n *localIpfs) GetDecrypted(cidStr string, pubKey []byte) ([]byte, error) {
-	boxer, err := n.newBoxer(pubKey)
-	if err != nil {
-		return nil, err
-	}
-	return boxer.Open(cidStr)
+func (n *localIpfs) Decrypt(bz []byte, pubKey []byte) ([]byte, bool) {
+	return n.config.Context.DecryptMessage(bz, pubKey)
 }
 
 // GetPath returns a file from the network given its CID
@@ -238,11 +229,6 @@ func (n *localIpfs) Peer() *cv1.PeerInfo {
 // Close closes the node
 func (n *localIpfs) Close() error {
 	return n.node.Close()
-}
-
-// GetCapabilityDelegation returns a capability delegation for the given peer
-func (l *localIpfs) GetCapabilityDelegation() *types.VerificationMethod {
-	return l.config.GetCapabilityDelegation()
 }
 
 // GetDocsStore creates or loads a document database from given name

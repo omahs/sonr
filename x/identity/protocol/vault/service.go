@@ -2,7 +2,6 @@ package vault
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -53,24 +52,6 @@ func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node c
 	return v1.RegisterVaultHandlerServer(context.Background(), mux, vaultService)
 }
 
-// Challeng returns a random challenge for the client to sign.
-func (v *VaultService) Challenge(ctx context.Context, req *v1.ChallengeRequest) (*v1.ChallengeResponse, error) {
-	session, err := store.NewEntry(req.RpId, req.Username)
-	if err != nil {
-		return nil, err
-	}
-	optsJson, eID, err := v.bank.StartRegistration(session)
-	if err != nil {
-		return nil, err
-	}
-	return &v1.ChallengeResponse{
-		RpName:          v.rpName,
-		CreationOptions: optsJson,
-		SessionId:       eID,
-		RpIcon:          v.rpIcon,
-	}, nil
-}
-
 // Register registers a new keypair and returns the public key.
 func (v *VaultService) NewWallet(ctx context.Context, req *v1.NewWalletRequest) (*v1.NewWalletResponse, error) {
 	// Get Session
@@ -88,86 +69,28 @@ func (v *VaultService) NewWallet(ctx context.Context, req *v1.NewWalletRequest) 
 }
 
 // CreateAccount derives a new key from the private key and returns the public key.
-func (v *VaultService) Authorize(ctx context.Context, req *v1.AuthorizeRequest) (*v1.AuthorizeResponse, error) {
-	session, err := store.LoadEntry(req.RpId, req.DidDocument)
-	if err != nil {
-		return nil, err
-	}
-	optsJson, eID, err := v.bank.StartLogin(session)
-	if err != nil {
-		return nil, err
-	}
-	return &v1.AuthorizeResponse{
-		RpName:         v.rpName,
-		RequestOptions: optsJson,
-		SessionId:      eID,
-		RpIcon:         v.rpIcon,
-	}, nil
-}
-
-// CreateAccount derives a new key from the private key and returns the public key.
 func (v *VaultService) CreateAccount(ctx context.Context, req *v1.CreateAccountRequest) (*v1.CreateAccountResponse, error) {
-	success, err := v.bank.FinishLogin(req.SessionId, req.CredentialResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	if !success {
-		return nil, errors.New("Failed to authorize")
-	}
-	return nil, fmt.Errorf("Method is unimplemented. Authorization result: %v", success)
+	return nil, fmt.Errorf("Method is unimplemented")
 }
 
 // ListAccounts lists all the accounts derived from the private key.
 func (v *VaultService) ListAccounts(ctx context.Context, req *v1.ListAccountsRequest) (*v1.ListAccountsResponse, error) {
-	success, err := v.bank.FinishLogin(req.SessionId, req.CredentialResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	if !success {
-		return nil, errors.New("Failed to authorize")
-	}
-	return nil, fmt.Errorf("Method is unimplemented. Authorization result: %v", success)
+	return nil, fmt.Errorf("Method is unimplemented")
 }
 
 // DeleteAccount deletes the account with the given address.
 func (v *VaultService) DeleteAccount(ctx context.Context, req *v1.DeleteAccountRequest) (*v1.DeleteAccountResponse, error) {
-	success, err := v.bank.FinishLogin(req.SessionId, req.CredentialResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	if !success {
-		return nil, errors.New("Failed to authorize")
-	}
-	return nil, fmt.Errorf("Method is unimplemented. Authorization result: %v", success)
+	return nil, fmt.Errorf("Method is unimplemented")
 }
 
 // Refresh refreshes the keypair and returns the public key.
 func (v *VaultService) Refresh(ctx context.Context, req *v1.RefreshRequest) (*v1.RefreshResponse, error) {
-	success, err := v.bank.FinishLogin(req.SessionId, req.CredentialResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	if !success {
-		return nil, errors.New("Failed to authorize")
-	}
-	return nil, fmt.Errorf("Method is unimplemented. Authorization result: %v", success)
+	return nil, fmt.Errorf("Method is unimplemented")
 }
 
 // Sign signs the data with the private key and returns the signature.
 func (v *VaultService) SignTransaction(ctx context.Context, req *v1.SignTransactionRequest) (*v1.SignTransactionResponse, error) {
-	success, err := v.bank.FinishLogin(req.SessionId, req.CredentialResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	if !success {
-		return nil, errors.New("Failed to authorize")
-	}
-	return nil, fmt.Errorf("Method is unimplemented. Authorization result: %v", success)
+	return nil, fmt.Errorf("Method is unimplemented")
 }
 
 //

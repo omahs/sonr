@@ -9,7 +9,6 @@ import (
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/x/identity/types"
 	v1 "github.com/sonrhq/core/x/identity/types/auth/v1"
 )
 
@@ -63,8 +62,8 @@ func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
 	}, nil
 }
 
-// FinishRegistration creates a credential which can be stored to use with User Authentication
-func (s *Session) FinishRegistration(credentialCreationData string) (*types.DidDocument, error) {
+// RegisterCredential creates a credential which can be stored to use with User Authentication
+func (s *Session) RegisterCredential(credentialCreationData string) (*v1.RegisterResponse, error) {
 	// Parse Client Credential Data
 	pcc, err := parseCreationData(credentialCreationData)
 	if err != nil {
@@ -78,44 +77,66 @@ func (s *Session) FinishRegistration(credentialCreationData string) (*types.DidD
 	if err != nil {
 		return nil, fmt.Errorf("Failed to add webauthn credential: %s", err)
 	}
-	return s.didDoc, nil
+	return &v1.RegisterResponse{
+		Success:     true,
+		DidDocument: s.didDoc,
+		Username:    s.alsoKnownAs,
+	}, nil
 }
 
-// BeginLogin creates a new AssertionChallenge for client to verify
-func (s *Session) BeginLogin() (string, error) {
+// GetAssertionOptions creates a new AssertionChallenge for client to verify
+func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
 	wauth, err := s.GetWebAuthn()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	opts, session, err := wauth.BeginLogin(s.didDoc, webauthn.WithAllowedCredentials(s.didDoc.AllowedWebauthnCredentials()))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	s.data = *session
 	bz, err := json.Marshal(opts)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(bz), nil
+
+	// Sync Session
+	err = s.Sync()
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.AssertResponse{
+		RequestOptions: string(bz),
+		SessionId:      s.ID,
+		RpName:         s.RPDisplayName,
+		RpIcon:         s.RPIcon,
+		RpOrigins:      s.RPOrigins,
+	}, nil
 }
 
-// FinishLogin authenticates from the signature provided to the client
-func (s *Session) FinishLogin(credentialRequestData string) (bool, error) {
+// AuthorizeCredential authenticates from the signature provided to the client
+func (s *Session) AuthorizeCredential(credentialRequestData string) (*v1.LoginResponse, error) {
 	wauth, err := s.GetWebAuthn()
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	pca, err := parseAssertionData(credentialRequestData)
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("Failed to get parsed creation data: %s", err))
+		return nil, errors.New(fmt.Sprintf("Failed to get parsed creation data: %s", err))
 	}
 	_, err = wauth.ValidateLogin(s.didDoc, s.data, pca)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	return true, nil
+
+	return &v1.LoginResponse{
+		Success:     true,
+		DidDocument: s.didDoc,
+		Username:    s.alsoKnownAs,
+	}, nil
 }
 
 // It takes a JSON string, converts it to a struct, and then converts that struct to a different struct

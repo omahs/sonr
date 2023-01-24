@@ -31,12 +31,26 @@ message ChallengeResponse {
   string rp_icon = 5;
 }
 
+// RegisterRequest is the request to register a new user.
+message RegisterRequest {
+  string session_id = 1;
+  string username = 2;
+  string registration_response = 3;
+}
+
+// RegisterResponse is the response to a Register request.
+message RegisterResponse {
+  bool success = 1;
+  string username = 2;
+  core.identity.DidDocument did_document = 3;
+}
+
 // ==================================================================
 // AUTHENTICATION
 // ==================================================================
 
 // AuthorizeRequest is the request to generate a challenge.
-message AuthorizeRequest {
+message AssertRequest {
   // Optional RP ID to use for the challenge.
   string rp_id = 1;
 
@@ -45,12 +59,26 @@ message AuthorizeRequest {
 }
 
 // AuthorizeResponse is the response to a Challenge request.
-message AuthorizeResponse {
+message AssertResponse {
   string session_id = 1;
   string request_options = 2;
   string rp_name = 3;
   repeated string rp_origins = 4;
   string rp_icon = 5;
+}
+
+// LoginRequest is the request to register a new user.
+message LoginRequest {
+  string session_id = 1;
+  string identifier = 2;
+  string assertion_response = 3;
+}
+
+// LoginResponse is the response to a Register request.
+message LoginResponse {
+  bool success = 1;
+  string username = 2;
+  core.identity.DidDocument did_document = 3;
 }
 
 // ==================================================================
@@ -64,8 +92,18 @@ service Auth {
     option (google.api.http).get = "/sonr/protocol/auth/challenge/{rp_id}/{username}";
   }
 
-  // Authorize generates a challenge for login and returns it.
-  rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse) {
+  // Register registers a new user.
+  rpc Register(RegisterRequest) returns (RegisterResponse) {
+    option (google.api.http).post = "/sonr/protocol/auth/register";
+  }
+
+  // Assertion return credential assertion options.
+  rpc Assertion(AssertRequest) returns (AssertResponse) {
     option (google.api.http).get = "/sonr/protocol/auth/authorize/{rp_id}/{identifier}";
+  }
+
+  // Login logs in a user.
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http).post = "/sonr/protocol/auth/login";
   }
 }
