@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	identityprotocol "github.com/sonrhq/core/x/identity/protocol"
 	ggio "github.com/gogo/protobuf/io"
 	"github.com/gogo/protobuf/proto"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
@@ -18,6 +17,7 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/node/config"
+	identityprotocol "github.com/sonrhq/core/x/identity/protocol"
 )
 
 // A P2PHost is a host.Host with a private key, a channel of mDNS peers, a channel of DHT peers, a
@@ -56,16 +56,16 @@ type hostImpl struct {
 }
 
 // Initialize Creates a Sonr libp2p Host with the given config
-func Initialize(ctx context.Context, config *config.Config) (config.P2PNode, error) {
+func Initialize(config *config.Config) (config.P2PNode, error) {
 	// Create Host and apply options
-	hn := defaultNode(ctx, config)
+	hn := defaultNode(config)
 	// Initialize Host
 	if err := initializeHost(hn); err != nil {
 		return nil, err
 	}
 
 	// Bootstrap DHT
-	if err := hn.Bootstrap(ctx); err != nil {
+	if err := hn.Bootstrap(hn.ctx); err != nil {
 		return nil, err
 	}
 
@@ -86,7 +86,7 @@ func Initialize(ctx context.Context, config *config.Config) (config.P2PNode, err
 }
 
 // Context returns the context of the Host
-func (n *hostImpl) Context() identityprotocol.Context {
+func (n *hostImpl) Context() *identityprotocol.Context {
 	return n.config.Context
 }
 

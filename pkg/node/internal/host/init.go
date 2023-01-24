@@ -1,7 +1,6 @@
 package host
 
 import (
-	"context"
 	"crypto/rand"
 
 	"github.com/libp2p/go-libp2p"
@@ -21,11 +20,11 @@ import (
 //
 
 // defaultNode creates a new node with default options
-func defaultNode(ctx context.Context, config *config.Config) *hostImpl {
+func defaultNode(config *config.Config) *hostImpl {
 	return &hostImpl{
 		mdnsPeerChan: make(chan peer.AddrInfo),
 		topics:       make(map[string]*ps.Topic),
-		ctx:          ctx,
+		ctx:          config.Context.Ctx,
 		config:       config,
 		callback:     config.Callback,
 	}

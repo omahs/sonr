@@ -3,7 +3,6 @@ package ipfs
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -12,7 +11,6 @@ import (
 	"berty.tech/go-orbit-db/iface"
 	files "github.com/ipfs/go-ipfs-files"
 	icore "github.com/ipfs/interface-go-ipfs-core"
-	"github.com/ipfs/kubo/config"
 	"github.com/ipfs/kubo/core"
 	"github.com/ipfs/kubo/core/coreapi"
 	klibp2p "github.com/ipfs/kubo/core/node/libp2p"
@@ -20,13 +18,12 @@ import (
 	"github.com/ipfs/kubo/repo/fsrepo"
 	nodeconfig "github.com/sonrhq/core/pkg/node/config"
 	snrConfig "github.com/sonrhq/core/pkg/node/config"
-	"github.com/sonrhq/core/x/identity/protocol"
 )
 
 // Initialize creates a new local IPFS node
-func Initialize(ctx context.Context, c *snrConfig.Config) (snrConfig.IPFSNode, error) {
+func Initialize(c *snrConfig.Config) (snrConfig.IPFSNode, error) {
 	// Apply the options
-	n := defaultNode(ctx, c)
+	n := defaultNode(c)
 	err := n.initialize()
 	if err != nil {
 		return nil, err
@@ -36,7 +33,7 @@ func Initialize(ctx context.Context, c *snrConfig.Config) (snrConfig.IPFSNode, e
 	if err != nil {
 		return nil, err
 	}
-	db, err := orbitdb.NewOrbitDB(ctx, n.CoreAPI(), &orbitdb.NewOrbitDBOptions{})
+	db, err := orbitdb.NewOrbitDB(n.ctx, n.CoreAPI(), &orbitdb.NewOrbitDBOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -55,9 +52,9 @@ type TopicMessageHandler func(topic string, msg icore.PubSubMessage) error
 //
 
 // defaultNode creates a new node with default options
-func defaultNode(ctx context.Context, cnfg *snrConfig.Config) *localIpfs {
+func defaultNode(cnfg *snrConfig.Config) *localIpfs {
 	return &localIpfs{
-		ctx:    ctx,
+		ctx:    cnfg.Context.Ctx,
 		config: cnfg,
 	}
 }
@@ -73,13 +70,7 @@ func (c *localIpfs) initialize() error {
 		return onceErr
 	}
 
-	// Create a Temporary Repo
-	repoPath, err := createHomeRepo(c.config.Context)
-	if err != nil {
-		return fmt.Errorf("error creating temporary repo: %s", err)
-	}
-
-	node, err := createNode(c.ctx, repoPath)
+	node, err := createNode(c.ctx, c.config.Context.RepoPath)
 	if err != nil {
 		return err
 	}
@@ -91,7 +82,6 @@ func (c *localIpfs) initialize() error {
 
 	// Set the node and repoPath
 	c.node = node
-	c.repoPath = repoPath
 	c.api = api
 	return nil
 }
@@ -114,31 +104,6 @@ func setupPlugins(externalPluginsPath string) error {
 	}
 
 	return nil
-}
-
-// It creates a temporary directory, initializes a new IPFS repo in that directory, and returns the
-// path to the repo
-func createHomeRepo(ctx protocol.Context) (string, error) {
-	// Create a config with default options and a 2048 bit key
-	cfg, err := config.Init(io.Discard, 2048)
-	if err != nil {
-		return "", err
-	}
-	// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#ipfs-filestore
-	cfg.Experimental.FilestoreEnabled = true
-	// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#ipfs-urlstore
-	cfg.Experimental.UrlstoreEnabled = true
-	// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#ipfs-p2p
-	cfg.Experimental.Libp2pStreamMounting = true
-	// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#p2p-http-proxy
-	cfg.Experimental.P2pHttpProxy = true
-
-	// Create the repo with the config
-	err = fsrepo.Init(ctx.RepoPath, cfg)
-	if err != nil {
-		return "", fmt.Errorf("failed to init ephemeral node: %s", err)
-	}
-	return ctx.RepoPath, nil
 }
 
 // Creates an IPFS node and returns its coreAPI

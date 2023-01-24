@@ -21,7 +21,6 @@ import (
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/x/identity/client/cli"
 	"github.com/sonrhq/core/x/identity/keeper"
-	"github.com/sonrhq/core/x/identity/protocol"
 	"github.com/sonrhq/core/x/identity/protocol/auth"
 	"github.com/sonrhq/core/x/identity/protocol/vault"
 	"github.com/sonrhq/core/x/identity/types"
@@ -36,18 +35,12 @@ var (
 	nodeHome string
 )
 
-func initProtocol() error {
-	// Start IPFS Node
-	ctx, err := protocol.NewContext()
+func init() {
+	node, err := node.NewIPFS(context.Background())
 	if err != nil {
-		return err
-	}
-	node, err := node.NewIPFS(context.Background(), config.WithProtocolContext(ctx))
-	if err != nil {
-		return err
+		panic(err)
 	}
 	ipfsNode = node
-	return nil
 }
 
 // ----------------------------------------------------------------------------
@@ -95,9 +88,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
-	if err := initProtocol(); err != nil {
-		panic(err)
-	}
 	auth.RegisterAuthIPFSService(clientCtx, mux, ipfsNode)
 	vault.RegisterVaultIPFSService(clientCtx, mux, ipfsNode)
 }

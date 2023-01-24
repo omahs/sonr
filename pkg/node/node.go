@@ -7,6 +7,7 @@ import (
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/pkg/node/internal/host"
 	"github.com/sonrhq/core/pkg/node/internal/ipfs"
+	identityprotocol "github.com/sonrhq/core/x/identity/protocol"
 )
 
 // `Node` is an interface that has three methods: `Host`, `IPFS`, and `Type`.
@@ -30,13 +31,17 @@ type Node interface {
 
 // It creates a new host, and then creates a new node with that host
 func New(ctx context.Context, opts ...config.Option) (Node, error) {
-	config := config.DefaultConfig()
-	err := config.Apply(opts...)
+	pctx, err := identityprotocol.NewContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	config := config.DefaultConfig(pctx)
+	err = config.Apply(opts...)
 	if err != nil {
 		return nil, err
 	}
 	if config.IsMotor() {
-		h, err := host.Initialize(ctx, config)
+		h, err := host.Initialize(config)
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +50,7 @@ func New(ctx context.Context, opts ...config.Option) (Node, error) {
 			config: config,
 		}, nil
 	}
-	i, err := ipfs.Initialize(ctx, config)
+	i, err := ipfs.Initialize(config)
 	if err != nil {
 		return nil, err
 	}
@@ -57,12 +62,17 @@ func New(ctx context.Context, opts ...config.Option) (Node, error) {
 
 // NewIPFS creates a new IPFS node
 func NewIPFS(ctx context.Context, opts ...config.Option) (config.IPFSNode, error) {
-	config := config.DefaultConfig()
-	err := config.Apply(opts...)
+	// Start IPFS Node
+	pctx, err := identityprotocol.NewContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	i, err := ipfs.Initialize(ctx, config)
+	config := config.DefaultConfig(pctx)
+	err = config.Apply(opts...)
+	if err != nil {
+		return nil, err
+	}
+	i, err := ipfs.Initialize(config)
 	if err != nil {
 		return nil, err
 	}

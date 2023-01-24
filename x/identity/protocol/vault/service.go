@@ -9,7 +9,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	gocache "github.com/patrickmn/go-cache"
 	"github.com/sonrhq/core/pkg/node/config"
-	"github.com/sonrhq/core/x/identity/protocol"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
 
@@ -32,16 +31,14 @@ type VaultService struct {
 	node   config.IPFSNode
 	rpName string
 	rpIcon string
-	cctx   protocol.Context
-	cache  *gocache.Cache
+
+	cache *gocache.Cache
 }
 
 // It creates a new VaultService and registers it with the gRPC server
 func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node config.IPFSNode) error {
-
 	cache := gocache.New(time.Minute*2, time.Minute*10)
 	vaultService = &VaultService{
-		cctx:   node.Context(),
 		node:   node,
 		rpName: "Sonr",
 		rpIcon: "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png",

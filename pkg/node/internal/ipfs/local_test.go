@@ -6,13 +6,18 @@ import (
 	"testing"
 
 	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/x/identity/protocol"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewAddGet(t *testing.T) {
 	// Call Run method and check for panic (if any)
-	cnfg := config.DefaultConfig()
-	node, err := Initialize(context.Background(), cnfg)
+	ctx, err := protocol.NewContext(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	cnfg := config.DefaultConfig(ctx)
+	node, err := Initialize(cnfg)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,8 +40,12 @@ func TestNewAddGet(t *testing.T) {
 }
 
 func TestOrbitDB(t *testing.T) {
-	cnfg := config.DefaultConfig()
-	node, err := Initialize(context.Background(), cnfg)
+	ctx, err := protocol.NewContext(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	cnfg := config.DefaultConfig(ctx)
+	node, err := Initialize(cnfg)
 	if err != nil {
 		t.Fatal(err)
 	}

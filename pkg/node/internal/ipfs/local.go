@@ -39,9 +39,8 @@ import (
 // @property {string} rendezvous - The rendezvous string is a unique identifier for the swarm. It is
 // used to find other peers in the swarm.
 type localIpfs struct {
-	api      icore.CoreAPI
-	node     *core.IpfsNode
-	repoPath string
+	api  icore.CoreAPI
+	node *core.IpfsNode
 
 	config *config.Config
 
@@ -90,7 +89,7 @@ func (n *localIpfs) Connect(peers ...string) error {
 }
 
 // Context returns the context of the node
-func (n *localIpfs) Context() protocol.Context {
+func (n *localIpfs) Context() *protocol.Context {
 	return n.config.Context
 }
 

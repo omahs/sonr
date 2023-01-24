@@ -27,7 +27,7 @@ func (st StoreType) String() string {
 
 // Config is the configuration for the node
 type Config struct {
-	Context protocol.Context
+	Context *protocol.Context
 
 	// Callback is the callback for the motor
 	Callback common.NodeCallback
@@ -43,10 +43,12 @@ type Config struct {
 }
 
 // DefaultConfig returns the default configuration
-func DefaultConfig() *Config {
+func DefaultConfig(ctx *protocol.Context) *Config {
 	return &Config{
 		PeerType:    common.PeerType_HIGHWAY,
 		SelfPartyID: party.ID("current"),
+		Callback:    common.DefaultCallback(),
+		Context:     ctx,
 	}
 }
 
@@ -103,14 +105,6 @@ func WithPartyId(partyId string) Option {
 func WithPeerType(peerType common.PeerType) Option {
 	return func(c *Config) error {
 		c.PeerType = peerType
-		return nil
-	}
-}
-
-// WithEncryptionKeyPath sets the encryption private key for the node from a file
-func WithProtocolContext(ctx protocol.Context) Option {
-	return func(c *Config) error {
-		c.Context = ctx
 		return nil
 	}
 }

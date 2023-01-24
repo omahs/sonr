@@ -21,7 +21,7 @@ import (
 // @property {error} Close - Close the node
 type Node interface {
 	// Context returns protocol.Context
-	Context() identityprotocol.Context
+	Context() *identityprotocol.Context
 
 	// PeerID returns the peer ID of the node
 	PeerID() peer.ID

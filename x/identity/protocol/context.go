@@ -1,12 +1,16 @@
 package protocol
 
 import (
+	"context"
 	"crypto/rand"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/ipfs/kubo/config"
+	"github.com/ipfs/kubo/repo/fsrepo"
 	"golang.org/x/crypto/nacl/box"
 )
 
@@ -50,7 +54,8 @@ var (
 // @property encPubKey - The public key of the encryption key pair.
 // @property encPrivKey - The private key used to encrypt the data.
 type Context struct {
-	cctx          client.Context
+	Ctx           context.Context
+	CCtx          client.Context
 	HomeDir       string
 	RepoPath      string
 	NodeRESTUri   string
@@ -63,13 +68,14 @@ type Context struct {
 	encPrivKey *[32]byte
 }
 
-// It creates a new context object, initializes the encryption keys, and returns the context object
-func NewContext() (Context, error) {
+// NewContext creates a new context object, initializes the encryption keys, and returns the context object
+func NewContext(c context.Context) (*Context, error) {
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
-		return Context{}, err
+		return nil, err
 	}
 	ctx := Context{
+		Ctx:           c,
 		HomeDir:       filepath.Join(userHomeDir, ".sonr"),
 		RepoPath:      filepath.Join(userHomeDir, ".ipfs"),
 		NodeRESTUri:   "http://api.sonr.network",
@@ -78,16 +84,62 @@ func NewContext() (Context, error) {
 		Rendevouz:     defaultRendezvousString,
 		BsMultiaddrs:  defaultBootstrapMultiaddrs,
 	}
-	err = ctx.initEncKeys()
+	return ctx.initialize()
+}
+
+// SetClientContext sets the client context
+func (ctx *Context) SetClientContext(c client.Context) *Context {
+	ctx.CCtx = c
+	return ctx
+}
+
+// It creates a temporary directory, initializes a new IPFS repo in that directory, and returns the
+// path to the repo
+func (ctx *Context) initialize() (*Context, error) {
+	if !hasKeys(ctx) {
+		err := generateBoxKeys(ctx)
+		if err != nil {
+			return ctx, err
+		}
+	}
+	pk, pb, err := loadBoxKeys(ctx)
 	if err != nil {
 		return ctx, err
+	}
+	ctx.encPrivKey = pk
+	ctx.encPubKey = pb
+
+	// Create the home directory if it doesn't exist
+	_, err = os.Stat(ctx.RepoPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			// Create a config with default options and a 2048 bit key
+			cfg, err := config.Init(io.Discard, 2048)
+			if err != nil {
+				return ctx, err
+			}
+			// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#ipfs-filestore
+			cfg.Experimental.FilestoreEnabled = true
+			// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#ipfs-urlstore
+			cfg.Experimental.UrlstoreEnabled = true
+			// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#ipfs-p2p
+			cfg.Experimental.Libp2pStreamMounting = true
+			// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#p2p-http-proxy
+			cfg.Experimental.P2pHttpProxy = true
+
+			// Create the repo with the config
+			err = fsrepo.Init(ctx.RepoPath, cfg)
+			if err != nil {
+				return ctx, fmt.Errorf("failed to init ephemeral node: %s", err)
+			}
+		}
 	}
 	return ctx, nil
 }
 
 // Write encrypts a message using the box algorithm
 // This encrypts msg and appends the result to the nonce.
-func (b Context) EncryptMessage(msg []byte, peerPk []byte) []byte {
+func (b *Context) EncryptMessage(msg []byte, peerPk []byte) []byte {
 	return box.Seal(nil, msg, b.findNonce(peerPk), b.encPubKey, b.encPrivKey)
 }
 
@@ -96,56 +148,47 @@ func (b Context) EncryptMessage(msg []byte, peerPk []byte) []byte {
 // used to encrypt the message. One way to achieve this is to store the
 // nonce alongside the encrypted message. Above, we stored the nonce in the
 // first 24 bytes of the encrypted text.
-func (b Context) DecryptMessage(encMsg []byte, peerPk []byte) ([]byte, bool) {
+func (b *Context) DecryptMessage(encMsg []byte, peerPk []byte) ([]byte, bool) {
 	return box.Open(nil, encMsg, b.findNonce(peerPk), b.encPubKey, b.encPrivKey)
 }
 
 // Nonce returns the nonce for the box
-func (b Context) findNonce(peerPk []byte) *[24]byte {
+func (b *Context) findNonce(peerPk []byte) *[24]byte {
 	var nonce [24]byte
 	copy(nonce[:], peerPk[:24])
 	return &nonce
 }
 
-func (c Context) initEncKeys() error {
-	if !hasKeys(c) {
-		err := generateBoxKeys(c)
-		if err != nil {
-			return err
-		}
-	}
-	pk, pb, err := loadBoxKeys(c)
-	if err != nil {
-		return err
-	}
-	c.encPrivKey = pk
-	c.encPubKey = pb
-	return nil
-}
-
-func kEncPrivKeyPath(cctx Context) string {
+// It returns the path to the file that contains the encryption key for the private key
+func kEncPrivKeyPath(cctx *Context) string {
 	return filepath.Join(cctx.HomeDir, "config", "highway", "encryption_key")
 }
 
-func kEncPubKeyPath(cctx Context) string {
+// `kEncPubKeyPath` returns the path to the public encryption key
+func kEncPubKeyPath(cctx *Context) string {
 	return filepath.Join(cctx.HomeDir, "config", "highway", "encryption_key.pub")
 }
 
-func hasEncryptionKey(cctx Context) bool {
+// If the file `/.lotus/encryption-key` exists, then return true, otherwise return false
+func hasEncryptionKey(cctx *Context) bool {
 	_, err := os.Stat(kEncPrivKeyPath(cctx))
 	return err == nil
 }
 
-func hasEncryptionPubKey(cctx Context) bool {
+// It checks if the file `/.lotus/encryption-pubkey` exists
+func hasEncryptionPubKey(cctx *Context) bool {
 	_, err := os.Stat(kEncPubKeyPath(cctx))
 	return err == nil
 }
 
-func hasKeys(cctx Context) bool {
+// If the context has both an encryption key and an encryption public key, then return true
+func hasKeys(cctx *Context) bool {
 	return hasEncryptionKey(cctx) && hasEncryptionPubKey(cctx)
 }
 
-func generateBoxKeys(cctx Context) error {
+// It generates a new encryption key pair, and writes the private key to the file
+// `/.lotus/key.priv` and the public key to the file `/.lotus/key.pub`
+func generateBoxKeys(cctx *Context) error {
 	pub, priv, err := box.GenerateKey(rand.Reader)
 	if err != nil {
 		return err
@@ -169,7 +212,8 @@ func generateBoxKeys(cctx Context) error {
 	return nil
 }
 
-func loadBoxKeys(cctx Context) (*[32]byte, *[32]byte, error) {
+// It reads the private and public keys from the file system and returns them
+func loadBoxKeys(cctx *Context) (*[32]byte, *[32]byte, error) {
 	if !hasKeys(cctx) {
 		return nil, nil, fmt.Errorf("no keys found")
 	}
