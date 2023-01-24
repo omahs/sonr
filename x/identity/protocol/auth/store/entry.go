@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/go-webauthn/webauthn/protocol"
@@ -49,7 +50,7 @@ func NewSession(rpId string, aka string) (*Session, error) {
 	s := defaultSession(rpId, aka)
 	err := s.Apply()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to apply options to Webauthn config: %w", err)
 	}
 	return s, nil
 }

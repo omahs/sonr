@@ -24,12 +24,6 @@ func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// Sync Session
-	err = s.Sync()
-	if err != nil {
-		return nil, err
-	}
 	return &v1.ChallengeResponse{
 		CreationOptions: string(bz),
 		RpName:          s.aka,
@@ -70,13 +64,6 @@ func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// Sync Session
-	err = s.Sync()
-	if err != nil {
-		return nil, err
-	}
-
 	return &v1.AssertResponse{
 		RequestOptions: string(bz),
 		SessionId:      s.ID,
