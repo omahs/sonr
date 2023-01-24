@@ -19,11 +19,11 @@ type AuthService struct {
 	rpName string
 	rpIcon string
 	cctx   client.Context
+	node   config.IPFSNode
 }
 
 // It creates a new VaultService and registers it with the gRPC server
 func RegisterAuthIPFSService(cctx client.Context, mux *runtime.ServeMux, node config.IPFSNode) error {
-	store.Initialize(cctx, node)
 	authService = &AuthService{
 		cctx:   cctx,
 		rpName: "Sonr",
@@ -41,7 +41,7 @@ func (s *AuthService) Challenge(ctx context.Context, req *authv1.ChallengeReques
 }
 
 func (s *AuthService) Register(ctx context.Context, req *authv1.RegisterRequest) (*authv1.RegisterResponse, error) {
-	sess, err := store.GetSession(req.Username, req.SessionId)
+	sess, err := store.GetSession(s.node, req.Username, req.SessionId)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (s *AuthService) Assertion(ctx context.Context, req *authv1.AssertRequest) 
 }
 
 func (s *AuthService) Login(ctx context.Context, req *authv1.LoginRequest) (*authv1.LoginResponse, error) {
-	sess, err := store.GetSession(req.Identifier, req.SessionId)
+	sess, err := store.GetSession(s.node, req.Identifier, req.SessionId)
 	if err != nil {
 		return nil, err
 	}

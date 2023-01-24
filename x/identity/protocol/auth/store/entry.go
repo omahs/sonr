@@ -4,15 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/sonrhq/core/pkg/node/config"
 )
 
 var (
-	cctx client.Context
-	node config.IPFSNode
-
 	// Default Origins
 	defaultRpOrigins = []string{
 		"https://auth.sonr.io",
@@ -39,12 +35,6 @@ var (
 	defaultTimeout = 60000
 )
 
-// Initialize initializes the store for the auth package
-func Initialize(ctx client.Context, n config.IPFSNode) {
-	cctx = ctx
-	node = n
-}
-
 // NewSession creates a new session with challenge to be used to register a new account
 func NewSession(rpId string, aka string) (*Session, error) {
 	s := defaultSession(rpId, aka)
@@ -56,7 +46,7 @@ func NewSession(rpId string, aka string) (*Session, error) {
 }
 
 // GetSession returns the session for the given username and session ID
-func GetSession(username string, sessionId string) (*Session, error) {
+func GetSession(node config.IPFSNode, username string, sessionId string) (*Session, error) {
 	docs, err := node.LoadDocsStore(username)
 	if err != nil {
 		return nil, err
@@ -67,17 +57,4 @@ func GetSession(username string, sessionId string) (*Session, error) {
 		return nil, err
 	}
 	return loadSessionFromMap(rawVal[0].(map[string]interface{}))
-}
-
-// HasSession returns true if the session exists
-func HasSession(username string, sessionId string) bool {
-	docs, err := node.LoadDocsStore(username)
-	if err != nil {
-		return false
-	}
-	_, err = docs.Get(context.Background(), sessionId, nil)
-	if err != nil {
-		return false
-	}
-	return true
 }

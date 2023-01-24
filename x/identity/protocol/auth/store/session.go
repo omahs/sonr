@@ -1,8 +1,6 @@
 package store
 
 import (
-	"context"
-
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/google/uuid"
@@ -90,19 +88,6 @@ func (s *Session) Apply(opts ...Option) error {
 		return err
 	}
 	s.webauthn = wauth
-	return nil
-}
-
-// Sync puts the session for the given username and session ID in Orbit DB
-func (s *Session) Sync() error {
-	docs, err := node.LoadDocsStore(s.aka)
-	if err != nil {
-		return err
-	}
-	_, err = docs.Put(context.Background(), s.ToMap())
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
