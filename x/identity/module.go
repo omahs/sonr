@@ -29,18 +29,14 @@ import (
 var (
 	_ module.AppModule      = AppModule{}
 	_ module.AppModuleBasic = AppModuleBasic{}
-
-	// IPFS Networking
-	ipfsNode config.IPFSNode
-	nodeHome string
 )
 
-func init() {
+func initProtocol() config.IPFSNode {
 	node, err := node.NewIPFS(context.Background())
 	if err != nil {
 		panic(err)
 	}
-	ipfsNode = node
+	return node
 }
 
 // ----------------------------------------------------------------------------
@@ -50,10 +46,13 @@ func init() {
 // AppModuleBasic implements the AppModuleBasic interface that defines the independent methods a Cosmos SDK module needs to implement.
 type AppModuleBasic struct {
 	cdc codec.BinaryCodec
+
+	// IPFS Networking
+	ipfsNode config.IPFSNode
 }
 
-func NewAppModuleBasic(cdc codec.BinaryCodec) AppModuleBasic {
-	return AppModuleBasic{cdc: cdc}
+func NewAppModuleBasic(cdc codec.BinaryCodec, node config.IPFSNode) AppModuleBasic {
+	return AppModuleBasic{cdc: cdc, ipfsNode: node}
 }
 
 // Name returns the name of the module as a string
@@ -86,10 +85,10 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module
-func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
-	auth.RegisterAuthIPFSService(clientCtx, mux, ipfsNode)
-	vault.RegisterVaultIPFSService(clientCtx, mux, ipfsNode)
+	auth.RegisterAuthIPFSService(clientCtx, mux, a.ipfsNode)
+	vault.RegisterVaultIPFSService(clientCtx, mux, a.ipfsNode)
 }
 
 // GetTxCmd returns the root Tx command for the module. The subcommands of this root command are used by end-users to generate new transactions containing messages defined in the module
@@ -122,7 +121,7 @@ func NewAppModule(
 	bankKeeper types.BankKeeper,
 ) AppModule {
 	return AppModule{
-		AppModuleBasic: NewAppModuleBasic(cdc),
+		AppModuleBasic: NewAppModuleBasic(cdc, initProtocol()),
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,

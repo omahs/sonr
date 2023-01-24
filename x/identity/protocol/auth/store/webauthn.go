@@ -12,11 +12,6 @@ import (
 	v1 "github.com/sonrhq/core/x/identity/types/auth/v1"
 )
 
-// GetUsername returns the username for the session
-func (s *Session) GetUsername() string {
-	return s.alsoKnownAs
-}
-
 // BeginRegistration starts the registration process for the underlying Webauthn instance
 func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
 	// Fetch Session Data
@@ -24,7 +19,7 @@ func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.data = *sessionData
+	s.data = sessionData
 	bz, err := json.Marshal(opts)
 	if err != nil {
 		return nil, err
@@ -37,9 +32,7 @@ func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
 	}
 	return &v1.ChallengeResponse{
 		CreationOptions: string(bz),
-		RpName:          s.config.RPDisplayName,
-		RpIcon:          s.config.RPIcon,
-		RpOrigins:       s.config.RPOrigins,
+		RpName:          s.aka,
 		SessionId:       s.ID,
 	}, nil
 }
@@ -62,7 +55,7 @@ func (s *Session) RegisterCredential(credentialCreationData string) (*v1.Registe
 	return &v1.RegisterResponse{
 		Success:     true,
 		DidDocument: s.didDoc,
-		Username:    s.alsoKnownAs,
+		Username:    s.aka,
 	}, nil
 }
 
@@ -72,7 +65,7 @@ func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.data = *session
+	s.data = session
 	bz, err := json.Marshal(opts)
 	if err != nil {
 		return nil, err
@@ -87,9 +80,7 @@ func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
 	return &v1.AssertResponse{
 		RequestOptions: string(bz),
 		SessionId:      s.ID,
-		RpName:         s.config.RPDisplayName,
-		RpIcon:         s.config.RPIcon,
-		RpOrigins:      s.config.RPOrigins,
+		RpName:         s.aka,
 	}, nil
 }
 
@@ -99,7 +90,7 @@ func (s *Session) AuthorizeCredential(credentialRequestData string) (*v1.LoginRe
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to get parsed creation data: %s", err))
 	}
-	_, err = s.webauthn.ValidateLogin(s.didDoc, s.data, pca)
+	_, err = s.webauthn.ValidateLogin(s.didDoc, *s.data, pca)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +98,7 @@ func (s *Session) AuthorizeCredential(credentialRequestData string) (*v1.LoginRe
 	return &v1.LoginResponse{
 		Success:     true,
 		DidDocument: s.didDoc,
-		Username:    s.alsoKnownAs,
+		Username:    s.aka,
 	}, nil
 }
 

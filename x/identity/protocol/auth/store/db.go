@@ -46,8 +46,8 @@ func Initialize(ctx client.Context, n config.IPFSNode) {
 
 // NewSession creates a new session with challenge to be used to register a new account
 func NewSession(rpId string, aka string) (*Session, error) {
-	s := defaultSession()
-	err := s.Apply(WithAlsoKnownAs(aka), WithRPID(rpId))
+	s := defaultSession(rpId, aka)
+	err := s.Apply()
 	if err != nil {
 		return nil, err
 	}
