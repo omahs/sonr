@@ -17,9 +17,11 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/sonrhq/core/pkg/node"
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/x/identity/client/cli"
 	"github.com/sonrhq/core/x/identity/keeper"
+	"github.com/sonrhq/core/x/identity/protocol"
 	"github.com/sonrhq/core/x/identity/protocol/auth"
 	"github.com/sonrhq/core/x/identity/protocol/vault"
 	"github.com/sonrhq/core/x/identity/types"
@@ -31,7 +33,22 @@ var (
 
 	// IPFS Networking
 	ipfsNode config.IPFSNode
+	nodeHome string
 )
+
+func initProtocol() error {
+	// Start IPFS Node
+	ctx, err := protocol.NewContext()
+	if err != nil {
+		return err
+	}
+	node, err := node.NewIPFS(context.Background(), config.WithProtocolContext(ctx))
+	if err != nil {
+		return err
+	}
+	ipfsNode = node
+	return nil
+}
 
 // ----------------------------------------------------------------------------
 // AppModuleBasic
@@ -78,6 +95,9 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	if err := initProtocol(); err != nil {
+		panic(err)
+	}
 	auth.RegisterAuthIPFSService(clientCtx, mux, ipfsNode)
 	vault.RegisterVaultIPFSService(clientCtx, mux, ipfsNode)
 }
@@ -110,9 +130,7 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
-	node config.IPFSNode,
 ) AppModule {
-	ipfsNode = node
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,

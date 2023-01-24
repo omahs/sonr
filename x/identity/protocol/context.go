@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"golang.org/x/crypto/nacl/box"
 )
 
@@ -49,6 +50,7 @@ var (
 // @property encPubKey - The public key of the encryption key pair.
 // @property encPrivKey - The private key used to encrypt the data.
 type Context struct {
+	cctx          client.Context
 	HomeDir       string
 	RepoPath      string
 	NodeRESTUri   string
@@ -62,17 +64,21 @@ type Context struct {
 }
 
 // It creates a new context object, initializes the encryption keys, and returns the context object
-func NewContext(homeDir string) (Context, error) {
+func NewContext() (Context, error) {
+	userHomeDir, err := os.UserHomeDir()
+	if err != nil {
+		return Context{}, err
+	}
 	ctx := Context{
-		HomeDir:       homeDir,
-		RepoPath:      filepath.Join(homeDir, ".sonr", "ipfs"),
+		HomeDir:       filepath.Join(userHomeDir, ".sonr"),
+		RepoPath:      filepath.Join(userHomeDir, ".ipfs"),
 		NodeRESTUri:   "http://api.sonr.network",
 		NodeGRPCUri:   "grpc.sonr.network",
 		NodeFaucetUri: "http://faucet.sonr.network",
 		Rendevouz:     defaultRendezvousString,
 		BsMultiaddrs:  defaultBootstrapMultiaddrs,
 	}
-	err := ctx.initEncKeys()
+	err = ctx.initEncKeys()
 	if err != nil {
 		return ctx, err
 	}
@@ -118,11 +124,11 @@ func (c Context) initEncKeys() error {
 }
 
 func kEncPrivKeyPath(cctx Context) string {
-	return filepath.Join(cctx.HomeDir, ".sonr", "highway", "encryption_key")
+	return filepath.Join(cctx.HomeDir, "config", "highway", "encryption_key")
 }
 
 func kEncPubKeyPath(cctx Context) string {
-	return filepath.Join(cctx.HomeDir, ".sonr", "highway", "encryption_key.pub")
+	return filepath.Join(cctx.HomeDir, "config", "highway", "encryption_key.pub")
 }
 
 func hasEncryptionKey(cctx Context) bool {

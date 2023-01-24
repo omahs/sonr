@@ -484,7 +484,7 @@ var (
 
 	pattern_Auth_Register_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sonr", "protocol", "auth", "register"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Auth_Assertion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"sonr", "protocol", "auth", "authorize", "rp_id", "identifier"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Auth_Assertion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"sonr", "protocol", "auth", "assertion", "rp_id", "identifier"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Auth_Login_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sonr", "protocol", "auth", "login"}, "", runtime.AssumeColonVerbOpt(false)))
 )

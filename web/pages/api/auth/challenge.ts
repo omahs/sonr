@@ -19,21 +19,15 @@ export default async function handler(req: NextRequest) {
   };
 
   const resp = await fetch(
-    apiUrl + "/sonr/protocol/vault/challenge/" + domain + "/" + username,
+    apiUrl + "/sonr/protocol/auth/challenge/" + domain + "/" + username,
     requestOptions
   );
   const data = await resp.json();
-  return new Response(
-    JSON.stringify({
-      session_id: data.session_id,
-      creation_options: data.creation_options,
-      domain: domain,
-    }),
-    {
-      status: 200,
-      headers: {
-        "content-type": "application/json",
-      },
-    }
-  );
+  console.log(data);
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      "content-type": "application/json",
+    },
+  });
 }

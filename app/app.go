@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -98,8 +97,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
-	"github.com/sonrhq/core/pkg/node"
-	nodeconfig "github.com/sonrhq/core/pkg/node/config"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -109,7 +106,6 @@ import (
 
 	identitymodule "github.com/sonrhq/core/x/identity"
 	identitymodulekeeper "github.com/sonrhq/core/x/identity/keeper"
-	"github.com/sonrhq/core/x/identity/protocol"
 	identitymoduletypes "github.com/sonrhq/core/x/identity/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
@@ -200,7 +196,7 @@ func init() {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, "."+Name)
+	DefaultNodeHome = filepath.Join(userHomeDir, fmt.Sprintf(".%s", Name))
 }
 
 // App extends an ABCI application, but with most of its parameters exported.
@@ -214,9 +210,6 @@ type App struct {
 	interfaceRegistry types.InterfaceRegistry
 
 	invCheckPeriod uint
-
-	// Networking
-	ipfsNode nodeconfig.IPFSNode
 
 	// keys to access the substores
 	keys    map[string]*storetypes.KVStoreKey
@@ -299,16 +292,6 @@ func New(
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
-	// Start IPFS Node
-	ctx, err := protocol.NewContext(DefaultNodeHome)
-	if err != nil {
-		panic(err)
-	}
-	node, err := node.NewIPFS(context.Background(), nodeconfig.WithProtocolContext(ctx))
-	if err != nil {
-		panic(err)
-	}
-
 	app := &App{
 		BaseApp:           bApp,
 		cdc:               cdc,
@@ -318,7 +301,6 @@ func New(
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
-		ipfsNode:          node,
 	}
 
 	app.ParamsKeeper = initParamsKeeper(
@@ -532,7 +514,7 @@ func New(
 		app.BankKeeper,
 		app.GroupKeeper,
 	)
-	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper, app.ipfsNode)
+	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 

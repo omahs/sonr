@@ -21,6 +21,7 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	cv1 "github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/x/identity/protocol"
 )
 
 // `localIpfs` is a struct that contains a `CoreAPI` and a `IpfsNode` and a `WalletShare` and a
@@ -86,6 +87,11 @@ func (n *localIpfs) Connect(peers ...string) error {
 	}
 	wg.Wait()
 	return nil
+}
+
+// Context returns the context of the node
+func (n *localIpfs) Context() protocol.Context {
+	return n.config.Context
 }
 
 // Add adds a file to the network

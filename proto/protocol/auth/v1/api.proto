@@ -99,7 +99,7 @@ service Auth {
 
   // Assertion return credential assertion options.
   rpc Assertion(AssertRequest) returns (AssertResponse) {
-    option (google.api.http).get = "/sonr/protocol/auth/authorize/{rp_id}/{identifier}";
+    option (google.api.http).get = "/sonr/protocol/auth/assertion/{rp_id}/{identifier}";
   }
 
   // Login logs in a user.

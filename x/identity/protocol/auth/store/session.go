@@ -24,14 +24,10 @@ type Session struct {
 	// Session ID
 	ID string
 
-	// Webauthn Config
-	RPID                string
-	RPDisplayName       string
-	RPIcon              string
-	RPOrigins           []string
-	Timeout             int
-	AttestionPreference protocol.ConveyancePreference
-	AuthenticatorSelect protocol.AuthenticatorSelection
+	// Relying Party ID
+	RPID     string
+	webauthn *webauthn.WebAuthn
+	config   *webauthn.Config
 
 	// User Data
 	didDoc      *types.DidDocument
@@ -53,7 +49,7 @@ func WithRPID(id string) Option {
 // WithAlsoKnownAs sets the RPDisplayName
 func WithAlsoKnownAs(name string) Option {
 	return func(s *Session) {
-		s.RPDisplayName = name
+		s.config.RPDisplayName = name
 		s.alsoKnownAs = name
 	}
 }
@@ -69,35 +65,35 @@ func WithDIDDoc(doc *types.DidDocument) Option {
 // WithRPIcon sets the RPIcon
 func WithRPIcon(icon string) Option {
 	return func(s *Session) {
-		s.RPIcon = icon
+		s.config.RPIcon = icon
 	}
 }
 
 // WithRPOrigins sets the RPOrigins
 func WithRPOrigins(origins []string) Option {
 	return func(s *Session) {
-		s.RPOrigins = origins
+		s.config.RPOrigins = origins
 	}
 }
 
 // WithTimeout sets the Timeout
 func WithTimeout(timeout int) Option {
 	return func(s *Session) {
-		s.Timeout = timeout
+		s.config.Timeout = timeout
 	}
 }
 
 // WithAttestionPreference sets the AttestionPreference
 func WithAttestionPreference(pref protocol.ConveyancePreference) Option {
 	return func(s *Session) {
-		s.AttestionPreference = pref
+		s.config.AttestationPreference = pref
 	}
 }
 
 // WithAuthenticatorSelect sets the AuthenticatorSelect
 func WithAuthenticatorSelect(selectAuth protocol.AuthenticatorSelection) Option {
 	return func(s *Session) {
-		s.AuthenticatorSelect = selectAuth
+		s.config.AuthenticatorSelection = selectAuth
 	}
 }
 
@@ -106,6 +102,14 @@ func (s *Session) Apply(opts ...Option) error {
 	for _, opt := range opts {
 		opt(s)
 	}
+	if !s.isExisting {
+		s.didDoc = types.NewBaseDocument(s.alsoKnownAs, s.ID)
+	}
+	wauth, err := webauthn.New(s.config)
+	if err != nil {
+		return err
+	}
+	s.webauthn = wauth
 	return s.Validate()
 }
 
@@ -125,18 +129,14 @@ func (s *Session) Sync() error {
 // ToMap converts the session to a map
 func (s *Session) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"_id":                 s.ID,
-		"RPID":                s.RPID,
-		"RPDisplayName":       s.RPDisplayName,
-		"RPIcon":              s.RPIcon,
-		"RPOrigins":           s.RPOrigins,
-		"Timeout":             s.Timeout,
-		"AttestionPreference": s.AttestionPreference,
-		"AuthenticatorSelect": s.AuthenticatorSelect,
-		"DidDoc":              s.didDoc,
-		"Data":                s.data,
-		"AlsoKnownAs":         s.alsoKnownAs,
-		"IsExisting":          s.isExisting,
+		"_id":         s.ID,
+		"RPID":        s.RPID,
+		"Config":      s.config,
+		"Webauthn":    s.webauthn,
+		"DidDoc":      s.didDoc,
+		"Data":        s.data,
+		"AlsoKnownAs": s.alsoKnownAs,
+		"IsExisting":  s.isExisting,
 	}
 }
 
@@ -145,32 +145,20 @@ func (s *Session) Validate() error {
 	if s.ID == "" {
 		return fmt.Errorf("Session ID is empty")
 	}
-	if s.isExisting && s.didDoc == nil {
-		return fmt.Errorf("Session is existing but didDoc is nil")
+	if s.didDoc == nil {
+		return fmt.Errorf("Session didDoc is nil")
 	}
-	if !strings.EqualFold(s.alsoKnownAs, s.RPDisplayName) {
+	if !strings.EqualFold(s.alsoKnownAs, s.webauthn.Config.RPDisplayName) {
 		return fmt.Errorf("Session RPDisplayName is not equal to alsoKnownAs")
 	}
 	if s.RPID == "" {
 		return fmt.Errorf("Session RPID is empty")
 	}
-	if s.RPDisplayName == "" {
-		return fmt.Errorf("Session RPDisplayName is empty")
+	if s.webauthn == nil {
+		return fmt.Errorf("Session webauthn is nil")
 	}
-	if s.RPIcon == "" {
-		return fmt.Errorf("Session RPIcon is empty")
-	}
-	if len(s.RPOrigins) == 0 {
-		return fmt.Errorf("Session RPOrigins is empty")
-	}
-	if s.Timeout == 0 {
-		return fmt.Errorf("Session Timeout is empty")
-	}
-	if s.AttestionPreference == "" {
-		return fmt.Errorf("Session AttestionPreference is empty")
-	}
-	if s.AuthenticatorSelect.AuthenticatorAttachment == "" {
-		return fmt.Errorf("Session AuthenticatorSelect is empty")
+	if s.config == nil {
+		return fmt.Errorf("Session config is nil")
 	}
 	return nil
 }
@@ -178,44 +166,36 @@ func (s *Session) Validate() error {
 // defaultSession returns a default session
 func defaultSession() *Session {
 	return &Session{
-		ID:                  uuid.New().String()[:8],
-		RPDisplayName:       defaultRpName,
-		RPIcon:              defaultRpIcon,
-		RPOrigins:           defaultRpOrigins,
-		Timeout:             defaultTimeout,
-		AttestionPreference: defaultAttestationPreference,
-		AuthenticatorSelect: defaultAuthSelect,
-		isExisting:          false,
+		ID:          uuid.New().String()[:8],
+		isExisting:  false,
+		alsoKnownAs: defaultRpName,
+		config: &webauthn.Config{
+			RPID:                   "localhost",
+			RPDisplayName:          defaultRpName,
+			RPIcon:                 defaultRpIcon,
+			RPOrigins:              defaultRpOrigins,
+			Timeout:                defaultTimeout,
+			AttestationPreference:  defaultAttestationPreference,
+			AuthenticatorSelection: defaultAuthSelect,
+		},
 	}
 }
 
 // loadSessionFromMap creates a session from a map
 func loadSessionFromMap(m map[string]interface{}) (*Session, error) {
 	s := &Session{
-		ID:                  m["_id"].(string),
-		RPID:                m["RPID"].(string),
-		RPDisplayName:       m["RPDisplayName"].(string),
-		RPIcon:              m["RPIcon"].(string),
-		RPOrigins:           m["RPOrigins"].([]string),
-		Timeout:             m["Timeout"].(int),
-		AttestionPreference: m["AttestionPreference"].(protocol.ConveyancePreference),
-		AuthenticatorSelect: m["AuthenticatorSelect"].(protocol.AuthenticatorSelection),
-		alsoKnownAs:         m["AlsoKnownAs"].(string),
-		isExisting:          m["IsExisting"].(bool),
-		didDoc:              m["DidDoc"].(*types.DidDocument),
-		data:                m["Data"].(webauthn.SessionData),
+		ID:          m["_id"].(string),
+		RPID:        m["RPID"].(string),
+		webauthn:    m["Webauthn"].(*webauthn.WebAuthn),
+		config:      m["Config"].(*webauthn.Config),
+		alsoKnownAs: m["AlsoKnownAs"].(string),
+		isExisting:  m["IsExisting"].(bool),
+		didDoc:      m["DidDoc"].(*types.DidDocument),
+		data:        m["Data"].(webauthn.SessionData),
 	}
 	err := s.Validate()
 	if err != nil {
 		return nil, err
 	}
 	return s, nil
-}
-
-// requiredOptions returns configured options
-func requiredOptions(rpid, aka string) []Option {
-	return []Option{
-		WithRPID(rpid),
-		WithAlsoKnownAs(aka),
-	}
 }

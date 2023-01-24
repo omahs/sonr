@@ -1,33 +1,39 @@
 import type { NextRequest } from "next/server";
-import { NewWalletRequest } from "@buf/sonr-hq_sonr.grpc_web/protocol/vault/v1/api_pb";
-import axios from "axios";
+
 export const config = {
   runtime: "experimental-edge",
 };
 
 export default async function handler(req: NextRequest) {
   // Get API URL
+  let domain = new URL(req.url).searchParams.get("domain");
   let apiUrl = "https://api.sonr.network";
   if (process && process.env.NODE_ENV === "development") {
     apiUrl = "http://localhost:1317";
   }
+  let username = req.headers.get("username");
 
-  let body = req.body;
   const requestOptions = {
-    method: "POST",
+    method: "GET",
     headers: { "Content-Type": "application/json" },
-    body: body,
   };
+
   const resp = await fetch(
-    process.env.API_URL + "/sonr/protocol/vault/new-wallet",
+    apiUrl + "/sonr/protocol/auth/assertion/" + domain + "/" + username,
     requestOptions
   );
   const data = await resp.json();
-  console.log(data);
-  return new Response(JSON.stringify(data), {
-    status: 200,
-    headers: {
-      "content-type": "application/json",
-    },
-  });
+  return new Response(
+    JSON.stringify({
+      session_id: data.session_id,
+      creation_options: data.creation_options,
+      domain: domain,
+    }),
+    {
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+      },
+    }
+  );
 }

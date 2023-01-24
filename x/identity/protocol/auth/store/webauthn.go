@@ -12,19 +12,6 @@ import (
 	v1 "github.com/sonrhq/core/x/identity/types/auth/v1"
 )
 
-// GetWebAuthn returns the underlying Webauthn instance
-func (s *Session) GetWebAuthn() (*webauthn.WebAuthn, error) {
-	return webauthn.New(&webauthn.Config{
-		RPID:                   s.RPID,
-		RPDisplayName:          s.RPDisplayName,
-		RPIcon:                 s.RPIcon,
-		RPOrigins:              s.RPOrigins,
-		Timeout:                s.Timeout,
-		AttestationPreference:  s.AttestionPreference,
-		AuthenticatorSelection: s.AuthenticatorSelect,
-	})
-}
-
 // GetUsername returns the username for the session
 func (s *Session) GetUsername() string {
 	return s.alsoKnownAs
@@ -32,13 +19,8 @@ func (s *Session) GetUsername() string {
 
 // BeginRegistration starts the registration process for the underlying Webauthn instance
 func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
-	wauth, err := s.GetWebAuthn()
-	if err != nil {
-		return nil, err
-	}
-
 	// Fetch Session Data
-	opts, sessionData, err := wauth.BeginRegistration(s.didDoc, webauthn.WithAuthenticatorSelection(defaultAuthSelect))
+	opts, sessionData, err := s.webauthn.BeginRegistration(s.didDoc, webauthn.WithAuthenticatorSelection(defaultAuthSelect))
 	if err != nil {
 		return nil, err
 	}
@@ -55,9 +37,9 @@ func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
 	}
 	return &v1.ChallengeResponse{
 		CreationOptions: string(bz),
-		RpName:          s.RPDisplayName,
-		RpIcon:          s.RPIcon,
-		RpOrigins:       s.RPOrigins,
+		RpName:          s.config.RPDisplayName,
+		RpIcon:          s.config.RPIcon,
+		RpOrigins:       s.config.RPOrigins,
 		SessionId:       s.ID,
 	}, nil
 }
@@ -86,12 +68,7 @@ func (s *Session) RegisterCredential(credentialCreationData string) (*v1.Registe
 
 // GetAssertionOptions creates a new AssertionChallenge for client to verify
 func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
-	wauth, err := s.GetWebAuthn()
-	if err != nil {
-		return nil, err
-	}
-
-	opts, session, err := wauth.BeginLogin(s.didDoc, webauthn.WithAllowedCredentials(s.didDoc.AllowedWebauthnCredentials()))
+	opts, session, err := s.webauthn.BeginLogin(s.didDoc, webauthn.WithAllowedCredentials(s.didDoc.AllowedWebauthnCredentials()))
 	if err != nil {
 		return nil, err
 	}
@@ -110,24 +87,19 @@ func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
 	return &v1.AssertResponse{
 		RequestOptions: string(bz),
 		SessionId:      s.ID,
-		RpName:         s.RPDisplayName,
-		RpIcon:         s.RPIcon,
-		RpOrigins:      s.RPOrigins,
+		RpName:         s.config.RPDisplayName,
+		RpIcon:         s.config.RPIcon,
+		RpOrigins:      s.config.RPOrigins,
 	}, nil
 }
 
 // AuthorizeCredential authenticates from the signature provided to the client
 func (s *Session) AuthorizeCredential(credentialRequestData string) (*v1.LoginResponse, error) {
-	wauth, err := s.GetWebAuthn()
-	if err != nil {
-		return nil, err
-	}
-
 	pca, err := parseAssertionData(credentialRequestData)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to get parsed creation data: %s", err))
 	}
-	_, err = wauth.ValidateLogin(s.didDoc, s.data, pca)
+	_, err = s.webauthn.ValidateLogin(s.didDoc, s.data, pca)
 	if err != nil {
 		return nil, err
 	}

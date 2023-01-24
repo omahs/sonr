@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	identityprotocol "github.com/sonrhq/core/x/identity/protocol"
 	ggio "github.com/gogo/protobuf/io"
 	"github.com/gogo/protobuf/proto"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
@@ -82,6 +83,11 @@ func Initialize(ctx context.Context, config *config.Config) (config.P2PNode, err
 		return nil, err
 	}
 	return hn, nil
+}
+
+// Context returns the context of the Host
+func (n *hostImpl) Context() identityprotocol.Context {
+	return n.config.Context
 }
 
 // PeerID returns the ID of the Host
