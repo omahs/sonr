@@ -22,7 +22,6 @@ type (
 		accountKeeper types.AccountKeeper
 		bankKeeper    types.BankKeeper
 		groupKeeper   types.GroupKeeper
-		mintKeeper    types.MintKeeper
 	}
 )
 
@@ -32,7 +31,7 @@ func NewKeeper(
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 
-	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, groupKeeper types.GroupKeeper, mintKeeper types.MintKeeper,
+	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, groupKeeper types.GroupKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -43,7 +42,7 @@ func NewKeeper(
 		storeKey:      storeKey,
 		memKey:        memKey,
 		paramstore:    ps,
-		accountKeeper: accountKeeper, bankKeeper: bankKeeper, groupKeeper: groupKeeper, mintKeeper: mintKeeper,
+		accountKeeper: accountKeeper, bankKeeper: bankKeeper, groupKeeper: groupKeeper,
 	}
 	return k
 }

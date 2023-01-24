@@ -2,10 +2,11 @@ package types
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
+	fmt "fmt"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	"github.com/shengdoushi/base58"
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	tmcrypto "github.com/tendermint/tendermint/crypto"
@@ -20,15 +21,12 @@ type (
 //
 
 // It takes a string, decodes it from base58, unmarshals it into a PubKey, and returns the PubKey
-func NewPubKeyFromBase58(key string) (*PubKey, error) {
-	bz, err := base58.Decode(key, base58.BitcoinAlphabet)
+func NewPubKeyFromBase64(key string) (*PubKey, error) {
+	bz, err := base64.StdEncoding.DecodeString(key)
 	if err != nil {
 		return nil, err
 	}
-	pk := &PubKey{
-		Key: bz,
-	}
-	return pk, nil
+	return NewPubKeyFromBytes(bz), nil
 }
 
 // NewPubKeyFromBytes takes a byte array and returns a PubKey
@@ -47,9 +45,34 @@ func (pk *PubKey) Address() Address {
 	return tmcrypto.AddressHash(pk.Key)
 }
 
+// ApplyToVM applies the given options to the verification method
+func (pk *PubKey) ApplyToVM(method string, ktype KeyType, opts ...VerificationMethodOption) (*VerificationMethod, error) {
+	vm := &VerificationMethod{
+		ID:                 fmt.Sprintf("did:%s:%s#%s", method, pk.Address(), pk.Type()),
+		Type:               ktype,
+		PublicKeyMultibase: pk.Base64(),
+	}
+	for _, opt := range opts {
+		if err := opt(vm); err != nil {
+			return nil, err
+		}
+	}
+	return vm, nil
+}
+
+// Base64 encoding the key.
+func (pk *PubKey) Base64() string {
+	return base64.StdEncoding.EncodeToString(pk.Key)
+}
+
 // Returning the key in bytes.
 func (pk *PubKey) Bytes() []byte {
 	return pk.Key
+}
+
+// DID returns the DID of the verification method
+func (pk *PubKey) DID() string {
+	return fmt.Sprintf("did:snr:%s", pk.Address())
 }
 
 // Verifying the signature of the message.

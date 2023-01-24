@@ -9,6 +9,11 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 )
 
+// CapabilityDelegationCount returns the number of Assertion Methods
+func (vm *DidDocument) CapabilityDelegationCount() int {
+	return vm.CapabilityDelegation.Count()
+}
+
 // AddCapabilityDelegation adds a VerificationMethod as CapabilityDelegation
 // If the controller is not set, it will be set to the document's ID
 func (d *DidDocument) AddCapabilityDelegation(v *VerificationMethod) {

@@ -12,7 +12,6 @@ import (
 	"github.com/sonrhq/core/pkg/node"
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/x/identity/protocol/vault/store"
-	"github.com/sonrhq/core/x/identity/types"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
 
@@ -49,7 +48,7 @@ func RegisterVaultService(cctx client.Context, mux *runtime.ServeMux) error {
 	cache := gocache.New(time.Minute*2, time.Minute*10)
 	vaultService = &VaultService{
 		cctx:   configureClientCtx(cctx),
-		bank:   store.InitBank(node, cache),
+		bank:   store.InitBank(cctx, node, cache),
 		node:   node,
 		rpName: "Sonr",
 		rpIcon: "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png",
@@ -87,28 +86,15 @@ func (v *VaultService) NewWallet(ctx context.Context, req *v1.NewWalletRequest) 
 	if err != nil {
 		return nil, err
 	}
+
+	// Return response
 	return &v1.NewWalletResponse{
 		Success:     true,
-		Address:     wallet.Address,
+		Address:     wallet.WalletConfig().Address,
 		DidDocument: didDoc,
 	}, nil
 }
 
-// CreateAccount derives a new key from the private key and returns the public key.
-func (v *VaultService) Publish(ctx context.Context, req *v1.PublishRequest) (*v1.PublishResponse, error) {
-	msg := types.NewMsgCreateDidDocument(string(v.cctx.GetFromAddress()), req.DidDocument)
-	res, err := v.cctx.BroadcastTxSync(msg.GetSignBytes())
-	if err != nil {
-		return nil, err
-	}
-	return &v1.PublishResponse{
-		Success:     res.Code == 0,
-		DidDocument: req.DidDocument,
-		TxHash:      res.TxHash,
-		BlockHeight: res.Height,
-	}, nil
-
-}
 
 // CreateAccount derives a new key from the private key and returns the public key.
 func (v *VaultService) Authorize(ctx context.Context, req *v1.AuthorizeRequest) (*v1.AuthorizeResponse, error) {

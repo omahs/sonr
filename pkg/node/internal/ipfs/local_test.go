@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ipfs/interface-go-ipfs-core/path"
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/stretchr/testify/assert"
 )
@@ -35,34 +34,30 @@ func TestNewAddGet(t *testing.T) {
 	assert.Equal(t, []byte("Hello World!"), file)
 }
 
-func TestKeyAPI(t *testing.T) {
-
+func TestOrbitDB(t *testing.T) {
 	cnfg := config.DefaultConfig()
 	node, err := Initialize(context.Background(), cnfg)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Generate a new key
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	// Add a file to the network
-	cid, err := node.Add([]byte("Hello World!"))
+	db, err := node.InitDB()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	key, err := node.CoreAPI().Key().Generate(ctx, "test")
+	docsStore, err := db.GetDocsStore("test")
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("Generated key: %s", key)
 
-	// Publish the key to the network
-	res, err := node.CoreAPI().Name().Publish(ctx, path.New(cid))
+	testData := map[string]interface{}{
+		"_id":  "0",
+		"test": "test",
+	}
+	op, err := docsStore.Put(context.Background(), testData)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("Published key: %s", res.Name())
+	t.Logf("op: %v", op)
 }

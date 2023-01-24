@@ -40,11 +40,10 @@ func (k ChainWalletPrefix) Prefix() string {
 	return k.String()
 }
 
-// func createFragment(wallet crypto.WalletShare, didDoc *DidDocument) string {
-// 	count := didDoc.GetBlockchainAccountCount(wallet.Prefix())
-// 	cwpfx := NewWalletPrefix(wallet.Prefix())
-// 	return fmt.Sprintf("%s-%d", cwpfx.String(), count)
-// }
+// AssertionMethodCount returns the number of Assertion Methods
+func (vm *DidDocument) AssertionMethodCount() int {
+	return vm.AssertionMethod.Count()
+}
 
 // FindAssertionMethod finds a VerificationMethod by its ID
 func (d *DidDocument) FindAssertionMethod(id string) *VerificationMethod {

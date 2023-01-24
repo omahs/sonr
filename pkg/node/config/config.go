@@ -9,6 +9,25 @@ import (
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
 )
 
+// StoreType is the type of a store
+type StoreType string
+
+const (
+	// DB_EVENT_LOG_STORE is a store that stores events
+	DB_EVENT_LOG_STORE StoreType = "eventlog"
+
+	// DB_KEY_VALUE_STORE is a store that stores key-value pairs
+	DB_KEY_VALUE_STORE StoreType = "keyvalue"
+
+	// DB_DOCUMENT_STORE is a store that stores documents
+	DB_DOCUMENT_STORE StoreType = "docstore"
+)
+
+// A method of the StoreType type.
+func (st StoreType) String() string {
+	return string(st)
+}
+
 // Default configuration
 var (
 	// defaultBootstrapMultiaddrs is the default list of bootstrap nodes
@@ -137,6 +156,14 @@ type Option func(*Config) error
 func AddBootstrappers(bootstrappers []string) Option {
 	return func(c *Config) error {
 		c.BootstrapMultiaddrs = append(c.BootstrapMultiaddrs, bootstrappers...)
+		return nil
+	}
+}
+
+// SetRemoteIPFS sets the remote IPFS URL
+func SetRemoteIPFS(remoteIPFSURL string) Option {
+	return func(c *Config) error {
+		c.RemoteIPFSURL = remoteIPFSURL
 		return nil
 	}
 }

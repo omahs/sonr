@@ -1,11 +1,16 @@
 package account
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"sync"
 
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/shengdoushi/base58"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account/internal/mpc"
@@ -33,6 +38,12 @@ type WalletAccount interface {
 	// Bip32Derive derives a new account from a BIP32 path
 	Bip32Derive(accName string, idx uint32, addrPrefix string, network string) (WalletAccount, error)
 
+	// Bytes returns the bytes of the account
+	Bytes() []byte
+
+	// Equals returns true if the account is equal to the other account
+	Equals(other cryptotypes.LedgerPrivKey) bool
+
 	// GetAssertionMethod returns the verification method for the account
 	GetAssertionMethod() *types.VerificationMethod
 
@@ -50,10 +61,16 @@ type WalletAccount interface {
 	ListConfigs() ([]*cmp.Config, error)
 
 	// PubKey returns secp256k1 public key
-	PubKey() (cryptotypes.PubKey, error)
+	PubKey() cryptotypes.PubKey
+
+	// Signs a message
+	Sign(bz []byte) ([]byte, error)
 
 	// Signs a transaction
-	Sign(bz []byte) ([]byte, error)
+	SignTxAux(msgs ...sdk.Msg) (txtypes.AuxSignerData, error)
+
+	// Type returns the type of the account
+	Type() string
 
 	// Verifies a signature
 	Verify(bz []byte, sig []byte) (bool, error)
@@ -117,6 +134,16 @@ func (w *walletAccountImpl) Bip32Derive(accName string, idx uint32, addrPrefix s
 	return NewAccountFromConfig(accConf)
 }
 
+// Bytes returns the bytes of the account.
+func (w *walletAccountImpl) Bytes() []byte {
+	return w.accountConfig.PublicKey
+}
+
+// Equals returns true if the account is equal to the other account.
+func (w *walletAccountImpl) Equals(other cryptotypes.LedgerPrivKey) bool {
+	return bytes.Equal(w.Bytes(), other.Bytes())
+}
+
 // GetAssertionMethod Returns the verification method for the account.
 func (w *walletAccountImpl) GetAssertionMethod() *types.VerificationMethod {
 	return &types.VerificationMethod{
@@ -144,13 +171,12 @@ func (w *walletAccountImpl) GetAssertionMethod() *types.VerificationMethod {
 
 // Returning the signer data for the account.
 func (w *walletAccountImpl) GetSignerData() authsigning.SignerData {
-	pubkey, _ := w.PubKey()
 	return authsigning.SignerData{
 		Address:       w.accountConfig.Address,
 		ChainID:       "sonr",
 		AccountNumber: 0,
 		Sequence:      0,
-		PubKey:        pubkey,
+		PubKey:        w.PubKey(),
 	}
 }
 
@@ -180,8 +206,9 @@ func (w *walletAccountImpl) ListConfigs() ([]*cmp.Config, error) {
 }
 
 // Returning the secp256k1 public key.
-func (w *walletAccountImpl) PubKey() (cryptotypes.PubKey, error) {
-	return w.accountConfig.GetCryptoPubKey()
+func (w *walletAccountImpl) PubKey() cryptotypes.PubKey {
+	pbKey, _ := w.accountConfig.GetCryptoPubKey()
+	return pbKey
 }
 
 // Signing a transaction.
@@ -189,10 +216,80 @@ func (w *walletAccountImpl) Sign(bz []byte) ([]byte, error) {
 	return signWithAccount(w.accountConfig, bz)
 }
 
+// Signing a transaction.
+func (w *walletAccountImpl) SignTxAux(msgs ...sdk.Msg) (txtypes.AuxSignerData, error) {
+	txBody, err := buildTx(msgs...)
+	if err != nil {
+		return txtypes.AuxSignerData{}, err
+	}
+	doc, sig, err := signTxDocDirectAux(w, txBody)
+	if err != nil {
+		return txtypes.AuxSignerData{}, err
+	}
+	return txtypes.AuxSignerData{
+		Address: w.accountConfig.Address,
+		Mode:    signing.SignMode_SIGN_MODE_DIRECT_AUX,
+		SignDoc: doc,
+		Sig:     sig,
+	}, nil
+}
+
+// Type returns the type of the account.
+func (w *walletAccountImpl) Type() string {
+	return "ECDSA-SECP256K1"
+}
+
 // Verifying a signature.
 func (w *walletAccountImpl) Verify(bz []byte, sig []byte) (bool, error) {
 	conf := w.accountConfig.GetConfigMap()
 	return mpc.CmpVerify(conf["current"], bz, sig)
+}
+
+func buildTx(msgs ...sdk.Msg) ([]byte, error) {
+	// func BuildTx(w *crypto.MPCWallet, msgs ...sdk.Msg) (*txtypes.TxBody, error) {
+	// Create Any for each message
+	anyMsgs, err := txtypes.SetMsgs(msgs)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create TXRaw and Marshal
+	txBody := &txtypes.TxBody{
+		Messages: anyMsgs,
+		Memo:     "xP;",
+	}
+	return txBody.Marshal()
+}
+
+// Signing a transaction.
+func signTxDocDirectAux(w *walletAccountImpl, txBody []byte) (*txtypes.SignDocDirectAux, []byte, error) {
+	// Build the public key.
+	pk, err := codectypes.NewAnyWithValue(w.PubKey())
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Build the sign doc.
+	doc := &txtypes.SignDocDirectAux{
+		ChainId:   "sonr",
+		PublicKey: pk,
+		BodyBytes: txBody,
+	}
+
+	// Marshal the document.
+	bz, err := doc.Marshal()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Sign the document.
+	sig, err := w.Sign(bz)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Return the document and the signature.
+	return doc, sig, nil
 }
 
 // signWithAccount signs a message with the given account configuration

@@ -2,7 +2,17 @@
 // I.e. Verification Material for Webauthn Credentials or KeyPrints. These are used to unlock the Controller Wallet.
 package types
 
-import "github.com/sonrhq/core/pkg/common"
+import (
+	fmt "fmt"
+
+	"github.com/go-webauthn/webauthn/protocol"
+	"github.com/sonrhq/core/pkg/common"
+)
+
+// AuthenticationCount returns the number of Assertion Methods
+func (vm *DidDocument) AuthenticationCount() int {
+	return vm.Authentication.Count()
+}
 
 // FindAuthenticationMethod finds a VerificationMethod by its ID
 func (d *DidDocument) FindAuthenticationMethod(id string) *VerificationMethod {
@@ -24,7 +34,9 @@ func (d *DidDocument) AddAuthentication(v *VerificationMethod) {
 	d.Authentication.Add(v)
 }
 
-func (d *DidDocument) AddWebauthnCredential(cred *common.WebauthnCredential, label string) error {
+// AddWebauthnCredential adds a Webauthn Credential as AuthenticationMethod
+func (d *DidDocument) AddWebauthnCredential(cred *common.WebauthnCredential) error {
+	label := fmt.Sprintf("webauthn-%v", d.AuthenticationCount()+1)
 	vm, err := NewWebAuthnVM(cred, WithIDFragmentSuffix(label))
 	if err != nil {
 		return err
@@ -32,4 +44,14 @@ func (d *DidDocument) AddWebauthnCredential(cred *common.WebauthnCredential, lab
 	d.VerificationMethod.Add(vm)
 	d.Authentication.Add(vm)
 	return nil
+}
+
+// AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials
+func (d *DidDocument) AllowedWebauthnCredentials() []protocol.CredentialDescriptor {
+	allowList := make([]protocol.CredentialDescriptor, 0)
+	creds := d.WebAuthnCredentials()
+	for _, cred := range creds {
+		allowList = append(allowList, cred.Descriptor())
+	}
+	return allowList
 }

@@ -1,9 +1,12 @@
 package wallet
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
@@ -35,7 +38,7 @@ type Wallet interface {
 	ListAccounts() ([]account.WalletAccount, error)
 
 	// Signs a transaction for Cosmos compatible blockchains
-	SignTx(memo string, msgs ...sdk.Msg) ([]byte, error)
+	SendTx(memo string, msgs ...sdk.Msg) (*sdk.TxResponse, error)
 }
 
 // `walletImpl` is a struct that has a single field, `walletConfig`, which is a pointer to a
@@ -44,10 +47,13 @@ type Wallet interface {
 type walletImpl struct {
 	// The wallet configuration
 	walletConfig *v1.WalletConfig
+
+	// The TxBuilder
+	cctx client.Context
 }
 
 // `NewWallet` creates a new wallet with a default root account
-func NewWallet() (Wallet, error) {
+func NewWallet(cctx client.Context) (Wallet, error) {
 	// The default shards that are added to the MPC wallet
 	rootAcc, err := account.NewAccount("Primary", "snr", "Sonr")
 	if err != nil {
@@ -56,6 +62,7 @@ func NewWallet() (Wallet, error) {
 	conf := v1.NewWalletConfigFromRootAccount(rootAcc.AccountConfig())
 	return &walletImpl{
 		walletConfig: conf,
+		cctx:         cctx,
 	}, nil
 }
 
@@ -114,40 +121,59 @@ func (w *walletImpl) PrimaryAccount() (account.WalletAccount, error) {
 }
 
 // Signing a transaction.
-func (w *walletImpl) SignTx(memo string, msgs ...sdk.Msg) ([]byte, error) {
+func (w *walletImpl) SendTx(memo string, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
+	req, err := w.buildBroadcastTx(memo, msgs...)
+	if err != nil {
+		return nil, err
+	}
+	cl, err := client.NewClientFromNode(w.cctx.NodeURI)
+	if err != nil {
+		return nil, err
+	}
+	res, err := cl.BroadcastTxCommit(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+	txres := &sdk.TxResponse{
+		Height:    res.Height,
+		TxHash:    string(res.DeliverTx.Data),
+		Codespace: res.DeliverTx.Codespace,
+		Code:      res.DeliverTx.Code,
+		RawLog:    res.DeliverTx.Log,
+	}
+	if txres.Code != 0 {
+		return nil, fmt.Errorf("tx failed: %s", txres.RawLog)
+	}
+	return txres, nil
+}
+
+// Building a transaction from the given inputs.
+func (w *walletImpl) buildBroadcastTx(memo string, msgs ...sdk.Msg) ([]byte, error) {
 	prim, err := w.PrimaryAccount()
 	if err != nil {
 		return nil, err
 	}
-
-	txb, err := buildTx(memo, msgs...)
+	auxData, err := prim.SignTxAux(msgs...)
 	if err != nil {
 		return nil, err
 	}
+	txBuilder := w.cctx.TxConfig.NewTxBuilder()
+	txBuilder.SetMemo(memo)
+	txBuilder.SetMsgs(msgs...)
+	txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("snr", sdk.NewInt(100))))
+	txBuilder.AddAuxSignerData(auxData)
+	txBuilder.SetGasLimit(200000)
 
-	ai, err := getAuthInfoSingle(prim, 2)
-	if err != nil {
-		return nil, err
-	}
+	return w.cctx.TxConfig.TxEncoder()(txBuilder.GetTx())
 
-	sigDocBz, err := getSignDocBytes(ai, txb)
-	if err != nil {
-		return nil, err
-	}
-
-	sig, err := prim.Sign(sigDocBz)
-	if err != nil {
-		return nil, err
-	}
-	return createRawTxBytes(txb, sig, ai)
 }
 
 //
 // Helper functions
 //
 
-// buildTx builds a transaction from the given inputs.
-func buildTx(note string, msgs ...sdk.Msg) (*txtypes.TxBody, error) {
+// makeTxBody builds a transaction from the given inputs.
+func makeTxBody(note string, msgs ...sdk.Msg) (*txtypes.TxBody, error) {
 	// func BuildTx(w *crypto.MPCWallet, msgs ...sdk.Msg) (*txtypes.TxBody, error) {
 	// Create Any for each message
 	anyMsgs := make([]*codectypes.Any, len(msgs))
@@ -198,14 +224,8 @@ func createRawTxBytes(txBody *txtypes.TxBody, sig []byte, authInfo *txtypes.Auth
 
 // getAuthInfoSingle returns the authentication information for the given message.
 func getAuthInfoSingle(w account.WalletAccount, gas int) (*txtypes.AuthInfo, error) {
-	// Get PublicKey
-	pubKey, err := w.PubKey()
-	if err != nil {
-		return nil, err
-	}
-
 	// Build signerInfo parameters
-	anyPubKey, err := codectypes.NewAnyWithValue(pubKey)
+	anyPubKey, err := codectypes.NewAnyWithValue(w.PubKey())
 	if err != nil {
 		return nil, err
 	}

@@ -513,7 +513,6 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.GroupKeeper,
-		app.MintKeeper,
 	)
 	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper)
 

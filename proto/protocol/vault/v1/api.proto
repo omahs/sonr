@@ -46,19 +46,6 @@ message NewWalletResponse {
   core.identity.DidDocument did_document = 3;
 }
 
-// PublishRequest is the request to publish the new account via Grant.
-message PublishRequest {
-  core.identity.DidDocument did_document = 1;
-}
-
-// PublishResponse is the response to a Publish request.
-message PublishResponse {
-  bool success = 1;
-  core.identity.DidDocument did_document = 2;
-  string tx_hash = 3;
-  int64 block_height = 4;
-}
-
 // ==================================================================
 // AUTHENTICATION
 // ==================================================================
@@ -165,14 +152,6 @@ service Vault {
   rpc NewWallet(NewWalletRequest) returns (NewWalletResponse) {
     option (google.api.http) = {
       post: "/sonr/protocol/vault/new-wallet"
-      body: "*"
-    };
-  }
-
-  // Publish publishes the new account via Grant.
-  rpc Publish(PublishRequest) returns (PublishResponse) {
-    option (google.api.http) = {
-      post: "/sonr/protocol/vault/publish"
       body: "*"
     };
   }

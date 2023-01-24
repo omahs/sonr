@@ -45,6 +45,7 @@ func NewBaseDocument(akaStr string, sessionId string) *DidDocument {
 	}
 }
 
+// NewDocumentFromJson creates a new document from a json byte array
 func NewDocumentFromJson(b []byte) (*DidDocument, error) {
 	var doc DidDocument
 	err := doc.UnmarshalJSON(b)
@@ -54,6 +55,7 @@ func NewDocumentFromJson(b []byte) (*DidDocument, error) {
 	return &doc, nil
 }
 
+// Address returns the address of the DID
 func (d *DidDocument) Address() string {
 	ptrs := strings.Split(d.ID, ":")
 	return fmt.Sprintf("%s%s", ptrs[len(ptrs)-2], ptrs[len(ptrs)-1])
@@ -85,6 +87,7 @@ func (d *DidDocument) CheckAccAddress(t interface{}) bool {
 	}
 }
 
+// SetMetadata sets the metadata of the document
 func (vm *DidDocument) SetMetadata(data map[string]string) {
 	vm.Metadata = MapToKeyValueList(data)
 }

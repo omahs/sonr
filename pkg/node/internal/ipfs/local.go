@@ -242,3 +242,8 @@ func (n *localIpfs) Close() error {
 func (l *localIpfs) GetCapabilityDelegation() *types.VerificationMethod {
 	return l.config.GetCapabilityDelegation()
 }
+
+// InitDB initializes the database
+func (l *localIpfs) InitDB() (config.IPFSDB, error) {
+	return newDBInstance(l.ctx, l)
+}

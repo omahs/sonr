@@ -19,22 +19,12 @@ export default async function handler(req: NextRequest) {
     body: body,
   };
   const resp = await fetch(
-    process.env.API_URL + "/sonr-io/sonr/vault/new-wallet",
+    process.env.API_URL + "/sonr/protocol/vault/new-wallet",
     requestOptions
   );
   const data = await resp.json();
-  const reqPubOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data.did_document),
-  };
-  const pubResp = await fetch(
-    process.env.API_URL + "/sonr-io/sonr/vault/publish",
-    reqPubOptions
-  );
-  const pubData = await pubResp.json();
-  console.log(pubData);
-  return new Response(JSON.stringify(pubData), {
+  console.log(data);
+  return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
       "content-type": "application/json",

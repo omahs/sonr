@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	gocache "github.com/patrickmn/go-cache"
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/x/identity/protocol/vault/wallet"
 	"github.com/sonrhq/core/x/identity/types"
-	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
 
 type VaultBank struct {
@@ -17,13 +17,17 @@ type VaultBank struct {
 
 	// The wallet that the vault is using
 	cache *gocache.Cache
+
+	// The TxBuilder
+	cctx client.Context
 }
 
 // Creates a new Vault
-func InitBank(node config.IPFSNode, cache *gocache.Cache) *VaultBank {
+func InitBank(cctx client.Context, node config.IPFSNode, cache *gocache.Cache) *VaultBank {
 	return &VaultBank{
 		node:  node,
 		cache: cache,
+		cctx:  cctx,
 	}
 }
 
@@ -36,7 +40,7 @@ func (v *VaultBank) StartRegistration(entry *Session) (string, string, error) {
 	return optsJson, entry.ID, nil
 }
 
-func (v *VaultBank) FinishRegistration(sessionId string, credsJson string) (*types.DidDocument, *v1.WalletConfig, error) {
+func (v *VaultBank) FinishRegistration(sessionId string, credsJson string) (*types.DidDocument, wallet.Wallet, error) {
 	// Get Session
 	entry, err := v.getEntryFromCache(sessionId)
 	if err != nil {
@@ -47,7 +51,7 @@ func (v *VaultBank) FinishRegistration(sessionId string, credsJson string) (*typ
 		return nil, nil, err
 	}
 	// Create a new offline wallet
-	wallet, err := wallet.NewWallet()
+	wallet, err := wallet.NewWallet(v.cctx)
 	if err != nil {
 		return nil, nil, errors.New(fmt.Sprintf("Failed to create new offline wallet using MPC: %s", err))
 	}
@@ -57,7 +61,7 @@ func (v *VaultBank) FinishRegistration(sessionId string, credsJson string) (*typ
 		return nil, nil, errors.New(fmt.Sprintf("Failed to get primary account: %s", err))
 	}
 	didDoc.AddAssertion(primAcc.GetAssertionMethod())
-	return didDoc, wallet.WalletConfig(), nil
+	return didDoc, wallet, nil
 }
 
 func (v *VaultBank) StartLogin(entry *Session) (string, string, error) {

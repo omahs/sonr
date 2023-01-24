@@ -4,8 +4,8 @@ syntax = "proto3";
 package sonrhq.protocol.vault.v1;
 
 import "common/v1/data.proto";
-import "google/api/annotations.proto";
 import "core/identity/did.proto";
+import "google/api/annotations.proto";
 
 option go_package = "github.com/sonrhq/core/x/identity/types/vault/v1";
 
