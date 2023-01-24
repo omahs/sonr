@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -97,6 +98,8 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
+	"github.com/sonrhq/core/pkg/node"
+	nodeconfig "github.com/sonrhq/core/pkg/node/config"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -211,6 +214,9 @@ type App struct {
 
 	invCheckPeriod uint
 
+	// Networking
+	ipfsNode nodeconfig.IPFSNode
+
 	// keys to access the substores
 	keys    map[string]*storetypes.KVStoreKey
 	tkeys   map[string]*storetypes.TransientStoreKey
@@ -292,6 +298,12 @@ func New(
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
+	// Start IPFS Node
+	node, err := node.NewIPFS(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
 	app := &App{
 		BaseApp:           bApp,
 		cdc:               cdc,
@@ -301,6 +313,7 @@ func New(
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
+		ipfsNode:          node,
 	}
 
 	app.ParamsKeeper = initParamsKeeper(
@@ -514,7 +527,7 @@ func New(
 		app.BankKeeper,
 		app.GroupKeeper,
 	)
-	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper)
+	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper, app.ipfsNode)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 

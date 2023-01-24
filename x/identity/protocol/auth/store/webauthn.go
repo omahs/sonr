@@ -10,6 +10,7 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/x/identity/types"
+	v1 "github.com/sonrhq/core/x/identity/types/auth/v1"
 )
 
 // GetWebAuthn returns the underlying Webauthn instance
@@ -25,23 +26,41 @@ func (s *Session) GetWebAuthn() (*webauthn.WebAuthn, error) {
 	})
 }
 
+// GetUsername returns the username for the session
+func (s *Session) GetUsername() string {
+	return s.alsoKnownAs
+}
+
 // BeginRegistration starts the registration process for the underlying Webauthn instance
-func (s *Session) BeginRegistration() (string, error) {
+func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
 	wauth, err := s.GetWebAuthn()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
+	// Fetch Session Data
 	opts, sessionData, err := wauth.BeginRegistration(s.didDoc, webauthn.WithAuthenticatorSelection(defaultAuthSelect))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	s.data = *sessionData
 	bz, err := json.Marshal(opts)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(bz), nil
+
+	// Sync Session
+	err = s.Sync()
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ChallengeResponse{
+		CreationOptions: string(bz),
+		RpName:          s.RPDisplayName,
+		RpIcon:          s.RPIcon,
+		RpOrigins:       s.RPOrigins,
+		SessionId:       s.ID,
+	}, nil
 }
 
 // FinishRegistration creates a credential which can be stored to use with User Authentication

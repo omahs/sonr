@@ -17,8 +17,10 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/x/identity/client/cli"
 	"github.com/sonrhq/core/x/identity/keeper"
+	"github.com/sonrhq/core/x/identity/protocol/auth"
 	"github.com/sonrhq/core/x/identity/protocol/vault"
 	"github.com/sonrhq/core/x/identity/types"
 )
@@ -26,6 +28,9 @@ import (
 var (
 	_ module.AppModule      = AppModule{}
 	_ module.AppModuleBasic = AppModuleBasic{}
+
+	// IPFS Networking
+	ipfsNode config.IPFSNode
 )
 
 // ----------------------------------------------------------------------------
@@ -73,7 +78,8 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
-	vault.RegisterVaultService(clientCtx, mux)
+	auth.RegisterAuthIPFSService(clientCtx, mux, ipfsNode)
+	vault.RegisterVaultIPFSService(clientCtx, mux, ipfsNode)
 }
 
 // GetTxCmd returns the root Tx command for the module. The subcommands of this root command are used by end-users to generate new transactions containing messages defined in the module
@@ -104,7 +110,9 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	node config.IPFSNode,
 ) AppModule {
+	ipfsNode = node
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,

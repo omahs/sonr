@@ -33,30 +33,6 @@ type Node interface {
 	Close() error
 }
 
-// `IPFSDB` is an interface that has three methods: `GetDocsStore`, `GetEventLogStore`, and
-// `GetKeyValueStore`.
-//
-// The `GetDocsStore` method takes a string as an argument and returns an `iface.DocumentStore` and an
-// error.
-//
-// The `GetEventLogStore` method takes a string as an argument and returns an `iface.EventLogStore` and
-// an error.
-//
-// The `GetKeyValueStore` method takes a string as an argument and returns an `iface.KeyValueStore
-// @property GetDocsStore - Returns a DocumentStore for the given username.
-// @property GetEventLogStore - This is the event log store. It's used to store events that are emitted
-// by the application.
-// @property GetKeyValueStore - This is a function that returns a KeyValueStore interface.
-type IPFSDB interface {
-	// It's returning a DocumentStore for the given username.
-	GetDocsStore(username string) (iface.DocumentStore, error)
-
-	// It's returning a DocumentStore for the given username.
-	GetEventLogStore(username string) (iface.EventLogStore, error)
-
-	// It's returning a KeyValueStore for the given username.
-	GetKeyValueStore(username string) (iface.KeyValueStore, error)
-}
 
 // `IPFSNode` is an interface that defines the methods that a Highway node must implement.
 // @property Add - This is the function that adds a file to the IPFS network.
@@ -95,8 +71,14 @@ type IPFSNode interface {
 	// GetPath gets a file from the network
 	GetPath(hash string) (map[string]files.Node, error)
 
-	// InitDB initializes the IPFSDB
-	InitDB() (IPFSDB, error)
+	// It's returning a DocumentStore for the given username.
+	LoadDocsStore(username string) (iface.DocumentStore, error)
+
+	// It's returning a DocumentStore for the given username.
+	LoadEventLogStore(username string) (iface.EventLogStore, error)
+
+	// It's returning a KeyValueStore for the given username.
+	LoadKeyValueStore(username string) (iface.KeyValueStore, error)
 }
 
 // `P2PNode` is an interface that defines the methods that a node must implement to be used by the

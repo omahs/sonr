@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"sync"
 
+	nodeconfig "github.com/sonrhq/core/pkg/node/config"
+	orbitdb "berty.tech/go-orbit-db"
+	"berty.tech/go-orbit-db/iface"
 	files "github.com/ipfs/go-ipfs-files"
 	icore "github.com/ipfs/interface-go-ipfs-core"
 	"github.com/ipfs/kubo/config"
@@ -32,6 +35,11 @@ func Initialize(ctx context.Context, c *snrConfig.Config) (snrConfig.IPFSNode, e
 	if err != nil {
 		return nil, err
 	}
+	db, err := orbitdb.NewOrbitDB(ctx, n.CoreAPI(), &orbitdb.NewOrbitDBOptions{})
+	if err != nil {
+		return nil, err
+	}
+	n.orbitDb = db
 	return n, nil
 }
 
@@ -184,4 +192,35 @@ func getUnixfsNode(path string) (files.Node, error) {
 	}
 
 	return f, nil
+}
+
+//
+// Helper functions
+//
+
+// fetchDocsAddress fetches the address of the document store for a given username
+func fetchDocsAddress(orb iface.OrbitDB, username string) (string, error) {
+	addr, err := orb.DetermineAddress(context.Background(), username, nodeconfig.DB_DOCUMENT_STORE.String(), nil)
+	if err != nil {
+		return "", err
+	}
+	return addr.String(), nil
+}
+
+// fetchEventLogAddress fetches the address of the event log for a given username
+func fetchEventLogAddress(orb iface.OrbitDB, username string) (string, error) {
+	addr, err := orb.DetermineAddress(context.Background(), username, nodeconfig.DB_EVENT_LOG_STORE.String(), nil)
+	if err != nil {
+		return "", err
+	}
+	return addr.String(), nil
+}
+
+// fetchKeyValueAddress fetches the address of the key value store for a given username
+func fetchKeyValueAddress(orb iface.OrbitDB, username string) (string, error) {
+	addr, err := orb.DetermineAddress(context.Background(), username, nodeconfig.DB_KEY_VALUE_STORE.String(), nil)
+	if err != nil {
+		return "", err
+	}
+	return addr.String(), nil
 }

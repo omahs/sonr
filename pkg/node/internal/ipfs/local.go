@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"berty.tech/go-orbit-db/iface"
 	"github.com/google/uuid"
 	"github.com/ipfs/go-cid"
 	files "github.com/ipfs/go-ipfs-files"
@@ -44,8 +45,9 @@ type localIpfs struct {
 
 	config *config.Config
 
-	ctx    context.Context
-	encKey crypto.PrivKey
+	ctx     context.Context
+	encKey  crypto.PrivKey
+	orbitDb iface.OrbitDB
 }
 
 func (n *localIpfs) CoreAPI() icore.CoreAPI {
@@ -243,7 +245,29 @@ func (l *localIpfs) GetCapabilityDelegation() *types.VerificationMethod {
 	return l.config.GetCapabilityDelegation()
 }
 
-// InitDB initializes the database
-func (l *localIpfs) InitDB() (config.IPFSDB, error) {
-	return newDBInstance(l.ctx, l)
+// GetDocsStore creates or loads a document database from given name
+func (r *localIpfs) LoadDocsStore(username string) (iface.DocumentStore, error) {
+	addr, err := fetchDocsAddress(r.orbitDb, username)
+	if err != nil {
+		return nil, err
+	}
+	return r.orbitDb.Docs(r.ctx, addr, nil)
+}
+
+// GetEventLogStore creates or loads an event log database from given name
+func (r *localIpfs) LoadEventLogStore(username string) (iface.EventLogStore, error) {
+	addr, err := fetchEventLogAddress(r.orbitDb, username)
+	if err != nil {
+		return nil, err
+	}
+	return r.orbitDb.Log(r.ctx, addr, nil)
+}
+
+// GetKeyValueStore creates or loads a key value database from given name
+func (r *localIpfs) LoadKeyValueStore(username string) (iface.KeyValueStore, error) {
+	addr, err := fetchKeyValueAddress(r.orbitDb, username)
+	if err != nil {
+		return nil, err
+	}
+	return r.orbitDb.KeyValue(r.ctx, addr, nil)
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	gocache "github.com/patrickmn/go-cache"
-	"github.com/sonrhq/core/pkg/node"
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/x/identity/protocol/vault/store"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
@@ -40,11 +39,8 @@ type VaultService struct {
 }
 
 // It creates a new VaultService and registers it with the gRPC server
-func RegisterVaultService(cctx client.Context, mux *runtime.ServeMux) error {
-	node, err := node.NewIPFS(context.Background(), config.WithClientContext(cctx, true))
-	if err != nil {
-		return err
-	}
+func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node config.IPFSNode) error {
+
 	cache := gocache.New(time.Minute*2, time.Minute*10)
 	vaultService = &VaultService{
 		cctx:   configureClientCtx(cctx),
@@ -54,11 +50,7 @@ func RegisterVaultService(cctx client.Context, mux *runtime.ServeMux) error {
 		rpIcon: "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png",
 		cache:  cache,
 	}
-	err = v1.RegisterVaultHandlerServer(context.Background(), mux, vaultService)
-	if err != nil {
-		return err
-	}
-	return nil
+	return v1.RegisterVaultHandlerServer(context.Background(), mux, vaultService)
 }
 
 // Challeng returns a random challenge for the client to sign.
@@ -94,7 +86,6 @@ func (v *VaultService) NewWallet(ctx context.Context, req *v1.NewWalletRequest) 
 		DidDocument: didDoc,
 	}, nil
 }
-
 
 // CreateAccount derives a new key from the private key and returns the public key.
 func (v *VaultService) Authorize(ctx context.Context, req *v1.AuthorizeRequest) (*v1.AuthorizeResponse, error) {

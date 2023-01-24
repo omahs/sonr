@@ -41,12 +41,7 @@ func TestOrbitDB(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	db, err := node.InitDB()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	docsStore, err := db.GetDocsStore("test")
+	docsStore, err := node.LoadDocsStore("test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,4 +55,12 @@ func TestOrbitDB(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("op: %v", op)
+
+	// Get the file from the network
+	rawVal, err := docsStore.Get(context.Background(), "0", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	val := rawVal[0].(map[string]interface{})
+	assert.Equal(t, "test", val["test"])
 }
