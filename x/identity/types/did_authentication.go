@@ -3,10 +3,7 @@
 package types
 
 import (
-	fmt "fmt"
-
 	"github.com/go-webauthn/webauthn/protocol"
-	"github.com/sonrhq/core/pkg/common"
 )
 
 // AuthenticationCount returns the number of Assertion Methods
@@ -32,18 +29,6 @@ func (d *DidDocument) AddAuthentication(v *VerificationMethod) {
 	}
 	d.VerificationMethod.Add(v)
 	d.Authentication.Add(v)
-}
-
-// AddWebauthnCredential adds a Webauthn Credential as AuthenticationMethod
-func (d *DidDocument) AddWebauthnCredential(cred *common.WebauthnCredential) error {
-	label := fmt.Sprintf("webauthn-%v", d.AuthenticationCount()+1)
-	vm, err := NewWebAuthnVM(cred, WithIDFragmentSuffix(label))
-	if err != nil {
-		return err
-	}
-	d.VerificationMethod.Add(vm)
-	d.Authentication.Add(vm)
-	return nil
 }
 
 // AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials

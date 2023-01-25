@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/shengdoushi/base58"
-	common "github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/common/crypto/jwx"
 )
 
@@ -59,26 +58,6 @@ func WithBlockchainAccount(v string) VerificationMethodOption {
 //
 // VerificationMethod Creation Functions
 //
-
-// NewWebAuthnVM creates a new WebAuthn VerificationMethod
-func NewWebAuthnVM(webauthnCredential *common.WebauthnCredential, options ...VerificationMethodOption) (*VerificationMethod, error) {
-	// Configure base Verification MEthod
-	vm := &VerificationMethod{
-		ID:                 webauthnCredential.Did(),
-		Type:               KeyType_KeyType_WEB_AUTHN_AUTHENTICATION_2018,
-		PublicKeyMultibase: webauthnCredential.PublicKeyMultibase(),
-		Metadata:           MapToKeyValueList(webauthnCredential.ToMetadata()),
-	}
-
-	// Apply VerificationMethod Options
-	for _, opt := range options {
-		err := opt(vm)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return vm, nil
-}
 
 // NewJWKVM creates a new JWK VerificationMethod
 func NewJWKVM(id string, key crypto.PublicKey, options ...VerificationMethodOption) (*VerificationMethod, error) {

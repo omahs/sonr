@@ -1,9 +1,6 @@
 package wallet
 
 import (
-	"context"
-	"fmt"
-
 	"github.com/sonrhq/core/pkg/node/config"
 )
 
@@ -39,20 +36,8 @@ func (d *Dispatcher) CallNewWallet() (Wallet, error) {
 }
 
 func (d *Dispatcher) backupWallet(w Wallet) (Wallet, error) {
-	kv, err := d.n.LoadKeyValueStore(w.WalletConfig().Address)
-	if err != nil {
+	if err := w.WalletConfig().BackupAccounts(d.n.LoadKeyValueStore); err != nil {
 		return nil, err
 	}
-
-	bz, err := w.WalletConfig().Marshal()
-	if err != nil {
-		return nil, err
-	}
-
-	op, err := kv.Put(context.Background(), w.WalletConfig().Address, bz)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(op)
 	return w, nil
 }

@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/sonrhq/core/pkg/common"
+	"github.com/sonrhq/core/x/identity/types"
 	v1 "github.com/sonrhq/core/x/identity/types/auth/v1"
 )
 
@@ -42,10 +42,13 @@ func (s *Session) RegisterCredential(credentialCreationData string) (*v1.Registe
 	if err != nil {
 		return nil, fmt.Errorf("Failed to make new credential: %s", err)
 	}
-	err = s.didDoc.AddWebauthnCredential(common.ConvertStdCredential(cred))
+	label := fmt.Sprintf("webauthn-%v", s.didDoc.AuthenticationCount()+1)
+	pub := types.NewPubKey(cred.PublicKey, types.KeyType_KeyType_WEB_AUTHN_AUTHENTICATION_2018)
+	vm, err := pub.VerificationMethod(types.WithIDFragmentSuffix(label))
 	if err != nil {
 		return nil, fmt.Errorf("Failed to add webauthn credential: %s", err)
 	}
+	s.didDoc.AddAuthentication(vm)
 	return &v1.RegisterResponse{
 		Success:     true,
 		DidDocument: s.didDoc,

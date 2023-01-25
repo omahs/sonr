@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -30,6 +31,15 @@ func NewAccountConfigFromShares(name string, index uint32, addrPrefix string, sh
 		CreatedAt:    time.Now().Unix(),
 		PublicKey:    pub.Raw(),
 	}, nil
+}
+
+// DID returns the DID of the account. It is the DID of the public key followed by the name of the account.
+func (a *AccountConfig) DID() string {
+	pub, err := a.GetCryptoPubKey()
+	if err != nil {
+		return ""
+	}
+	return fmt.Sprintf("%s#%s", pub.DID(), a.Name)
 }
 
 // Creating a map of party.ID to cmp.Config.

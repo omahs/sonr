@@ -8,6 +8,7 @@ import (
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 	mb "github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-varint"
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
@@ -137,15 +138,49 @@ func (pk *PubKey) Type() string {
 
 // Verifying the signature of the message.
 func (pk *PubKey) VerifySignature(msg []byte, sig []byte) bool {
-	pp := &curve.Secp256k1Point{}
-	if err := pp.UnmarshalBinary(pk.Key); err != nil {
-		return false
+	if pk.KeyType == KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019 {
+		pp := &curve.Secp256k1Point{}
+		if err := pp.UnmarshalBinary(pk.Key); err != nil {
+			return false
+		}
+		signature, err := deserializeSignature(sig)
+		if err != nil {
+			return false
+		}
+		return signature.Verify(pp, msg)
 	}
-	signature, err := deserializeSignature(sig)
-	if err != nil {
-		return false
+	if pk.KeyType == KeyType_KeyType_WEB_AUTHN_AUTHENTICATION_2018 {
+		keyFace, err := webauthncose.ParsePublicKey(pk.Key)
+		if err != nil {
+			return false
+		}
+		switch keyFace.(type) {
+		case webauthncose.OKPPublicKeyData:
+			key := keyFace.(webauthncose.OKPPublicKeyData)
+			ok, err := key.Verify(msg, sig)
+			if err != nil {
+				return false
+			}
+			return ok
+		case webauthncose.EC2PublicKeyData:
+			key := keyFace.(webauthncose.EC2PublicKeyData)
+			ok, err := key.Verify(msg, sig)
+			if err != nil {
+				return false
+			}
+			return ok
+		case webauthncose.RSAPublicKeyData:
+			key := keyFace.(webauthncose.RSAPublicKeyData)
+			ok, err := key.Verify(msg, sig)
+			if err != nil {
+				return false
+			}
+			return ok
+		default:
+			return false
+		}
 	}
-	return signature.Verify(pp, msg)
+	return false
 }
 
 // VerificationMethod applies the given options and builds a verification method from this Key
