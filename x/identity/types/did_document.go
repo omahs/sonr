@@ -13,7 +13,7 @@ import (
 func BlankDocument(idStr string) *DidDocument {
 	return &DidDocument{
 		ID:                   idStr,
-		Context:              []string{"https://www.w3.org/ns/did/v1"},
+		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().DidMethodContext},
 		Controller:           []string{},
 		VerificationMethod:   new(VerificationMethods),
 		Authentication:       new(VerificationRelationships),
@@ -30,7 +30,7 @@ func BlankDocument(idStr string) *DidDocument {
 func NewBaseDocument(akaStr string, sessionId string) *DidDocument {
 	return &DidDocument{
 		ID:                   fmt.Sprintf("did:tmp:%s", sessionId),
-		Context:              []string{"https://www.w3.org/ns/did/v1"},
+		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().DidMethodContext},
 		Controller:           []string{},
 		VerificationMethod:   new(VerificationMethods),
 		Authentication:       new(VerificationRelationships),

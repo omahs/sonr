@@ -1,23 +1,32 @@
 package wallet
 
 import (
+	"sync"
+
 	"github.com/sonrhq/core/pkg/node/config"
 )
 
 type Dispatcher struct {
 	n config.IPFSNode
+	sync.Mutex
 }
 
+// NewDispatcher creates a new wallet dispatcher
 func NewDispatcher(n config.IPFSNode) *Dispatcher {
 	return &Dispatcher{
 		n: n,
 	}
 }
 
+// CallNewWallet creates a new wallet
 func (d *Dispatcher) CallNewWallet() (Wallet, error) {
+	// Lock the dispatcher
+	d.Lock()
+	defer d.Unlock()
 	doneCh := make(chan Wallet)
 	errCh := make(chan error)
 
+	// Create the wallet in a goroutine
 	go func() {
 		w, err := newWallet(d.n)
 		if err != nil {
@@ -26,18 +35,14 @@ func (d *Dispatcher) CallNewWallet() (Wallet, error) {
 		doneCh <- w
 	}()
 
+	// Wait for the wallet to be created
 	select {
 	case w := <-doneCh:
-		return d.backupWallet(w)
+		if err := w.WalletConfig().BackupAccounts(d.n.LoadKeyValueStore); err != nil {
+			return nil, err
+		}
+		return w, nil
 	case err := <-errCh:
 		return nil, err
 	}
-	// return NewWallet()
-}
-
-func (d *Dispatcher) backupWallet(w Wallet) (Wallet, error) {
-	if err := w.WalletConfig().BackupAccounts(d.n.LoadKeyValueStore); err != nil {
-		return nil, err
-	}
-	return w, nil
 }

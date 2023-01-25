@@ -38,14 +38,14 @@ func (s *AuthService) Challenge(ctx context.Context, req *authv1.ChallengeReques
 	if err != nil {
 		return nil, err
 	}
-	docs, err := s.node.LoadDocsStore(req.Username)
-	if err != nil {
-		return nil, err
-	}
-	_, err = docs.Put(ctx, map[string]interface{}{
-		"_id":     sess.ID,
-		"session": sess,
-	})
+	// docs, err := s.node.LoadDocsStore(req.Username)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// _, err = docs.Put(ctx, map[string]interface{}{
+	// 	"_id":     sess.ID,
+	// 	"session": sess,
+	// })
 	if err != nil {
 		return nil, err
 	}
