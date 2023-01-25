@@ -79,9 +79,9 @@ func NewVerificationMethod(id string, keyType KeyType, controller string, key in
 	return vm, nil
 }
 
-func (v *VerificationMethod) Address() string {
-	ptrs := strings.Split(v.ID, ":")
-	return ptrs[len(ptrs)-1]
+// PubKey returns the public key of the verification method
+func (v *VerificationMethod) PubKey() (*PubKey, error) {
+	return PubKeyFromDID(v.ID)
 }
 
 func (v *VerificationMethod) UnmarshalJSON(bytes []byte) error {

@@ -42,7 +42,7 @@ func (wvm *VerificationMethod) WebAuthnCredential() (*common.WebauthnCredential,
 	}
 
 	// Decode Cred ID
-	credId, err := base58.Decode(wvm.Address(), base58.BitcoinAlphabet)
+	credId, err := base58.Decode(fetchFinalDidPath(wvm.ID), base58.BitcoinAlphabet)
 	if err != nil {
 		return nil, err
 	}
@@ -122,4 +122,9 @@ func (d *DidDocument) GetCommonWebauthCredentials() []*common.WebauthnCredential
 		}
 	}
 	return creds
+}
+
+func fetchFinalDidPath(path string) string {
+	parts := strings.Split(path, ":")
+	return parts[len(parts)-1]
 }
