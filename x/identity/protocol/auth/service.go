@@ -24,6 +24,7 @@ type AuthService struct {
 
 // It creates a new VaultService and registers it with the gRPC server
 func RegisterAuthIPFSService(cctx client.Context, mux *runtime.ServeMux, node config.IPFSNode) error {
+	node.WrapClientContext(cctx)
 	authService = &AuthService{
 		cctx:   cctx,
 		rpName: "Sonr",

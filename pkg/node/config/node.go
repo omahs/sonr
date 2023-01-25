@@ -2,6 +2,7 @@ package config
 
 import (
 	"berty.tech/go-orbit-db/iface"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/gogo/protobuf/proto"
 	files "github.com/ipfs/go-ipfs-files"
 	icore "github.com/ipfs/interface-go-ipfs-core"
@@ -22,6 +23,8 @@ import (
 type Node interface {
 	// Context returns protocol.Context
 	Context() *identityprotocol.Context
+
+	WrapClientContext(c client.Context) *identityprotocol.Context
 
 	// PeerID returns the peer ID of the node
 	PeerID() peer.ID

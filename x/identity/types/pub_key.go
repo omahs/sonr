@@ -2,11 +2,14 @@ package types
 
 import (
 	"bytes"
-	"encoding/base64"
 	"errors"
 	fmt "fmt"
+	"strings"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
+	mb "github.com/multiformats/go-multibase"
+	"github.com/multiformats/go-varint"
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	tmcrypto "github.com/tendermint/tendermint/crypto"
@@ -20,19 +23,58 @@ type (
 // Constructors
 //
 
-// It takes a string, decodes it from base58, unmarshals it into a PubKey, and returns the PubKey
-func NewPubKeyFromBase64(key string) (*PubKey, error) {
-	bz, err := base64.StdEncoding.DecodeString(key)
+// It takes a string of a DID, decodes it from base58, unmarshals it into a PubKey, and returns the PubKey
+func PubKeyFromDID(did string) (*PubKey, error) {
+	ptrs := strings.Split(did, ":")
+	keystr := ptrs[len(ptrs)-1]
+
+	enc, data, err := mb.Decode(keystr)
+	if err != nil {
+		return nil, fmt.Errorf("decoding multibase: %w", err)
+	}
+
+	if enc != mb.Base58BTC {
+		return nil, fmt.Errorf("unexpected multibase encoding: %s", mb.EncodingToStr[enc])
+	}
+
+	code, n, err := varint.FromUvarint(data)
 	if err != nil {
 		return nil, err
 	}
-	return NewPubKeyFromBytes(bz), nil
+	kt, err := KeyTypeFromMulticodec(code)
+	if err != nil {
+		return nil, err
+	}
+	return NewPubKey(data[n:], kt), nil
 }
 
-// NewPubKeyFromBytes takes a byte array and returns a PubKey
-func NewPubKeyFromBytes(bz []byte) *PubKey {
+// PubKeyFromCurvePoint takes a curve point and returns a PubKey
+func PubKeyFromCurvePoint(p *curve.Secp256k1Point) (*PubKey, error) {
+	bz, err := p.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+	return NewPubKey(bz, KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019), nil
+}
+
+// PubKeyFromBytes takes a byte array and returns a PubKey
+func PubKeyFromBytes(bz []byte) (*PubKey, error) {
+	code, n, err := varint.FromUvarint(bz)
+	if err != nil {
+		return nil, err
+	}
+	kt, err := KeyTypeFromMulticodec(code)
+	if err != nil {
+		return nil, err
+	}
+	return NewPubKey(bz[n:], kt), nil
+}
+
+// NewPubKey takes a byte array and returns a PubKey
+func NewPubKey(bz []byte, kt KeyType) *PubKey {
 	pk := &PubKey{}
 	pk.Key = bz
+	pk.KeyType = kt
 	return pk
 }
 
@@ -42,37 +84,55 @@ func NewPubKeyFromBytes(bz []byte) *PubKey {
 
 // Creating a new method called Address() that returns an Address type.
 func (pk *PubKey) Address() Address {
-	return tmcrypto.AddressHash(pk.Key)
+	return tmcrypto.AddressHash(pk.Bytes())
 }
 
-// ApplyToVM applies the given options to the verification method
-func (pk *PubKey) ApplyToVM(method string, ktype KeyType, opts ...VerificationMethodOption) (*VerificationMethod, error) {
-	vm := &VerificationMethod{
-		ID:                 fmt.Sprintf("did:%s:%s#%s", method, pk.Address(), pk.Type()),
-		Type:               ktype,
-		PublicKeyMultibase: pk.Base64(),
-	}
-	for _, opt := range opts {
-		if err := opt(vm); err != nil {
-			return nil, err
-		}
-	}
-	return vm, nil
-}
-
-// Base64 encoding the key.
-func (pk *PubKey) Base64() string {
-	return base64.StdEncoding.EncodeToString(pk.Key)
-}
-
-// Returning the key in bytes.
-func (pk *PubKey) Bytes() []byte {
-	return pk.Key
+// Bech32 returns the bech32 encoding of the key.
+func (pk *PubKey) Bech32(pfix string) (string, error) {
+	return bech32.ConvertAndEncode(pfix, pk.Bytes())
 }
 
 // DID returns the DID of the verification method
 func (pk *PubKey) DID() string {
-	return fmt.Sprintf("did:snr:%s", pk.Address())
+	return fmt.Sprintf("did:%s:%s:%s", DefaultParams().DidMethodName, DefaultParams().DidNetwork, pk.Multibase())
+}
+
+// Multibase returns the Base58 encoding the key.
+func (pk *PubKey) Multibase() string {
+	b58BKeyStr, err := mb.Encode(mb.Base58BTC, pk.Bytes())
+	if err != nil {
+		return ""
+	}
+	return b58BKeyStr
+}
+
+// Returning the key in bytes.
+func (pk *PubKey) Bytes() []byte {
+	raw := pk.Key
+	t := pk.KeyType.MulticodecType()
+	size := varint.UvarintSize(t)
+	data := make([]byte, size+len(raw))
+	n := varint.PutUvarint(data, t)
+	copy(data[n:], raw)
+	return pk.Key
+}
+
+// Comparing the two keys.
+func (pk *PubKey) Equals(other cryptotypes.PubKey) bool {
+	if other == nil {
+		return false
+	}
+	return bytes.Equal(pk.Bytes(), other.Bytes())
+}
+
+// Raw returns the raw key without the type.
+func (pk *PubKey) Raw() []byte {
+	return pk.Key
+}
+
+// // Returning the type of the key.
+func (pk *PubKey) Type() string {
+	return pk.KeyType.PrettyString()
 }
 
 // Verifying the signature of the message.
@@ -88,17 +148,19 @@ func (pk *PubKey) VerifySignature(msg []byte, sig []byte) bool {
 	return signature.Verify(pp, msg)
 }
 
-// Comparing the two keys.
-func (pk *PubKey) Equals(other cryptotypes.PubKey) bool {
-	if other == nil {
-		return false
+// VerificationMethod applies the given options and builds a verification method from this Key
+func (pk *PubKey) VerificationMethod(opts ...VerificationMethodOption) (*VerificationMethod, error) {
+	vm := &VerificationMethod{
+		ID:                 pk.DID(),
+		Type:               pk.KeyType,
+		PublicKeyMultibase: pk.Multibase(),
 	}
-	return bytes.Equal(pk.Key, other.Bytes())
-}
-
-// Returning the type of the key.
-func (pk *PubKey) Type() string {
-	return "secp256k1"
+	for _, opt := range opts {
+		if err := opt(vm); err != nil {
+			return nil, err
+		}
+	}
+	return vm, nil
 }
 
 // SerializeSignature marshals an ECDSA signature to DER format for use with the CMP protocol
@@ -141,4 +203,77 @@ func deserializeSignature(sigStr []byte) (*ecdsa.Signature, error) {
 
 	// Create and return the signature.
 	return &sig, nil
+}
+
+// -- We represent those as raw public key bytes prefixed with public key
+// -- multiformat code.
+// | secp256k1  "0xe7"
+// | Ed25519    "0xed"
+// | P256       "0x1200"
+// | P384       "0x1201"
+// | P512       "0x1202"
+// | RSA        "0x1205"
+//
+// MulticodecType returns the multicodec code for the key type
+func (kt KeyType) MulticodecType() uint64 {
+	switch kt {
+	case KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019:
+		return 0xe7
+	case KeyType_KeyType_ED25519_VERIFICATION_KEY_2018:
+		return 0xed
+	case KeyType_KeyType_JSON_WEB_KEY_2020:
+		return 0x1200
+	case KeyType_KeyType_RSA_VERIFICATION_KEY_2018:
+		return 0x1205
+	default:
+		return 0
+	}
+}
+
+// PrettyString returns the string representation of the key type
+func (kt KeyType) PrettyString() string {
+	switch kt {
+	case KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019:
+		return "secp256k1"
+	case KeyType_KeyType_ED25519_VERIFICATION_KEY_2018:
+		return "Ed25519"
+	case KeyType_KeyType_JSON_WEB_KEY_2020:
+		return "JWK"
+	case KeyType_KeyType_RSA_VERIFICATION_KEY_2018:
+		return "RSA"
+	default:
+		return "unknown"
+	}
+}
+
+// KeyTypeFromMulticodec returns the key type
+func KeyTypeFromMulticodec(code uint64) (KeyType, error) {
+	switch code {
+	case 0xe7:
+		return KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019, nil
+	case 0xed:
+		return KeyType_KeyType_ED25519_VERIFICATION_KEY_2018, nil
+	case 0x1200:
+		return KeyType_KeyType_JSON_WEB_KEY_2020, nil
+	case 0x1205:
+		return KeyType_KeyType_RSA_VERIFICATION_KEY_2018, nil
+	default:
+		return KeyType_KeyType_UNSPECIFIED, fmt.Errorf("unknown key type code: %d", code)
+	}
+}
+
+// KeyTypeFromPrettyString returns the key type
+func KeyTypeFromPrettyString(s string) (KeyType, error) {
+	switch s {
+	case "secp256k1":
+		return KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019, nil
+	case "Ed25519":
+		return KeyType_KeyType_ED25519_VERIFICATION_KEY_2018, nil
+	case "JWK":
+		return KeyType_KeyType_JSON_WEB_KEY_2020, nil
+	case "RSA":
+		return KeyType_KeyType_RSA_VERIFICATION_KEY_2018, nil
+	default:
+		return KeyType_KeyType_UNSPECIFIED, fmt.Errorf("unknown key type: %s", s)
+	}
 }

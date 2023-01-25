@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	types "github.com/sonrhq/core/x/identity/types"
 
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
@@ -14,7 +13,11 @@ import (
 
 // It takes a name, index, address prefix, and a slice of shares, and returns an account config
 func NewAccountConfigFromShares(name string, index uint32, addrPrefix string, shares []*ShareConfig) (*AccountConfig, error) {
-	addr, err := bech32.ConvertAndEncode(addrPrefix, shares[0].PublicKey)
+	pub, err := shares[0].GetCryptoPubKey()
+	if err != nil {
+		return nil, err
+	}
+	addr, err := pub.Bech32(addrPrefix)
 	if err != nil {
 		return nil, err
 	}
@@ -22,10 +25,10 @@ func NewAccountConfigFromShares(name string, index uint32, addrPrefix string, sh
 		Name:         strings.ToLower(name),
 		Index:        index,
 		Address:      addr,
-		PublicKey:    shares[0].PublicKey,
 		Shares:       shares,
 		Bech32Prefix: addrPrefix,
 		CreatedAt:    time.Now().Unix(),
+		PublicKey:    pub.Raw(),
 	}, nil
 }
 
@@ -58,5 +61,5 @@ func (a *AccountConfig) PublicPoint() (curve.Point, error) {
 
 // GetCryptoPubKey returns the public key of the first share.
 func (a *AccountConfig) GetCryptoPubKey() (*types.PubKey, error) {
-	return a.Shares[0].GetCryptoPubKey()
+	return types.NewPubKey(a.PublicKey, types.KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019), nil
 }

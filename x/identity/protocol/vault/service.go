@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/x/identity/protocol/vault/wallet"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
 
@@ -26,17 +27,20 @@ var (
 // @property  - `v1.VaultServer`: This is the interface that the Vault service implements.
 // @property highway - This is the HighwayNode that the VaultService is running on.
 type VaultService struct {
-	node   config.IPFSNode
-	rpName string
-	rpIcon string
+	node       config.IPFSNode
+	dispatcher *wallet.Dispatcher
+	rpName     string
+	rpIcon     string
 }
 
 // It creates a new VaultService and registers it with the gRPC server
 func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node config.IPFSNode) error {
+	node.WrapClientContext(cctx)
 	vaultService = &VaultService{
-		node:   node,
-		rpName: "Sonr",
-		rpIcon: "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png",
+		node:       node,
+		dispatcher: wallet.NewDispatcher(node),
+		rpName:     "Sonr",
+		rpIcon:     "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png",
 	}
 	return v1.RegisterVaultHandlerServer(context.Background(), mux, vaultService)
 }
@@ -44,14 +48,15 @@ func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node c
 // Register registers a new keypair and returns the public key.
 func (v *VaultService) NewWallet(ctx context.Context, req *v1.NewWalletRequest) (*v1.NewWalletResponse, error) {
 	// // Get Session
-	// didDoc, wallet, err := v.bank.FinishRegistration(req.SessionId, req.CredentialResponse)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	wallet, err := v.dispatcher.CallNewWallet()
+	if err != nil {
+		return nil, err
+	}
 
 	// Return response
 	return &v1.NewWalletResponse{
 		Success: false,
+		Address: wallet.WalletConfig().Address,
 	}, nil
 }
 

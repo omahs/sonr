@@ -2,6 +2,8 @@ package common
 
 import (
 	"log"
+
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 )
 
 // NodeCallback is an interface with three methods: OnDiscover, OnLinking, and OnTopicMessage.
@@ -36,4 +38,16 @@ func (cb *defaultCallback) OnLinking(data []byte) {
 // Defining a method on the defaultCallback struct.
 func (cb *defaultCallback) OnTopicMessage(topic string, data []byte) {
 	log.Println("ERROR: MotorCallback not implemented.")
+}
+
+// `SNRPubKey` is a `PubKey` that has a `DID` and a `Multibase`
+// @property {string} DID - The DID of the SNR
+// @property {string} Multibase - The multibase encoding of the DID.
+type SNRPubKey interface {
+	cryptotypes.PubKey
+
+	Bech32(pfix string) (string, error)
+	DID() string
+	Multibase() string
+	Raw() []byte
 }

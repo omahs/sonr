@@ -55,7 +55,7 @@ var (
 // @property encPrivKey - The private key used to encrypt the data.
 type Context struct {
 	Ctx           context.Context
-	CCtx          client.Context
+	ClientContext client.Context
 	HomeDir       string
 	RepoPath      string
 	NodeRESTUri   string
@@ -88,8 +88,8 @@ func NewContext(c context.Context) (*Context, error) {
 }
 
 // SetClientContext sets the client context
-func (ctx *Context) SetClientContext(c client.Context) *Context {
-	ctx.CCtx = c
+func (ctx *Context) WrapClientContext(c client.Context) *Context {
+	ctx.ClientContext = c
 	return ctx
 }
 

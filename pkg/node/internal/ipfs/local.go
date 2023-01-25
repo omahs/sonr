@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"berty.tech/go-orbit-db/iface"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/google/uuid"
 	"github.com/ipfs/go-cid"
 	files "github.com/ipfs/go-ipfs-files"
@@ -91,6 +92,11 @@ func (n *localIpfs) Connect(peers ...string) error {
 // Context returns the context of the node
 func (n *localIpfs) Context() *protocol.Context {
 	return n.config.Context
+}
+
+// WrapClientContext wraps the protocol context with the client's context
+func (n *localIpfs) WrapClientContext(c client.Context) *protocol.Context {
+	return n.config.Context.WrapClientContext(c)
 }
 
 // Add adds a file to the network

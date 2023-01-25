@@ -26,8 +26,9 @@ require (
 	github.com/libp2p/go-libp2p-pubsub v0.8.2
 	github.com/marstr/guid v1.1.0
 	github.com/multiformats/go-multiaddr v0.8.0
+	github.com/multiformats/go-multibase v0.1.1
+	github.com/multiformats/go-varint v0.0.7
 	github.com/ockam-network/did v0.1.3
-	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/shengdoushi/base58 v1.0.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
@@ -36,6 +37,7 @@ require (
 	github.com/taurusgroup/multi-party-sig v0.6.0-alpha-2021-09-21
 	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
+	github.com/ucan-wg/go-ucan v0.0.0-20220326223643-c90281f7a4ac
 	golang.org/x/crypto v0.5.0
 	golang.org/x/mobile v0.0.0-20221110043201-43a038452099
 	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37
@@ -249,6 +251,7 @@ require (
 	github.com/libp2p/go-doh-resolver v0.4.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
 	github.com/libp2p/go-libp2p-asn-util v0.2.0 // indirect
+	github.com/libp2p/go-libp2p-core v0.20.1 // indirect
 	github.com/libp2p/go-libp2p-kbucket v0.5.0 // indirect
 	github.com/libp2p/go-libp2p-pubsub-router v0.6.0 // indirect
 	github.com/libp2p/go-libp2p-record v0.2.0 // indirect
@@ -292,11 +295,9 @@ require (
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr-dns v0.3.1 // indirect
 	github.com/multiformats/go-multiaddr-fmt v0.1.0 // indirect
-	github.com/multiformats/go-multibase v0.1.1 // indirect
 	github.com/multiformats/go-multicodec v0.7.0 // indirect
 	github.com/multiformats/go-multihash v0.2.1 // indirect
 	github.com/multiformats/go-multistream v0.3.3 // indirect
-	github.com/multiformats/go-varint v0.0.7 // indirect
 	github.com/onsi/ginkgo/v2 v2.6.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect

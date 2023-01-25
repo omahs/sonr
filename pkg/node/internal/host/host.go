@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	ggio "github.com/gogo/protobuf/io"
 	"github.com/gogo/protobuf/proto"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
@@ -88,6 +89,11 @@ func Initialize(config *config.Config) (config.P2PNode, error) {
 // Context returns the context of the Host
 func (n *hostImpl) Context() *identityprotocol.Context {
 	return n.config.Context
+}
+
+// WrapClientContext wraps the protocol context with the client's context
+func (n *hostImpl) WrapClientContext(c client.Context) *identityprotocol.Context {
+	return n.config.Context.WrapClientContext(c)
 }
 
 // PeerID returns the ID of the Host

@@ -10,9 +10,14 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/x/identity/protocol"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
+
+// rootWalletAccountName is the name of the root account
+const rootWalletAccountName = "Primary"
 
 // `Wallet` is an interface that has a method `WalletConfig` that returns a `*v1.WalletConfig` and a
 // method `CreateAccount` that takes a `string`, a `string`, and a `string` and returns an `error`.
@@ -50,24 +55,28 @@ type walletImpl struct {
 
 	// The TxBuilder
 	cctx client.Context
+	pctx *protocol.Context
+	node config.IPFSNode
 }
 
-// `NewWallet` creates a new wallet with a default root account
-func NewWallet(cctx client.Context) (Wallet, error) {
+// `newWallet` creates a new wallet with a default root account
+func newWallet(n config.IPFSNode) (Wallet, error) {
 	// The default shards that are added to the MPC wallet
-	rootAcc, err := account.NewAccount("Primary", "snr", "Sonr")
+	rootAcc, err := account.NewAccount(rootWalletAccountName, "snr", "Sonr")
 	if err != nil {
 		return nil, err
 	}
 	conf := v1.NewWalletConfigFromRootAccount(rootAcc.AccountConfig())
 	return &walletImpl{
 		walletConfig: conf,
-		cctx:         cctx,
+		cctx:         n.Context().ClientContext,
+		pctx:         n.Context(),
+		node:         n,
 	}, nil
 }
 
-// `NewWalletFromConfig` takes a `WalletConfig` and returns a `Wallet` and an error
-func NewWalletFromConfig(walletConf *v1.WalletConfig) (Wallet, error) {
+// `LoadConfig` takes a `WalletConfig` and returns a `Wallet` and an error
+func LoadConfig(walletConf *v1.WalletConfig) (Wallet, error) {
 	return &walletImpl{
 		walletConfig: walletConf,
 	}, nil
@@ -117,7 +126,11 @@ func (w *walletImpl) ListAccounts() ([]account.WalletAccount, error) {
 
 // Returning the primary account.
 func (w *walletImpl) PrimaryAccount() (account.WalletAccount, error) {
-	return w.GetAccount("Primary")
+	accConf, ok := w.walletConfig.Accounts[rootWalletAccountName]
+	if !ok {
+		return nil, errors.New("Account not found")
+	}
+	return account.NewAccountFromConfig(accConf)
 }
 
 // Signing a transaction.

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -12,14 +13,14 @@ import (
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-	"github.com/shengdoushi/base58"
+	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account/internal/mpc"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account/internal/network"
-	"github.com/sonrhq/core/x/identity/types"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
 	"github.com/taurusgroup/multi-party-sig/pkg/pool"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
+	"github.com/ucan-wg/go-ucan"
 )
 
 // `WalletAccount` is an interface that defines the methods that a wallet account must implement.
@@ -44,9 +45,6 @@ type WalletAccount interface {
 	// Equals returns true if the account is equal to the other account
 	Equals(other cryptotypes.LedgerPrivKey) bool
 
-	// GetAssertionMethod returns the verification method for the account
-	GetAssertionMethod() *types.VerificationMethod
-
 	// GetSignerData returns the signer data for the account
 	GetSignerData() authsigning.SignerData
 
@@ -60,8 +58,11 @@ type WalletAccount interface {
 	// sign a transaction.
 	ListConfigs() ([]*cmp.Config, error)
 
+	NewOriginToken(audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (*ucan.Token, error)
+	NewAttenuatedToken(parent *ucan.Token, audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (*ucan.Token, error)
+
 	// PubKey returns secp256k1 public key
-	PubKey() cryptotypes.PubKey
+	PubKey() common.SNRPubKey
 
 	// Signs a message
 	Sign(bz []byte) ([]byte, error)
@@ -136,37 +137,12 @@ func (w *walletAccountImpl) Bip32Derive(accName string, idx uint32, addrPrefix s
 
 // Bytes returns the bytes of the account.
 func (w *walletAccountImpl) Bytes() []byte {
-	return w.accountConfig.PublicKey
+	return w.PubKey().Bytes()
 }
 
 // Equals returns true if the account is equal to the other account.
 func (w *walletAccountImpl) Equals(other cryptotypes.LedgerPrivKey) bool {
 	return bytes.Equal(w.Bytes(), other.Bytes())
-}
-
-// GetAssertionMethod Returns the verification method for the account.
-func (w *walletAccountImpl) GetAssertionMethod() *types.VerificationMethod {
-	return &types.VerificationMethod{
-		ID:                  fmt.Sprintf("%s#%s", types.ConvertAccAddressToDid(w.accountConfig.Address), w.accountConfig.Name),
-		Type:                types.KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019,
-		Controller:          types.ConvertAccAddressToDid(w.accountConfig.Address),
-		PublicKeyMultibase:  base58.Encode(w.accountConfig.PublicKey, base58.BitcoinAlphabet),
-		BlockchainAccountId: w.accountConfig.Address,
-		Metadata: []*types.KeyValuePair{
-			{
-				Key:   "label",
-				Value: w.accountConfig.Name,
-			},
-			{
-				Key:   "network",
-				Value: w.accountConfig.Shares[0].Network,
-			},
-			{
-				Key:   "algorithm",
-				Value: "cmp",
-			},
-		},
-	}
 }
 
 // Returning the signer data for the account.
@@ -205,8 +181,21 @@ func (w *walletAccountImpl) ListConfigs() ([]*cmp.Config, error) {
 	return configs, nil
 }
 
+// NewOriginToken returns a new origin token for the account.
+func (w *walletAccountImpl) NewOriginToken(audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (*ucan.Token, error) {
+	return nil, errors.New("not implemented")
+}
+
+// NewAttenuatedToken returns a new attenuated token for the account.
+func (w *walletAccountImpl) NewAttenuatedToken(parent *ucan.Token, audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (*ucan.Token, error) {
+	if !parent.Attenuations.Contains(att) {
+		return nil, fmt.Errorf("scope of ucan attenuations must be less than it's parent")
+	}
+	return nil, errors.New("not implemented")
+}
+
 // Returning the secp256k1 public key.
-func (w *walletAccountImpl) PubKey() cryptotypes.PubKey {
+func (w *walletAccountImpl) PubKey() common.SNRPubKey {
 	pbKey, _ := w.accountConfig.GetCryptoPubKey()
 	return pbKey
 }
