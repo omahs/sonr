@@ -1,9 +1,9 @@
 syntax = "proto3";
-package sonrhq.core.identity;
+package sonrhq.core.identity.v1;
 
 import "common/v1/data.proto";
-import "core/identity/ssi.proto";
-import "core/identity/vc.proto";
+import "core/identity/v1/ssi.proto";
+import "core/identity/v1/vc.proto";
 
 option go_package = "github.com/sonrhq/core/x/identity/types";
 

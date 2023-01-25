@@ -17,8 +17,8 @@ import (
 	"github.com/libp2p/go-libp2p/core/protocol"
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/sonrhq/core/pkg/common"
+	identityprotocol "github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/node/config"
-	identityprotocol "github.com/sonrhq/core/x/identity/protocol"
 )
 
 // A P2PHost is a host.Host with a private key, a channel of mDNS peers, a channel of DHT peers, a

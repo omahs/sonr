@@ -1,13 +1,13 @@
 syntax = "proto3";
-package sonrhq.core.identity;
+package sonrhq.core.identity.v1;
 
+import "core/identity/v1/did.proto";
+import "core/identity/v1/genesis.proto";
+import "core/identity/v1/hns.proto";
+import "core/identity/v1/vc.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "core/identity/did.proto";
-import "core/identity/genesis.proto";
-import "core/identity/hns.proto";
-import "core/identity/vc.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/sonrhq/core/x/identity/types";

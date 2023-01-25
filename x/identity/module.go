@@ -10,8 +10,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -24,20 +22,13 @@ import (
 	"github.com/sonrhq/core/x/identity/protocol/auth"
 	"github.com/sonrhq/core/x/identity/protocol/vault"
 	"github.com/sonrhq/core/x/identity/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
 	_ module.AppModule      = AppModule{}
 	_ module.AppModuleBasic = AppModuleBasic{}
 )
-
-func initProtocol() config.IPFSNode {
-	node, err := node.NewIPFS(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	return node
-}
 
 // ----------------------------------------------------------------------------
 // AppModuleBasic
@@ -174,4 +165,13 @@ func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 // EndBlock contains the logic that is automatically triggered at the end of each block
 func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return []abci.ValidatorUpdate{}
+}
+
+// initProtocol initializes the IPFS protocol
+func initProtocol() config.IPFSNode {
+	node, err := node.NewIPFS(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	return node
 }

@@ -24,11 +24,11 @@ type AuthService struct {
 
 // It creates a new VaultService and registers it with the gRPC server
 func RegisterAuthIPFSService(cctx client.Context, mux *runtime.ServeMux, node config.IPFSNode) error {
-	node.WrapClientContext(cctx)
 	authService = &AuthService{
 		cctx:   cctx,
 		rpName: "Sonr",
 		rpIcon: "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png",
+		node:   node,
 	}
 	return authv1.RegisterAuthHandlerServer(context.Background(), mux, authService)
 }
@@ -38,6 +38,18 @@ func (s *AuthService) Challenge(ctx context.Context, req *authv1.ChallengeReques
 	if err != nil {
 		return nil, err
 	}
+	docs, err := s.node.LoadDocsStore(req.Username)
+	if err != nil {
+		return nil, err
+	}
+	_, err = docs.Put(ctx, map[string]interface{}{
+		"_id":     sess.ID,
+		"session": sess,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return sess.GetChallengeResponse()
 }
 

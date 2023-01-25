@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/x/identity/protocol"
+
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
 )
 
@@ -27,7 +27,7 @@ func (st StoreType) String() string {
 
 // Config is the configuration for the node
 type Config struct {
-	Context *protocol.Context
+	Context *common.Context
 
 	// Callback is the callback for the motor
 	Callback common.NodeCallback
@@ -43,7 +43,7 @@ type Config struct {
 }
 
 // DefaultConfig returns the default configuration
-func DefaultConfig(ctx *protocol.Context) *Config {
+func DefaultConfig(ctx *common.Context) *Config {
 	return &Config{
 		PeerType:    common.PeerType_HIGHWAY,
 		SelfPartyID: party.ID("current"),

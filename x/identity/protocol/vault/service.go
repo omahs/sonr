@@ -35,7 +35,6 @@ type VaultService struct {
 
 // It creates a new VaultService and registers it with the gRPC server
 func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node config.IPFSNode) error {
-	node.WrapClientContext(cctx)
 	vaultService = &VaultService{
 		node:       node,
 		dispatcher: wallet.NewDispatcher(node),

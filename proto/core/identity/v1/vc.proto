@@ -1,6 +1,7 @@
 syntax = "proto3";
-package sonrhq.core.identity;
-import "core/identity/ssi.proto";
+package sonrhq.core.identity.v1;
+
+import "core/identity/v1/ssi.proto";
 // this line is used by starport scaffolding # proto/tx/import
 
 option go_package = "github.com/sonrhq/core/x/identity/types";
@@ -28,7 +29,6 @@ message JSONWebSignature2020Proof {
   Proof proof = 1;
   string jws = 2;
 }
-
 
 // VerifiableCredential represents a credential as defined by the Verifiable Credentials Data Model 1.0 specification (https://www.w3.org/TR/vc-data-model/).
 message VerifiableCredential {

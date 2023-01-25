@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/node/config"
-	"github.com/sonrhq/core/x/identity/protocol"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewAddGet(t *testing.T) {
 	// Call Run method and check for panic (if any)
-	ctx, err := protocol.NewContext(context.Background())
+	ctx, err := common.NewContext(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +40,7 @@ func TestNewAddGet(t *testing.T) {
 }
 
 func TestOrbitDB(t *testing.T) {
-	ctx, err := protocol.NewContext(context.Background())
+	ctx, err := common.NewContext(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}

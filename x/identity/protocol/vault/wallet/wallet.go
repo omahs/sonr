@@ -1,17 +1,14 @@
 package wallet
 
 import (
-	"context"
 	"errors"
-	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/node/config"
-	"github.com/sonrhq/core/x/identity/protocol"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
@@ -43,7 +40,7 @@ type Wallet interface {
 	ListAccounts() ([]account.WalletAccount, error)
 
 	// Signs a transaction for Cosmos compatible blockchains
-	SendTx(memo string, msgs ...sdk.Msg) (*sdk.TxResponse, error)
+	// SendTx(memo string, msgs ...sdk.Msg) (*sdk.TxResponse, error)
 }
 
 // `walletImpl` is a struct that has a single field, `walletConfig`, which is a pointer to a
@@ -54,8 +51,8 @@ type walletImpl struct {
 	walletConfig *v1.WalletConfig
 
 	// The TxBuilder
-	cctx client.Context
-	pctx *protocol.Context
+	// cctx client.Context
+	pctx *common.Context
 	node config.IPFSNode
 }
 
@@ -69,9 +66,9 @@ func newWallet(n config.IPFSNode) (Wallet, error) {
 	conf := v1.NewWalletConfigFromRootAccount(rootAcc.AccountConfig())
 	return &walletImpl{
 		walletConfig: conf,
-		cctx:         n.Context().ClientContext,
-		pctx:         n.Context(),
-		node:         n,
+		// cctx:         n.Context().ClientContext,
+		pctx: n.Context(),
+		node: n,
 	}, nil
 }
 
@@ -133,51 +130,51 @@ func (w *walletImpl) PrimaryAccount() (account.WalletAccount, error) {
 	return account.NewAccountFromConfig(accConf)
 }
 
-// Signing a transaction.
-func (w *walletImpl) SendTx(memo string, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
-	req, err := w.buildBroadcastTx(memo, msgs...)
-	if err != nil {
-		return nil, err
-	}
-	cl, err := client.NewClientFromNode(w.cctx.NodeURI)
-	if err != nil {
-		return nil, err
-	}
-	res, err := cl.BroadcastTxCommit(context.Background(), req)
-	if err != nil {
-		return nil, err
-	}
-	txres := &sdk.TxResponse{
-		Height:    res.Height,
-		TxHash:    string(res.DeliverTx.Data),
-		Codespace: res.DeliverTx.Codespace,
-		Code:      res.DeliverTx.Code,
-		RawLog:    res.DeliverTx.Log,
-	}
-	if txres.Code != 0 {
-		return nil, fmt.Errorf("tx failed: %s", txres.RawLog)
-	}
-	return txres, nil
-}
+// // Signing a transaction.
+// func (w *walletImpl) SendTx(memo string, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
+// 	req, err := w.buildBroadcastTx(memo, msgs...)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	cl, err := client.NewClientFromNode(w.cctx.NodeURI)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	res, err := cl.BroadcastTxCommit(context.Background(), req)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	txres := &sdk.TxResponse{
+// 		Height:    res.Height,
+// 		TxHash:    string(res.DeliverTx.Data),
+// 		Codespace: res.DeliverTx.Codespace,
+// 		Code:      res.DeliverTx.Code,
+// 		RawLog:    res.DeliverTx.Log,
+// 	}
+// 	if txres.Code != 0 {
+// 		return nil, fmt.Errorf("tx failed: %s", txres.RawLog)
+// 	}
+// 	return txres, nil
+// }
 
-// Building a transaction from the given inputs.
-func (w *walletImpl) buildBroadcastTx(memo string, msgs ...sdk.Msg) ([]byte, error) {
-	prim, err := w.PrimaryAccount()
-	if err != nil {
-		return nil, err
-	}
-	auxData, err := prim.SignTxAux(msgs...)
-	if err != nil {
-		return nil, err
-	}
-	txBuilder := w.cctx.TxConfig.NewTxBuilder()
-	txBuilder.SetMemo(memo)
-	txBuilder.SetMsgs(msgs...)
-	txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("snr", sdk.NewInt(100))))
-	txBuilder.AddAuxSignerData(auxData)
-	txBuilder.SetGasLimit(200000)
-	return w.cctx.TxConfig.TxEncoder()(txBuilder.GetTx())
-}
+// // Building a transaction from the given inputs.
+// func (w *walletImpl) buildBroadcastTx(memo string, msgs ...sdk.Msg) ([]byte, error) {
+// 	prim, err := w.PrimaryAccount()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	auxData, err := prim.SignTxAux(msgs...)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	txBuilder := w.cctx.TxConfig.NewTxBuilder()
+// 	txBuilder.SetMemo(memo)
+// 	txBuilder.SetMsgs(msgs...)
+// 	txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("snr", sdk.NewInt(100))))
+// 	txBuilder.AddAuxSignerData(auxData)
+// 	txBuilder.SetGasLimit(200000)
+// 	return w.cctx.TxConfig.TxEncoder()(txBuilder.GetTx())
+// }
 
 //
 // Helper functions

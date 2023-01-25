@@ -11,7 +11,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/sonrhq/core/pkg/common"
-	identityprotocol "github.com/sonrhq/core/x/identity/protocol"
+	identityprotocol "github.com/sonrhq/core/pkg/common"
 )
 
 // `Node` is an interface that defines the methods that a node must implement to be used by the

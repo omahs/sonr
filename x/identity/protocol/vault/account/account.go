@@ -13,6 +13,7 @@ import (
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	"github.com/golang-jwt/jwt"
 	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account/internal/mpc"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account/internal/network"
@@ -21,6 +22,24 @@ import (
 	"github.com/taurusgroup/multi-party-sig/pkg/pool"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 	"github.com/ucan-wg/go-ucan"
+)
+
+// ErrInvalidToken indicates an access token is invalid
+var ErrInvalidToken = errors.New("invalid access token")
+
+const (
+	// UCANVersion is the current version of the UCAN spec
+	UCANVersion = "0.7.0"
+	// UCANVersionKey is the key used in version headers for the UCAN spec
+	UCANVersionKey = "ucv"
+	// PrfKey denotes "Proofs" in a UCAN. Stored in JWT Claims
+	PrfKey = "prf"
+	// FctKey denotes "Facts" in a UCAN. Stored in JWT Claims
+	FctKey = "fct"
+	// AttKey denotes "Attenuations" in a UCAN. Stored in JWT Claims
+	AttKey = "att"
+	// CapKey indicates a resource Capability. Used in an attenuation
+	CapKey = "cap"
 )
 
 // `WalletAccount` is an interface that defines the methods that a wallet account must implement.
@@ -58,7 +77,10 @@ type WalletAccount interface {
 	// sign a transaction.
 	ListConfigs() ([]*cmp.Config, error)
 
+	// NewOriginToken creates a new UCAN token
 	NewOriginToken(audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (*ucan.Token, error)
+
+	// NewAttenuatedToken creates a new UCAN token from the parent token
 	NewAttenuatedToken(parent *ucan.Token, audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (*ucan.Token, error)
 
 	// PubKey returns secp256k1 public key
@@ -183,7 +205,7 @@ func (w *walletAccountImpl) ListConfigs() ([]*cmp.Config, error) {
 
 // NewOriginToken returns a new origin token for the account.
 func (w *walletAccountImpl) NewOriginToken(audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (*ucan.Token, error) {
-	return nil, errors.New("not implemented")
+	return newToken(w.accountConfig, audienceDID, nil, att, fct, notBefore, expires)
 }
 
 // NewAttenuatedToken returns a new attenuated token for the account.
@@ -191,7 +213,7 @@ func (w *walletAccountImpl) NewAttenuatedToken(parent *ucan.Token, audienceDID s
 	if !parent.Attenuations.Contains(att) {
 		return nil, fmt.Errorf("scope of ucan attenuations must be less than it's parent")
 	}
-	return nil, errors.New("not implemented")
+	return newToken(w.accountConfig, audienceDID, append(parent.Proofs, ucan.Proof(parent.Raw)), att, fct, notBefore, expires)
 }
 
 // Returning the secp256k1 public key.
@@ -234,6 +256,7 @@ func (w *walletAccountImpl) Verify(bz []byte, sig []byte) (bool, error) {
 	return mpc.CmpVerify(conf["current"], bz, sig)
 }
 
+// It takes a list of messages, creates a transaction body, and marshals it
 func buildTx(msgs ...sdk.Msg) ([]byte, error) {
 	// func BuildTx(w *crypto.MPCWallet, msgs ...sdk.Msg) (*txtypes.TxBody, error) {
 	// Create Any for each message
@@ -248,6 +271,58 @@ func buildTx(msgs ...sdk.Msg) ([]byte, error) {
 		Memo:     "xP;",
 	}
 	return txBody.Marshal()
+}
+
+// It creates a new token, signs it, and returns it
+func newToken(a *v1.AccountConfig, audienceDID string, prf []ucan.Proof, att ucan.Attenuations, fct []ucan.Fact, nbf, exp time.Time) (*ucan.Token, error) {
+	t := jwt.New(jwt.SigningMethodES256)
+
+	t.Header[UCANVersionKey] = UCANVersion
+
+	var (
+		nbfUnix int64
+		expUnix int64
+	)
+
+	if !nbf.IsZero() {
+		nbfUnix = nbf.Unix()
+	}
+	if !exp.IsZero() {
+		expUnix = exp.Unix()
+	}
+	pub, err := a.GetCryptoPubKey()
+	if err != nil {
+		return nil, err
+	}
+
+	// set our claims
+	t.Claims = &ucan.Claims{
+		StandardClaims: &jwt.StandardClaims{
+			Issuer:    pub.DID(),
+			Audience:  audienceDID,
+			NotBefore: nbfUnix,
+			// set the expire time
+			// see http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-20#section-4.1.4
+			ExpiresAt: expUnix,
+		},
+		Attenuations: att,
+		Facts:        fct,
+		Proofs:       prf,
+	}
+	sig, err := t.SigningString()
+	if err != nil {
+		return nil, err
+	}
+	raw, err := signWithAccount(a, []byte(sig))
+	if err != nil {
+		return nil, err
+	}
+	return &ucan.Token{
+		Raw:          string(raw),
+		Attenuations: att,
+		Facts:        fct,
+		Proofs:       prf,
+	}, nil
 }
 
 // Signing a transaction.

@@ -20,9 +20,9 @@ import (
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/peer"
 	ma "github.com/multiformats/go-multiaddr"
+	"github.com/sonrhq/core/pkg/common"
 	cv1 "github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/node/config"
-	"github.com/sonrhq/core/x/identity/protocol"
 )
 
 // `localIpfs` is a struct that contains a `CoreAPI` and a `IpfsNode` and a `WalletShare` and a
@@ -90,12 +90,12 @@ func (n *localIpfs) Connect(peers ...string) error {
 }
 
 // Context returns the context of the node
-func (n *localIpfs) Context() *protocol.Context {
+func (n *localIpfs) Context() *common.Context {
 	return n.config.Context
 }
 
 // WrapClientContext wraps the protocol context with the client's context
-func (n *localIpfs) WrapClientContext(c client.Context) *protocol.Context {
+func (n *localIpfs) WrapClientContext(c client.Context) *common.Context {
 	return n.config.Context.WrapClientContext(c)
 }
 

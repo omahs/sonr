@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/sonrhq/core/pkg/common"
+	identityprotocol "github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/pkg/node/internal/host"
 	"github.com/sonrhq/core/pkg/node/internal/ipfs"
-	identityprotocol "github.com/sonrhq/core/x/identity/protocol"
 )
 
 // `Node` is an interface that has three methods: `Host`, `IPFS`, and `Type`.
