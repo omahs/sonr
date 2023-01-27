@@ -1,11 +1,49 @@
-package store
+package session
 
 import (
+	"fmt"
+
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/google/uuid"
 	"github.com/sonrhq/core/x/identity/types"
 )
+
+var (
+	// Default Origins
+	defaultRpOrigins = []string{
+		"https://auth.sonr.io",
+		"https://sonr.id",
+		"https://sandbox.sonr.network",
+		"http://localhost:3000",
+	}
+
+	// Default Icon to display
+	defaultRpIcon = "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png"
+
+	// Default name to display
+	defaultRpName = "Sonr"
+
+	// defaultAttestionPreference
+	defaultAttestationPreference = protocol.PreferDirectAttestation
+
+	// defaultAuthSelect
+	defaultAuthSelect = protocol.AuthenticatorSelection{
+		AuthenticatorAttachment: protocol.AuthenticatorAttachment("platform"),
+	}
+
+	// defaultTimeout
+	defaultTimeout = 60000
+)
+
+// NewSession creates a new session with challenge to be used to register a new account
+func NewSession(rpId string, aka string) (*Session, error) {
+	s := defaultSession(rpId, aka)
+	err := s.Apply()
+	if err != nil {
+		return nil, fmt.Errorf("failed to apply options to Webauthn config: %w", err)
+	}
+	return s, nil
+}
 
 // `Session` is a struct that contains a `string` (`ID`), a `string` (`RPID`), a
 // `common.WebauthnCredential` (`WebauthnCredential`), a `types.DidDocument` (`DidDoc`), a
@@ -18,9 +56,8 @@ import (
 // @property {string} AlsoKnownAs - The user's username.
 type Session struct {
 	// Session ID
-	ID   string
 	rpid string
-	aka  string
+	AKA  string
 
 	// Relying Party ID
 	webauthn *webauthn.WebAuthn
@@ -73,7 +110,7 @@ func WithAuthenticatorSelect(selectAuth protocol.AuthenticatorSelection) Option 
 func (s *Session) Apply(opts ...Option) error {
 	c := &webauthn.Config{
 		RPID:                   s.rpid,
-		RPDisplayName:          s.aka,
+		RPDisplayName:          s.AKA,
 		RPIcon:                 defaultRpIcon,
 		RPOrigins:              defaultRpOrigins,
 		Timeout:                defaultTimeout,
@@ -91,35 +128,12 @@ func (s *Session) Apply(opts ...Option) error {
 	return nil
 }
 
-// ToMap converts the session to a map
-func (s *Session) ToMap() map[string]interface{} {
-	return map[string]interface{}{
-		"_id":      s.ID,
-		"Webauthn": s.webauthn,
-		"DidDoc":   s.didDoc,
-		"Data":     s.data,
-	}
-}
-
 // defaultSession returns a default session
 func defaultSession(rpid string, aka string) *Session {
-	id := uuid.New().String()[:8]
 	return &Session{
-		ID:         id,
 		isExisting: false,
-		didDoc:     types.NewBaseDocument(aka, id),
+		didDoc:     types.NewBaseDocument(aka),
 		rpid:       rpid,
-		aka:        aka,
+		AKA:        aka,
 	}
-}
-
-// loadSessionFromMap creates a session from a map
-func loadSessionFromMap(m map[string]interface{}) (*Session, error) {
-	s := &Session{
-		ID:       m["_id"].(string),
-		webauthn: m["Webauthn"].(*webauthn.WebAuthn),
-		didDoc:   m["DidDoc"].(*types.DidDocument),
-		data:     m["Data"].(*webauthn.SessionData),
-	}
-	return s, nil
 }

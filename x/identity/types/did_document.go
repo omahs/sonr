@@ -27,9 +27,9 @@ func BlankDocument(idStr string) *DidDocument {
 }
 
 // BlankDocument creates a blank document to begin the WebAuthnProcess
-func NewBaseDocument(akaStr string, sessionId string) *DidDocument {
+func NewBaseDocument(akaStr string) *DidDocument {
 	return &DidDocument{
-		ID:                   fmt.Sprintf("did:tmp:%s", sessionId),
+		ID:                   fmt.Sprintf("did:tmp:%s", akaStr),
 		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().DidMethodContext},
 		Controller:           []string{},
 		VerificationMethod:   new(VerificationMethods),

@@ -1,4 +1,4 @@
-package store
+package session
 
 import (
 	"encoding/base64"
@@ -26,8 +26,8 @@ func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
 	}
 	return &v1.ChallengeResponse{
 		CreationOptions: string(bz),
-		RpName:          s.aka,
-		SessionId:       s.ID,
+		RpName:          s.AKA,
+		SessionId:       s.AKA,
 	}, nil
 }
 
@@ -52,7 +52,7 @@ func (s *Session) RegisterCredential(credentialCreationData string) (*v1.Registe
 	return &v1.RegisterResponse{
 		Success:     true,
 		DidDocument: s.didDoc,
-		Username:    s.aka,
+		Username:    s.AKA,
 	}, nil
 }
 
@@ -69,8 +69,8 @@ func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
 	}
 	return &v1.AssertResponse{
 		RequestOptions: string(bz),
-		SessionId:      s.ID,
-		RpName:         s.aka,
+		SessionId:      s.AKA,
+		RpName:         s.AKA,
 	}, nil
 }
 
@@ -88,7 +88,7 @@ func (s *Session) AuthorizeCredential(credentialRequestData string) (*v1.LoginRe
 	return &v1.LoginResponse{
 		Success:     true,
 		DidDocument: s.didDoc,
-		Username:    s.aka,
+		Username:    s.AKA,
 	}, nil
 }
 
