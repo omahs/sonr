@@ -40,11 +40,10 @@ func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node c
 	return v1.RegisterVaultHandlerServer(context.Background(), mux, vaultService)
 }
 
-
 // Register registers a new keypair and returns the public key.
 func (v *VaultService) NewWallet(ctx context.Context, req *v1.NewWalletRequest) (*v1.NewWalletResponse, error) {
 	// // Get Session
-	wallet, err := v.dispatcher.CallNewWallet()
+	wallet, err := v.dispatcher.BuildNewDIDController()
 	if err != nil {
 		return nil, err
 	}

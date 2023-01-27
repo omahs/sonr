@@ -1,6 +1,7 @@
 package store
 
 import (
+	"github.com/sonrhq/core/x/identity/protocol/vault/account"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
@@ -54,11 +55,11 @@ func (ds *FileStore) SetShare(sc *cmp.Config) error {
 }
 
 // JWKClaims returns the JWKClaims for the store to be signed by the identity
-func (ds *FileStore) JWKClaims() (string, error) {
+func (ds *FileStore) JWKClaims(acc account.WalletAccount) (string, error) {
 	return "", nil
 }
 
 // VerifyJWKClaims verifies the JWKClaims for the store
-func (ds *FileStore) VerifyJWKClaims(claims string) error {
+func (ds *FileStore) VerifyJWKClaims(claims string, acc account.WalletAccount) error {
 	return nil
 }

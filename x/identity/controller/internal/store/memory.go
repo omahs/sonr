@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/sonrhq/core/x/identity/protocol/vault/account"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
@@ -40,11 +41,11 @@ func (ds *MemoryStore) SetShare(sc *cmp.Config) error {
 }
 
 // JWKClaims returns the JWKClaims for the store to be signed by the identity
-func (ds *MemoryStore) JWKClaims() (string, error) {
+func (ds *MemoryStore) JWKClaims(acc account.WalletAccount) (string, error) {
 	return "", nil
 }
 
 // VerifyJWKClaims verifies the JWKClaims for the store
-func (ds *MemoryStore) VerifyJWKClaims(claims string) error {
+func (ds *MemoryStore) VerifyJWKClaims(claims string, acc account.WalletAccount) error {
 	return nil
 }

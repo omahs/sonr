@@ -21,8 +21,8 @@ func NewDispatcher() *Dispatcher {
 	}
 }
 
-// CallNewWallet creates a new wallet
-func (d *Dispatcher) CallNewWallet() (controller.DIDController, error) {
+// BuildNewDIDController creates a new wallet
+func (d *Dispatcher) BuildNewDIDController() (controller.DIDController, error) {
 	// Lock the dispatcher
 	d.Lock()
 	defer d.Unlock()

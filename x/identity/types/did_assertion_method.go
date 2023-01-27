@@ -2,42 +2,14 @@
 // I.e. Verification Material for Wallets. This is the default Verification Method for DID Documents. (snr, btc, eth, etc.)
 package types
 
-// KnownWalletPrefixes is an enum of known wallet prefixes
-type ChainWalletPrefix int
-
-const (
-	// KnownWalletPrefixes is an enum of known wallet prefixes
-	ChainWalletPrefixNone ChainWalletPrefix = iota
-	ChainWalletPrefixSNR
-	ChainWalletPrefixBTC
-	ChainWalletPrefixETH
-)
-
-func NewWalletPrefix(prefix string) ChainWalletPrefix {
-	switch prefix {
-	case "snr":
-		return ChainWalletPrefixSNR
-	case "btc":
-		return ChainWalletPrefixBTC
-	case "eth":
-		return ChainWalletPrefixETH
-	case "0x":
-		return ChainWalletPrefixETH
-	default:
-		return ChainWalletPrefixNone
+// SetAssertion sets the AssertionMethod of the DID Document to a PubKey and configured with the given options
+func (d *DidDocument) SetAssertion(pubKey *PubKey, opts ...VerificationMethodOption) error {
+	vm, err := pubKey.VerificationMethod(opts...)
+	if err != nil {
+		return err
 	}
-}
-
-func (k ChainWalletPrefix) String() string {
-	return [...]string{"account", "snr", "btc", "eth"}[k]
-}
-
-// Prefix returns the prefix of the wallet
-func (k ChainWalletPrefix) Prefix() string {
-	if k == ChainWalletPrefixETH {
-		return "0x"
-	}
-	return k.String()
+	d.AddAssertion(vm)
+	return nil
 }
 
 // AssertionMethodCount returns the number of Assertion Methods

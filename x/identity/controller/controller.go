@@ -30,6 +30,9 @@ type DIDController interface {
 	// DID
 	ID() string
 
+	// DID Document
+	Document() *types.DidDocument
+
 	// This method is used to get the challenge response from the DID controller.
 	// GetChallengeOptions(aka string) (*v1.ChallengeResponse, error)
 
@@ -103,6 +106,11 @@ func (d *DIDControllerImpl) ID() string {
 	return d.primaryAccount.DID()
 }
 
+// Document returns the DID document of the DID controller.
+func (d *DIDControllerImpl) Document() *types.DidDocument {
+	return d.didDocument
+}
+
 // // This method is used to get the challenge response from the DID controller.
 // func (d *DIDControllerImpl) GetChallengeOptions(aka string) (*v1.ChallengeResponse, error) {
 // 	return nil, nil
@@ -126,11 +134,26 @@ func (d *DIDControllerImpl) ID() string {
 // Creating a new account.
 func (w *DIDControllerImpl) CreateAccount(name string, coinType common.CoinType) error {
 	prim, err := w.PrimaryAccount()
+	if err != nil {
+		return err
+	}
 	acc, err := prim.Bip32Derive(name, coinType)
 	if err != nil {
 		return err
 	}
 	w.accounts[name] = acc.AccountConfig()
+	pub, err := acc.AccountConfig().PubKey()
+	if err != nil {
+		return err
+	}
+	addr, err := pub.Bech32(acc.AccountConfig().CoinType().AddrPrefix())
+	if err != nil {
+		return err
+	}
+	err = w.didDocument.SetAssertion(pub, types.WithBlockchainAccount(addr), types.WithController(w.didDocument.ID), types.WithIDFragmentSuffix(acc.AccountConfig().Name))
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

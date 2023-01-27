@@ -2,6 +2,7 @@ package store
 
 import (
 	"github.com/sonrhq/core/pkg/common"
+	"github.com/sonrhq/core/x/identity/protocol/vault/account"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
@@ -14,10 +15,10 @@ type WalletStore interface {
 	SetShare(share *cmp.Config) error
 
 	// JWKClaims returns the JWKClaims for the store to be signed by the identity
-	JWKClaims() (string, error)
+	JWKClaims(acc account.WalletAccount) (string, error)
 
 	// VerifyJWKClaims verifies the JWKClaims for the store
-	VerifyJWKClaims(claims string) error
+	VerifyJWKClaims(claims string, acc account.WalletAccount) error
 }
 
 // NewWalletStore returns a new WalletStore

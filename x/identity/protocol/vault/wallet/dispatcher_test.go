@@ -1,25 +1,28 @@
-package wallet
+package wallet_test
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/cosmos/gogoproto/proto"
+	"github.com/sonrhq/core/app"
 	"github.com/sonrhq/core/pkg/common"
+	"github.com/sonrhq/core/x/identity/protocol/vault/wallet"
 )
 
 func TestDispatcher(t *testing.T) {
-	d := NewDispatcher()
-	w, err := d.CallNewWallet()
+	d := wallet.NewDispatcher()
+	w, err := d.BuildNewDIDController()
 	checkErr(t, err)
 	t.Log(w.Address())
 	err = w.CreateAccount("Ethereum", common.CoinType_CoinType_ETHEREUM)
 	checkErr(t, err)
 	err = w.CreateAccount("Bitcoin", common.CoinType_CoinType_BITCOIN)
 	checkErr(t, err)
-	accs, err := w.ListAccounts()
+	bz, err := app.MakeEncodingConfig().Marshaler.MarshalJSON(w.Document())
 	checkErr(t, err)
-	for _, acc := range accs {
-		t.Log(acc.AccountConfig())
-	}
+	t.Log(string(bz))
+	fmt.Println(proto.MarshalTextString(w.Document()))
 }
 
 func checkErr(t *testing.T, err error) {

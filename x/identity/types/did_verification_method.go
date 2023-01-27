@@ -167,16 +167,7 @@ func (vm *VerificationMethod) CredentialDescriptor() (protocol.CredentialDescrip
 
 // IsBlockchainAccount returns true if the VerificationMethod is a blockchain account
 func (vm *VerificationMethod) IsBlockchainAccount() bool {
-	var (
-		validKey         bool
-		validPrefix      bool
-		containsMetadata bool
-	)
-	validKey = vm.Type == KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019
-	wkp := NewWalletPrefix(vm.BlockchainAccountId)
-	validPrefix = wkp != ChainWalletPrefixNone
-	containsMetadata = vm.HasMetadataValue("blockchain")
-	return validKey && validPrefix && containsMetadata
+	return vm.BlockchainAccountId != ""
 }
 
 // PublicKey returns the public key of the VerificationMethod

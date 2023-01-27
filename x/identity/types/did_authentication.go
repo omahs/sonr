@@ -31,6 +31,16 @@ func (d *DidDocument) AddAuthentication(v *VerificationMethod) {
 	d.Authentication.Add(v)
 }
 
+// SetAuthentication sets the AuthenticationMethod of the DID Document to a PubKey and configured with the given options
+func (d *DidDocument) SetAuthentication(pk *PubKey, opts ...VerificationMethodOption) error{
+	vm, err := pk.VerificationMethod(opts...)
+	if err != nil {
+		return err
+	}
+	d.AddAuthentication(vm)
+	return nil
+}
+
 // AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials
 func (d *DidDocument) AllowedWebauthnCredentials() []protocol.CredentialDescriptor {
 	allowList := make([]protocol.CredentialDescriptor, 0)
