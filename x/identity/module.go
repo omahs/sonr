@@ -75,10 +75,10 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 	// auth.RegisterAuthIPFSService(clientCtx, mux, a.ipfsNode)
-	vault.RegisterVaultIPFSService(clientCtx, mux, a.ipfsNode)
+	vault.RegisterVaultIPFSService(clientCtx, mux, nil)
 }
 
 // GetTxCmd returns the root Tx command for the module. The subcommands of this root command are used by end-users to generate new transactions containing messages defined in the module
@@ -170,7 +170,7 @@ func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.Valid
 func initProtocol() common.IPFSNode {
 	node, err := node.NewIPFS(context.Background())
 	if err != nil {
-		panic(err)
+		// panic(err)
 	}
 	return node
 }

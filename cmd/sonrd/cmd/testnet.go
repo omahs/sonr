@@ -248,7 +248,7 @@ func initTestnetFiles(
 			return err
 		}
 
-		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
+		memo := fmt.Sprintf("%s@%s:26657", nodeIDs[i], ip)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
 		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, clientCtx.Codec)

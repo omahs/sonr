@@ -10,7 +10,7 @@ import (
 )
 
 type Dispatcher struct {
-	n common.IPFSNode
+	// n common.IPFSNode
 	sync.Mutex
 }
 
