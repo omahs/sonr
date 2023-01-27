@@ -70,7 +70,7 @@ func (c *VaultConfig) Export(node common.IPFSNode) (*types.Service, error) {
 		return nil, err
 	}
 	return &types.Service{
-		ID:              fmt.Sprintf("did:snr:%s#vault", strings.TrimPrefix(c.address, "snr")),
+		Id:              fmt.Sprintf("did:snr:%s#vault", strings.TrimPrefix(c.address, "snr")),
 		Type:            types.ServiceType_ServiceType_ENCRYPTED_DATA_VAULT,
 		ServiceEndpoint: cid,
 	}, nil

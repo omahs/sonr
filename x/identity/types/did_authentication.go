@@ -6,33 +6,21 @@ import (
 	"github.com/go-webauthn/webauthn/protocol"
 )
 
-// AuthenticationCount returns the number of Assertion Methods
-func (vm *DidDocument) AuthenticationCount() int {
-	return vm.Authentication.Count()
-}
-
-// FindAuthenticationMethod finds a VerificationMethod by its ID
-func (d *DidDocument) FindAuthenticationMethod(id string) *VerificationMethod {
-	return d.Authentication.FindByID(id)
-}
-
-// FindAuthenticationMethodByFragment finds a VerificationMethod by its fragment
-func (d *DidDocument) FindAuthenticationMethodByFragment(fragment string) *VerificationMethod {
-	return d.Authentication.FindByFragment(fragment)[0]
-}
-
 // AddAuthenticationMethod adds a VerificationMethod as AuthenticationMethod
 // If the controller is not set, it will be set to the document's ID
 func (d *DidDocument) AddAuthentication(v *VerificationMethod) {
 	if v.Controller == "" {
-		v.Controller = d.ID
+		v.Controller = d.Id
 	}
-	d.VerificationMethod.Add(v)
-	d.Authentication.Add(v)
+	d.VerificationMethod = append(d.VerificationMethod, v)
+	d.Authentication = append(d.Authentication, &VerificationRelationship{
+		Reference:          d.Id,
+		VerificationMethod: v,
+	})
 }
 
 // SetAuthentication sets the AuthenticationMethod of the DID Document to a PubKey and configured with the given options
-func (d *DidDocument) SetAuthentication(pk *PubKey, opts ...VerificationMethodOption) error{
+func (d *DidDocument) SetAuthentication(pk *PubKey, opts ...VerificationMethodOption) error {
 	vm, err := pk.VerificationMethod(opts...)
 	if err != nil {
 		return err

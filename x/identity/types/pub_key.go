@@ -218,7 +218,7 @@ func (pk *PubKey) VerifySignature(msg []byte, sig []byte) bool {
 // VerificationMethod applies the given options and builds a verification method from this Key
 func (pk *PubKey) VerificationMethod(opts ...VerificationMethodOption) (*VerificationMethod, error) {
 	vm := &VerificationMethod{
-		ID:                 pk.DID(),
+		Id:                 pk.DID(),
 		Type:               pk.KeyType,
 		PublicKeyMultibase: pk.Multibase(),
 	}

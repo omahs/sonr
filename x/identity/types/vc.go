@@ -42,7 +42,7 @@ func (wvm *VerificationMethod) WebAuthnCredential() (*common.WebauthnCredential,
 	}
 
 	// Decode Cred ID
-	credId, err := base58.Decode(fetchFinalDidPath(wvm.ID), base58.BitcoinAlphabet)
+	credId, err := base58.Decode(fetchFinalDidPath(wvm.Id), base58.BitcoinAlphabet)
 	if err != nil {
 		return nil, err
 	}
@@ -83,12 +83,12 @@ func (wvm *VerificationMethod) WebAuthnCredential() (*common.WebauthnCredential,
 }
 
 func (wvm *DidDocument) WebAuthnID() []byte {
-	return []byte(wvm.ID)
+	return []byte(wvm.Id)
 }
 
 func (wvm *DidDocument) WebAuthnDisplayName() string {
 	if len(wvm.AlsoKnownAs) == 0 {
-		return wvm.ID
+		return wvm.Id
 	}
 	return wvm.AlsoKnownAs[0]
 }
@@ -112,7 +112,7 @@ func (wvm *DidDocument) WebAuthnCredentials() []webauthn.Credential {
 
 func (d *DidDocument) GetCommonWebauthCredentials() []*common.WebauthnCredential {
 	creds := []*common.WebauthnCredential{}
-	for _, vm := range d.VerificationMethod.Data {
+	for _, vm := range d.VerificationMethod {
 		if vm.Type == KeyType_KeyType_WEB_AUTHN_AUTHENTICATION_2018 {
 			vmcr, err := vm.WebAuthnCredential()
 			if err != nil {

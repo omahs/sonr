@@ -12,8 +12,6 @@ import (
 	odid "github.com/ockam-network/did"
 )
 
-
-
 var _ fmt.Stringer = DID{}
 var _ encoding.TextMarshaler = DID{}
 

@@ -133,7 +133,7 @@ func defaultSession(rpid string, aka string) *Session {
 	return &Session{
 		isExisting: false,
 		// didDoc:     types.NewBaseDocument(aka),
-		rpid:       rpid,
-		AKA:        aka,
+		rpid: rpid,
+		AKA:  aka,
 	}
 }

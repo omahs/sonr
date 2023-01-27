@@ -39,7 +39,7 @@ func WithController(v string) VerificationMethodOption {
 // WithIDFragmentSuffix sets the fragment of the ID on a verificationMethod
 func WithIDFragmentSuffix(v string) VerificationMethodOption {
 	return func(vm *VerificationMethod) error {
-		vm.ID = fmt.Sprintf("%s#%s", vm.ID, v)
+		vm.Id = fmt.Sprintf("%s#%s", vm.Id, v)
 		return nil
 	}
 }
@@ -60,7 +60,7 @@ func WithBlockchainAccount(v string) VerificationMethodOption {
 // It automatically encodes the provided public key based on the keyType.
 func NewVerificationMethod(id string, keyType KeyType, controller string, key interface{}) (*VerificationMethod, error) {
 	vm := &VerificationMethod{
-		ID:         id,
+		Id:         id,
 		Type:       keyType,
 		Controller: controller,
 	}
@@ -81,7 +81,7 @@ func NewVerificationMethod(id string, keyType KeyType, controller string, key in
 
 // PubKey returns the public key of the verification method
 func (v *VerificationMethod) PubKey() (*PubKey, error) {
-	return PubKeyFromDID(v.ID)
+	return PubKeyFromDID(v.Id)
 }
 
 func (v *VerificationMethod) UnmarshalJSON(bytes []byte) error {
@@ -102,54 +102,6 @@ func findAddrPrefix(addr string) (string, string) {
 		}
 	}
 	return "", addr
-}
-
-func (d *DidDocument) GetVerificationMethods() *VerificationMethods {
-	return d.VerificationMethod
-}
-
-// FindByID find the first VerificationMethod which matches the provided DID.
-// Returns nil when not found
-func (vms VerificationMethods) FindByID(id string) *VerificationMethod {
-	for _, vm := range vms.Data {
-		if vm.ID == id {
-			return vm
-		}
-	}
-	return nil
-}
-
-// Remove removes a VerificationMethod from the slice.
-// If a verificationMethod was removed with the given DID, it will be returned
-func (vms *VerificationMethods) Remove(id string) *VerificationMethod {
-	var (
-		filteredVMS []*VerificationMethod
-		foundVM     *VerificationMethod
-	)
-	for _, vm := range vms.Data {
-		if vm.ID != id {
-			filteredVMS = append(filteredVMS, vm)
-		} else {
-			foundVM = vm
-		}
-	}
-	vms.Data = filteredVMS
-	return foundVM
-}
-
-// Add adds a verificationMethod to the verificationMethods if it not already present.
-func (vms *VerificationMethods) Add(v *VerificationMethod) {
-	for _, ptr := range vms.Data {
-		// check if the pointer is already in the list
-		if ptr == v {
-			return
-		}
-		// check if the actual ids match?
-		if ptr.ID == v.ID {
-			return
-		}
-	}
-	vms.Data = append(vms.Data, v)
 }
 
 // CredentialDiscriptor is a descriptor for a credential for VerificationMethod which contains WebAuthnCredential

@@ -66,7 +66,7 @@ func (b *boxer) Nonce() *[24]byte {
 // GetService returns the service for the box
 func (b *boxer) GetService(addr string, cid string) types.Service {
 	return types.Service{
-		ID:              types.ConvertAccAddressToDid(addr),
+		Id:              types.ConvertAccAddressToDid(addr),
 		Type:            types.ServiceType_ServiceType_ENCRYPTED_DATA_VAULT,
 		ServiceEndpoint: cid,
 	}
@@ -77,7 +77,7 @@ func (b *boxer) GetCapabilityDelegation(addr string, cid string) types.Verificat
 	var pubKey []byte
 	copy(pubKey, b.nodePubKey[:])
 	return types.VerificationMethod{
-		ID:                 types.ConvertAccAddressToDid(addr),
+		Id:                 types.ConvertAccAddressToDid(addr),
 		Type:               types.KeyType_KeyType_ED25519_VERIFICATION_KEY_2018,
 		PublicKeyMultibase: base58.Encode(pubKey, base58.BitcoinAlphabet),
 		// sController: types.ConvertAccAddressToDid(b.node),

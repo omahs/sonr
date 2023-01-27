@@ -28,7 +28,7 @@ func (j *JWT) Generate(doc *did.DidDocument) (string, error) {
 	if doc == nil {
 		return "", errors.New("highway/jwt Document cannot be nil")
 	}
-	creatorDID := doc.GetID()
+	creatorDID := doc.GetId()
 	time := time.Now().Unix()
 	exp := time + j.options.ttl // expiers in one hour after issue
 	// Create a new token object, specifying signing method and the claims
