@@ -19,7 +19,6 @@ import (
 	"github.com/sonrhq/core/pkg/node"
 	"github.com/sonrhq/core/x/identity/client/cli"
 	"github.com/sonrhq/core/x/identity/keeper"
-	"github.com/sonrhq/core/x/identity/protocol/auth"
 	"github.com/sonrhq/core/x/identity/protocol/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -78,7 +77,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
-	auth.RegisterAuthIPFSService(clientCtx, mux, a.ipfsNode)
+	// auth.RegisterAuthIPFSService(clientCtx, mux, a.ipfsNode)
 	vault.RegisterVaultIPFSService(clientCtx, mux, a.ipfsNode)
 }
 

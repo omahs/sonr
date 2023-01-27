@@ -77,7 +77,7 @@ func NewContext(c context.Context) (*Context, error) {
 	ctx := Context{
 		Ctx:           c,
 		HomeDir:       filepath.Join(userHomeDir, ".sonr"),
-		RepoPath:      filepath.Join(userHomeDir, ".ipfs"),
+		RepoPath:      filepath.Join(userHomeDir, ".sonr", "ipfs"),
 		NodeRESTUri:   "http://api.sonr.network",
 		NodeGRPCUri:   "grpc.sonr.network",
 		NodeFaucetUri: "http://faucet.sonr.network",

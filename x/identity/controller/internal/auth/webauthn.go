@@ -4,93 +4,89 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"github.com/go-webauthn/webauthn/protocol"
-	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/sonrhq/core/x/identity/types"
-	v1 "github.com/sonrhq/core/x/identity/types/auth/v1"
 )
 
-// BeginRegistration starts the registration process for the underlying Webauthn instance
-func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
-	// Fetch Session Data
-	opts, sessionData, err := s.webauthn.BeginRegistration(s.didDoc, webauthn.WithAuthenticatorSelection(defaultAuthSelect))
-	if err != nil {
-		return nil, err
-	}
-	s.data = sessionData
-	bz, err := json.Marshal(opts)
-	if err != nil {
-		return nil, err
-	}
-	return &v1.ChallengeResponse{
-		CreationOptions: string(bz),
-		RpName:          s.AKA,
-		SessionId:       s.AKA,
-	}, nil
-}
+// // BeginRegistration starts the registration process for the underlying Webauthn instance
+// func (s *Session) GetChallengeResponse() (*v1.ChallengeResponse, error) {
+// 	// Fetch Session Data
+// 	opts, sessionData, err := s.webauthn.BeginRegistration(s.didDoc, webauthn.WithAuthenticatorSelection(defaultAuthSelect))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	s.data = sessionData
+// 	bz, err := json.Marshal(opts)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &v1.ChallengeResponse{
+// 		CreationOptions: string(bz),
+// 		RpName:          s.AKA,
+// 		SessionId:       s.AKA,
+// 	}, nil
+// }
 
-// RegisterCredential creates a credential which can be stored to use with User Authentication
-func (s *Session) RegisterCredential(credentialCreationData string) (*v1.RegisterResponse, error) {
-	// Parse Client Credential Data
-	pcc, err := parseCreationData(credentialCreationData)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to get parsed creation data: %s", err))
-	}
-	cred, err := webauthn.MakeNewCredential(pcc)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to make new credential: %s", err)
-	}
-	label := fmt.Sprintf("webauthn-%v", s.didDoc.AuthenticationCount()+1)
-	pub := types.NewPubKey(cred.PublicKey, types.KeyType_KeyType_WEB_AUTHN_AUTHENTICATION_2018)
-	vm, err := pub.VerificationMethod(types.WithIDFragmentSuffix(label))
-	if err != nil {
-		return nil, fmt.Errorf("Failed to add webauthn credential: %s", err)
-	}
-	s.didDoc.AddAuthentication(vm)
-	return &v1.RegisterResponse{
-		Success:     true,
-		DidDocument: s.didDoc,
-		Username:    s.AKA,
-	}, nil
-}
+// // RegisterCredential creates a credential which can be stored to use with User Authentication
+// func (s *Session) RegisterCredential(credentialCreationData string) (*v1.RegisterResponse, error) {
+// 	// Parse Client Credential Data
+// 	pcc, err := parseCreationData(credentialCreationData)
+// 	if err != nil {
+// 		return nil, errors.New(fmt.Sprintf("Failed to get parsed creation data: %s", err))
+// 	}
+// 	cred, err := webauthn.MakeNewCredential(pcc)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("Failed to make new credential: %s", err)
+// 	}
+// 	label := fmt.Sprintf("webauthn-%v", s.didDoc.AuthenticationCount()+1)
+// 	pub := types.NewPubKey(cred.PublicKey, types.KeyType_KeyType_WEB_AUTHN_AUTHENTICATION_2018)
+// 	vm, err := pub.VerificationMethod(types.WithIDFragmentSuffix(label))
+// 	if err != nil {
+// 		return nil, fmt.Errorf("Failed to add webauthn credential: %s", err)
+// 	}
+// 	s.didDoc.AddAuthentication(vm)
+// 	return &v1.RegisterResponse{
+// 		Success:     true,
+// 		DidDocument: s.didDoc,
+// 		Username:    s.AKA,
+// 	}, nil
+// }
 
-// GetAssertionOptions creates a new AssertionChallenge for client to verify
-func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
-	opts, session, err := s.webauthn.BeginLogin(s.didDoc, webauthn.WithAllowedCredentials(s.didDoc.AllowedWebauthnCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	s.data = session
-	bz, err := json.Marshal(opts)
-	if err != nil {
-		return nil, err
-	}
-	return &v1.AssertResponse{
-		RequestOptions: string(bz),
-		SessionId:      s.AKA,
-		RpName:         s.AKA,
-	}, nil
-}
+// // GetAssertionOptions creates a new AssertionChallenge for client to verify
+// func (s *Session) GetAssertionOptions() (*v1.AssertResponse, error) {
+// 	opts, session, err := s.webauthn.BeginLogin(s.didDoc, webauthn.WithAllowedCredentials(s.didDoc.AllowedWebauthnCredentials()))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	s.data = session
+// 	bz, err := json.Marshal(opts)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &v1.AssertResponse{
+// 		RequestOptions: string(bz),
+// 		SessionId:      s.AKA,
+// 		RpName:         s.AKA,
+// 	}, nil
+// }
 
-// AuthorizeCredential authenticates from the signature provided to the client
-func (s *Session) AuthorizeCredential(credentialRequestData string) (*v1.LoginResponse, error) {
-	pca, err := parseAssertionData(credentialRequestData)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to get parsed creation data: %s", err))
-	}
-	_, err = s.webauthn.ValidateLogin(s.didDoc, *s.data, pca)
-	if err != nil {
-		return nil, err
-	}
+// // AuthorizeCredential authenticates from the signature provided to the client
+// func (s *Session) AuthorizeCredential(credentialRequestData string) (*v1.LoginResponse, error) {
+// 	pca, err := parseAssertionData(credentialRequestData)
+// 	if err != nil {
+// 		return nil, errors.New(fmt.Sprintf("Failed to get parsed creation data: %s", err))
+// 	}
+// 	_, err = s.webauthn.ValidateLogin(s.didDoc, *s.data, pca)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &v1.LoginResponse{
-		Success:     true,
-		DidDocument: s.didDoc,
-		Username:    s.AKA,
-	}, nil
-}
+// 	return &v1.LoginResponse{
+// 		Success:     true,
+// 		DidDocument: s.didDoc,
+// 		Username:    s.AKA,
+// 	}, nil
+// }
 
 // It takes a JSON string, converts it to a struct, and then converts that struct to a different struct
 func parseCreationData(bz string) (*protocol.ParsedCredentialCreationData, error) {
