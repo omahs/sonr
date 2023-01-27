@@ -57,7 +57,7 @@ type hostImpl struct {
 }
 
 // Initialize Creates a Sonr libp2p Host with the given config
-func Initialize(config *config.Config) (config.P2PNode, error) {
+func Initialize(config *config.Config) (common.P2PNode, error) {
 	// Create Host and apply options
 	hn := defaultNode(config)
 	// Initialize Host

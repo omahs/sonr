@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/shengdoushi/base58"
-	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/x/identity/types"
 	"golang.org/x/crypto/nacl/box"
 )
@@ -20,7 +20,7 @@ type boxer struct {
 	peerPubKey  []byte
 	nodePubKey  *[32]byte
 	nodePrivKey *[32]byte
-	node        config.IPFSNode
+	node        common.IPFSNode
 }
 
 // NewBox creates a new box

@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/pkg/common"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
@@ -35,7 +35,7 @@ func NewWalletStore(cnfg *vaultv1.AccountConfig, opts ...Option) (WalletStore, e
 type storeConfig struct {
 	accCfg   *vaultv1.AccountConfig
 	path     string
-	ipfsNode config.IPFSNode
+	ipfsNode common.IPFSNode
 	isFile   bool
 	isIPFS   bool
 }
@@ -64,7 +64,7 @@ func SetFileStore(path string) Option {
 }
 
 // SetIPFSStore sets the store to use an IPFS store
-func SetIPFSStore(ipfsNode config.IPFSNode) Option {
+func SetIPFSStore(ipfsNode common.IPFSNode) Option {
 	return func(cfg *storeConfig) {
 		cfg.ipfsNode = ipfsNode
 		cfg.isFile = false

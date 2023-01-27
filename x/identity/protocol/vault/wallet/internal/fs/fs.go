@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	files "github.com/ipfs/go-ipfs-files"
-	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/x/identity/types"
 )
 
@@ -27,10 +27,10 @@ type VaultFS interface {
 	Address() string
 
 	// Import imports the filesystem from IPFS with the DIDDocument
-	Import(node config.IPFSNode, doc *types.DidDocument) error
+	Import(node common.IPFSNode, doc *types.DidDocument) error
 
 	// Export exports the filesystem to IPFS and returns the CID
-	Export(node config.IPFSNode) (*types.Service, error)
+	Export(node common.IPFSNode) (*types.Service, error)
 
 	// Sync synchronizes the local filesystem with the IPFS network
 
@@ -61,7 +61,7 @@ func (c *VaultConfig) Sync() error { // ipfsApi coreapi.CoreAPI
 }
 
 // Export exports the filesystem to IPFS and returns the CID within a DID Service
-func (c *VaultConfig) Export(node config.IPFSNode) (*types.Service, error) {
+func (c *VaultConfig) Export(node common.IPFSNode) (*types.Service, error) {
 	if !c.localRootDir.Exists("") {
 		return nil, fmt.Errorf("vault is not initialized")
 	}
@@ -77,7 +77,7 @@ func (c *VaultConfig) Export(node config.IPFSNode) (*types.Service, error) {
 }
 
 // Import imports the filesystem from IPFS with the DIDDocument
-func (c *VaultConfig) Import(node config.IPFSNode, doc *types.DidDocument) error {
+func (c *VaultConfig) Import(node common.IPFSNode, doc *types.DidDocument) error {
 	service := doc.GetVaultService()
 	if service == nil {
 		return fmt.Errorf("no vault service found")

@@ -8,7 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/x/identity/protocol/vault/account"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
@@ -53,11 +52,11 @@ type walletImpl struct {
 	// The TxBuilder
 	// cctx client.Context
 	pctx *common.Context
-	node config.IPFSNode
+	node common.IPFSNode
 }
 
 // `newWallet` creates a new wallet with a default root account
-func newWallet(n config.IPFSNode) (Wallet, error) {
+func newWallet(n common.IPFSNode) (Wallet, error) {
 	// The default shards that are added to the MPC wallet
 	rootAcc, err := account.NewAccount(rootWalletAccountName, "snr", "Sonr")
 	if err != nil {

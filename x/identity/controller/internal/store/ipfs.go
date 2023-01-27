@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"berty.tech/go-orbit-db/iface"
-	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/pkg/common"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
 
@@ -13,7 +13,7 @@ type IPFSStore struct {
 	ipfsKVStore iface.KeyValueStore
 }
 
-func newIPFSStore(node config.IPFSNode, accCfg *vaultv1.AccountConfig) (WalletStore, error) {
+func newIPFSStore(node common.IPFSNode, accCfg *vaultv1.AccountConfig) (WalletStore, error) {
 	docs, err := node.LoadKeyValueStore(accCfg.Address)
 	if err != nil {
 

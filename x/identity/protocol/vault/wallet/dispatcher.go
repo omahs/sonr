@@ -3,16 +3,16 @@ package wallet
 import (
 	"sync"
 
-	"github.com/sonrhq/core/pkg/node/config"
+	"github.com/sonrhq/core/pkg/common"
 )
 
 type Dispatcher struct {
-	n config.IPFSNode
+	n common.IPFSNode
 	sync.Mutex
 }
 
 // NewDispatcher creates a new wallet dispatcher
-func NewDispatcher(n config.IPFSNode) *Dispatcher {
+func NewDispatcher(n common.IPFSNode) *Dispatcher {
 	return &Dispatcher{
 		n: n,
 	}

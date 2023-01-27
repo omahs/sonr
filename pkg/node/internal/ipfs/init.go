@@ -16,12 +16,13 @@ import (
 	klibp2p "github.com/ipfs/kubo/core/node/libp2p"
 	"github.com/ipfs/kubo/plugin/loader"
 	"github.com/ipfs/kubo/repo/fsrepo"
+	"github.com/sonrhq/core/pkg/common"
 	nodeconfig "github.com/sonrhq/core/pkg/node/config"
 	snrConfig "github.com/sonrhq/core/pkg/node/config"
 )
 
 // Initialize creates a new local IPFS node
-func Initialize(c *snrConfig.Config) (snrConfig.IPFSNode, error) {
+func Initialize(c *snrConfig.Config) (common.IPFSNode, error) {
 	// Apply the options
 	n := defaultNode(c)
 	err := n.initialize()

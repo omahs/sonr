@@ -1,4 +1,4 @@
-package config
+package common
 
 import (
 	"berty.tech/go-orbit-db/iface"
@@ -10,8 +10,6 @@ import (
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
-	"github.com/sonrhq/core/pkg/common"
-	identityprotocol "github.com/sonrhq/core/pkg/common"
 )
 
 // `Node` is an interface that defines the methods that a node must implement to be used by the
@@ -22,9 +20,9 @@ import (
 // @property {error} Close - Close the node
 type Node interface {
 	// Context returns protocol.Context
-	Context() *identityprotocol.Context
+	Context() *Context
 
-	WrapClientContext(c client.Context) *identityprotocol.Context
+	WrapClientContext(c client.Context) *Context
 
 	// PeerID returns the peer ID of the node
 	PeerID() peer.ID
@@ -107,22 +105,4 @@ type P2PNode interface {
 
 	// Subscribe to a topic
 	Subscribe(topic string, handlers ...func(msg *ps.Message)) (*ps.Subscription, error)
-}
-
-type node struct {
-	host   P2PNode
-	ipfs   IPFSNode
-	config *Config
-}
-
-func (n *node) Host() P2PNode {
-	return n.host
-}
-
-func (n *node) IPFS() IPFSNode {
-	return n.ipfs
-}
-
-func (n *node) Type() common.PeerType {
-	return n.config.PeerType
 }

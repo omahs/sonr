@@ -7,9 +7,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/sonrhq/core/pkg/node/config"
 
 	gocache "github.com/patrickmn/go-cache"
+	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/x/identity/protocol/auth/session"
 	authv1 "github.com/sonrhq/core/x/identity/types/auth/v1"
 )
@@ -29,11 +29,11 @@ type AuthService struct {
 	rpIcon string
 	cache  *gocache.Cache
 	cctx   client.Context
-	node   config.IPFSNode
+	node   common.IPFSNode
 }
 
 // It creates a new VaultService and registers it with the gRPC server
-func RegisterAuthIPFSService(cctx client.Context, mux *runtime.ServeMux, node config.IPFSNode) error {
+func RegisterAuthIPFSService(cctx client.Context, mux *runtime.ServeMux, node common.IPFSNode) error {
 	authService = &AuthService{
 		cctx:   cctx,
 		rpName: "Sonr",

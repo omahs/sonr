@@ -24,8 +24,8 @@ import (
 // @property {Type} Type - The type of node. This can be either a Motor or a Highway.
 type Node interface {
 	// Returning a Motor interface and an error.
-	Host() config.P2PNode
-	IPFS() config.IPFSNode
+	Host() common.P2PNode
+	IPFS() common.IPFSNode
 	Type() common.PeerType
 }
 
@@ -61,7 +61,7 @@ func New(ctx context.Context, opts ...config.Option) (Node, error) {
 }
 
 // NewIPFS creates a new IPFS node
-func NewIPFS(ctx context.Context, opts ...config.Option) (config.IPFSNode, error) {
+func NewIPFS(ctx context.Context, opts ...config.Option) (common.IPFSNode, error) {
 	// Start IPFS Node
 	pctx, err := identityprotocol.NewContext(ctx)
 	if err != nil {
@@ -80,16 +80,16 @@ func NewIPFS(ctx context.Context, opts ...config.Option) (config.IPFSNode, error
 }
 
 type node struct {
-	host   config.P2PNode
-	ipfs   config.IPFSNode
+	host   common.P2PNode
+	ipfs   common.IPFSNode
 	config *config.Config
 }
 
-func (n *node) Host() config.P2PNode {
+func (n *node) Host() common.P2PNode {
 	return n.host
 }
 
-func (n *node) IPFS() config.IPFSNode {
+func (n *node) IPFS() common.IPFSNode {
 	return n.ipfs
 }
 
