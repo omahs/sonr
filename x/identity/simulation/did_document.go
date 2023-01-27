@@ -27,7 +27,7 @@ func SimulateMsgCreateDidDocument(
 
 		msg := &types.MsgCreateDidDocument{
 			Creator:  simAccount.Address.String(),
-			Document: types.BlankDocument(simAccount.Address.String()),
+			Document: types.NewBlankDocument(simAccount.Address.String()),
 		}
 
 		_, found := k.GetDidDocument(ctx, msg.Document.ID)

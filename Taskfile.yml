@@ -13,7 +13,7 @@ tasks:
     silent: true
     cmds:
       - echo ""
-      - echo "⭐️ TASKFILE (sonr-hq/sonr) ⭐️"
+      - echo "⭐️ TASKFILE (sonrhq/core) ⭐️"
       - echo ""
       - task --list
   docs:

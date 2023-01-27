@@ -29,8 +29,6 @@ var (
 type VaultService struct {
 	node       config.IPFSNode
 	dispatcher *wallet.Dispatcher
-	rpName     string
-	rpIcon     string
 }
 
 // It creates a new VaultService and registers it with the gRPC server
@@ -38,8 +36,6 @@ func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node c
 	vaultService = &VaultService{
 		node:       node,
 		dispatcher: wallet.NewDispatcher(node),
-		rpName:     "Sonr",
-		rpIcon:     "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png",
 	}
 	return v1.RegisterVaultHandlerServer(context.Background(), mux, vaultService)
 }

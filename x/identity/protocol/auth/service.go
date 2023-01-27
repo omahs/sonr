@@ -37,7 +37,7 @@ func RegisterAuthIPFSService(cctx client.Context, mux *runtime.ServeMux, node co
 	authService = &AuthService{
 		cctx:   cctx,
 		rpName: "Sonr",
-		rpIcon: "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png",
+		rpIcon: "https://raw.githubusercontent.com/sonrhq/core/master/docs/static/favicon.png",
 		node:   node,
 		cache:  gocache.New(5*time.Minute, 10*time.Minute),
 	}

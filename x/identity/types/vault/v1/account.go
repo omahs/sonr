@@ -6,7 +6,6 @@ import (
 	"time"
 
 	types "github.com/sonrhq/core/x/identity/types"
-
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"

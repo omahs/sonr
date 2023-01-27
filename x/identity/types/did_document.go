@@ -7,10 +7,30 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	common "github.com/sonrhq/core/pkg/common"
 )
 
-// BlankDocument creates a blank document to begin the WebAuthnProcess
-func BlankDocument(idStr string) *DidDocument {
+// NewDocument takes a SNRPubKey and returns a new DID Document
+func NewDocument(pubKey common.SNRPubKey) (*DidDocument, error) {
+	pk, err := PubKeyFromCommon(pubKey)
+	if err != nil {
+		return nil, err
+	}
+	addr, err := pk.Bech32("snr")
+	if err != nil {
+		return nil, err
+	}
+	doc := NewBlankDocument(pk.DID())
+	vm, err := pk.VerificationMethod(WithBlockchainAccount(addr))
+	if err != nil {
+		return nil, err
+	}
+	doc.AddAssertion(vm)
+	return doc, nil
+}
+
+// NewBlankDocument creates a blank document to begin the WebAuthnProcess
+func NewBlankDocument(idStr string) *DidDocument {
 	return &DidDocument{
 		ID:                   idStr,
 		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().DidMethodContext},
@@ -27,7 +47,7 @@ func BlankDocument(idStr string) *DidDocument {
 }
 
 // BlankDocument creates a blank document to begin the WebAuthnProcess
-func NewBaseDocument(akaStr string) *DidDocument {
+func NewDocumentFromAKA(akaStr string) *DidDocument {
 	return &DidDocument{
 		ID:                   fmt.Sprintf("did:tmp:%s", akaStr),
 		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().DidMethodContext},

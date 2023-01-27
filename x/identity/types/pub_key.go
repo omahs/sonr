@@ -11,6 +11,7 @@ import (
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 	mb "github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-varint"
+	common "github.com/sonrhq/core/pkg/common"
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	tmcrypto "github.com/tendermint/tendermint/crypto"
@@ -69,6 +70,15 @@ func PubKeyFromBytes(bz []byte) (*PubKey, error) {
 		return nil, err
 	}
 	return NewPubKey(bz[n:], kt), nil
+}
+
+// PubKeyFromCommon takes a common.SNRPubKey and returns a PubKey
+func PubKeyFromCommon(pk common.SNRPubKey) (*PubKey, error) {
+	t, err := KeyTypeFromPrettyString(pk.Type())
+	if err != nil {
+		return nil, fmt.Errorf("error retreiving key type from PubKey interface: %w", err)
+	}
+	return NewPubKey(pk.Raw(), t), nil
 }
 
 // NewPubKey takes a byte array and returns a PubKey

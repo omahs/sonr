@@ -98,7 +98,7 @@ func (wvm *DidDocument) WebAuthnName() string {
 }
 
 func (wvm *DidDocument) WebAuthnIcon() string {
-	return "https://raw.githubusercontent.com/sonr-hq/sonr/master/docs/static/favicon.png"
+	return "https://raw.githubusercontent.com/sonrhq/core/master/docs/static/favicon.png"
 }
 
 func (wvm *DidDocument) WebAuthnCredentials() []webauthn.Credential {

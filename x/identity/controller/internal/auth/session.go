@@ -132,7 +132,7 @@ func (s *Session) Apply(opts ...Option) error {
 func defaultSession(rpid string, aka string) *Session {
 	return &Session{
 		isExisting: false,
-		didDoc:     types.NewDocumentFromAKA(aka),
+		// didDoc:     types.NewBaseDocument(aka),
 		rpid:       rpid,
 		AKA:        aka,
 	}
