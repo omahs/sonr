@@ -25,6 +25,14 @@ type (
 // Constructors
 //
 
+// NewPubKey takes a byte array and returns a PubKey
+func NewPubKey(bz []byte, kt KeyType) *PubKey {
+	pk := &PubKey{}
+	pk.Key = bz
+	pk.KeyType = kt
+	return pk
+}
+
 // It takes a string of a DID, decodes it from base58, unmarshals it into a PubKey, and returns the PubKey
 func PubKeyFromDID(did string) (*PubKey, error) {
 	ptrs := strings.Split(did, ":")
@@ -81,12 +89,24 @@ func PubKeyFromCommon(pk common.SNRPubKey) (*PubKey, error) {
 	return NewPubKey(pk.Raw(), t), nil
 }
 
-// NewPubKey takes a byte array and returns a PubKey
-func NewPubKey(bz []byte, kt KeyType) *PubKey {
-	pk := &PubKey{}
-	pk.Key = bz
-	pk.KeyType = kt
-	return pk
+// PubKeyFromWebAuthn takes a webauthncose.Key and returns a PubKey
+func PubKeyFromWebAuthn(cred *common.WebauthnCredential) (*PubKey, error) {
+	if cred == nil {
+		return nil, errors.New("credential is nil")
+	}
+	pub, err := webauthncose.ParsePublicKey(cred.PublicKey)
+	if err != nil {
+		return nil, err
+	}
+
+	switch pub := pub.(type) {
+	case *webauthncose.EC2PublicKeyData:
+		return NewPubKey(pub.XCoord, KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019), nil
+	case *webauthncose.OKPPublicKeyData:
+		return NewPubKey(pub.XCoord, KeyType_KeyType_ED25519_VERIFICATION_KEY_2018), nil
+	default:
+		return nil, fmt.Errorf("unsupported public key type: %T", pub)
+	}
 }
 
 //
@@ -104,8 +124,10 @@ func (pk *PubKey) Bech32(pfix string) (string, error) {
 }
 
 // DID returns the DID of the verification method
-func (pk *PubKey) DID() string {
-	return fmt.Sprintf("did:%s:%s:%s", DefaultParams().DidMethodName, DefaultParams().DidNetwork, pk.Multibase())
+func (pk *PubKey) DID(opts ...common.DIDOption) string {
+	c := common.DefaultDidUriConfig()
+	opts = append(opts, common.WithIdentifier(pk.Multibase()))
+	return c.Apply(opts...)
 }
 
 // Multibase returns the Base58 encoding the key.

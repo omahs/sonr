@@ -2,16 +2,16 @@ package store
 
 import (
 	"github.com/sonrhq/core/pkg/common"
-	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
+	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
 
 type WalletStore interface {
 	// GetShare returns a *cmp.Config for the given name
-	GetShare(name string) (*v1.ShareConfig, error)
+	GetShare(name string) (*cmp.Config, error)
 
 	// PutShare stores the given *cmp.Config under the given name
-	SetShare(share *v1.ShareConfig) error
+	SetShare(share *cmp.Config) error
 
 	// JWKClaims returns the JWKClaims for the store to be signed by the identity
 	JWKClaims() (string, error)

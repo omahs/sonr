@@ -26,5 +26,5 @@ message Params {
   string did_network = 5;
   string ipfs_gateway = 6;
   string ipfs_api = 7;
-  repeated DomainRecordTLD hns_tlds = 8;
+  repeated DomainRecordTLD hns_tlds = 9;
 }

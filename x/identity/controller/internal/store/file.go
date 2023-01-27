@@ -2,6 +2,8 @@ package store
 
 import (
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
+	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
+	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -24,30 +26,29 @@ func newFileStore(p string, accCfg *vaultv1.AccountConfig) (WalletStore, error) 
 		accConfig: accCfg,
 		path:      p,
 		db:        db,
-		bucketKey: []byte(accCfg.Address),
+		bucketKey: []byte(accCfg.DID()),
 	}
 	return ds, nil
 }
 
-func (ds *FileStore) GetShare(name string) (*vaultv1.ShareConfig, error) {
-	var sc *vaultv1.ShareConfig
+func (ds *FileStore) GetShare(name string) (*cmp.Config, error) {
+	sc := cmp.EmptyConfig(curve.Secp256k1{})
 	ds.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(ds.bucketKey)
 		v := b.Get([]byte(name))
-		sc = &vaultv1.ShareConfig{}
-		return sc.Unmarshal(v)
+		return sc.UnmarshalBinary(v)
 	})
 	return sc, nil
 }
 
-func (ds *FileStore) SetShare(sc *vaultv1.ShareConfig) error {
+func (ds *FileStore) SetShare(sc *cmp.Config) error {
 	ds.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(ds.bucketKey)
-		v, err := sc.Marshal()
+		v, err := sc.MarshalBinary()
 		if err != nil {
 			return err
 		}
-		return b.Put([]byte(sc.SelfId), v)
+		return b.Put([]byte(sc.ID), v)
 	})
 	return nil
 }

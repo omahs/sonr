@@ -7,7 +7,7 @@ import "core/identity/v1/did.proto";
 import "google/api/annotations.proto";
 import "protocol/vault/v1/models.proto";
 
-option go_package = "github.com/sonrhq/core/x/identity/types/auth/v1";
+// option go_package = "github.com/sonrhq/core/x/identity/types/auth/v1";
 
 // ==================================================================
 // REGISTRATION

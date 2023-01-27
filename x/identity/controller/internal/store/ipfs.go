@@ -6,6 +6,8 @@ import (
 	"berty.tech/go-orbit-db/iface"
 	"github.com/sonrhq/core/pkg/common"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
+	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
+	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
 
 type IPFSStore struct {
@@ -14,7 +16,7 @@ type IPFSStore struct {
 }
 
 func newIPFSStore(node common.IPFSNode, accCfg *vaultv1.AccountConfig) (WalletStore, error) {
-	docs, err := node.LoadKeyValueStore(accCfg.Address)
+	docs, err := node.LoadKeyValueStore(accCfg.DID())
 	if err != nil {
 
 		return nil, err
@@ -26,25 +28,25 @@ func newIPFSStore(node common.IPFSNode, accCfg *vaultv1.AccountConfig) (WalletSt
 	return ds, nil
 }
 
-func (ds *IPFSStore) GetShare(name string) (*vaultv1.ShareConfig, error) {
+func (ds *IPFSStore) GetShare(name string) (*cmp.Config, error) {
 	bz, err := ds.ipfsKVStore.Get(context.Background(), name)
 	if err != nil {
 		return nil, err
 	}
 
-	sc := &vaultv1.ShareConfig{}
-	if err := sc.Unmarshal(bz); err != nil {
+	sc := cmp.EmptyConfig(curve.Secp256k1{})
+	if err := sc.UnmarshalBinary(bz); err != nil {
 		return nil, err
 	}
 	return sc, nil
 }
 
-func (ds *IPFSStore) SetShare(sc *vaultv1.ShareConfig) error {
-	bz, err := sc.Marshal()
+func (ds *IPFSStore) SetShare(sc *cmp.Config) error {
+	bz, err := sc.MarshalBinary()
 	if err != nil {
 		return err
 	}
-	_, err = ds.ipfsKVStore.Put(context.Background(), sc.SelfId, bz)
+	_, err = ds.ipfsKVStore.Put(context.Background(), string(sc.ID), bz)
 	if err != nil {
 		return err
 	}

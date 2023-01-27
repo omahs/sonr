@@ -27,6 +27,15 @@ tasks:
       - mintlify dev
     interactive: true
 
+  install:
+    desc: Build and Install the binary
+    summary: |
+      Build and Install Binary
+
+      This task will build and install the binary
+    cmds:
+      - ignite chain build
+
   serve:
     desc: Serve the blockchain locally
     aliases:

@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	peer "github.com/libp2p/go-libp2p/core/peer"
+	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/common/crypto"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
@@ -16,7 +17,7 @@ import (
 )
 
 // Keygen Generates a new ECDSA private key shared among all the given participants.
-func Keygen(accName string, current party.ID, threshold int, net crypto.Network, addrPrefix string, network string) (*v1.AccountConfig, error) {
+func Keygen(accName string, current party.ID, threshold int, net crypto.Network, coinType common.CoinType) (*v1.AccountConfig, error) {
 	var mtx sync.Mutex
 	configs := make(map[party.ID]*cmp.Config)
 	var wg sync.WaitGroup
@@ -36,11 +37,11 @@ func Keygen(accName string, current party.ID, threshold int, net crypto.Network,
 	}
 	wg.Wait()
 	// conf := <-doneChan
-	shares := make([]*v1.ShareConfig, 0)
+	shares := make([]*cmp.Config, 0)
 	for _, conf := range configs {
-		shares = append(shares, v1.NewShareConfig(network, conf))
+		shares = append(shares, conf)
 	}
-	return v1.NewAccountConfigFromShares(accName, 0, addrPrefix, shares)
+	return v1.NewAccountConfigFromShares(accName, coinType, shares)
 }
 
 //

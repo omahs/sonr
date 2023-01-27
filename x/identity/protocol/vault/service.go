@@ -35,10 +35,11 @@ type VaultService struct {
 func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node common.IPFSNode) error {
 	vaultService = &VaultService{
 		node:       node,
-		dispatcher: wallet.NewDispatcher(node),
+		dispatcher: wallet.NewDispatcher(),
 	}
 	return v1.RegisterVaultHandlerServer(context.Background(), mux, vaultService)
 }
+
 
 // Register registers a new keypair and returns the public key.
 func (v *VaultService) NewWallet(ctx context.Context, req *v1.NewWalletRequest) (*v1.NewWalletResponse, error) {
@@ -51,7 +52,7 @@ func (v *VaultService) NewWallet(ctx context.Context, req *v1.NewWalletRequest) 
 	// Return response
 	return &v1.NewWalletResponse{
 		Success: false,
-		Address: wallet.WalletConfig().Address,
+		Address: wallet.Address(),
 	}, nil
 }
 

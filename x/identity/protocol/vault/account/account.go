@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -56,7 +57,7 @@ type WalletAccount interface {
 	AccountConfig() *v1.AccountConfig
 
 	// Bip32Derive derives a new account from a BIP32 path
-	Bip32Derive(accName string, idx uint32, addrPrefix string, network string) (WalletAccount, error)
+	Bip32Derive(accName string, coinType common.CoinType) (WalletAccount, error)
 
 	// Bytes returns the bytes of the account
 	Bytes() []byte
@@ -108,11 +109,11 @@ type walletAccountImpl struct {
 }
 
 // It creates a new account with the given name, address prefix, and network name
-func NewAccount(accName string, addrPrefix string, networkName string) (WalletAccount, error) {
+func NewAccount(accName string, coinType common.CoinType) (WalletAccount, error) {
 	// The default shards that are added to the MPC wallet
 	parties := party.IDSlice{"vault", "current"}
 	net := network.NewOfflineNetwork(parties)
-	accConf, err := mpc.Keygen(accName, "current", 1, net, addrPrefix, networkName)
+	accConf, err := mpc.Keygen(strings.ToLower(accName), "current", 1, net, coinType)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +135,7 @@ func (w *walletAccountImpl) AccountConfig() *v1.AccountConfig {
 }
 
 // Deriving a new account from a BIP32 path.
-func (w *walletAccountImpl) Bip32Derive(accName string, idx uint32, addrPrefix string, network string) (WalletAccount, error) {
+func (w *walletAccountImpl) Bip32Derive(accName string, coinType common.CoinType) (WalletAccount, error) {
 	if !w.IsPrimary() {
 		return nil, errors.New("cannot derive from non-primary account")
 	}
@@ -142,19 +143,15 @@ func (w *walletAccountImpl) Bip32Derive(accName string, idx uint32, addrPrefix s
 	if err != nil {
 		return nil, err
 	}
-	shares := make([]*v1.ShareConfig, 0)
-	for _, conf := range oldConfs {
-		c, err := conf.DeriveBIP32(idx)
-		if err != nil {
-			return nil, err
-		}
-		shares = append(shares, v1.NewShareConfig(network, c))
-	}
-	accConf, err := v1.NewAccountConfigFromShares(accName, 0, addrPrefix, shares)
+	c, err := oldConfs[0].DeriveBIP32(uint32(coinType.Index()))
 	if err != nil {
 		return nil, err
 	}
-	return NewAccountFromConfig(accConf)
+	conf, err := v1.NewDerivedAccountConfig(accName, coinType, c)
+	if err != nil {
+		return nil, err
+	}
+	return NewAccountFromConfig(conf)
 }
 
 // Bytes returns the bytes of the account.
@@ -170,7 +167,7 @@ func (w *walletAccountImpl) Equals(other cryptotypes.LedgerPrivKey) bool {
 // Returning the signer data for the account.
 func (w *walletAccountImpl) GetSignerData() authsigning.SignerData {
 	return authsigning.SignerData{
-		Address:       w.accountConfig.Address,
+		Address:       w.accountConfig.DID(),
 		ChainID:       "sonr",
 		AccountNumber: 0,
 		Sequence:      0,
@@ -180,11 +177,12 @@ func (w *walletAccountImpl) GetSignerData() authsigning.SignerData {
 
 // Returning the account information.
 func (w *walletAccountImpl) Info() *v1.AccountInfo {
+	addr, _ := w.accountConfig.Address()
 	return &v1.AccountInfo{
 		Label:   w.accountConfig.Name,
-		Address: w.accountConfig.Address,
-		Index:   w.accountConfig.Index,
-		Network: w.accountConfig.Bech32Prefix,
+		Address: addr,
+		Index:   w.accountConfig.CoinType().PathComponent(),
+		Network: w.accountConfig.CoinType().Name(),
 	}
 }
 
@@ -195,12 +193,7 @@ func (w *walletAccountImpl) IsPrimary() bool {
 
 // Returning the list of all the configurations that are needed to sign a transaction.
 func (w *walletAccountImpl) ListConfigs() ([]*cmp.Config, error) {
-	confMap := w.accountConfig.GetConfigMap()
-	configs := make([]*cmp.Config, 0, len(confMap))
-	for _, conf := range confMap {
-		configs = append(configs, conf)
-	}
-	return configs, nil
+	return v1.DeserializeConfigList(w.accountConfig.Shares)
 }
 
 // NewOriginToken returns a new origin token for the account.
@@ -218,7 +211,7 @@ func (w *walletAccountImpl) NewAttenuatedToken(parent *ucan.Token, audienceDID s
 
 // Returning the secp256k1 public key.
 func (w *walletAccountImpl) PubKey() common.SNRPubKey {
-	pbKey, _ := w.accountConfig.GetCryptoPubKey()
+	pbKey, _ := w.accountConfig.PubKey()
 	return pbKey
 }
 
@@ -237,8 +230,9 @@ func (w *walletAccountImpl) SignTxAux(msgs ...sdk.Msg) (txtypes.AuxSignerData, e
 	if err != nil {
 		return txtypes.AuxSignerData{}, err
 	}
+	addr, _ := w.accountConfig.Address()
 	return txtypes.AuxSignerData{
-		Address: w.accountConfig.Address,
+		Address: addr,
 		Mode:    signing.SignMode_SIGN_MODE_DIRECT_AUX,
 		SignDoc: doc,
 		Sig:     sig,
@@ -252,8 +246,11 @@ func (w *walletAccountImpl) Type() string {
 
 // Verifying a signature.
 func (w *walletAccountImpl) Verify(bz []byte, sig []byte) (bool, error) {
-	conf := w.accountConfig.GetConfigMap()
-	return mpc.CmpVerify(conf["current"], bz, sig)
+	pubKey, err := w.accountConfig.PubKey()
+	if err != nil {
+		return false, err
+	}
+	return pubKey.VerifySignature(bz, sig), nil
 }
 
 // It takes a list of messages, creates a transaction body, and marshals it
@@ -290,7 +287,7 @@ func newToken(a *v1.AccountConfig, audienceDID string, prf []ucan.Proof, att uca
 	if !exp.IsZero() {
 		expUnix = exp.Unix()
 	}
-	pub, err := a.GetCryptoPubKey()
+	pub, err := a.PubKey()
 	if err != nil {
 		return nil, err
 	}
@@ -359,22 +356,26 @@ func signTxDocDirectAux(w *walletAccountImpl, txBody []byte) (*txtypes.SignDocDi
 // signWithAccount signs a message with the given account configuration
 func signWithAccount(a *v1.AccountConfig, msg []byte) ([]byte, error) {
 	net := network.NewOfflineNetwork(a.PartyIDs())
-	configs := a.GetConfigMap()
+	configs, err := v1.DeserializeConfigList(a.Shares)
+	if err != nil {
+		return nil, err
+	}
+
 	doneChan := make(chan []byte, 1)
 	var wg sync.WaitGroup
-	for _, id := range net.Ls() {
+	for _, c := range configs {
 		wg.Add(1)
-		go func(id party.ID) {
+		go func(conf *cmp.Config) {
 			pl := pool.NewPool(0)
 			defer pl.TearDown()
-			sig, err := mpc.CmpSign(configs[id], msg, net.Ls(), net, &wg, pl)
+			sig, err := mpc.CmpSign(conf, msg, net.Ls(), net, &wg, pl)
 			if err != nil {
 				return
 			}
-			if id == "current" {
+			if conf.ID == "current" {
 				doneChan <- sig
 			}
-		}(id)
+		}(c)
 	}
 	wg.Wait()
 	return <-doneChan, nil

@@ -5,23 +5,24 @@ import (
 	"sync"
 
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
+	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
 
 type MemoryStore struct {
 	accConfig *vaultv1.AccountConfig
-	configs   map[string]*vaultv1.ShareConfig
+	configs   map[string]*cmp.Config
 	sync.Mutex
 }
 
 func newMemoryStore(accCfg *vaultv1.AccountConfig) (WalletStore, error) {
 	ds := &MemoryStore{
 		accConfig: accCfg,
-		configs:   make(map[string]*vaultv1.ShareConfig),
+		configs:   make(map[string]*cmp.Config),
 	}
 	return ds, nil
 }
 
-func (ds *MemoryStore) GetShare(name string) (*vaultv1.ShareConfig, error) {
+func (ds *MemoryStore) GetShare(name string) (*cmp.Config, error) {
 	ds.Lock()
 	defer ds.Unlock()
 	s, ok := ds.configs[name]
@@ -31,10 +32,10 @@ func (ds *MemoryStore) GetShare(name string) (*vaultv1.ShareConfig, error) {
 	return s, nil
 }
 
-func (ds *MemoryStore) SetShare(sc *vaultv1.ShareConfig) error {
+func (ds *MemoryStore) SetShare(sc *cmp.Config) error {
 	ds.Lock()
 	defer ds.Unlock()
-	ds.configs[sc.SelfId] = sc
+	ds.configs[string(sc.ID)] = sc
 	return nil
 }
 

@@ -1,23 +1,31 @@
 package wallet
 
 import (
-	"context"
 	"testing"
 
-	"github.com/sonrhq/core/pkg/node"
+	"github.com/sonrhq/core/pkg/common"
 )
 
 func TestDispatcher(t *testing.T) {
-	n, err := node.NewIPFS(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	d := NewDispatcher(n)
+	d := NewDispatcher()
 	w, err := d.CallNewWallet()
+	checkErr(t, err)
+	t.Log(w.Address())
+	err = w.CreateAccount("Ethereum", common.CoinType_CoinType_ETHEREUM)
+	checkErr(t, err)
+	err = w.CreateAccount("Bitcoin", common.CoinType_CoinType_BITCOIN)
+	checkErr(t, err)
+	accs, err := w.ListAccounts()
+	checkErr(t, err)
+	for _, acc := range accs {
+		t.Log(acc.AccountConfig())
+	}
+}
+
+func checkErr(t *testing.T, err error) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(w.WalletConfig().Address)
 }
 
 // snr16nzrp4x3sachmraq34uzr9tpzpp5tegcjam80z

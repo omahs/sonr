@@ -25,38 +25,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// ChallengeType is used for defining the type of challenge.
-type ChallengeType int32
-
-const (
-	// CHALLENGE_TYPE_UNSPECIFIED is the default value.
-	ChallengeType_CHALLENGE_TYPE_UNSPECIFIED ChallengeType = 0
-	// CHALLENGE_TYPE_ATTESTION is used for attestation challenges.
-	ChallengeType_CHALLENGE_TYPE_ATTESTION ChallengeType = 1
-	// CHALLENGE_TYPE_ASSERTION is used for assertion challenges.
-	ChallengeType_CHALLENGE_TYPE_ASSERTION ChallengeType = 2
-)
-
-var ChallengeType_name = map[int32]string{
-	0: "CHALLENGE_TYPE_UNSPECIFIED",
-	1: "CHALLENGE_TYPE_ATTESTION",
-	2: "CHALLENGE_TYPE_ASSERTION",
-}
-
-var ChallengeType_value = map[string]int32{
-	"CHALLENGE_TYPE_UNSPECIFIED": 0,
-	"CHALLENGE_TYPE_ATTESTION":   1,
-	"CHALLENGE_TYPE_ASSERTION":   2,
-}
-
-func (x ChallengeType) String() string {
-	return proto.EnumName(ChallengeType_name, int32(x))
-}
-
-func (ChallengeType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_d53fa4614f4f387b, []int{0}
-}
-
 // Account is used for storing all credentials and their locations to be encrypted.
 type AccountInfo struct {
 	// Address is the associated Sonr address.
@@ -133,18 +101,16 @@ func (m *AccountInfo) GetIndex() uint32 {
 type AccountConfig struct {
 	// Name is the name of the account.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Address is the associated blockchain address.
-	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	// multibase is the associated pubkey encoded in multibase.
+	Multibase string `protobuf:"bytes,2,opt,name=multibase,proto3" json:"multibase,omitempty"`
 	// PublicKey is the public key of the account.
 	PublicKey []byte `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	// Index is the index of the account.
-	Index uint32 `protobuf:"varint,4,opt,name=index,proto3" json:"index,omitempty"`
-	// Bech32Prefix is the bech32 prefix of the account.
-	Bech32Prefix string `protobuf:"bytes,5,opt,name=bech32_prefix,json=bech32Prefix,proto3" json:"bech32_prefix,omitempty"`
+	// CoinType is the coin type of the account. See https://github.com/satoshilabs/slips/blob/master/slip-0044.md for more information.
+	CoinTypeIndex int32 `protobuf:"varint,4,opt,name=coin_type_index,json=coinTypeIndex,proto3" json:"coin_type_index,omitempty"`
 	// CreatedAt is the time the account was created.
-	CreatedAt int64 `protobuf:"varint,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt int64 `protobuf:"varint,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	// Shares is a list of all shares associated with the account.
-	Shares []*ShareConfig `protobuf:"bytes,7,rep,name=shares,proto3" json:"shares,omitempty"`
+	Shares [][]byte `protobuf:"bytes,6,rep,name=shares,proto3" json:"shares,omitempty"`
 }
 
 func (m *AccountConfig) Reset()         { *m = AccountConfig{} }
@@ -187,9 +153,9 @@ func (m *AccountConfig) GetName() string {
 	return ""
 }
 
-func (m *AccountConfig) GetAddress() string {
+func (m *AccountConfig) GetMultibase() string {
 	if m != nil {
-		return m.Address
+		return m.Multibase
 	}
 	return ""
 }
@@ -201,18 +167,11 @@ func (m *AccountConfig) GetPublicKey() []byte {
 	return nil
 }
 
-func (m *AccountConfig) GetIndex() uint32 {
+func (m *AccountConfig) GetCoinTypeIndex() int32 {
 	if m != nil {
-		return m.Index
+		return m.CoinTypeIndex
 	}
 	return 0
-}
-
-func (m *AccountConfig) GetBech32Prefix() string {
-	if m != nil {
-		return m.Bech32Prefix
-	}
-	return ""
 }
 
 func (m *AccountConfig) GetCreatedAt() int64 {
@@ -222,90 +181,9 @@ func (m *AccountConfig) GetCreatedAt() int64 {
 	return 0
 }
 
-func (m *AccountConfig) GetShares() []*ShareConfig {
+func (m *AccountConfig) GetShares() [][]byte {
 	if m != nil {
 		return m.Shares
-	}
-	return nil
-}
-
-type ShareConfig struct {
-	// SelfID is the partyID of the share
-	SelfId string `protobuf:"bytes,1,opt,name=self_id,json=selfId,proto3" json:"self_id,omitempty"`
-	// PublicKey is the public key of the share
-	PublicKey []byte `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	// CreatedAt is the time the share was created.
-	CreatedAt int64 `protobuf:"varint,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	// Network is the name of the network the share is on.
-	Network string `protobuf:"bytes,4,opt,name=network,proto3" json:"network,omitempty"`
-	// ConfigData is the config data of the share.
-	ConfigData []byte `protobuf:"bytes,5,opt,name=config_data,json=configData,proto3" json:"config_data,omitempty"`
-}
-
-func (m *ShareConfig) Reset()         { *m = ShareConfig{} }
-func (m *ShareConfig) String() string { return proto.CompactTextString(m) }
-func (*ShareConfig) ProtoMessage()    {}
-func (*ShareConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d53fa4614f4f387b, []int{2}
-}
-func (m *ShareConfig) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ShareConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ShareConfig.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ShareConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ShareConfig.Merge(m, src)
-}
-func (m *ShareConfig) XXX_Size() int {
-	return m.Size()
-}
-func (m *ShareConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_ShareConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ShareConfig proto.InternalMessageInfo
-
-func (m *ShareConfig) GetSelfId() string {
-	if m != nil {
-		return m.SelfId
-	}
-	return ""
-}
-
-func (m *ShareConfig) GetPublicKey() []byte {
-	if m != nil {
-		return m.PublicKey
-	}
-	return nil
-}
-
-func (m *ShareConfig) GetCreatedAt() int64 {
-	if m != nil {
-		return m.CreatedAt
-	}
-	return 0
-}
-
-func (m *ShareConfig) GetNetwork() string {
-	if m != nil {
-		return m.Network
-	}
-	return ""
-}
-
-func (m *ShareConfig) GetConfigData() []byte {
-	if m != nil {
-		return m.ConfigData
 	}
 	return nil
 }
@@ -327,7 +205,7 @@ func (m *WalletConfig) Reset()         { *m = WalletConfig{} }
 func (m *WalletConfig) String() string { return proto.CompactTextString(m) }
 func (*WalletConfig) ProtoMessage()    {}
 func (*WalletConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d53fa4614f4f387b, []int{3}
+	return fileDescriptor_d53fa4614f4f387b, []int{2}
 }
 func (m *WalletConfig) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -392,10 +270,8 @@ func (m *WalletConfig) GetAccounts() map[string]*AccountConfig {
 }
 
 func init() {
-	proto.RegisterEnum("sonrhq.protocol.vault.v1.ChallengeType", ChallengeType_name, ChallengeType_value)
 	proto.RegisterType((*AccountInfo)(nil), "sonrhq.protocol.vault.v1.AccountInfo")
 	proto.RegisterType((*AccountConfig)(nil), "sonrhq.protocol.vault.v1.AccountConfig")
-	proto.RegisterType((*ShareConfig)(nil), "sonrhq.protocol.vault.v1.ShareConfig")
 	proto.RegisterType((*WalletConfig)(nil), "sonrhq.protocol.vault.v1.WalletConfig")
 	proto.RegisterMapType((map[string]*AccountConfig)(nil), "sonrhq.protocol.vault.v1.WalletConfig.AccountsEntry")
 }
@@ -403,45 +279,37 @@ func init() {
 func init() { proto.RegisterFile("protocol/vault/v1/models.proto", fileDescriptor_d53fa4614f4f387b) }
 
 var fileDescriptor_d53fa4614f4f387b = []byte{
-	// 599 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x54, 0xc1, 0x6e, 0xd3, 0x30,
-	0x18, 0x6e, 0xd2, 0xb5, 0xa3, 0x6e, 0x2b, 0x4d, 0x16, 0x12, 0xd1, 0x34, 0x42, 0x55, 0x84, 0xa8,
-	0x38, 0x24, 0x6c, 0xe3, 0x80, 0x90, 0x76, 0x28, 0x5d, 0x80, 0xc2, 0x34, 0xaa, 0xb4, 0x08, 0xc1,
-	0x25, 0x72, 0x13, 0x37, 0xb1, 0xe6, 0xda, 0x21, 0x71, 0xcb, 0xf2, 0x16, 0xbc, 0x01, 0x8f, 0xc0,
-	0x6b, 0x70, 0xdc, 0x91, 0x23, 0xda, 0x9e, 0x81, 0x3b, 0x8a, 0x9d, 0x96, 0xb6, 0x5a, 0xc5, 0xcd,
-	0xff, 0xf7, 0xd9, 0xfe, 0xbe, 0xef, 0xf7, 0x2f, 0x03, 0x33, 0x4e, 0xb8, 0xe0, 0x3e, 0xa7, 0xf6,
-	0x1c, 0xcd, 0xa8, 0xb0, 0xe7, 0x87, 0xf6, 0x94, 0x07, 0x98, 0xa6, 0x96, 0x24, 0xa0, 0x91, 0x72,
-	0x96, 0x44, 0x5f, 0xac, 0xc5, 0x36, 0x4b, 0x6e, 0xb3, 0xe6, 0x87, 0xfb, 0x07, 0x21, 0xe7, 0x21,
-	0xc5, 0x36, 0x8a, 0x89, 0x8d, 0x18, 0xe3, 0x02, 0x09, 0xc2, 0x59, 0x71, 0xae, 0x3d, 0x05, 0xf5,
-	0xae, 0xef, 0xf3, 0x19, 0x13, 0x7d, 0x36, 0xe1, 0xd0, 0x00, 0xbb, 0x28, 0x08, 0x12, 0x9c, 0xa6,
-	0x86, 0xd6, 0xd2, 0x3a, 0x35, 0x77, 0x51, 0xe6, 0x0c, 0xc3, 0xe2, 0x2b, 0x4f, 0x2e, 0x0c, 0x5d,
-	0x31, 0x45, 0x09, 0xef, 0x82, 0x0a, 0x45, 0x63, 0x4c, 0x8d, 0xb2, 0xc4, 0x55, 0x91, 0xa3, 0x84,
-	0x05, 0xf8, 0xd2, 0xd8, 0x69, 0x69, 0x9d, 0xa6, 0xab, 0x8a, 0xf6, 0x1f, 0x0d, 0x34, 0x0b, 0xbd,
-	0x1e, 0x67, 0x13, 0x12, 0x42, 0x08, 0x76, 0x18, 0x9a, 0xe2, 0x42, 0x4e, 0xae, 0x57, 0x5d, 0xe8,
-	0xeb, 0x2e, 0xee, 0x03, 0x10, 0xcf, 0xc6, 0x94, 0xf8, 0xde, 0x05, 0xce, 0xa4, 0x60, 0xc3, 0xad,
-	0x29, 0xe4, 0x1d, 0xce, 0x6e, 0x17, 0x85, 0x0f, 0x41, 0x73, 0x8c, 0xfd, 0xe8, 0xf8, 0xc8, 0x8b,
-	0x13, 0x3c, 0x21, 0x97, 0x46, 0x45, 0x5e, 0xda, 0x50, 0xe0, 0x40, 0x62, 0xf9, 0xcd, 0x7e, 0x82,
-	0x91, 0xc0, 0x81, 0x87, 0x84, 0x51, 0x6d, 0x69, 0x9d, 0xb2, 0x5b, 0x2b, 0x90, 0xae, 0x80, 0x27,
-	0xa0, 0x9a, 0x46, 0x28, 0xc1, 0xa9, 0xb1, 0xdb, 0x2a, 0x77, 0xea, 0x47, 0x8f, 0xac, 0x6d, 0x0d,
-	0xb7, 0x86, 0xf9, 0x3e, 0x95, 0xce, 0x2d, 0x0e, 0xb5, 0xbf, 0x6b, 0xa0, 0xbe, 0x82, 0xc3, 0x7b,
-	0x60, 0x37, 0xc5, 0x74, 0xe2, 0x91, 0xa0, 0x08, 0x5e, 0xcd, 0xcb, 0x7e, 0xb0, 0x11, 0x50, 0xdf,
-	0x0c, 0xb8, 0xee, 0xb2, 0xbc, 0xe9, 0x72, 0xe5, 0x91, 0x76, 0xd6, 0x1f, 0xe9, 0x01, 0xa8, 0xfb,
-	0x52, 0xda, 0x0b, 0x90, 0x40, 0xb2, 0x03, 0x0d, 0x17, 0x28, 0xe8, 0x14, 0x09, 0xd4, 0xfe, 0xa1,
-	0x83, 0xc6, 0x47, 0x44, 0x29, 0x5e, 0x3c, 0xcc, 0xf6, 0x51, 0xf8, 0x8f, 0xc7, 0x03, 0x50, 0x43,
-	0x34, 0xe4, 0x09, 0x11, 0xd1, 0xb4, 0x98, 0x89, 0x7f, 0x00, 0xdc, 0x03, 0x65, 0x9f, 0x04, 0x85,
-	0xbd, 0x7c, 0x09, 0x07, 0xe0, 0x0e, 0x52, 0x23, 0x91, 0x1a, 0x15, 0xd9, 0xdc, 0x67, 0xdb, 0x9b,
-	0xbb, 0x6a, 0xd1, 0x2a, 0x26, 0x29, 0x75, 0x98, 0x48, 0x32, 0x77, 0x79, 0xcb, 0x7e, 0xb0, 0x1c,
-	0x32, 0x45, 0xe5, 0xa2, 0xb9, 0x55, 0x95, 0x23, 0x5f, 0xc2, 0x13, 0x50, 0x99, 0x23, 0x3a, 0xc3,
-	0xd2, 0x7e, 0xfd, 0xe8, 0xf1, 0x76, 0xc5, 0xb5, 0x71, 0x75, 0xd5, 0xa9, 0x17, 0xfa, 0x73, 0xed,
-	0xc9, 0x05, 0x68, 0xf6, 0xa2, 0xdc, 0x0e, 0x0b, 0xf1, 0x28, 0x8b, 0x31, 0x34, 0xc1, 0x7e, 0xef,
-	0x4d, 0xf7, 0xec, 0xcc, 0x39, 0x7f, 0xed, 0x78, 0xa3, 0x4f, 0x03, 0xc7, 0xfb, 0x70, 0x3e, 0x1c,
-	0x38, 0xbd, 0xfe, 0xab, 0xbe, 0x73, 0xba, 0x57, 0x82, 0x07, 0xc0, 0xd8, 0xe0, 0xbb, 0xa3, 0x91,
-	0x33, 0x1c, 0xf5, 0xdf, 0x9f, 0xef, 0x69, 0xb7, 0xb1, 0xc3, 0xa1, 0xe3, 0x4a, 0x56, 0x7f, 0xf9,
-	0xf6, 0xe7, 0xb5, 0xa9, 0x5d, 0x5d, 0x9b, 0xda, 0xef, 0x6b, 0x53, 0xfb, 0x76, 0x63, 0x96, 0xae,
-	0x6e, 0xcc, 0xd2, 0xaf, 0x1b, 0xb3, 0xf4, 0xf9, 0x69, 0x48, 0x44, 0x34, 0x1b, 0x5b, 0x3e, 0x9f,
-	0xda, 0x2a, 0x84, 0xed, 0xf3, 0x04, 0xdb, 0x97, 0x36, 0x09, 0x30, 0x13, 0x44, 0x64, 0xb6, 0xc8,
-	0x62, 0x9c, 0x2e, 0x3f, 0x8e, 0x71, 0x55, 0x86, 0x3c, 0xfe, 0x1b, 0x00, 0x00, 0xff, 0xff, 0x39,
-	0xe5, 0xbf, 0x4d, 0x54, 0x04, 0x00, 0x00,
+	// 472 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x52, 0xc1, 0x8e, 0xd3, 0x30,
+	0x14, 0x6c, 0x9a, 0x4d, 0x21, 0x6e, 0x2b, 0x90, 0x85, 0x50, 0xb4, 0x2a, 0x51, 0xd4, 0x03, 0xe4,
+	0x14, 0xb3, 0x0b, 0x07, 0x84, 0xc4, 0x61, 0x41, 0x1c, 0x16, 0x2e, 0x28, 0x42, 0x42, 0xe2, 0x52,
+	0x39, 0x89, 0x37, 0xb5, 0xd6, 0xb1, 0x43, 0xec, 0x94, 0xcd, 0x5f, 0xf0, 0x27, 0x7c, 0x02, 0x57,
+	0x8e, 0x7b, 0xe4, 0x88, 0xda, 0x1f, 0x41, 0x8e, 0xdd, 0x96, 0xae, 0xd4, 0xdb, 0x9b, 0x79, 0xf6,
+	0x9b, 0xf1, 0x1b, 0x83, 0xb0, 0x6e, 0x84, 0x12, 0xb9, 0x60, 0x68, 0x85, 0x5b, 0xa6, 0xd0, 0xea,
+	0x0c, 0x55, 0xa2, 0x20, 0x4c, 0x26, 0x7d, 0x03, 0x06, 0x52, 0xf0, 0x66, 0xf9, 0x2d, 0xd9, 0x1e,
+	0x4b, 0xfa, 0x63, 0xc9, 0xea, 0xec, 0x74, 0x56, 0x0a, 0x51, 0x32, 0x82, 0x70, 0x4d, 0x11, 0xe6,
+	0x5c, 0x28, 0xac, 0xa8, 0xe0, 0xf6, 0xde, 0xbc, 0x02, 0xe3, 0x8b, 0x3c, 0x17, 0x2d, 0x57, 0x97,
+	0xfc, 0x4a, 0xc0, 0x00, 0xdc, 0xc3, 0x45, 0xd1, 0x10, 0x29, 0x03, 0x27, 0x72, 0x62, 0x3f, 0xdd,
+	0x42, 0xdd, 0xe1, 0x44, 0x7d, 0x17, 0xcd, 0x75, 0x30, 0x34, 0x1d, 0x0b, 0xe1, 0x23, 0xe0, 0x31,
+	0x9c, 0x11, 0x16, 0xb8, 0x3d, 0x6f, 0x80, 0x66, 0x29, 0x2f, 0xc8, 0x4d, 0x70, 0x12, 0x39, 0xf1,
+	0x34, 0x35, 0x60, 0xfe, 0xcb, 0x01, 0x53, 0xab, 0xf7, 0x4e, 0xf0, 0x2b, 0x5a, 0x42, 0x08, 0x4e,
+	0x38, 0xae, 0x88, 0x95, 0xeb, 0x6b, 0x38, 0x03, 0x7e, 0xd5, 0x32, 0x45, 0x33, 0x2c, 0x89, 0x55,
+	0xdb, 0x13, 0xf0, 0x09, 0x00, 0x75, 0x9b, 0x31, 0x9a, 0x2f, 0xae, 0x49, 0xd7, 0x8b, 0x4e, 0x52,
+	0xdf, 0x30, 0x1f, 0x49, 0x07, 0x9f, 0x82, 0x07, 0xb9, 0xa0, 0x7c, 0xa1, 0xba, 0x9a, 0x2c, 0xf6,
+	0x16, 0xbc, 0x74, 0xaa, 0xe9, 0xcf, 0x5d, 0x4d, 0x2e, 0x35, 0xa9, 0xc7, 0xe4, 0x0d, 0xc1, 0x8a,
+	0x14, 0x0b, 0xac, 0x02, 0x2f, 0x72, 0x62, 0x37, 0xf5, 0x2d, 0x73, 0xa1, 0xe0, 0x63, 0x30, 0x92,
+	0x4b, 0xdc, 0x10, 0x19, 0x8c, 0x22, 0x37, 0x9e, 0xa4, 0x16, 0xcd, 0x7f, 0x0e, 0xc1, 0xe4, 0x0b,
+	0x66, 0x8c, 0x6c, 0x1f, 0x70, 0x7c, 0x65, 0x87, 0x46, 0x87, 0x77, 0x8d, 0xce, 0x80, 0x8f, 0x59,
+	0x29, 0x1a, 0xaa, 0x96, 0x95, 0xdd, 0xdd, 0x9e, 0x80, 0x0f, 0x81, 0x9b, 0xd3, 0xa2, 0xb7, 0xee,
+	0xa7, 0xba, 0x84, 0x9f, 0xc0, 0x7d, 0x6c, 0x56, 0x27, 0x03, 0x2f, 0x72, 0xe3, 0xf1, 0xf9, 0xcb,
+	0xe4, 0x58, 0xea, 0xc9, 0xff, 0x16, 0x13, 0xbb, 0x71, 0xf9, 0x9e, 0xab, 0xa6, 0x4b, 0x77, 0x53,
+	0x4e, 0x8b, 0x5d, 0x18, 0xa6, 0xa5, 0x45, 0xb5, 0x55, 0xf3, 0x0e, 0x5d, 0xc2, 0x37, 0xc0, 0x5b,
+	0x61, 0xd6, 0x9a, 0x18, 0xc6, 0xe7, 0xcf, 0x8e, 0x2b, 0x1e, 0xc4, 0x9a, 0x9a, 0x5b, 0xaf, 0x87,
+	0xaf, 0x9c, 0xb7, 0x1f, 0x7e, 0xaf, 0x43, 0xe7, 0x76, 0x1d, 0x3a, 0x7f, 0xd7, 0xa1, 0xf3, 0x63,
+	0x13, 0x0e, 0x6e, 0x37, 0xe1, 0xe0, 0xcf, 0x26, 0x1c, 0x7c, 0x7d, 0x5e, 0x52, 0xb5, 0x6c, 0xb3,
+	0x24, 0x17, 0x15, 0x32, 0x73, 0x51, 0x2e, 0x1a, 0x82, 0x6e, 0x10, 0x2d, 0x08, 0x57, 0x54, 0x75,
+	0x48, 0xa7, 0x28, 0x77, 0x7f, 0x3e, 0x1b, 0xf5, 0xba, 0x2f, 0xfe, 0x05, 0x00, 0x00, 0xff, 0xff,
+	0xd6, 0x15, 0xfb, 0x86, 0x0f, 0x03, 0x00, 0x00,
 }
 
 func (m *AccountInfo) Marshal() (dAtA []byte, err error) {
@@ -515,32 +383,20 @@ func (m *AccountConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = l
 	if len(m.Shares) > 0 {
 		for iNdEx := len(m.Shares) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Shares[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintModels(dAtA, i, uint64(size))
-			}
+			i -= len(m.Shares[iNdEx])
+			copy(dAtA[i:], m.Shares[iNdEx])
+			i = encodeVarintModels(dAtA, i, uint64(len(m.Shares[iNdEx])))
 			i--
-			dAtA[i] = 0x3a
+			dAtA[i] = 0x32
 		}
 	}
 	if m.CreatedAt != 0 {
 		i = encodeVarintModels(dAtA, i, uint64(m.CreatedAt))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x28
 	}
-	if len(m.Bech32Prefix) > 0 {
-		i -= len(m.Bech32Prefix)
-		copy(dAtA[i:], m.Bech32Prefix)
-		i = encodeVarintModels(dAtA, i, uint64(len(m.Bech32Prefix)))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if m.Index != 0 {
-		i = encodeVarintModels(dAtA, i, uint64(m.Index))
+	if m.CoinTypeIndex != 0 {
+		i = encodeVarintModels(dAtA, i, uint64(m.CoinTypeIndex))
 		i--
 		dAtA[i] = 0x20
 	}
@@ -551,10 +407,10 @@ func (m *AccountConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintModels(dAtA, i, uint64(len(m.Address)))
+	if len(m.Multibase) > 0 {
+		i -= len(m.Multibase)
+		copy(dAtA[i:], m.Multibase)
+		i = encodeVarintModels(dAtA, i, uint64(len(m.Multibase)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -562,62 +418,6 @@ func (m *AccountConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.Name)
 		copy(dAtA[i:], m.Name)
 		i = encodeVarintModels(dAtA, i, uint64(len(m.Name)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ShareConfig) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ShareConfig) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ShareConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.ConfigData) > 0 {
-		i -= len(m.ConfigData)
-		copy(dAtA[i:], m.ConfigData)
-		i = encodeVarintModels(dAtA, i, uint64(len(m.ConfigData)))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.Network) > 0 {
-		i -= len(m.Network)
-		copy(dAtA[i:], m.Network)
-		i = encodeVarintModels(dAtA, i, uint64(len(m.Network)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if m.CreatedAt != 0 {
-		i = encodeVarintModels(dAtA, i, uint64(m.CreatedAt))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.PublicKey) > 0 {
-		i -= len(m.PublicKey)
-		copy(dAtA[i:], m.PublicKey)
-		i = encodeVarintModels(dAtA, i, uint64(len(m.PublicKey)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.SelfId) > 0 {
-		i -= len(m.SelfId)
-		copy(dAtA[i:], m.SelfId)
-		i = encodeVarintModels(dAtA, i, uint64(len(m.SelfId)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -746,7 +546,7 @@ func (m *AccountConfig) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovModels(uint64(l))
 	}
-	l = len(m.Address)
+	l = len(m.Multibase)
 	if l > 0 {
 		n += 1 + l + sovModels(uint64(l))
 	}
@@ -754,49 +554,17 @@ func (m *AccountConfig) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovModels(uint64(l))
 	}
-	if m.Index != 0 {
-		n += 1 + sovModels(uint64(m.Index))
-	}
-	l = len(m.Bech32Prefix)
-	if l > 0 {
-		n += 1 + l + sovModels(uint64(l))
+	if m.CoinTypeIndex != 0 {
+		n += 1 + sovModels(uint64(m.CoinTypeIndex))
 	}
 	if m.CreatedAt != 0 {
 		n += 1 + sovModels(uint64(m.CreatedAt))
 	}
 	if len(m.Shares) > 0 {
-		for _, e := range m.Shares {
-			l = e.Size()
+		for _, b := range m.Shares {
+			l = len(b)
 			n += 1 + l + sovModels(uint64(l))
 		}
-	}
-	return n
-}
-
-func (m *ShareConfig) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.SelfId)
-	if l > 0 {
-		n += 1 + l + sovModels(uint64(l))
-	}
-	l = len(m.PublicKey)
-	if l > 0 {
-		n += 1 + l + sovModels(uint64(l))
-	}
-	if m.CreatedAt != 0 {
-		n += 1 + sovModels(uint64(m.CreatedAt))
-	}
-	l = len(m.Network)
-	if l > 0 {
-		n += 1 + l + sovModels(uint64(l))
-	}
-	l = len(m.ConfigData)
-	if l > 0 {
-		n += 1 + l + sovModels(uint64(l))
 	}
 	return n
 }
@@ -1073,7 +841,7 @@ func (m *AccountConfig) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Multibase", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1101,7 +869,7 @@ func (m *AccountConfig) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Address = string(dAtA[iNdEx:postIndex])
+			m.Multibase = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -1139,9 +907,9 @@ func (m *AccountConfig) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CoinTypeIndex", wireType)
 			}
-			m.Index = 0
+			m.CoinTypeIndex = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowModels
@@ -1151,44 +919,12 @@ func (m *AccountConfig) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Index |= uint32(b&0x7F) << shift
+				m.CoinTypeIndex |= int32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Bech32Prefix", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowModels
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthModels
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthModels
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Bech32Prefix = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
 			}
@@ -1207,126 +943,10 @@ func (m *AccountConfig) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Shares", wireType)
 			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowModels
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthModels
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthModels
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Shares = append(m.Shares, &ShareConfig{})
-			if err := m.Shares[len(m.Shares)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipModels(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthModels
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ShareConfig) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowModels
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ShareConfig: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ShareConfig: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SelfId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowModels
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthModels
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthModels
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SelfId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PublicKey", wireType)
-			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
@@ -1352,95 +972,8 @@ func (m *ShareConfig) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.PublicKey = append(m.PublicKey[:0], dAtA[iNdEx:postIndex]...)
-			if m.PublicKey == nil {
-				m.PublicKey = []byte{}
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
-			}
-			m.CreatedAt = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowModels
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.CreatedAt |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Network", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowModels
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthModels
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthModels
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Network = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ConfigData", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowModels
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthModels
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthModels
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ConfigData = append(m.ConfigData[:0], dAtA[iNdEx:postIndex]...)
-			if m.ConfigData == nil {
-				m.ConfigData = []byte{}
-			}
+			m.Shares = append(m.Shares, make([]byte, postIndex-iNdEx))
+			copy(m.Shares[len(m.Shares)-1], dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
