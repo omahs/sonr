@@ -104,6 +104,15 @@ tasks:
       - sh bind.sh -a
       - sh bind.sh -w
 
+  sync:
+    desc: Sync the blockchain
+    summary: |
+      Sync Blockchain
+
+      This task will sync the blockchain
+    cmds:
+      - sh .github/scripts/unresolved.sh sonrhq core 26
+
   web:dev:
     aliases:
       - "web"

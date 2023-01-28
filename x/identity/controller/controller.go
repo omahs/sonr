@@ -75,10 +75,15 @@ type DIDControllerImpl struct {
 
 // `New` creates a new DID controller instance
 func New(ctx context.Context, account *vaultv1.AccountConfig) (DIDController, error) {
+	st, err := store.NewWalletStore(account)
+	if err != nil {
+		return nil, err
+	}
 	docc := &DIDControllerImpl{
 		ctx:            ctx,
 		primaryAccount: account,
 		accounts:       make(map[string]*vaultv1.AccountConfig),
+		store:          st,
 	}
 
 	pubKey, err := account.PubKey()
