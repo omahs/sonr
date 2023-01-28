@@ -150,7 +150,7 @@ func (w *DIDControllerImpl) CreateAccount(name string, coinType common.CoinType)
 	if err != nil {
 		return err
 	}
-	err = w.didDocument.SetAssertion(pub, types.WithBlockchainAccount(addr), types.WithController(w.didDocument.ID), types.WithIDFragmentSuffix(acc.AccountConfig().Name))
+	err = w.didDocument.SetAssertion(pub, types.WithBlockchainAccount(addr), types.WithController(w.didDocument.Id), types.WithIDFragmentSuffix(acc.AccountConfig().Name))
 	if err != nil {
 		return err
 	}

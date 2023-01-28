@@ -28,7 +28,7 @@ func TestDidDocumentMsgServerCreate(t *testing.T) {
 		_, err := srv.CreateDidDocument(wctx, expected)
 		require.NoError(t, err)
 		rst, found := k.GetDidDocument(ctx,
-			expected.Document.ID,
+			expected.Document.Id,
 		)
 		accAddr, err := rst.AccAddress()
 		require.NoError(t, err)
@@ -82,7 +82,7 @@ func TestDidDocumentMsgServerUpdate(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				rst, found := k.GetDidDocument(ctx,
-					expected.Document.ID,
+					expected.Document.Id,
 				)
 				require.True(t, found)
 				accAddr, err := rst.AccAddress()

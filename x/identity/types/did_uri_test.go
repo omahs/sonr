@@ -72,7 +72,7 @@ func TestParseDID(t *testing.T) {
 	t.Run("error - invalid DID", func(t *testing.T) {
 		id, err := uri.ParseDID("invalidDID")
 		assert.Nil(t, id)
-		assert.EqualError(t, err, "invalid DID: input does not begin with 'did:' prefix")
+		assert.EqualError(t, err, "invalid DId:input does not begin with 'did:' prefix")
 
 	})
 	t.Run("error - DID URL", func(t *testing.T) {

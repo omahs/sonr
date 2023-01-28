@@ -4,19 +4,22 @@ package types
 
 // KeyAgreementCount returns the number of Assertion Methods
 func (vm *DidDocument) KeyAgreementCount() int {
-	return vm.KeyAgreement.Count()
+	return len(vm.KeyAgreement)
 }
 
 // AddKeyAgreement adds a VerificationMethod as KeyAgreement
 // If the controller is not set, it will be set to the document's ID
 func (d *DidDocument) AddKeyAgreement(v *VerificationMethod) {
 	if v.Controller == "" {
-		v.Controller = d.ID
+		v.Controller = d.Id
 	}
-	d.VerificationMethod.Add(v)
-	d.KeyAgreement.Add(v)
+	d.VerificationMethod = append(d.VerificationMethod, v)
+	d.KeyAgreement = append(d.KeyAgreement, &VerificationRelationship{
+		Reference:          v.Id,
+		VerificationMethod: v,
+	})
 }
 
-func (d *DidDocument) GetKeyAgreements() VerificationRelationships {
-	return *d.KeyAgreement
+func (d *DidDocument) GetKeyAgreements() []*VerificationRelationship {
+	return d.KeyAgreement
 }

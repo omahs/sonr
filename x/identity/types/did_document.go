@@ -32,16 +32,16 @@ func NewDocument(pubKey common.SNRPubKey) (*DidDocument, error) {
 // NewBlankDocument creates a blank document to begin the WebAuthnProcess
 func NewBlankDocument(idStr string) *DidDocument {
 	return &DidDocument{
-		ID:                   idStr,
+		Id:                   idStr,
 		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().DidMethodContext},
 		Controller:           []string{},
-		VerificationMethod:   new(VerificationMethods),
-		Authentication:       new(VerificationRelationships),
-		AssertionMethod:      new(VerificationRelationships),
-		CapabilityInvocation: new(VerificationRelationships),
-		CapabilityDelegation: new(VerificationRelationships),
-		KeyAgreement:         new(VerificationRelationships),
-		Service:              new(Services),
+		VerificationMethod:   make([]*VerificationMethod, 0),
+		Authentication:       make([]*VerificationRelationship, 0),
+		AssertionMethod:      make([]*VerificationRelationship, 0),
+		CapabilityInvocation: make([]*VerificationRelationship, 0),
+		CapabilityDelegation: make([]*VerificationRelationship, 0),
+		KeyAgreement:         make([]*VerificationRelationship, 0),
+		Service:              make([]*Service, 0),
 		AlsoKnownAs:          make([]string, 0),
 	}
 }
@@ -49,41 +49,31 @@ func NewBlankDocument(idStr string) *DidDocument {
 // BlankDocument creates a blank document to begin the WebAuthnProcess
 func NewDocumentFromAKA(akaStr string) *DidDocument {
 	return &DidDocument{
-		ID:                   fmt.Sprintf("did:tmp:%s", akaStr),
+		Id:                   fmt.Sprintf("did:tmp:%s", akaStr),
 		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().DidMethodContext},
 		Controller:           []string{},
-		VerificationMethod:   new(VerificationMethods),
-		Authentication:       new(VerificationRelationships),
-		AssertionMethod:      new(VerificationRelationships),
-		CapabilityInvocation: new(VerificationRelationships),
-		CapabilityDelegation: new(VerificationRelationships),
-		KeyAgreement:         new(VerificationRelationships),
-		Service:              new(Services),
+		VerificationMethod:   make([]*VerificationMethod, 0),
+		Authentication:       make([]*VerificationRelationship, 0),
+		AssertionMethod:      make([]*VerificationRelationship, 0),
+		CapabilityInvocation: make([]*VerificationRelationship, 0),
+		CapabilityDelegation: make([]*VerificationRelationship, 0),
+		KeyAgreement:         make([]*VerificationRelationship, 0),
+		Service:              make([]*Service, 0),
 		AlsoKnownAs: []string{
 			akaStr,
 		},
 	}
 }
 
-// NewDocumentFromJson creates a new document from a json byte array
-func NewDocumentFromJson(b []byte) (*DidDocument, error) {
-	var doc DidDocument
-	err := doc.UnmarshalJSON(b)
-	if err != nil {
-		return nil, err
-	}
-	return &doc, nil
-}
-
 // Address returns the address of the DID
 func (d *DidDocument) Address() string {
-	ptrs := strings.Split(d.ID, ":")
+	ptrs := strings.Split(d.Id, ":")
 	return fmt.Sprintf("%s%s", ptrs[len(ptrs)-2], ptrs[len(ptrs)-1])
 }
 
 // AccAddress returns the account address of the DID
 func (d *DidDocument) AccAddress() (sdk.AccAddress, error) {
-	return ConvertDidToAccAddress(d.ID)
+	return ConvertDidToAccAddress(d.Id)
 }
 
 // CheckAccAddress checks if the provided sdk.AccAddress or string matches the DID ID

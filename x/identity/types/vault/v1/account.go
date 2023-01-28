@@ -100,7 +100,7 @@ func (a *AccountConfig) GetConfigAtIndex(index int) (*cmp.Config, error) {
 	return conf, nil
 }
 
-// Creating a slice of party.ID from the shares.
+// Creating a slice of party.Id from the shares.
 func (a *AccountConfig) PartyIDs() []party.ID {
 	ids := make([]party.ID, 0, len(a.Shares))
 	for i := range a.Shares {
