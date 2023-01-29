@@ -1,11 +1,16 @@
-package tx
+package internal
 
 import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
-	"github.com/sonrhq/core/x/identity/protocol/vault/account"
+	"github.com/sonrhq/core/pkg/crypto/wallet"
 )
+
+
+//
+// Cosmos TX Signing helper functions
+//
 
 // makeTxBody builds a transaction from the given inputs.
 func makeTxBody(note string, msgs ...sdk.Msg) (*txtypes.TxBody, error) {
@@ -58,7 +63,7 @@ func createRawTxBytes(txBody *txtypes.TxBody, sig []byte, authInfo *txtypes.Auth
 }
 
 // getAuthInfoSingle returns the authentication information for the given message.
-func getAuthInfoSingle(w account.WalletAccount, gas int) (*txtypes.AuthInfo, error) {
+func getAuthInfoSingle(w wallet.Account, gas int) (*txtypes.AuthInfo, error) {
 	// Build signerInfo parameters
 	anyPubKey, err := codectypes.NewAnyWithValue(w.PubKey())
 	if err != nil {
@@ -109,4 +114,36 @@ func getSignDocBytes(authInfo *txtypes.AuthInfo, txBody *txtypes.TxBody) ([]byte
 		ChainId:       "sonr",
 	}
 	return signDoc.Marshal()
+}
+
+
+// Signing a transaction.
+func signTxDocDirectAux(w wallet.Account, txBody []byte) (*txtypes.SignDocDirectAux, []byte, error) {
+	// Build the public key.
+	pk, err := codectypes.NewAnyWithValue(w.PubKey())
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Build the sign doc.
+	doc := &txtypes.SignDocDirectAux{
+		ChainId:   "sonr",
+		PublicKey: pk,
+		BodyBytes: txBody,
+	}
+
+	// Marshal the document.
+	bz, err := doc.Marshal()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Sign the document.
+	sig, err := w.Sign(bz)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Return the document and the signature.
+	return doc, sig, nil
 }

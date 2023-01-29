@@ -1,10 +1,10 @@
-package store
+package internal
 
 import (
 	"fmt"
 	"sync"
 
-	"github.com/sonrhq/core/x/identity/protocol/vault/account"
+	"github.com/sonrhq/core/pkg/crypto/wallet"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
@@ -13,12 +13,14 @@ type MemoryStore struct {
 	accConfig *vaultv1.AccountConfig
 	configs   map[string]*cmp.Config
 	sync.Mutex
+	*empty
 }
 
-func newMemoryStore(accCfg *vaultv1.AccountConfig) (WalletStore, error) {
+func NewMemoryStore(accCfg *vaultv1.AccountConfig) (wallet.Store, error) {
 	ds := &MemoryStore{
 		accConfig: accCfg,
 		configs:   make(map[string]*cmp.Config),
+		empty:     &empty{},
 	}
 	return ds, nil
 }
@@ -41,11 +43,11 @@ func (ds *MemoryStore) SetShare(sc *cmp.Config) error {
 }
 
 // JWKClaims returns the JWKClaims for the store to be signed by the identity
-func (ds *MemoryStore) JWKClaims(acc account.WalletAccount) (string, error) {
+func (ds *MemoryStore) JWKClaims(acc wallet.Account) (string, error) {
 	return "", nil
 }
 
 // VerifyJWKClaims verifies the JWKClaims for the store
-func (ds *MemoryStore) VerifyJWKClaims(claims string, acc account.WalletAccount) error {
+func (ds *MemoryStore) VerifyJWKClaims(claims string, acc wallet.Account) error {
 	return nil
 }

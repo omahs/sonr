@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/x/identity/protocol/vault/wallet"
+	"github.com/sonrhq/core/x/identity/protocol/vault/dispatcher"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
 
@@ -28,14 +28,14 @@ var (
 // @property highway - This is the HighwayNode that the VaultService is running on.
 type VaultService struct {
 	node       common.IPFSNode
-	dispatcher *wallet.Dispatcher
+	dispatcher *dispatcher.Dispatcher
 }
 
 // It creates a new VaultService and registers it with the gRPC server
 func RegisterVaultIPFSService(cctx client.Context, mux *runtime.ServeMux, node common.IPFSNode) error {
 	vaultService = &VaultService{
 		node:       node,
-		dispatcher: wallet.NewDispatcher(),
+		dispatcher: dispatcher.New(),
 	}
 	return v1.RegisterVaultHandlerServer(context.Background(), mux, vaultService)
 }

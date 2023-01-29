@@ -2,8 +2,11 @@
 // I.e. Verification Material for Wallets. This is the default Verification Method for DID Documents. (snr, btc, eth, etc.)
 package types
 
+import common "github.com/sonrhq/core/pkg/common"
+
 // SetAssertion sets the AssertionMethod of the DID Document to a PubKey and configured with the given options
-func (d *DidDocument) SetAssertion(pubKey *PubKey, opts ...VerificationMethodOption) error {
+func (d *DidDocument) SetAssertion(pub common.SNRPubKey, opts ...VerificationMethodOption) error {
+	pubKey, err := PubKeyFromCommon(pub)
 	vm, err := pubKey.VerificationMethod(opts...)
 	if err != nil {
 		return err

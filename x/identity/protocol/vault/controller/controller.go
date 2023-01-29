@@ -6,10 +6,11 @@ import (
 	"strings"
 
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/x/identity/controller/internal/store"
-	"github.com/sonrhq/core/x/identity/protocol/vault/account"
+	"github.com/sonrhq/core/pkg/crypto"
+	"github.com/sonrhq/core/pkg/crypto/wallet"
+	"github.com/sonrhq/core/pkg/crypto/wallet/accounts"
+	"github.com/sonrhq/core/pkg/crypto/wallet/stores"
 	"github.com/sonrhq/core/x/identity/types"
-	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
 
 // rootWalletAccountName is the name of the root account
@@ -31,7 +32,7 @@ type DIDController interface {
 	ID() string
 
 	// DID Document
-	Document() *types.DidDocument
+	Document() *crypto.DidDocument
 
 	// This method is used to get the challenge response from the DID controller.
 	// GetChallengeOptions(aka string) (*v1.ChallengeResponse, error)
@@ -49,60 +50,54 @@ type DIDController interface {
 	CreateAccount(name string, coinType common.CoinType) error
 
 	// Gets an account by name
-	GetAccount(name string) (account.WalletAccount, error)
-
-	// Gets Primary account
-	PrimaryAccount() (account.WalletAccount, error)
+	GetAccount(name string) (wallet.Account, error)
 
 	// Gets all accounts
-	ListAccounts() ([]account.WalletAccount, error)
+	ListAccounts() ([]wallet.Account, error)
 }
 
 // `DIDControllerImpl` is a type that implements the `DIDController` interface.
 // @property  - `wallet.Wallet`: This is the interface that the DID controller implements.
 // @property  - `store.WalletStore`: This is the interface that the DID controller implements.
 type DIDControllerImpl struct {
-	store store.WalletStore
+	store wallet.Store
 
 	ctx context.Context
 	aka string
 
-	accounts       map[string]*vaultv1.AccountConfig
-	didDocument    *types.DidDocument
-	rootPubKey     *types.PubKey
-	primaryAccount *vaultv1.AccountConfig
+	accounts       map[string]*wallet.AccountConfig
+	didDocument    *crypto.DidDocument
+	primaryAccount wallet.Account
 }
 
 // `New` creates a new DID controller instance
-func New(ctx context.Context, account *vaultv1.AccountConfig) (DIDController, error) {
-	st, err := store.NewWalletStore(account)
+func New(ctx context.Context, account wallet.Account) (DIDController, error) {
+	st, err := stores.New(account.Config())
 	if err != nil {
 		return nil, err
 	}
 	docc := &DIDControllerImpl{
 		ctx:            ctx,
 		primaryAccount: account,
-		accounts:       make(map[string]*vaultv1.AccountConfig),
+		accounts:       make(map[string]*wallet.AccountConfig),
 		store:          st,
 	}
-
-	pubKey, err := account.PubKey()
-	if err != nil {
-		return nil, err
-	}
 	// Create the DID document.
-	doc, err := types.NewDocument(pubKey)
+	doc, err := types.NewDocument(account.PubKey())
 	if err != nil {
 		return nil, err
 	}
 	docc.didDocument = doc
-	docc.rootPubKey = pubKey
+
 	return docc, nil
 }
 
 // Address returns the address of the DID controller.
 func (d *DIDControllerImpl) Address() string {
-	addr, _ := d.primaryAccount.Address()
+	addr, err := d.primaryAccount.Config().Address()
+	if err != nil {
+		return ""
+	}
 	return addr
 }
 
@@ -112,7 +107,7 @@ func (d *DIDControllerImpl) ID() string {
 }
 
 // Document returns the DID document of the DID controller.
-func (d *DIDControllerImpl) Document() *types.DidDocument {
+func (d *DIDControllerImpl) Document() *crypto.DidDocument {
 	return d.didDocument
 }
 
@@ -138,24 +133,17 @@ func (d *DIDControllerImpl) Document() *types.DidDocument {
 
 // Creating a new account.
 func (w *DIDControllerImpl) CreateAccount(name string, coinType common.CoinType) error {
-	prim, err := w.PrimaryAccount()
+	acc, err := w.primaryAccount.Bip32Derive(name, coinType)
 	if err != nil {
 		return err
 	}
-	acc, err := prim.Bip32Derive(name, coinType)
+	w.accounts[name] = acc.Config()
+
+	addr, err := acc.PubKey().Bech32(acc.Config().CoinType().AddrPrefix())
 	if err != nil {
 		return err
 	}
-	w.accounts[name] = acc.AccountConfig()
-	pub, err := acc.AccountConfig().PubKey()
-	if err != nil {
-		return err
-	}
-	addr, err := pub.Bech32(acc.AccountConfig().CoinType().AddrPrefix())
-	if err != nil {
-		return err
-	}
-	err = w.didDocument.SetAssertion(pub, types.WithBlockchainAccount(addr), types.WithController(w.didDocument.Id), types.WithIDFragmentSuffix(acc.AccountConfig().Name))
+	err = w.didDocument.SetAssertion(acc.PubKey(), types.WithBlockchainAccount(addr), types.WithController(w.didDocument.Id), types.WithIDFragmentSuffix(acc.Config().Name))
 	if err != nil {
 		return err
 	}
@@ -163,28 +151,23 @@ func (w *DIDControllerImpl) CreateAccount(name string, coinType common.CoinType)
 }
 
 // Returning the account.WalletAccount and error.
-func (w *DIDControllerImpl) GetAccount(name string) (account.WalletAccount, error) {
+func (w *DIDControllerImpl) GetAccount(name string) (wallet.Account, error) {
 	accConf, ok := w.accounts[strings.ToLower(name)]
 	if !ok {
 		return nil, errors.New("Account not found")
 	}
-	return account.NewAccountFromConfig(accConf)
+	return accounts.Load(accConf)
 }
 
 // Returning a list of accounts.
-func (w *DIDControllerImpl) ListAccounts() ([]account.WalletAccount, error) {
-	accs := make([]account.WalletAccount, 0, len(w.accounts))
+func (w *DIDControllerImpl) ListAccounts() ([]wallet.Account, error) {
+	accs := make([]wallet.Account, 0, len(w.accounts))
 	for _, accConf := range w.accounts {
-		acc, err := account.NewAccountFromConfig(accConf)
+		acc, err := accounts.Load(accConf)
 		if err != nil {
 			return nil, err
 		}
 		accs = append(accs, acc)
 	}
 	return accs, nil
-}
-
-// Returning the primary account.
-func (w *DIDControllerImpl) PrimaryAccount() (account.WalletAccount, error) {
-	return account.NewAccountFromConfig(w.primaryAccount)
 }

@@ -1,7 +1,7 @@
-package store
+package internal
 
 import (
-	"github.com/sonrhq/core/x/identity/protocol/vault/account"
+	"github.com/sonrhq/core/pkg/crypto/wallet"
 	vaultv1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
@@ -13,9 +13,10 @@ type FileStore struct {
 	path      string
 	db        *bolt.DB
 	bucketKey []byte
+	*empty
 }
 
-func newFileStore(p string, accCfg *vaultv1.AccountConfig) (WalletStore, error) {
+func NewFileStore(p string, accCfg *vaultv1.AccountConfig) (wallet.Store, error) {
 	// Open the my.db data file in your current directory.
 	// It will be created if it doesn't exist.
 	db, err := bolt.Open(p, 0600, nil)
@@ -27,6 +28,7 @@ func newFileStore(p string, accCfg *vaultv1.AccountConfig) (WalletStore, error) 
 		accConfig: accCfg,
 		path:      p,
 		db:        db,
+		empty:     &empty{},
 		bucketKey: []byte(accCfg.DID()),
 	}
 	return ds, nil
@@ -55,11 +57,11 @@ func (ds *FileStore) SetShare(sc *cmp.Config) error {
 }
 
 // JWKClaims returns the JWKClaims for the store to be signed by the identity
-func (ds *FileStore) JWKClaims(acc account.WalletAccount) (string, error) {
+func (ds *FileStore) JWKClaims(acc wallet.Account) (string, error) {
 	return "", nil
 }
 
 // VerifyJWKClaims verifies the JWKClaims for the store
-func (ds *FileStore) VerifyJWKClaims(claims string, acc account.WalletAccount) error {
+func (ds *FileStore) VerifyJWKClaims(claims string, acc wallet.Account) error {
 	return nil
 }

@@ -1,12 +1,11 @@
-package wallet
+package dispatcher
 
 import (
 	"context"
 	"sync"
 
-	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/x/identity/controller"
-	"github.com/sonrhq/core/x/identity/protocol/vault/account"
+	"github.com/sonrhq/core/pkg/crypto/wallet/accounts"
+	"github.com/sonrhq/core/x/identity/protocol/vault/controller"
 )
 
 type Dispatcher struct {
@@ -15,7 +14,7 @@ type Dispatcher struct {
 }
 
 // NewDispatcher creates a new wallet dispatcher
-func NewDispatcher() *Dispatcher {
+func New() *Dispatcher {
 	return &Dispatcher{
 		// n: n,
 	}
@@ -32,11 +31,11 @@ func (d *Dispatcher) BuildNewDIDController() (controller.DIDController, error) {
 	// Create the wallet in a goroutine
 	go func() {
 		// The default shards that are added to the MPC wallet
-		rootAcc, err := account.NewAccount("Primary", common.CoinType_CoinType_SONR)
+		rootAcc, err := accounts.New()
 		if err != nil {
 			errCh <- err
 		}
-		control, err := controller.New(context.Background(), rootAcc.AccountConfig())
+		control, err := controller.New(context.Background(), rootAcc)
 		if err != nil {
 			errCh <- err
 		}

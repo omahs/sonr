@@ -1,4 +1,4 @@
-package wallet_test
+package dispatcher_test
 
 import (
 	"fmt"
@@ -7,11 +7,11 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/sonrhq/core/app"
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/x/identity/protocol/vault/wallet"
+	"github.com/sonrhq/core/x/identity/protocol/vault/dispatcher"
 )
 
 func TestDispatcher(t *testing.T) {
-	d := wallet.NewDispatcher()
+	d := dispatcher.New()
 	w, err := d.BuildNewDIDController()
 	checkErr(t, err)
 	t.Log(w.Address())
