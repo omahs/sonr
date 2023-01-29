@@ -9,6 +9,10 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/sonrhq/core/x/identity/types"
+	// channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
+    // host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
+    // "github.com/cosmos/ibc-go/v6/modules/core/exported"
+
 	"github.com/tendermint/tendermint/libs/log"
 )
 
