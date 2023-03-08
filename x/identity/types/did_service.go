@@ -14,7 +14,7 @@ func NewIPNSService(id string, endpoint string) *Service {
 	return &Service{
 		Id:              id,
 		Type:            "EncryptedVault",
-		ServiceEndpoint: endpoint,
+		Origin: endpoint,
 	}
 }
 
@@ -93,7 +93,7 @@ func (s *Service) UnmarshalJSON(data []byte) error {
 
 // Unmarshal unmarshalls the service endpoint into a domain-specific type.
 func (s Service) UnmarshalServiceEndpoint(target interface{}) error {
-	if asJSON, err := json.Marshal(s.ServiceEndpoint); err != nil {
+	if asJSON, err := json.Marshal(s.Origin); err != nil {
 		return err
 	} else {
 		return json.Unmarshal(asJSON, target)
@@ -101,8 +101,8 @@ func (s Service) UnmarshalServiceEndpoint(target interface{}) error {
 }
 
 func (s *Service) CID() string {
-	if strings.Contains(s.ServiceEndpoint, "ipfs") {
-		return strings.TrimPrefix(s.ServiceEndpoint, "https://ipfs.sonr.network")
+	if strings.Contains(s.Origin, "ipfs") {
+		return strings.TrimPrefix(s.Origin, "https://ipfs.sonr.network")
 	}
 	return ""
 }
