@@ -761,198 +761,6 @@ func (m *QueryByNetworkResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-type QueryGetDomainRecordRequest struct {
-	Tld    string `protobuf:"bytes,1,opt,name=tld,proto3" json:"tld,omitempty"`
-	Domain string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`
-}
-
-func (m *QueryGetDomainRecordRequest) Reset()         { *m = QueryGetDomainRecordRequest{} }
-func (m *QueryGetDomainRecordRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetDomainRecordRequest) ProtoMessage()    {}
-func (*QueryGetDomainRecordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b2bdb996e9029f99, []int{16}
-}
-func (m *QueryGetDomainRecordRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryGetDomainRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryGetDomainRecordRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryGetDomainRecordRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetDomainRecordRequest.Merge(m, src)
-}
-func (m *QueryGetDomainRecordRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryGetDomainRecordRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetDomainRecordRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryGetDomainRecordRequest proto.InternalMessageInfo
-
-func (m *QueryGetDomainRecordRequest) GetTld() string {
-	if m != nil {
-		return m.Tld
-	}
-	return ""
-}
-
-func (m *QueryGetDomainRecordRequest) GetDomain() string {
-	if m != nil {
-		return m.Domain
-	}
-	return ""
-}
-
-type QueryGetDomainRecordResponse struct {
-	DomainRecord DomainRecord `protobuf:"bytes,1,opt,name=domainRecord,proto3" json:"domainRecord"`
-}
-
-func (m *QueryGetDomainRecordResponse) Reset()         { *m = QueryGetDomainRecordResponse{} }
-func (m *QueryGetDomainRecordResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetDomainRecordResponse) ProtoMessage()    {}
-func (*QueryGetDomainRecordResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b2bdb996e9029f99, []int{17}
-}
-func (m *QueryGetDomainRecordResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryGetDomainRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryGetDomainRecordResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryGetDomainRecordResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetDomainRecordResponse.Merge(m, src)
-}
-func (m *QueryGetDomainRecordResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryGetDomainRecordResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetDomainRecordResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryGetDomainRecordResponse proto.InternalMessageInfo
-
-func (m *QueryGetDomainRecordResponse) GetDomainRecord() DomainRecord {
-	if m != nil {
-		return m.DomainRecord
-	}
-	return DomainRecord{}
-}
-
-type QueryAllDomainRecordRequest struct {
-	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryAllDomainRecordRequest) Reset()         { *m = QueryAllDomainRecordRequest{} }
-func (m *QueryAllDomainRecordRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllDomainRecordRequest) ProtoMessage()    {}
-func (*QueryAllDomainRecordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b2bdb996e9029f99, []int{18}
-}
-func (m *QueryAllDomainRecordRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAllDomainRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAllDomainRecordRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAllDomainRecordRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllDomainRecordRequest.Merge(m, src)
-}
-func (m *QueryAllDomainRecordRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAllDomainRecordRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllDomainRecordRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAllDomainRecordRequest proto.InternalMessageInfo
-
-func (m *QueryAllDomainRecordRequest) GetPagination() *query.PageRequest {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
-type QueryAllDomainRecordResponse struct {
-	DomainRecord []DomainRecord      `protobuf:"bytes,1,rep,name=domainRecord,proto3" json:"domainRecord"`
-	Pagination   *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryAllDomainRecordResponse) Reset()         { *m = QueryAllDomainRecordResponse{} }
-func (m *QueryAllDomainRecordResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllDomainRecordResponse) ProtoMessage()    {}
-func (*QueryAllDomainRecordResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b2bdb996e9029f99, []int{19}
-}
-func (m *QueryAllDomainRecordResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAllDomainRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAllDomainRecordResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAllDomainRecordResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllDomainRecordResponse.Merge(m, src)
-}
-func (m *QueryAllDomainRecordResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAllDomainRecordResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllDomainRecordResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAllDomainRecordResponse proto.InternalMessageInfo
-
-func (m *QueryAllDomainRecordResponse) GetDomainRecord() []DomainRecord {
-	if m != nil {
-		return m.DomainRecord
-	}
-	return nil
-}
-
-func (m *QueryAllDomainRecordResponse) GetPagination() *query.PageResponse {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "sonrhq.core.identity.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "sonrhq.core.identity.v1.QueryParamsResponse")
@@ -970,79 +778,65 @@ func init() {
 	proto.RegisterType((*QueryAllDidResponse)(nil), "sonrhq.core.identity.v1.QueryAllDidResponse")
 	proto.RegisterType((*QueryByNetworkRequest)(nil), "sonrhq.core.identity.v1.QueryByNetworkRequest")
 	proto.RegisterType((*QueryByNetworkResponse)(nil), "sonrhq.core.identity.v1.QueryByNetworkResponse")
-	proto.RegisterType((*QueryGetDomainRecordRequest)(nil), "sonrhq.core.identity.v1.QueryGetDomainRecordRequest")
-	proto.RegisterType((*QueryGetDomainRecordResponse)(nil), "sonrhq.core.identity.v1.QueryGetDomainRecordResponse")
-	proto.RegisterType((*QueryAllDomainRecordRequest)(nil), "sonrhq.core.identity.v1.QueryAllDomainRecordRequest")
-	proto.RegisterType((*QueryAllDomainRecordResponse)(nil), "sonrhq.core.identity.v1.QueryAllDomainRecordResponse")
 }
 
 func init() { proto.RegisterFile("core/identity/v1/query.proto", fileDescriptor_b2bdb996e9029f99) }
 
 var fileDescriptor_b2bdb996e9029f99 = []byte{
-	// 1001 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x97, 0xcd, 0x6f, 0x1b, 0x45,
-	0x14, 0xc0, 0x33, 0x0d, 0xb5, 0xc8, 0x34, 0x7c, 0x68, 0x48, 0xbf, 0xb6, 0xa9, 0x83, 0x86, 0x26,
-	0x85, 0xc6, 0xec, 0xc8, 0x6e, 0xe0, 0xc6, 0xc1, 0x91, 0x45, 0x64, 0x95, 0x8f, 0x62, 0x38, 0x21,
-	0xa4, 0x6a, 0xe3, 0x19, 0x36, 0x83, 0xd7, 0x3b, 0xce, 0xee, 0x24, 0x65, 0xb5, 0xf2, 0x05, 0x21,
-	0x71, 0x45, 0xe2, 0xc4, 0x95, 0x0b, 0x07, 0x50, 0xb9, 0xf2, 0x07, 0x70, 0xe8, 0xb1, 0x12, 0x17,
-	0x4e, 0x08, 0x25, 0xfc, 0x21, 0x68, 0x67, 0xc6, 0xfb, 0x11, 0x7b, 0x59, 0xa7, 0x6d, 0xa4, 0xdc,
-	0x76, 0xdf, 0xbe, 0x8f, 0xdf, 0x3c, 0xbf, 0x79, 0xef, 0x19, 0xae, 0xf6, 0x45, 0xc0, 0x08, 0xa7,
-	0xcc, 0x97, 0x5c, 0x46, 0xe4, 0xb0, 0x49, 0xf6, 0x0f, 0x58, 0x10, 0xd9, 0xa3, 0x40, 0x48, 0x81,
-	0xae, 0x86, 0xc2, 0x0f, 0xf6, 0xf6, 0xed, 0x44, 0xc9, 0x9e, 0x28, 0xd9, 0x87, 0x4d, 0xcb, 0x9a,
-	0x32, 0xa3, 0x9c, 0x6a, 0x23, 0xab, 0x3e, 0xf5, 0xcd, 0x65, 0x3e, 0x0b, 0x79, 0x68, 0xbe, 0x4f,
-	0xdb, 0xee, 0xf9, 0x93, 0x6f, 0x77, 0xfa, 0x22, 0x1c, 0x8a, 0x90, 0xec, 0x3a, 0x21, 0xd3, 0x24,
-	0xe4, 0xb0, 0xb9, 0xcb, 0xa4, 0xd3, 0x24, 0x23, 0xc7, 0xe5, 0xbe, 0x23, 0xb9, 0xf0, 0x8d, 0xee,
-	0x8a, 0x2b, 0x5c, 0xa1, 0x1e, 0x49, 0xf2, 0x64, 0xa4, 0xab, 0xae, 0x10, 0xae, 0xc7, 0x88, 0x33,
-	0xe2, 0xc4, 0xf1, 0x7d, 0x21, 0x95, 0x89, 0xf1, 0x8f, 0x57, 0x20, 0xfa, 0x24, 0xf1, 0x7a, 0xdf,
-	0x09, 0x9c, 0x61, 0xd8, 0x63, 0xfb, 0x07, 0x2c, 0x94, 0xf8, 0x33, 0xf8, 0x5a, 0x41, 0x1a, 0x8e,
-	0x84, 0x1f, 0x32, 0xf4, 0x1e, 0xac, 0x8d, 0x94, 0xe4, 0x1a, 0x78, 0x1d, 0xbc, 0x79, 0xa9, 0xb5,
-	0x66, 0x97, 0xa4, 0xc3, 0xd6, 0x86, 0xdb, 0x2f, 0x3c, 0xfe, 0x7b, 0x6d, 0xa1, 0x67, 0x8c, 0xf0,
-	0x86, 0x89, 0xb5, 0xc3, 0x64, 0x87, 0x53, 0x13, 0x0b, 0xbd, 0x0a, 0x17, 0x29, 0xa7, 0xca, 0xe3,
-	0x52, 0x2f, 0x79, 0xc4, 0x7d, 0x13, 0x7d, 0xa2, 0x67, 0xa2, 0x7f, 0x00, 0x2f, 0x51, 0x4e, 0x3b,
-	0xa2, 0x7f, 0x30, 0x64, 0xbe, 0x34, 0x08, 0xb7, 0x4a, 0x11, 0x3a, 0x99, 0xae, 0xe1, 0xc8, 0x9b,
-	0xe3, 0x77, 0xe1, 0x65, 0x15, 0x64, 0x3b, 0xfa, 0x94, 0x05, 0x87, 0xbc, 0xcf, 0x26, 0x3c, 0x37,
-	0x21, 0x0c, 0xb5, 0xe4, 0x41, 0x8a, 0xb5, 0x64, 0x24, 0x5d, 0x8a, 0xbf, 0x84, 0x57, 0x4e, 0xda,
-	0x9d, 0x09, 0x5f, 0xc3, 0x24, 0x61, 0x3b, 0xba, 0xc7, 0xa2, 0x6e, 0x67, 0x42, 0x77, 0x19, 0xd6,
-	0x06, 0x2c, 0xca, 0xc8, 0x2e, 0x0e, 0x58, 0xd4, 0xa5, 0x98, 0xc2, 0x95, 0xa2, 0xf6, 0x99, 0x30,
-	0xb5, 0xe0, 0x75, 0x13, 0xa5, 0xed, 0x85, 0xe2, 0x9e, 0x2f, 0x1e, 0xfa, 0xed, 0x30, 0x47, 0xe6,
-	0x0c, 0x9c, 0x1c, 0x99, 0x33, 0x70, 0xba, 0x14, 0x7f, 0x05, 0xad, 0x59, 0x36, 0x67, 0xc2, 0x17,
-	0xa7, 0x59, 0xf8, 0x90, 0xc9, 0x3d, 0x91, 0x96, 0xd8, 0x0d, 0xb8, 0x34, 0x54, 0x82, 0x8c, 0xee,
-	0x45, 0x2d, 0xe8, 0x52, 0xf4, 0x3e, 0x84, 0xd9, 0x4d, 0xba, 0x76, 0x41, 0x11, 0x6c, 0xd8, 0xfa,
-	0xda, 0xd9, 0xc9, 0xb5, 0xb3, 0x75, 0x03, 0x30, 0xd7, 0xce, 0xbe, 0xef, 0xb8, 0x93, 0x5a, 0xe9,
-	0xe5, 0x2c, 0xf1, 0x23, 0x90, 0x56, 0xd4, 0x24, 0x7a, 0xd9, 0x21, 0x17, 0x9f, 0xe1, 0x90, 0x68,
-	0x67, 0x06, 0xef, 0xed, 0x4a, 0x5e, 0x8d, 0x52, 0x00, 0xfe, 0xc2, 0x5c, 0xc7, 0xb6, 0xe7, 0xe5,
-	0xae, 0x63, 0x31, 0x1d, 0xe0, 0xa9, 0xd3, 0xf1, 0x2b, 0x30, 0x05, 0x3c, 0x71, 0x7f, 0xbe, 0x93,
-	0x91, 0xb5, 0x83, 0x8f, 0x98, 0x7c, 0x28, 0x82, 0x41, 0xae, 0x1d, 0xf8, 0x5a, 0x92, 0x6b, 0x07,
-	0x46, 0xd2, 0xa5, 0xf8, 0x37, 0x90, 0xf6, 0x83, 0xd4, 0xf0, 0x7c, 0x9f, 0x74, 0x07, 0xde, 0x48,
-	0xbb, 0xab, 0x18, 0x3a, 0xdc, 0xef, 0xb1, 0xbe, 0x08, 0xf2, 0xed, 0x58, 0x7a, 0x69, 0x3b, 0x96,
-	0x1e, 0x45, 0x57, 0x60, 0x8d, 0x2a, 0x45, 0x15, 0x75, 0xa9, 0x67, 0xde, 0xb0, 0x80, 0xab, 0xb3,
-	0x1d, 0x99, 0xf3, 0x7f, 0x0c, 0x97, 0x69, 0x4e, 0x6e, 0x6a, 0x69, 0xbd, 0x3c, 0x01, 0x39, 0x65,
-	0x93, 0x81, 0x82, 0x03, 0xcc, 0x0c, 0x79, 0x52, 0x51, 0x33, 0xc8, 0x9f, 0x57, 0xe5, 0xfe, 0x0e,
-	0xcc, 0xc1, 0xa6, 0xe2, 0x94, 0x1e, 0x6c, 0xf1, 0x99, 0x0e, 0xf6, 0xdc, 0x7e, 0xdb, 0xd6, 0x1f,
-	0xcb, 0xf0, 0xa2, 0x42, 0x47, 0xdf, 0x01, 0x58, 0xd3, 0x43, 0x18, 0x6d, 0x96, 0x82, 0x4d, 0x4f,
-	0x7e, 0xab, 0x31, 0x9f, 0xb2, 0x8e, 0x8d, 0xf1, 0x37, 0x7f, 0xfe, 0xfb, 0xc3, 0x85, 0x55, 0x64,
-	0x91, 0xc4, 0x8a, 0x14, 0xf7, 0x18, 0x3d, 0xf5, 0x13, 0x92, 0xc5, 0x0e, 0xa7, 0x55, 0x18, 0x85,
-	0xa5, 0xa0, 0x0a, 0xa3, 0xb8, 0x19, 0xe0, 0x75, 0x85, 0xb1, 0x86, 0x6e, 0xce, 0xc2, 0xa0, 0x9c,
-	0x92, 0x98, 0x72, 0x3a, 0x46, 0xdf, 0x02, 0x58, 0xeb, 0x70, 0xda, 0xf6, 0xbc, 0x2a, 0x98, 0x42,
-	0x4b, 0xac, 0x82, 0x29, 0x36, 0x38, 0xbc, 0xa6, 0x60, 0xae, 0xa3, 0xab, 0x25, 0x30, 0xe8, 0x67,
-	0x00, 0x5f, 0x2e, 0xae, 0x10, 0xc8, 0xfe, 0xff, 0x08, 0x27, 0x77, 0x14, 0x8b, 0xcc, 0xad, 0x6f,
-	0xa0, 0xb6, 0x14, 0x94, 0x8d, 0x1a, 0x65, 0x19, 0x32, 0x0b, 0x0e, 0x89, 0xb3, 0xdd, 0x67, 0x8c,
-	0x7e, 0x04, 0x70, 0x39, 0xbf, 0x56, 0xa0, 0x46, 0x55, 0xdc, 0xfc, 0xae, 0x62, 0xbd, 0x3d, 0xa7,
-	0xb6, 0x61, 0x6c, 0x28, 0xc6, 0x0d, 0x74, 0xab, 0x8c, 0x71, 0xc0, 0x22, 0x12, 0xeb, 0xed, 0x67,
-	0x8c, 0x7e, 0x01, 0x66, 0x7c, 0x15, 0x16, 0x0b, 0xd4, 0xaa, 0x8a, 0x39, 0xbd, 0xb9, 0x58, 0x77,
-	0x4f, 0x65, 0x33, 0x2f, 0xad, 0x33, 0x70, 0x48, 0xac, 0x37, 0xa2, 0x31, 0xfa, 0x09, 0xc0, 0x97,
-	0x0a, 0xcb, 0x01, 0xaa, 0x4c, 0x4e, 0x61, 0x85, 0xb1, 0xec, 0x79, 0xd5, 0x0d, 0x5e, 0x4b, 0xe1,
-	0x35, 0xd0, 0x9d, 0x32, 0x3c, 0xbd, 0xff, 0x90, 0x38, 0x5d, 0x8c, 0xc6, 0xf9, 0xc2, 0x34, 0xb3,
-	0xac, 0xba, 0x30, 0x8b, 0xd3, 0xb2, 0xba, 0x30, 0x4f, 0x0c, 0xc9, 0xea, 0xc2, 0x34, 0xa3, 0x96,
-	0xc4, 0xd9, 0x14, 0x1e, 0xa3, 0x47, 0x00, 0x2e, 0xe7, 0xbb, 0x2a, 0xda, 0xaa, 0xee, 0x17, 0xd3,
-	0x13, 0xc3, 0x7a, 0xe7, 0x94, 0x56, 0x86, 0xb9, 0xa9, 0x98, 0x37, 0xd1, 0x5b, 0x33, 0x99, 0x95,
-	0x05, 0x89, 0xa5, 0x47, 0xc7, 0x24, 0xd6, 0x6f, 0xaa, 0x5a, 0x5f, 0xc9, 0xfb, 0x4a, 0x7a, 0xd0,
-	0x56, 0x75, 0x5b, 0x39, 0x3d, 0x73, 0xc9, 0xcc, 0xc2, 0x9b, 0x8a, 0x79, 0x1d, 0xbd, 0x51, 0xce,
-	0xfc, 0x20, 0x60, 0x2e, 0x0f, 0x65, 0x10, 0x6d, 0xb7, 0x1f, 0x1f, 0xd5, 0xc1, 0x93, 0xa3, 0x3a,
-	0xf8, 0xe7, 0xa8, 0x0e, 0xbe, 0x3f, 0xae, 0x2f, 0x3c, 0x39, 0xae, 0x2f, 0xfc, 0x75, 0x5c, 0x5f,
-	0xf8, 0xfc, 0xb6, 0xcb, 0xe5, 0xde, 0xc1, 0xae, 0xdd, 0x17, 0x43, 0xa2, 0x39, 0xb4, 0xab, 0xaf,
-	0x33, 0x67, 0x32, 0x1a, 0xb1, 0x70, 0xb7, 0xa6, 0xfe, 0x5e, 0xde, 0xfd, 0x2f, 0x00, 0x00, 0xff,
-	0xff, 0x87, 0xf5, 0xd1, 0x85, 0x4f, 0x0f, 0x00, 0x00,
+	// 836 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0xcf, 0x6f, 0xd3, 0x48,
+	0x14, 0xc7, 0x33, 0xed, 0x36, 0xda, 0x4c, 0x77, 0x57, 0xab, 0xd9, 0x76, 0xdb, 0x7a, 0xdb, 0x64,
+	0x65, 0x95, 0x16, 0x95, 0xe0, 0x51, 0x52, 0xc4, 0x8d, 0x43, 0xa2, 0x88, 0x2a, 0x2a, 0xa0, 0x12,
+	0x38, 0x21, 0x24, 0x34, 0xc9, 0x0c, 0xee, 0x90, 0xc4, 0x93, 0xc6, 0x4e, 0x8a, 0x15, 0xe5, 0x82,
+	0x90, 0xb8, 0x22, 0x71, 0xe2, 0xca, 0x85, 0x03, 0x08, 0xfe, 0x8d, 0x1e, 0x2b, 0x71, 0xe1, 0x84,
+	0x50, 0x0b, 0xff, 0x07, 0x8a, 0x67, 0x12, 0xdb, 0x4d, 0x8d, 0x03, 0xa8, 0x52, 0x6f, 0xd6, 0xcb,
+	0xfb, 0xf1, 0x99, 0xa7, 0xf7, 0xde, 0x37, 0x70, 0xb9, 0x26, 0xda, 0x0c, 0x73, 0xca, 0x2c, 0x87,
+	0x3b, 0x2e, 0xee, 0xe6, 0xf0, 0x5e, 0x87, 0xb5, 0x5d, 0xa3, 0xd5, 0x16, 0x8e, 0x40, 0x0b, 0xb6,
+	0xb0, 0xda, 0xbb, 0x7b, 0xc6, 0xc0, 0xc9, 0x18, 0x3a, 0x19, 0xdd, 0x9c, 0xa6, 0x8d, 0x85, 0x51,
+	0x4e, 0x65, 0x90, 0x96, 0x1e, 0xfb, 0xcd, 0x64, 0x16, 0xb3, 0xb9, 0xad, 0x7e, 0xdf, 0xa8, 0x09,
+	0xbb, 0x29, 0x6c, 0x5c, 0x25, 0x36, 0x93, 0xd5, 0x70, 0x37, 0x57, 0x65, 0x0e, 0xc9, 0xe1, 0x16,
+	0x31, 0xb9, 0x45, 0x1c, 0x2e, 0x2c, 0xe5, 0x3b, 0x67, 0x0a, 0x53, 0x78, 0x9f, 0x78, 0xf0, 0xa5,
+	0xac, 0xcb, 0xa6, 0x10, 0x66, 0x83, 0x61, 0xd2, 0xe2, 0x98, 0x58, 0x96, 0x70, 0xbc, 0x10, 0x95,
+	0x5f, 0x9f, 0x83, 0xe8, 0xf6, 0x20, 0xeb, 0x0e, 0x69, 0x93, 0xa6, 0x5d, 0x61, 0x7b, 0x1d, 0x66,
+	0x3b, 0xfa, 0x5d, 0xf8, 0x4f, 0xc8, 0x6a, 0xb7, 0x84, 0x65, 0x33, 0x74, 0x0d, 0x26, 0x5b, 0x9e,
+	0x65, 0x11, 0xfc, 0x0f, 0x2e, 0xce, 0xe6, 0x33, 0x46, 0xc4, 0x93, 0x0d, 0x19, 0x58, 0xfc, 0xed,
+	0xe0, 0x53, 0x26, 0x51, 0x51, 0x41, 0xfa, 0x9a, 0xaa, 0xb5, 0xc5, 0x9c, 0x12, 0xa7, 0xaa, 0x16,
+	0xfa, 0x1b, 0x4e, 0x53, 0x4e, 0xbd, 0x8c, 0xa9, 0xca, 0xe0, 0x53, 0xaf, 0xa9, 0xea, 0x43, 0x3f,
+	0x55, 0xfd, 0x06, 0x9c, 0xa5, 0x9c, 0x96, 0x44, 0xad, 0xd3, 0x64, 0x96, 0xa3, 0x10, 0x56, 0x23,
+	0x11, 0x4a, 0xbe, 0xaf, 0xe2, 0x08, 0x86, 0xeb, 0x57, 0xe1, 0xbc, 0x57, 0xa4, 0xe8, 0xde, 0x61,
+	0xed, 0x2e, 0xaf, 0xb1, 0x21, 0xcf, 0x0a, 0x84, 0xb6, 0xb4, 0x3c, 0x18, 0x61, 0xa5, 0x94, 0xa5,
+	0x4c, 0xf5, 0x87, 0xf0, 0xdf, 0x93, 0x71, 0x67, 0xc2, 0x97, 0x55, 0x4d, 0x28, 0xba, 0xdb, 0xcc,
+	0x2d, 0x97, 0x86, 0x74, 0xf3, 0x30, 0x59, 0x67, 0xae, 0x4f, 0x36, 0x53, 0x67, 0x6e, 0x99, 0xea,
+	0x14, 0xce, 0x85, 0xbd, 0xcf, 0x84, 0x29, 0x0f, 0x97, 0x54, 0x95, 0x42, 0xc3, 0x16, 0xdb, 0x96,
+	0xd8, 0xb7, 0x0a, 0x76, 0x80, 0x8c, 0xd4, 0x49, 0x80, 0x8c, 0xd4, 0x49, 0x99, 0xea, 0x8f, 0xa0,
+	0x76, 0x5a, 0xcc, 0x99, 0xf0, 0xf5, 0x46, 0x5d, 0xb8, 0xc9, 0x9c, 0x5d, 0x31, 0x1a, 0xb1, 0xff,
+	0x60, 0xaa, 0xe9, 0x19, 0x7c, 0xba, 0xdf, 0xa5, 0xa1, 0x4c, 0xd1, 0x75, 0x08, 0xfd, 0x4d, 0x5a,
+	0x9c, 0xf2, 0x08, 0xd6, 0x0c, 0xb9, 0x76, 0xc6, 0x60, 0xed, 0x0c, 0xb9, 0xe4, 0x6a, 0xed, 0x8c,
+	0x1d, 0x62, 0x0e, 0x67, 0xa5, 0x12, 0x88, 0xd4, 0xdf, 0x81, 0xd1, 0x44, 0x0d, 0xab, 0x47, 0x3d,
+	0x72, 0xfa, 0x17, 0x1e, 0x89, 0xb6, 0x4e, 0xe1, 0x5d, 0x8f, 0xe5, 0x95, 0x28, 0x21, 0xe0, 0xfb,
+	0x6a, 0x1d, 0x0b, 0x8d, 0x46, 0x60, 0x1d, 0xc3, 0xed, 0x00, 0x3f, 0xdd, 0x8e, 0xb7, 0x40, 0x0d,
+	0xf0, 0x30, 0xfd, 0xf9, 0x6e, 0x86, 0x7f, 0x0e, 0x6e, 0x31, 0x67, 0x5f, 0xb4, 0xeb, 0x81, 0x73,
+	0x60, 0x49, 0x4b, 0xe0, 0x1c, 0x28, 0x4b, 0x99, 0xea, 0xef, 0xc1, 0xe8, 0x1e, 0x8c, 0x02, 0xcf,
+	0xf5, 0x4b, 0xf3, 0x5f, 0x53, 0x70, 0xc6, 0x23, 0x46, 0xcf, 0x00, 0x4c, 0xca, 0x43, 0x8d, 0x2e,
+	0x45, 0x62, 0x8d, 0xab, 0x83, 0x96, 0x9d, 0xcc, 0x59, 0xd6, 0xd6, 0xf5, 0x27, 0x1f, 0xbe, 0xbc,
+	0x98, 0x5a, 0x46, 0x1a, 0x1e, 0x44, 0xe1, 0xb0, 0xde, 0x49, 0x65, 0x18, 0x90, 0x4c, 0x97, 0x38,
+	0x8d, 0xc3, 0x08, 0x09, 0x47, 0x1c, 0x46, 0x58, 0x3d, 0xf4, 0x0b, 0x1e, 0x46, 0x06, 0xad, 0x9c,
+	0x86, 0x41, 0x39, 0xc5, 0x3d, 0xca, 0x69, 0x1f, 0x3d, 0x05, 0x30, 0x59, 0xe2, 0xb4, 0xd0, 0x68,
+	0xc4, 0xc1, 0x84, 0xd6, 0x26, 0x0e, 0x26, 0xbc, 0x04, 0x7a, 0xc6, 0x83, 0x59, 0x42, 0x0b, 0x11,
+	0x30, 0xe8, 0x35, 0x80, 0x7f, 0x85, 0x65, 0x06, 0x19, 0xdf, 0xaf, 0x70, 0x52, 0xc7, 0x34, 0x3c,
+	0xb1, 0xbf, 0x82, 0xba, 0xe2, 0x41, 0x19, 0x28, 0x1b, 0xd5, 0x21, 0x25, 0x82, 0xb8, 0xe7, 0xeb,
+	0x63, 0x1f, 0xbd, 0x04, 0xf0, 0x8f, 0xa0, 0xf4, 0xa0, 0x6c, 0x5c, 0xdd, 0xa0, 0x9e, 0x69, 0x97,
+	0x27, 0xf4, 0x56, 0x8c, 0x59, 0x8f, 0x71, 0x0d, 0xad, 0x46, 0x31, 0xd6, 0x99, 0x8b, 0x7b, 0x52,
+	0x21, 0xfb, 0xe8, 0x0d, 0x50, 0x27, 0x2e, 0x24, 0x3e, 0x28, 0x1f, 0x57, 0x73, 0x5c, 0xdd, 0xb4,
+	0xcd, 0x1f, 0x8a, 0x99, 0x94, 0x96, 0xd4, 0x09, 0xee, 0x49, 0xd5, 0xec, 0xa3, 0x57, 0x00, 0xfe,
+	0x19, 0x12, 0x10, 0x14, 0xdb, 0x9c, 0x90, 0xcc, 0x69, 0xc6, 0xa4, 0xee, 0x0a, 0x2f, 0xef, 0xe1,
+	0x65, 0xd1, 0x46, 0x14, 0x9e, 0xd4, 0x48, 0xdc, 0x1b, 0x89, 0x67, 0x3f, 0x38, 0x98, 0xea, 0xde,
+	0xc5, 0x0f, 0x66, 0xf8, 0xa2, 0xc6, 0x0f, 0xe6, 0x89, 0x43, 0x1a, 0x3f, 0x98, 0xea, 0x1c, 0xe3,
+	0x9e, 0x7f, 0xa9, 0xfb, 0xc5, 0xc2, 0xc1, 0x51, 0x1a, 0x1c, 0x1e, 0xa5, 0xc1, 0xe7, 0xa3, 0x34,
+	0x78, 0x7e, 0x9c, 0x4e, 0x1c, 0x1e, 0xa7, 0x13, 0x1f, 0x8f, 0xd3, 0x89, 0x7b, 0xeb, 0x26, 0x77,
+	0x76, 0x3b, 0x55, 0xa3, 0x26, 0x9a, 0x58, 0xa2, 0xc8, 0x9c, 0x8f, 0xfd, 0xac, 0x8e, 0xdb, 0x62,
+	0x76, 0x35, 0xe9, 0xfd, 0x47, 0xde, 0xfc, 0x16, 0x00, 0x00, 0xff, 0xff, 0x29, 0x98, 0x62, 0x6f,
+	0xf8, 0x0b, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1073,10 +867,6 @@ type QueryClient interface {
 	QueryByMethod(ctx context.Context, in *QueryByMethodRequest, opts ...grpc.CallOption) (*QueryByMethodResponse, error)
 	// Queries a list of QueryByNetwork items.
 	QueryByNetwork(ctx context.Context, in *QueryByNetworkRequest, opts ...grpc.CallOption) (*QueryByNetworkResponse, error)
-	// Queries a DomainRecord by index.
-	DomainRecord(ctx context.Context, in *QueryGetDomainRecordRequest, opts ...grpc.CallOption) (*QueryGetDomainRecordResponse, error)
-	// Queries a list of DomainRecord items.
-	DomainRecordAll(ctx context.Context, in *QueryAllDomainRecordRequest, opts ...grpc.CallOption) (*QueryAllDomainRecordResponse, error)
 }
 
 type queryClient struct {
@@ -1159,24 +949,6 @@ func (c *queryClient) QueryByNetwork(ctx context.Context, in *QueryByNetworkRequ
 	return out, nil
 }
 
-func (c *queryClient) DomainRecord(ctx context.Context, in *QueryGetDomainRecordRequest, opts ...grpc.CallOption) (*QueryGetDomainRecordResponse, error) {
-	out := new(QueryGetDomainRecordResponse)
-	err := c.cc.Invoke(ctx, "/sonrhq.core.identity.v1.Query/DomainRecord", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) DomainRecordAll(ctx context.Context, in *QueryAllDomainRecordRequest, opts ...grpc.CallOption) (*QueryAllDomainRecordResponse, error) {
-	out := new(QueryAllDomainRecordResponse)
-	err := c.cc.Invoke(ctx, "/sonrhq.core.identity.v1.Query/DomainRecordAll", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
@@ -1195,10 +967,6 @@ type QueryServer interface {
 	QueryByMethod(context.Context, *QueryByMethodRequest) (*QueryByMethodResponse, error)
 	// Queries a list of QueryByNetwork items.
 	QueryByNetwork(context.Context, *QueryByNetworkRequest) (*QueryByNetworkResponse, error)
-	// Queries a DomainRecord by index.
-	DomainRecord(context.Context, *QueryGetDomainRecordRequest) (*QueryGetDomainRecordResponse, error)
-	// Queries a list of DomainRecord items.
-	DomainRecordAll(context.Context, *QueryAllDomainRecordRequest) (*QueryAllDomainRecordResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -1228,12 +996,6 @@ func (*UnimplementedQueryServer) QueryByMethod(ctx context.Context, req *QueryBy
 }
 func (*UnimplementedQueryServer) QueryByNetwork(ctx context.Context, req *QueryByNetworkRequest) (*QueryByNetworkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryByNetwork not implemented")
-}
-func (*UnimplementedQueryServer) DomainRecord(ctx context.Context, req *QueryGetDomainRecordRequest) (*QueryGetDomainRecordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DomainRecord not implemented")
-}
-func (*UnimplementedQueryServer) DomainRecordAll(ctx context.Context, req *QueryAllDomainRecordRequest) (*QueryAllDomainRecordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DomainRecordAll not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1384,42 +1146,6 @@ func _Query_QueryByNetwork_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_DomainRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetDomainRecordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).DomainRecord(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sonrhq.core.identity.v1.Query/DomainRecord",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).DomainRecord(ctx, req.(*QueryGetDomainRecordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_DomainRecordAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllDomainRecordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).DomainRecordAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sonrhq.core.identity.v1.Query/DomainRecordAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).DomainRecordAll(ctx, req.(*QueryAllDomainRecordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "sonrhq.core.identity.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -1455,14 +1181,6 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryByNetwork",
 			Handler:    _Query_QueryByNetwork_Handler,
-		},
-		{
-			MethodName: "DomainRecord",
-			Handler:    _Query_DomainRecord_Handler,
-		},
-		{
-			MethodName: "DomainRecordAll",
-			Handler:    _Query_DomainRecordAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -2031,160 +1749,6 @@ func (m *QueryByNetworkResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetDomainRecordRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetDomainRecordRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetDomainRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Domain) > 0 {
-		i -= len(m.Domain)
-		copy(dAtA[i:], m.Domain)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Domain)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Tld) > 0 {
-		i -= len(m.Tld)
-		copy(dAtA[i:], m.Tld)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Tld)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryGetDomainRecordResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetDomainRecordResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetDomainRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.DomainRecord.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAllDomainRecordRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAllDomainRecordRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAllDomainRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAllDomainRecordResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAllDomainRecordResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAllDomainRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.DomainRecord) > 0 {
-		for iNdEx := len(m.DomainRecord) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.DomainRecord[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -2401,66 +1965,6 @@ func (m *QueryByNetworkResponse) Size() (n int) {
 	_ = l
 	if len(m.DidDocument) > 0 {
 		for _, e := range m.DidDocument {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryGetDomainRecordRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Tld)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	l = len(m.Domain)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryGetDomainRecordResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.DomainRecord.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
-func (m *QueryAllDomainRecordRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryAllDomainRecordResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.DomainRecord) > 0 {
-		for _, e := range m.DomainRecord {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -3857,409 +3361,6 @@ func (m *QueryByNetworkResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.DidDocument = append(m.DidDocument, DidDocument{})
 			if err := m.DidDocument[len(m.DidDocument)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageResponse{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetDomainRecordRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetDomainRecordRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetDomainRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Tld", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Tld = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Domain = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetDomainRecordResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetDomainRecordResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetDomainRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DomainRecord", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.DomainRecord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAllDomainRecordRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllDomainRecordRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllDomainRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageRequest{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAllDomainRecordResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllDomainRecordResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllDomainRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DomainRecord", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DomainRecord = append(m.DomainRecord, DomainRecord{})
-			if err := m.DomainRecord[len(m.DomainRecord)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

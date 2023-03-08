@@ -15,12 +15,12 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNDomainRecord(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.DomainRecord {
-	items := make([]types.DomainRecord, n)
+func createNDomainRecord(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Service {
+	items := make([]types.Service, n)
 	for i := range items {
-		items[i].Index = strconv.Itoa(i)
+		items[i].Id = strconv.Itoa(i)
 
-		keeper.SetDomainRecord(ctx, items[i])
+		keeper.SetService(ctx, items[i])
 	}
 	return items
 }
@@ -29,9 +29,8 @@ func TestDomainRecordGet(t *testing.T) {
 	keeper, ctx := keepertest.IdentityKeeper(t)
 	items := createNDomainRecord(keeper, ctx, 10)
 	for _, item := range items {
-		rst, found := keeper.GetDomainRecord(ctx,
-			item.Index,
-			item.Domain,
+		rst, found := keeper.GetService(ctx,
+			item.Id,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -40,17 +39,17 @@ func TestDomainRecordGet(t *testing.T) {
 		)
 	}
 }
+// TestDomainRecordRemove checks if a domain record can be removed from the store
+
 func TestDomainRecordRemove(t *testing.T) {
 	keeper, ctx := keepertest.IdentityKeeper(t)
 	items := createNDomainRecord(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveDomainRecord(ctx,
-			item.Index,
-			item.Domain,
+			item.Id,
 		)
-		_, found := keeper.GetDomainRecord(ctx,
-			item.Index,
-			item.Domain,
+		_, found := keeper.GetService(ctx,
+			item.Id,
 		)
 		require.False(t, found)
 	}
@@ -61,6 +60,6 @@ func TestDomainRecordGetAll(t *testing.T) {
 	items := createNDomainRecord(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllDomainRecord(ctx)),
+		nullify.Fill(keeper.GetAllServices(ctx)),
 	)
 }
