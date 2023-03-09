@@ -27,7 +27,7 @@ func (d *Dispatcher) BuildNewDIDController(deviceName string) (controller.DIDCon
 	// Create the wallet in a goroutine
 	go func() {
 		// The default shards that are added to the MPC wallet
-		rootAcc, err := accounts.New(accounts.WithSelfID(deviceName), accounts.WithName("primary"))
+		rootAcc, err := accounts.New(accounts.WithSelfID(deviceName))
 		if err != nil {
 			errCh <- err
 		}
