@@ -13,7 +13,7 @@ type SonrQueryClient struct {
 }
 
 // NewClient creates a new client for the sonr chain
-func NewClient(apiEndpoint ClientOriginAPI) *SonrQueryClient {
+func NewClient(apiEndpoint APIEndpoint) *SonrQueryClient {
 	return &SonrQueryClient{APIEndpoint: string(apiEndpoint)}
 }
 

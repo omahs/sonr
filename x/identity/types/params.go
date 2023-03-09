@@ -2,6 +2,9 @@ package types
 
 import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/go-webauthn/webauthn/protocol/webauthncose"
+
+	"github.com/go-webauthn/webauthn/protocol"
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -40,4 +43,31 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 // Validate validates the set of params
 func (p Params) Validate() error {
 	return nil
+}
+
+// WebauthnConveyancePreference returns the webauthn conveyance preference.
+func (p Params) WebauthnConveyancePreference() protocol.ConveyancePreference {
+	return protocol.ConveyancePreference(p.WebauthnAttestionPreference)
+}
+
+// WebauthnAuthenticatorSelection returns the authenticator selection for webauthn.
+func (p Params) WebauthnAuthenticatorSelection() protocol.AuthenticatorSelection {
+	return protocol.AuthenticatorSelection{
+		AuthenticatorAttachment: protocol.AuthenticatorAttachment(p.WebauthnAuthenticatorAttachment),
+	}
+}
+
+// We return ECDSA P-256 with SHA-256 as the default credential parameter.
+func (p Params) WebauthnRegistrationCredentialParameters() []protocol.CredentialParameter {
+	return []protocol.CredentialParameter{
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: webauthncose.AlgES256,
+		},
+	}
+}
+
+// WebauthnTimeoutInteger returns the webauthn timeout as an integer.
+func (p Params) WebauthnTimeoutInteger() int {
+	return int(p.WebauthnTimeout)
 }

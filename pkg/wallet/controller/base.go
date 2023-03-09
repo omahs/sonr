@@ -6,7 +6,6 @@ import (
 	"github.com/sonrhq/core/x/identity/types"
 )
 
-
 // DID Metadata Key for VerificationMethod Blockchain Coin
 const kDIDMetadataKeyCoin = "blockchain.coin"
 
@@ -33,18 +32,6 @@ type DIDController interface {
 
 	// DID Document
 	Document() *types.DidDocument
-
-	// This method is used to get the challenge response from the DID controller.
-	BeginRegistration(aka string) ([]byte, error)
-
-	// This is the method that will be called when the user clicks on the "Register" button.
-	FinishRegistration(aka string, challengeResponse string) ([]byte, error)
-
-	// This method is used to get the options for the assertion.
-	BeginLogin(aka string) ([]byte, error)
-
-	// This is the method that will be called when the user clicks the "Login" button on the login page.
-	FinishLogin(aka string, challengeResponse string) ([]byte, error)
 
 	// Creates a new account and returns the address of the account.
 	CreateAccount(name string, coinType crypto.CoinType) (*types.VerificationMethod, error)

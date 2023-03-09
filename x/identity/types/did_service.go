@@ -3,17 +3,19 @@
 package types
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	fmt "fmt"
 	"strings"
 
+	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/sonrhq/core/x/identity/types/internal/marshal"
 )
 
 func NewIPNSService(id string, endpoint string) *Service {
 	return &Service{
-		Id:              id,
-		Type:            "EncryptedVault",
+		Id:     id,
+		Type:   "EncryptedVault",
 		Origin: endpoint,
 	}
 }
@@ -37,6 +39,54 @@ func (d *DidDocument) GetVaultService() *Service {
 		if s.Type == "EncryptedVault" && s.CID() != "" {
 			return s
 		}
+	}
+	return nil
+}
+
+func (s *Service) CredentialEntity() protocol.CredentialEntity {
+	return protocol.CredentialEntity{
+		Name: s.Name,
+	}
+}
+
+func (s *Service) GetUserEntity(id, displayName string) protocol.UserEntity {
+	return protocol.UserEntity{
+		ID:               []byte(id),
+		DisplayName:      displayName,
+		CredentialEntity: s.CredentialEntity(),
+	}
+}
+
+// IssueChallenge issues a challenge for the VerificationMethod to sign and return
+func (vm *Service) IssueChallenge() (protocol.URLEncodedBase64, error) {
+	// Marshal the service into JSON.
+	bz, err := vm.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	b64Ucan := base64.RawURLEncoding.EncodeToString(bz)
+	return protocol.URLEncodedBase64(b64Ucan), nil
+}
+
+// RelyingPartyEntity is a struct that represents a Relying Party entity.
+func (s *Service) RelyingPartyEntity() protocol.RelyingPartyEntity {
+	return protocol.RelyingPartyEntity{
+		ID: s.Id,
+		CredentialEntity: protocol.CredentialEntity{
+			Name: s.Name,
+		},
+	}
+}
+
+// VerifyChallenge verifies the challenge signature
+func (vm *Service) VerifyChallenge(pcc *protocol.ParsedCredentialCreationData) error {
+	chal, err := vm.IssueChallenge()
+	if err != nil {
+		return err
+	}
+	err = pcc.Verify(chal.String(), false, vm.Id, []string{vm.Origin})
+	if err != nil {
+		return err
 	}
 	return nil
 }

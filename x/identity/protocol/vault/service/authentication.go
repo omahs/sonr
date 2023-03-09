@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/sonrhq/core/pkg/client/chain"
 	"github.com/sonrhq/core/pkg/common"
+	"github.com/sonrhq/core/pkg/service"
 	"github.com/sonrhq/core/x/identity/protocol/dispatcher"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 )
@@ -30,21 +32,20 @@ type AuthenticationService struct {
 
 // Register registers a new keypair and returns the public key.
 func (v *AuthenticationService) RegisterStart(ctx context.Context, req *v1.RegisterStartRequest) (*v1.RegisterStartResponse, error) {
-	// // Get Session
-	controller, err := v.Dispatcher.BuildNewDIDController()
+	// Get service handler
+	handler, err := service.NewServiceHandler(req.Origin, chain.SonrLocalRpcOrigin)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get service handler: %w", err)
 	}
 
-	credOpts, err := controller.BeginRegistration(req.DeviceLabel)
+	opts, err := handler.BeginRegistration(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to begin registration: %w", err)
 	}
+
 	// Return response
 	return &v1.RegisterStartResponse{
-		AccountAddress:  controller.Address(),
-		CreationOptions: string(credOpts),
-		Aka:             req.DeviceLabel,
+		CreationOptions: string(opts),
 	}, nil
 }
 

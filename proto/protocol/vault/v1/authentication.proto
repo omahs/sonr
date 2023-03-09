@@ -14,15 +14,14 @@ message RegisterStartRequest {
   string origin = 1;
   string device_label = 2;
   int32 security_threshold = 3;
-  bytes passcode = 4;
+  string passcode = 4;
+  string uuid = 5;
 }
 
 // RegisterStartResponse is the response to a Register request.
 message RegisterStartResponse {
-  string account_address = 1;
-  string aka = 2;
-  string creation_options = 3;
-  string session_id = 4;
+  string creation_options = 1;
+  string session_id = 2;
 }
 
 // RegisterFinishRequest is the request to CreateAccount a new key from the private key.
