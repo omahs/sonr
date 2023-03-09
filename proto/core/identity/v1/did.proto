@@ -3,7 +3,6 @@ package sonrhq.core.identity.v1;
 
 option go_package = "github.com/sonrhq/core/x/identity/types";
 
-
 message DidDocument {
   repeated string context = 1;
   string id = 2;

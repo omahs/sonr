@@ -46,8 +46,8 @@ type DIDController interface {
 	ListAccounts() ([]wallet.Account, error)
 
 	// Sign a message with the primary account
-	Sign(message []byte) ([]byte, error)
+	SignWithAccount(message []byte, account string) ([]byte, error)
 
 	// Verify a message with the primary account
-	Verify(message []byte, signature []byte) (bool, error)
+	VerifyWithAccount(message []byte, signature []byte, account string) (bool, error)
 }
