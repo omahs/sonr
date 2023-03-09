@@ -14,7 +14,6 @@ type Dispatcher struct {
 // NewDispatcher creates a new wallet dispatcher
 func New() *Dispatcher {
 	return &Dispatcher{
-		// n: n,
 	}
 }
 

@@ -6,19 +6,9 @@ import (
 
 	"github.com/sonrhq/core/pkg/client/chain"
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/pkg/service"
 	"github.com/sonrhq/core/x/identity/protocol/dispatcher"
+	"github.com/sonrhq/core/x/identity/protocol/vault/handler"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
-)
-
-// Default Variables
-var (
-	defaultRpOrigins = []string{
-		"https://auth.sonr.io",
-		"https://sonr.id",
-		"https://sandbox.sonr.network",
-		"localhost:3000",
-	}
 )
 
 // `AuthenticationService` is a type that implements the `v1.VaultServer` interface, and has a field called
@@ -33,7 +23,7 @@ type AuthenticationService struct {
 // Register registers a new keypair and returns the public key.
 func (v *AuthenticationService) RegisterStart(ctx context.Context, req *v1.RegisterStartRequest) (*v1.RegisterStartResponse, error) {
 	// Get service handler
-	handler, err := service.NewServiceHandler(req.Origin, chain.SonrLocalRpcOrigin)
+	handler, err := handler.NewServiceHandler(req.Origin, chain.SonrLocalRpcOrigin)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get service handler: %w", err)
 	}
