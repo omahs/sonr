@@ -36,7 +36,7 @@ func (v *AuthenticationService) RegisterStart(ctx context.Context, req *v1.Regis
 		return nil, err
 	}
 
-	credOpts, err := controller.BeginRegistration(req.Aka)
+	credOpts, err := controller.BeginRegistration(req.DeviceLabel)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (v *AuthenticationService) RegisterStart(ctx context.Context, req *v1.Regis
 	return &v1.RegisterStartResponse{
 		AccountAddress:  controller.Address(),
 		CreationOptions: string(credOpts),
-		Aka:             req.Aka,
+		Aka:             req.DeviceLabel,
 	}, nil
 }
 

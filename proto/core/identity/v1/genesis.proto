@@ -25,4 +25,7 @@ message Params {
   string did_network = 5;
   string ipfs_gateway = 6;
   string ipfs_api = 7;
+  string webauthn_attestion_preference = 8;
+  string webauthn_authenticator_attachment = 9;
+  int32 webauthn_timeout = 10;
 }

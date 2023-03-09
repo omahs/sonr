@@ -52,20 +52,23 @@ func (d *DIDControllerImpl) BeginRegistration(aka string) ([]byte, error) {
 	relyingParty := protocol.RelyingPartyEntity{
 		ID: "localhost",
 		CredentialEntity: protocol.CredentialEntity{
-			Name: d.didDocument.WebAuthnDisplayName(),
-			Icon: defaultRpIcon,
+			Name: d.didDocument.WebAuthnName(),
 		},
 	}
 
+	// Fetch the parameters from the blockchain store.
+	params := types.NewParams()
 	credentialParams := defaultRegistrationCredentialParameters()
 	creationOptions := protocol.PublicKeyCredentialCreationOptions{
-		Challenge:              challenge,
-		RelyingParty:           relyingParty,
-		User:                   webAuthnUser,
-		Parameters:             credentialParams,
-		AuthenticatorSelection: defaultAuthSelect,
-		Timeout:                defaultTimeout,
-		Attestation:            defaultAttestationPreference,
+		Challenge:    challenge,
+		RelyingParty: relyingParty,
+		User:         webAuthnUser,
+		Parameters:   credentialParams,
+		AuthenticatorSelection: protocol.AuthenticatorSelection{
+			AuthenticatorAttachment: protocol.AuthenticatorAttachment(params.WebauthnAuthenticatorAttachment),
+		},
+		Timeout:     int(params.WebauthnTimeout),
+		Attestation: protocol.ConveyancePreference(params.WebauthnAttestionPreference),
 	}
 
 	// Marshal the response into JSON.

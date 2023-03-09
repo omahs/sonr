@@ -1,38 +1,11 @@
 package controller
 
 import (
-	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/wallet"
 	"github.com/sonrhq/core/x/identity/types"
 )
 
-var (
-	// Default Origins
-	defaultRpOrigins = []string{
-		"https://auth.sonr.io",
-		"https://sonr.id",
-		"https://sandbox.sonr.network",
-		"http://localhost:3000",
-	}
-
-	// Default Icon to display
-	defaultRpIcon = "https://raw.githubusercontent.com/sonrhq/core/master/docs/static/favicon.png"
-
-	// Default name to display
-	defaultRpName = "Sonr"
-
-	// defaultAttestionPreference
-	defaultAttestationPreference = protocol.PreferDirectAttestation
-
-	// defaultAuthSelect
-	defaultAuthSelect = protocol.AuthenticatorSelection{
-		AuthenticatorAttachment: protocol.AuthenticatorAttachment("platform"),
-	}
-
-	// defaultTimeout
-	defaultTimeout = 60000
-)
 
 // DID Metadata Key for VerificationMethod Blockchain Coin
 const kDIDMetadataKeyCoin = "blockchain.coin"
