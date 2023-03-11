@@ -2,10 +2,10 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/sonrhq/core/pkg/wallet"
 	"github.com/sonrhq/core/pkg/wallet/accounts"
@@ -21,17 +21,37 @@ const (
 	coinType = 703
 )
 
-// WriteAccountConfig writes an AccountConfig to the specified file path in the
-// BIP32 file system.
-func WriteAccountConfig(path string, accountConfig *vaultv1.AccountConfig) error {
-	// Create the parent directories for the file path
-	err := os.MkdirAll(filepath.Join(bip44Prefix, strconv.Itoa(int(coinType))), os.ModePerm)
-	if err != nil {
-		return err
+// FindFilePathWithPrefix finds the full path of a file starting with a parent directory named "m/44'".
+// Returns an error if the parent directory doesn't exist.
+func FindFilePathWithPrefix(rootDir string, fileName string) (string, error) {
+	prefix := "m/44'"
+	dir := filepath.Join(rootDir, prefix)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return "", fmt.Errorf("directory %s doesn't exist", dir)
 	}
 
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && filepath.Base(path) == fileName {
+			return filepath.SkipDir
+		}
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(dir, fileName), nil
+}
+
+// WriteAccountConfig writes an AccountConfig to the specified file path in the
+// BIP32 file system.
+func WriteAccountConfig(filePath string, basePath string, accountConfig *vaultv1.AccountConfig) error {
 	// Create or truncate the file at the specified path
-	file, err := os.Create(filepath.Join(bip44Prefix, strconv.Itoa(int(coinType)), path))
+	file, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}

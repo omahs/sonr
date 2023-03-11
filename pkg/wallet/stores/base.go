@@ -9,10 +9,14 @@ import (
 	"github.com/sonrhq/core/pkg/wallet/stores/internal"
 )
 
+const (
+	DEFAULT_WALLET_PATH = "_SNR_WALLET_"
+)
+
 // NewWalletStore returns a new WalletStore
 func New(acc wallet.Account, opts ...Option) (wallet.Store, error) {
 	userHomeDir, _ := os.UserHomeDir()
-	testWalOut := filepath.Join(userHomeDir, "Desktop", "test-wallet")
+	testWalOut := filepath.Join(userHomeDir, DEFAULT_WALLET_PATH)
 	cfg := &storeConfig{
 		acc:  acc,
 		path: testWalOut,
@@ -47,10 +51,11 @@ func (cfg *storeConfig) Apply() (wallet.Store, error) {
 // Option is a function that configures the store
 type Option func(*storeConfig)
 
-// SetFileStorePath sets the store to use a file store. Password must be 32 bytes and already hashed
-func SetFileStorePath(path string) Option {
+// SetFileStorePath sets the base path to use a file store. You can provide a list of paths to append, The default wallet name will be appended to the path.
+func SetFileStorePath(path ...string) Option {
 	return func(cfg *storeConfig) {
-		cfg.path = path
+		cfg.path = filepath.Join(path...)
+		cfg.path = filepath.Join(cfg.path, DEFAULT_WALLET_PATH)
 		cfg.isIPFS = false
 	}
 }
@@ -61,4 +66,11 @@ func SetIPFSStore(ipfsNode common.IPFSNode) Option {
 		cfg.ipfsNode = ipfsNode
 		cfg.isIPFS = true
 	}
+}
+
+// ResetWalletStore resets the wallet store
+func ResetWalletStore(path ...string) error {
+	testWalOut := filepath.Join(path...)
+	testWalOut = filepath.Join(testWalOut, DEFAULT_WALLET_PATH)
+	return os.RemoveAll(testWalOut)
 }

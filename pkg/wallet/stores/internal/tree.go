@@ -53,8 +53,14 @@ func printAccountTree(node *AccountTree, indent int) {
 }
 
 func getAccountPath(basePath string, coinType crypto.CoinType) (string, error) {
+	// Create the parent directories for the file path
+	err := os.MkdirAll(filepath.Join(basePath, bip44Prefix, strconv.Itoa(int(coinType))), os.ModePerm)
+	if err != nil {
+		return "", fmt.Errorf("could not create directory for coin type %d: %w", coinType, err)
+	}
+
 	// Check if the directory for the coin type exists, create it if it doesn't
-	coinTypeDir := filepath.Join(basePath, strconv.Itoa(int(coinType.Index())))
+	coinTypeDir := filepath.Join(basePath, bip44Prefix, strconv.Itoa(int(coinType.BipPath())))
 	if _, err := os.Stat(coinTypeDir); os.IsNotExist(err) {
 		if err := os.Mkdir(coinTypeDir, os.ModePerm); err != nil {
 			return "", fmt.Errorf("could not create directory for coin type %d: %w", coinType, err)
@@ -62,7 +68,7 @@ func getAccountPath(basePath string, coinType crypto.CoinType) (string, error) {
 	}
 	// Find the next available account number for the coin type
 	nextAccountNum := 1
-	err := filepath.Walk(coinTypeDir, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(coinTypeDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}

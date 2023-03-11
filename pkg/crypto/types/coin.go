@@ -1,5 +1,68 @@
 package types
 
+import "strings"
+
+// AllCoinTypes returns all the coin types.
+func AllCoinTypes() []CoinType {
+	return []CoinType{
+		CoinType_CoinType_BITCOIN,
+		CoinType_CoinType_ETHEREUM,
+		CoinType_CoinType_LITECOIN,
+		CoinType_CoinType_DOGE,
+		CoinType_CoinType_SONR,
+		CoinType_CoinType_COSMOS,
+		CoinType_CoinType_FILECOIN,
+		CoinType_CoinType_HNS,
+		CoinType_CoinType_TESTNET,
+		CoinType_CoinType_SOLANA,
+		CoinType_CoinType_XRP,
+	}
+}
+
+// CoinTypeFromAddrPrefix returns the CoinType from the string.
+func CoinTypeFromAddrPrefix(str string) CoinType {
+	coins := AllCoinTypes()
+	for _, coin := range coins {
+		if coin.AddrPrefix() == str {
+			return coin
+		}
+	}
+	return CoinType_CoinType_TESTNET
+}
+
+// CoinTypeFromBipPath returns the CoinType from the index.
+func CoinTypeFromBipPath(i int32) CoinType {
+	coins := AllCoinTypes()
+	for _, coin := range coins {
+		if coin.BipPath() == i {
+			return coin
+		}
+	}
+	return CoinType_CoinType_TESTNET
+}
+
+// CoinTypeFromName returns the CoinType from the name.
+func CoinTypeFromName(str string) CoinType {
+	coins := AllCoinTypes()
+	for _, coin := range coins {
+		if strings.ToLower(coin.Name()) == strings.ToLower(str) {
+			return coin
+		}
+	}
+	return CoinType_CoinType_TESTNET
+}
+
+// CoinTypeFromTicker returns the CoinType from the symbol.
+func CoinTypeFromTicker(str string) CoinType {
+	coins := AllCoinTypes()
+	for _, coin := range coins {
+		if strings.ToLower(coin.Ticker()) == strings.ToLower(str) {
+			return coin
+		}
+	}
+	return CoinType_CoinType_TESTNET
+}
+
 // AddrPrefix returns the address prefix for the given coin type.
 func (ct CoinType) AddrPrefix() string {
 	switch ct {
@@ -21,13 +84,17 @@ func (ct CoinType) AddrPrefix() string {
 		return "hs"
 	case CoinType_CoinType_TESTNET:
 		return "test"
+	case CoinType_CoinType_SOLANA:
+		return "sol"
+	case CoinType_CoinType_XRP:
+		return "xrp"
 	default:
 		return "test"
 	}
 }
 
-// Index returns the index for the given coin type.
-func (ct CoinType) Index() int32 {
+// BipPath returns the index for the given coin type.
+func (ct CoinType) BipPath() int32 {
 	switch ct {
 	case CoinType_CoinType_BITCOIN:
 		return 0
@@ -47,6 +114,10 @@ func (ct CoinType) Index() int32 {
 		return 5353
 	case CoinType_CoinType_TESTNET:
 		return 1
+	case CoinType_CoinType_SOLANA:
+		return 501
+	case CoinType_CoinType_XRP:
+		return 144
 	default:
 		return 1
 	}
@@ -71,13 +142,17 @@ func (ct CoinType) Name() string {
 		return "Filecoin"
 	case CoinType_CoinType_HNS:
 		return "Handshake"
+	case CoinType_CoinType_SOLANA:
+		return "Solana"
+	case CoinType_CoinType_XRP:
+		return "Ripple"
 	default:
 		return "Testnet"
 	}
 }
 
-// Symbol returns the symbol for the given coin type.
-func (ct CoinType) Symbol() string {
+// Ticker returns the symbol for the given coin type for exchanges.
+func (ct CoinType) Ticker() string {
 	switch ct {
 	case CoinType_CoinType_BITCOIN:
 		return "BTC"
@@ -95,6 +170,10 @@ func (ct CoinType) Symbol() string {
 		return "FIL"
 	case CoinType_CoinType_HNS:
 		return "HNS"
+	case CoinType_CoinType_SOLANA:
+		return "SOL"
+	case CoinType_CoinType_XRP:
+		return "XRP"
 	default:
 		return "TESTNET"
 	}

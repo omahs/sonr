@@ -27,7 +27,7 @@ func NewDerivedAccountConfig(name string, coinType crypto.CoinType, share *cmp.C
 		Name:          strings.ToLower(name),
 		Multibase:     pub.Multibase(),
 		Shares:        shareConfigs,
-		CoinTypeIndex: int32(coinType.Index()),
+		CoinTypeIndex: int32(coinType.BipPath()),
 		CreatedAt:     time.Now().Unix(),
 		PublicKey:     pub.Raw(),
 	}, nil
@@ -47,7 +47,7 @@ func NewAccountConfigFromShares(name string, coinType crypto.CoinType, shares []
 		Name:          strings.ToLower(name),
 		Multibase:     pub.Multibase(),
 		Shares:        shareConfigs,
-		CoinTypeIndex: int32(coinType.Index()),
+		CoinTypeIndex: int32(coinType.BipPath()),
 		CreatedAt:     time.Now().Unix(),
 		PublicKey:     pub.Raw(),
 	}, nil
@@ -64,7 +64,7 @@ func (a *AccountConfig) Address() (string, error) {
 
 // Returning the coin type of the account.
 func (a *AccountConfig) CoinType() crypto.CoinType {
-	return crypto.CoinTypeFromIndex(a.CoinTypeIndex)
+	return crypto.CoinTypeFromBipPath(a.CoinTypeIndex)
 }
 
 // DID returns the DID of the account. It is the DID of the public key followed by the name of the account.

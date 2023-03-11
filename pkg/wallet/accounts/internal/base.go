@@ -20,6 +20,8 @@ func BaseAccountFromConfig(conf *v1.AccountConfig, rootCnf *cmp.Config) wallet.A
 	}
 }
 
+
+
 // The baseAccountImpl type is a struct that has a single field, accountConfig, which is a pointer to
 // a v1.AccountConfig.
 // @property accountConfig - The account configuration
@@ -43,7 +45,7 @@ func (w *baseAccountImpl) Address() string {
 
 // Deriving a new account from a BIP32 path.
 func (w *baseAccountImpl) Bip32Derive(name string, coinType crypto.CoinType) (wallet.Account, error) {
-	newCnf, err := w.rootCmpConf().DeriveBIP32(uint32(coinType.Index()))
+	newCnf, err := w.rootCmpConf().DeriveBIP32(uint32(coinType.BipPath()))
 	if err != nil {
 		return nil, err
 	}

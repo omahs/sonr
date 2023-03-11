@@ -11,16 +11,16 @@ import (
 )
 
 type FileStore struct {
-	accConfig *vaultv1.AccountConfig
-	path      string
+	sonrAcc  *vaultv1.AccountConfig
+	basePath string
 }
 
 func NewFileStore(p string, accCfg *vaultv1.AccountConfig) (wallet.Store, error) {
 	// Open the my.db data file in your current directory.
 	// It will be created if it doesn't exist.
 	ds := &FileStore{
-		accConfig: accCfg,
-		path:      p,
+		sonrAcc:  accCfg,
+		basePath: p,
 	}
 	acc, err := accounts.Load(accCfg)
 	if err != nil {
@@ -38,12 +38,12 @@ func (ds *FileStore) ListAccounts() ([]wallet.Account, error) {
 }
 
 func (ds *FileStore) PutAccount(w wallet.Account) error {
-	accPath, err := getAccountPath(ds.path, w.CoinType())
+	accPath, err := getAccountPath(ds.basePath, w.CoinType())
 	if err != nil {
 		return err
 	}
 
-	WriteAccountConfig(accPath, w.Config())
+	WriteAccountConfig(accPath, ds.basePath, w.Config())
 
 	return nil
 }

@@ -2,11 +2,13 @@ package dispatcher_test
 
 import (
 	"encoding/base64"
+	"os"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/sonrhq/core/pkg/crypto"
+	"github.com/sonrhq/core/pkg/wallet/stores"
 	"github.com/sonrhq/core/x/identity/protocol/dispatcher"
 	"github.com/stretchr/testify/assert"
 )
@@ -23,22 +25,24 @@ var accTests = []accTest{
 	{"Handshake", crypto.HNSCoinType},
 	{"Litecoin", crypto.LTCCoinType},
 	{"Cosmos", crypto.COSMOSCoinType},
+	{"Sonr", crypto.SONRCoinType},
 }
 
 func usedNetworks() string {
 	var nets []string
 	for _, test := range accTests {
-		nets = append(nets, test.coinType.Symbol())
+		nets = append(nets, test.coinType.Ticker())
 	}
 	return strings.Join(nets, ", ")
 }
 
-func TestDispatcherAccounts(t *testing.T) {
+func TestNewWallet(t *testing.T) {
 	t.Logf("Initialize new DID Controller...")
 	startTime := time.Now()
 	d := dispatcher.New()
-
-	w, err := d.BuildNewDIDController("prad's iphone")
+	homeDir, err := os.UserHomeDir()
+	checkErr(t, err)
+	w, err := d.BuildNewDIDController("prad's iphone", stores.SetFileStorePath(homeDir, "Desktop"))
 	checkErr(t, err)
 	t.Logf("(%s) - Root Identifier", w.ID())
 	t.Logf("Address: %s", w.Address())
@@ -69,6 +73,10 @@ func TestDispatcherAccounts(t *testing.T) {
 		t.Logf("\t\t↪ Type: %s", acc.Type())
 		t.Logf("\t\t↪ Multibase PubKey: %s", acc.PubKey())
 	}
+}
+
+func TestListAccounts(t *testing.T) {
+	// wallet.GetAccountsByCoinType(walletPath string, coinType crypto.CoinType)
 }
 
 func TestDispatcherSignature(t *testing.T) {

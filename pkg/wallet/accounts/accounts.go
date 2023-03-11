@@ -1,7 +1,9 @@
 package accounts
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/sonrhq/core/pkg/client/rosetta"
 	"github.com/sonrhq/core/pkg/wallet"
@@ -39,4 +41,23 @@ func LoadFromBytes(b []byte) (wallet.Account, error) {
 		return nil, fmt.Errorf("failed to unmarshal account config: %w", err)
 	}
 	return Load(accCfg)
+}
+
+// LoadFromPath loads an account from a file path.
+func LoadFromPath(path string) (wallet.Account, error) {
+	// Open the file at the specified path
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	// Decode the JSON-encoded AccountConfig from the file
+	var accountConfig v1.AccountConfig
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&accountConfig)
+	if err != nil {
+		return nil, err
+	}
+	return Load(&accountConfig)
 }
