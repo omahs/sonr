@@ -39,7 +39,6 @@ require (
 	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
 	github.com/ucan-wg/go-ucan v0.0.0-20220326223643-c90281f7a4ac
-	go.etcd.io/bbolt v1.3.6
 	golang.org/x/crypto v0.5.0
 	golang.org/x/mobile v0.0.0-20221110043201-43a038452099
 	google.golang.org/genproto v0.0.0-20230223222841-637eb2293923
@@ -355,6 +354,7 @@ require (
 	github.com/zeebo/blake3 v0.2.0 // indirect
 	github.com/zondax/hid v0.9.1 // indirect
 	github.com/zondax/ledger-go v0.14.0 // indirect
+	go.etcd.io/bbolt v1.3.6 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel v1.11.1 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.7.0 // indirect
