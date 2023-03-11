@@ -31,7 +31,7 @@ func NewIPFSStore(node common.IPFSNode, accCfg *vaultv1.AccountConfig) (wallet.S
 	if err != nil {
 		return nil, err
 	}
-	err = ds.PutAccount(acc, accCfg.DID())
+	err = ds.PutAccount(acc)
 	if err != nil {
 		return nil, err
 	}
@@ -46,12 +46,20 @@ func (ds *IPFSStore) GetAccount(name string) (wallet.Account, error) {
 	return accounts.LoadFromBytes(bz)
 }
 
-func (ds *IPFSStore) PutAccount(sc wallet.Account, name string) error {
+func (ds *IPFSStore) ListAccounts() ([]wallet.Account, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+func (ds *IPFSStore) PutAccount(sc wallet.Account) error {
 	bz, err := sc.Marshal()
 	if err != nil {
 		return err
 	}
-	_, err = ds.ipfsKVStore.Put(context.Background(), name, bz)
+	accPath, err := getAccountPath("", sc.CoinType())
+	if err != nil {
+		return err
+	}
+	_, err = ds.ipfsKVStore.Put(context.Background(), accPath, bz)
 	if err != nil {
 		return err
 	}

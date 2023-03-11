@@ -73,7 +73,7 @@ func (w *DIDControllerImpl) CreateAccount(name string, coinType crypto.CoinType)
 		return nil, err
 	}
 	// Set account in list
-	err = w.store.PutAccount(acc, name)
+	err = w.store.PutAccount(acc)
 	if err != nil {
 		return nil, err
 	}
@@ -93,11 +93,16 @@ func (w *DIDControllerImpl) CreateAccount(name string, coinType crypto.CoinType)
 
 // Returning the account.WalletAccount and error.
 func (w *DIDControllerImpl) GetAccount(name string) (wallet.Account, error) {
-	accConf, err := w.store.GetAccount(name)
+	accs, err := w.store.ListAccounts()
 	if err != nil {
 		return nil, err
 	}
-	return accConf, nil
+	for _, acc := range accs {
+		if acc.Name() == name {
+			return acc, nil
+		}
+	}
+	return nil, fmt.Errorf("account %s not found", name)
 }
 
 // Get Sonr account
@@ -107,21 +112,5 @@ func (w *DIDControllerImpl) GetSonrAccount() (wallet.CosmosAccount, error) {
 
 // ListAccounts returns the list of accounts.
 func (w *DIDControllerImpl) ListAccounts() ([]wallet.Account, error) {
-	vms := w.didDocument.ListBlockchainAccounts()
-	if len(vms) == 0 {
-		return nil, fmt.Errorf("no accounts found")
-	}
-	accounts := make([]wallet.Account, 0, len(vms))
-	for _, vm := range vms {
-		name, ok := vm.GetMetadataValue(kDIDMetadataKeyAccName)
-		if !ok {
-			return nil, fmt.Errorf("account name not found in metadata")
-		}
-		acc, err := w.store.GetAccount(name)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get account %s: %w", name, err)
-		}
-		accounts = append(accounts, acc)
-	}
-	return accounts, nil
+	return w.store.ListAccounts()
 }

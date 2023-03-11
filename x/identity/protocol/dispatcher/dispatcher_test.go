@@ -59,13 +59,16 @@ func TestDispatcherAccounts(t *testing.T) {
 	t.Logf("DONE! Time elapsed: %s\n", time.Since(startTime))
 
 	t.Logf("\nGet %s accounts....", un)
-	startTime = time.Now()
-	for i, test := range accTests {
-		acc, err := w.GetAccount(test.name)
-		checkErr(t, err)
-		t.Logf("\t↪ [%d]<%s> %s", i, test.coinType.Symbol(), acc.Name())
-	}
+	accs, err := w.ListAccounts()
 	t.Logf("DONE! Time elapsed: %s\n", time.Since(startTime))
+	checkErr(t, err)
+	for i, acc := range accs {
+		t.Logf("\t* [%d] #%s", i, acc.DID())
+		t.Logf("\t\t↪ Address: %s", acc.Address())
+		t.Logf("\t\t↪ Controller: %s", acc.CoinType())
+		t.Logf("\t\t↪ Type: %s", acc.Type())
+		t.Logf("\t\t↪ Multibase PubKey: %s", acc.PubKey())
+	}
 }
 
 func TestDispatcherSignature(t *testing.T) {

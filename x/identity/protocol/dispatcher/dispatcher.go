@@ -5,6 +5,7 @@ import (
 
 	"github.com/sonrhq/core/pkg/wallet/accounts"
 	"github.com/sonrhq/core/pkg/wallet/controller"
+	"github.com/sonrhq/core/pkg/wallet/stores"
 )
 
 type Dispatcher struct {
@@ -17,7 +18,7 @@ func New() *Dispatcher {
 }
 
 // BuildNewDIDController creates a new wallet
-func (d *Dispatcher) BuildNewDIDController(deviceName string) (controller.DIDController, error) {
+func (d *Dispatcher) BuildNewDIDController(deviceName string, opts ...stores.Option) (controller.DIDController, error) {
 	// Lock the dispatcher
 	d.Lock()
 	defer d.Unlock()
@@ -31,7 +32,7 @@ func (d *Dispatcher) BuildNewDIDController(deviceName string) (controller.DIDCon
 		if err != nil {
 			errCh <- err
 		}
-		control, err := controller.New(rootAcc)
+		control, err := controller.New(rootAcc, opts...)
 		if err != nil {
 			errCh <- err
 		}
