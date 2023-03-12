@@ -21,23 +21,6 @@ message AccountInfo {
   int32 balance = 5;
 }
 
-message AccountConfig {
-  // Name is the name of the account.
-  string name = 1;
-
-  // multibase is the associated pubkey encoded in multibase.
-  string multibase = 2;
-
-  // PublicKey is the public key of the account.
-  bytes public_key = 3;
-
-  // CoinType is the coin type of the account. See https://github.com/satoshilabs/slips/blob/master/slip-0044.md for more information.
-  int32 coin_type_index = 4;
-
-  // Shares is a list of all shares associated with the account.
-  repeated bytes shares = 5;
-}
-
 // Basic Info Sent to Peers to Establish Connections
 message PeerInfo {
   string id = 1;       // User Sonr Account Decentralized ID
