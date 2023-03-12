@@ -3,7 +3,6 @@ package v2
 import (
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,6 +30,9 @@ type Account interface {
 	// Name returns the name of the account
 	Name() string
 
+	// Path returns the path of the account
+	Path() string
+
 	// PartyIDs returns the party IDs of the account
 	PartyIDs() []crypto.PartyID
 
@@ -51,26 +53,22 @@ type Account interface {
 }
 
 type walletAccount struct {
-	p     string
-	files []fs.FileInfo
+	p string
 }
 
 // NewWalletAccount loads an accound directory and returns a WalletAccount
 func NewWalletAccount(p string) (Account, error) {
 	// Check if the path is a directory
-	ok, files := isDir(p)
-	if !ok {
+	if !isDir(p) {
 		return nil, fmt.Errorf("path %s is not a directory", p)
-	}
-	if !hasShare(files) {
-		return nil, fmt.Errorf("directory %s does not contain any MPC shard files", p)
 	}
 	return &walletAccount{p: p}, nil
 }
 
 // Address returns the address of the account based on the coin type
 func (wa *walletAccount) Address() string {
-	return ""
+	addr, _ := wa.PubKey().Bech32(wa.CoinType().AddrPrefix())
+	return addr
 }
 
 // CoinType returns the coin type of the account
@@ -95,8 +93,12 @@ func (wa *walletAccount) DID() string {
 
 // ListKeyshares returns a list of keyshares for the account
 func (wa *walletAccount) ListKeyshares() ([]KeyShare, error) {
+	files, err := os.ReadDir(wa.p)
+	if err != nil {
+		return nil, err
+	}
 	var keyshares []KeyShare
-	for _, f := range wa.files {
+	for _, f := range files {
 		if !f.IsDir() && filepath.Ext(f.Name()) == ".key" {
 			ks, err := NewKeyshare(filepath.Join(wa.p, f.Name()))
 			if err != nil {
@@ -115,8 +117,12 @@ func (wa *walletAccount) Name() string {
 
 // PartyIDs returns the party IDs of the account
 func (wa *walletAccount) PartyIDs() []crypto.PartyID {
+	files, err := os.ReadDir(wa.p)
+	if err != nil {
+		return nil
+	}
 	var partyIDs []crypto.PartyID
-	for _, f := range wa.files {
+	for _, f := range files {
 		if !f.IsDir() && filepath.Ext(f.Name()) == ".key" {
 			id := strings.TrimRight(f.Name(), ".key")
 			partyIDs = append(partyIDs, crypto.PartyID(id))
@@ -125,9 +131,18 @@ func (wa *walletAccount) PartyIDs() []crypto.PartyID {
 	return partyIDs
 }
 
+// Path returns the path of the account
+func (wa *walletAccount) Path() string {
+	return wa.p
+}
+
 // PubKey returns secp256k1 public key
 func (wa *walletAccount) PubKey() *crypto.PubKey {
-	ks, err := NewKeyshare(wa.files[0].Name())
+	files, err := os.ReadDir(wa.p)
+	if err != nil {
+		return nil
+	}
+	ks, err := NewKeyshare(files[0].Name())
 	if err != nil {
 		return nil
 	}
@@ -149,15 +164,13 @@ func (wa *walletAccount) Rename(name string) error {
 
 // Signs a message using the account
 func (wa *walletAccount) Sign(bz []byte) ([]byte, error) {
+	kss, err := wa.ListKeyshares()
+	if err != nil {
+		return nil, err
+	}
 	var configs []*cmp.Config
-	for _, f := range wa.files {
-		if !f.IsDir() && filepath.Ext(f.Name()) == ".key" {
-			ks, err := NewKeyshare(filepath.Join(wa.p, f.Name()))
-			if err != nil {
-				return nil, err
-			}
-			configs = append(configs, ks.Config())
-		}
+	for _, ks := range kss {
+		configs = append(configs, ks.Config())
 	}
 	return mpc.SignCMP(configs, bz, wa.PartyIDs())
 }
@@ -169,11 +182,11 @@ func (wa *walletAccount) Type() string {
 
 // Verifies a signature
 func (wa *walletAccount) Verify(bz []byte, sig []byte) (bool, error) {
-	ks, err := NewKeyshare(wa.files[0].Name())
+	kss, err := wa.ListKeyshares()
 	if err != nil {
 		return false, err
 	}
-	return mpc.VerifyCMP(ks.Config(), bz, sig)
+	return mpc.VerifyCMP(kss[0].Config(), bz, sig)
 }
 
 //
@@ -181,20 +194,15 @@ func (wa *walletAccount) Verify(bz []byte, sig []byte) (bool, error) {
 //
 
 // isDir checks if the path is a directory and contains at least one MPC shard file
-func isDir(p string) (bool, []fs.FileInfo) {
+func isDir(p string) bool {
 	fi, err := os.Stat(p)
 	if err != nil {
-		return false, nil
+		return false
 	}
 	if !fi.IsDir() {
-		return false, nil
+		return false
 	}
-	// Check if the directory contains at least one MPC shard file
-	files, err := ioutil.ReadDir(p)
-	if err != nil {
-		return false, nil
-	}
-	return true, files
+	return true
 }
 
 // hasShare checks if the directory contains at least one MPC shard file

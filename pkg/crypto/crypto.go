@@ -11,7 +11,7 @@ import (
 	"github.com/multiformats/go-varint"
 
 	"github.com/sonrhq/core/pkg/common"
-	"github.com/sonrhq/core/pkg/crypto/types"
+	types "github.com/sonrhq/core/types/crypto"
 )
 
 // SNRPubKey is a type alias for common.SNRPubKey in pkg/common.

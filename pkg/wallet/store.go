@@ -50,11 +50,11 @@ func (fs *FileStore) ListAccountsForToken(coinType crypto.CoinType) ([]Account, 
 		if !info.IsDir() {
 			return nil
 		}
-		acc, err := NewWalletAccount(path)
-		if err != nil {
-			return err
+		acc, _ := NewWalletAccount(filepath.Join(dir, info.Name()))
+		if acc != nil {
+			accounts = append(accounts, acc)
 		}
-		accounts = append(accounts, acc)
+
 		return nil
 	})
 	if err != nil {

@@ -7,7 +7,6 @@ import (
 	"github.com/sonrhq/core/pkg/crypto/mpc/internal/algorithm"
 	"github.com/sonrhq/core/pkg/crypto/mpc/internal/network"
 	"github.com/sonrhq/core/pkg/crypto/mpc/internal/utils"
-	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
 	"github.com/taurusgroup/multi-party-sig/pkg/pool"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
@@ -33,13 +32,6 @@ type OnConfigGenerated func(*cmp.Config) error
 // KeygenOption is a function that configures an account.
 type KeygenOption func(*KeygenOpts)
 
-// WithName sets the name of the account.
-func WithName(name string) KeygenOption {
-	return func(c *KeygenOpts) {
-		c.AccName = name
-	}
-}
-
 // WithThreshold sets the number of required signatures to authorize a transaction.
 func WithThreshold(threshold int) KeygenOption {
 	return func(c *KeygenOpts) {
@@ -64,49 +56,8 @@ func WithPeers(peers ...string) KeygenOption {
 	}
 }
 
-// WithCoinType sets the coin type of the account.
-func WithCoinType(coinType crypto.CoinType) KeygenOption {
-	return func(c *KeygenOpts) {
-		c.CoinType = coinType
-	}
-}
-
 // Keygen Generates a new ECDSA private key shared among all the given participants.
-func Keygen(accName string, current crypto.PartyID, threshold int, peers []crypto.PartyID, coinType crypto.CoinType) (*v1.AccountConfig, error) {
-	group := utils.EnsureSelfIDInGroup(current, peers)
-	net := network.NewOfflineNetwork(group...)
-	var mtx sync.Mutex
-	configs := make(map[party.ID]*cmp.Config)
-	var wg sync.WaitGroup
-	for _, id := range net.Ls() {
-		wg.Add(1)
-		go func(id party.ID) {
-			pl := pool.NewPool(0)
-			defer pl.TearDown()
-			conf, err := algorithm.CmpKeygen(id, net.Ls(), net, threshold, &wg, pl)
-			if err != nil {
-				return
-			}
-			mtx.Lock()
-			configs[conf.ID] = conf
-			mtx.Unlock()
-		}(id)
-	}
-	wg.Wait()
-	// conf := <-doneChan
-	shares := make([]*cmp.Config, 0)
-	for _, conf := range configs {
-		shares = append(shares, conf)
-	}
-	conf, err := v1.NewAccountConfigFromShares(accName, coinType, shares)
-	if err != nil {
-		return nil, err
-	}
-	return conf, nil
-}
-
-// KeygenV2 Generates a new ECDSA private key shared among all the given participants.
-func KeygenV2(current crypto.PartyID, threshold int, peers []crypto.PartyID) ([]*cmp.Config, error) {
+func Keygen(current crypto.PartyID, threshold int, peers []crypto.PartyID) ([]*cmp.Config, error) {
 	group := utils.EnsureSelfIDInGroup(current, peers)
 	net := network.NewOfflineNetwork(group...)
 	var mtx sync.Mutex

@@ -16,7 +16,7 @@ type Wallet interface {
 	Controller() string
 
 	// CreateAccount creates a new account for the given coin type
-	CreateAccount(coin crypto.CoinType, name string) (Account, error)
+	CreateAccount(coin crypto.CoinType) (Account, error)
 
 	// ListAllocatedCoins returns a list of coins that this currently has accounts for
 	ListCoins() ([]crypto.CoinType, error)
@@ -68,7 +68,7 @@ func NewWallet(currentId string, threshold int) (Wallet, error) {
 	}
 
 	// Call Handler for keygen
-	confs, err := mpc.KeygenV2(crypto.PartyID(currentId), threshold, []crypto.PartyID{"default", "vault"})
+	confs, err := mpc.Keygen(crypto.PartyID(currentId), threshold, []crypto.PartyID{"default", "vault"})
 	if err != nil {
 		return nil, err
 	}
@@ -93,9 +93,9 @@ func (w *wallet) Controller() string {
 }
 
 // CreateAccount creates a new account for the given coin type
-func (w *wallet) CreateAccount(coin crypto.CoinType, name string) (Account, error) {
+func (w *wallet) CreateAccount(coin crypto.CoinType) (Account, error) {
 	// Call Handler for keygen
-	confs, err := mpc.KeygenV2(crypto.PartyID(w.currentId), w.threshold, []crypto.PartyID{"default", "vault"})
+	confs, err := mpc.Keygen(crypto.PartyID(w.currentId), w.threshold, []crypto.PartyID{"default", "vault"})
 	if err != nil {
 		return nil, err
 	}
@@ -174,6 +174,15 @@ func (w *wallet) GetAccountByPublicKey(key string) (Account, error) {
 		}
 	}
 	return nil, fmt.Errorf("account for public key %s not found", key)
+}
+
+// RenameAccount renames the account for the given coin type and account name
+func (w *wallet) RenameAccount(coin crypto.CoinType, name, newName string) error {
+	acc, err := w.GetAccount(coin, name)
+	if err != nil {
+		return err
+	}
+	return acc.Rename(newName)
 }
 
 // findCoinTypeFromAddress returns the CoinType for the given address
