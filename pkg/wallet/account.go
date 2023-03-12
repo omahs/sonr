@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/sonrhq/core/pkg/crypto"
@@ -67,20 +68,26 @@ func NewWalletAccount(p string) (Account, error) {
 
 // Address returns the address of the account based on the coin type
 func (wa *walletAccount) Address() string {
+	// if wa.CoinType().IsEthereum() {
+	// 	return wa.PubKey().ETHAddress()
+	// }
+	// addr, err := wa.PubKey().Bech32(wa.CoinType().AddrPrefix())
+	// if err != nil {
+	// 	return ""
+	// }
+	// return addr
 	addr, _ := wa.PubKey().Bech32(wa.CoinType().AddrPrefix())
 	return addr
 }
 
 // CoinType returns the coin type of the account
 func (wa *walletAccount) CoinType() crypto.CoinType {
-	parentDir := filepath.Base(filepath.Dir(wa.p))
-	allCoins := crypto.AllCoinTypes()
-	for _, coin := range allCoins {
-		if strings.Contains(parentDir, fmt.Sprintf("%d", coin.BipPath())) {
-			return coin
-		}
+	coinBipStr := filepath.Base(filepath.Dir(wa.p))
+	coinBip, err := strconv.Atoi(coinBipStr)
+	if err != nil {
+		return crypto.TestCoinType
 	}
-	return crypto.TestCoinType
+	return crypto.CoinTypeFromBipPath(int32(coinBip))
 }
 
 // DID returns the DID of the account
@@ -142,7 +149,7 @@ func (wa *walletAccount) PubKey() *crypto.PubKey {
 	if err != nil {
 		return nil
 	}
-	ks, err := NewKeyshare(files[0].Name())
+	ks, err := NewKeyshare(filepath.Join(wa.p, files[0].Name()))
 	if err != nil {
 		return nil
 	}
@@ -159,7 +166,11 @@ func (wa *walletAccount) PubKey() *crypto.PubKey {
 
 // Rename renames the account
 func (wa *walletAccount) Rename(name string) error {
-	return os.Rename(wa.p, filepath.Join(filepath.Dir(wa.p), name))
+	parentDir := filepath.Dir(wa.p)
+	newPath := filepath.Join(parentDir, name)
+
+	// Rename the directory to the new name
+	return os.Rename(wa.p, newPath)
 }
 
 // Signs a message using the account

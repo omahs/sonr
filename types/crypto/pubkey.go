@@ -12,6 +12,7 @@ import (
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 	mb "github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-varint"
+	"github.com/shengdoushi/base58"
 	common "github.com/sonrhq/core/pkg/common"
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
@@ -56,7 +57,7 @@ func (pk *PubKey) Bech32(pfix string) (string, error) {
 // ETHAddress returns the keccak256 hash of the key. This is used for the Ethereum address.
 func (pk *PubKey) ETHAddress() string {
 	hash := ethcrypto.Keccak256(pk.Bytes())
-	return "0x" + string(hash[len(hash)-20:])
+	return "0x" + base58.Encode(hash[len(hash)-20:], base58.BitcoinAlphabet)
 }
 
 // Multibase returns the Base58 encoding the key.

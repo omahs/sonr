@@ -15,6 +15,9 @@ type Wallet interface {
 	// Get the wallet's controller
 	Controller() string
 
+	// Count returns the number of accounts in the wallet for the given coin type
+	Count(coin crypto.CoinType) int
+
 	// CreateAccount creates a new account for the given coin type
 	CreateAccount(coin crypto.CoinType) (Account, error)
 
@@ -27,8 +30,11 @@ type Wallet interface {
 	// ListAccountsForCoin returns a list of accounts for the given coin type
 	ListAccountsForCoin(coin crypto.CoinType) ([]Account, error)
 
-	// GetAccount returns the account for the given coin type and account name
-	GetAccount(coin crypto.CoinType, name string) (Account, error)
+	// GetAccount returns the account for the given coin type and account index
+	GetAccount(coin crypto.CoinType, index int) (Account, error)
+
+	// GetAccountByIndex returns the account for the given coin type and account name
+	GetAccountByName(coin crypto.CoinType, name string) (Account, error)
 
 	// GetAccountByAddress returns the account for the given address and parses the coin type from the address
 	GetAccountByAddress(address string) (Account, error)
@@ -80,6 +86,18 @@ func NewWallet(currentId string, threshold int) (Wallet, error) {
 	return w, nil
 }
 
+// LoadWallet loads a wallet from the given path
+func LoadWallet(path string) (Wallet, error) {
+	fs, err := NewFileStore(path)
+	if err != nil {
+		return nil, err
+	}
+	w := &wallet{
+		fileStore: fs,
+	}
+	return w, nil
+}
+
 // Controller returns the controller of the wallet as did string
 func (w *wallet) Controller() string {
 	accs, err := w.fileStore.ListAccountsForToken(crypto.SONRCoinType)
@@ -90,6 +108,15 @@ func (w *wallet) Controller() string {
 		return ""
 	}
 	return accs[0].DID()
+}
+
+// Count returns the number of accounts in the wallet for the given coin type
+func (w *wallet) Count(coin crypto.CoinType) int {
+	accs, err := w.fileStore.ListAccountsForToken(coin)
+	if err != nil {
+		return 0
+	}
+	return len(accs)
 }
 
 // CreateAccount creates a new account for the given coin type
@@ -130,7 +157,7 @@ func (w *wallet) ListAccountsForCoin(coin crypto.CoinType) ([]Account, error) {
 }
 
 // GetAccount returns the account for the given coin type and account name
-func (w *wallet) GetAccount(coin crypto.CoinType, name string) (Account, error) {
+func (w *wallet) GetAccountByName(coin crypto.CoinType, name string) (Account, error) {
 	accsList, err := w.fileStore.ListAccountsForToken(coin)
 	if err != nil {
 		return nil, err
@@ -146,13 +173,34 @@ func (w *wallet) GetAccount(coin crypto.CoinType, name string) (Account, error) 
 // GetAccountByAddress returns the account for the given address and parses the coin type from the address
 func (w *wallet) GetAccountByAddress(address string) (Account, error) {
 	coin := findCoinTypeFromAddress(address)
-	return w.GetAccount(coin, address)
+	accs, err := w.ListAccountsForCoin(coin)
+	if err != nil {
+		return nil, err
+	}
+	for _, acc := range accs {
+		if acc.Address() == address {
+			return acc, nil
+		}
+	}
+	return nil, fmt.Errorf("account %s not found", address)
+}
+
+// GetAccountByIndex returns the account for the given coin type and account index
+func (w *wallet) GetAccount(coin crypto.CoinType, index int) (Account, error) {
+	accsList, err := w.fileStore.ListAccountsForToken(coin)
+	if err != nil {
+		return nil, err
+	}
+	if index >= len(accsList) {
+		return nil, fmt.Errorf("account index %d out of range", index)
+	}
+	return accsList[index], nil
 }
 
 // GetAccountByDID returns the account for the given DID and parses the coin type from the DID
 func (w *wallet) GetAccountByDID(did string) (Account, error) {
-	addr, coin, _ := parseBlockchainAccountFromDID(did)
-	return w.GetAccount(coin, addr)
+	addr, _, _ := parseBlockchainAccountFromDID(did)
+	return w.GetAccountByAddress(addr)
 }
 
 // GetAccountByPublicKey returns the account for the given public key and parses the coin type from the public key
@@ -178,7 +226,7 @@ func (w *wallet) GetAccountByPublicKey(key string) (Account, error) {
 
 // RenameAccount renames the account for the given coin type and account name
 func (w *wallet) RenameAccount(coin crypto.CoinType, name, newName string) error {
-	acc, err := w.GetAccount(coin, name)
+	acc, err := w.GetAccountByName(coin, name)
 	if err != nil {
 		return err
 	}
