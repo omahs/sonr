@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
@@ -30,7 +29,6 @@ func NewDerivedAccountConfig(name string, coinType crypto.CoinType, share *cmp.C
 		Multibase:     pub.Multibase(),
 		Shares:        shareConfigs,
 		CoinTypeIndex: int32(coinType.BipPath()),
-		CreatedAt:     time.Now().Unix(),
 		PublicKey:     pub.Raw(),
 	}, nil
 }
@@ -50,7 +48,6 @@ func NewAccountConfigFromShares(name string, coinType crypto.CoinType, shares []
 		Multibase:     pub.Multibase(),
 		Shares:        shareConfigs,
 		CoinTypeIndex: int32(coinType.BipPath()),
-		CreatedAt:     time.Now().Unix(),
 		PublicKey:     pub.Raw(),
 	}, nil
 }

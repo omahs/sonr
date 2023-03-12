@@ -38,26 +38,23 @@ message AccountConfig {
   // CoinType is the coin type of the account. See https://github.com/satoshilabs/slips/blob/master/slip-0044.md for more information.
   int32 coin_type_index = 4;
 
-  // CreatedAt is the time the account was created.
-  int64 created_at = 5;
-
   // Shares is a list of all shares associated with the account.
-  repeated bytes shares = 6;
+  repeated bytes shares = 5;
 }
 
-message WalletConfig {
-  // Address is the associated blockchain address.
-  string address = 1;
+message WalletInfo {
+  // Controller is the associated Sonr address.
+  string controller = 1;
 
-  // PublicKey is the public key of the wallet.
-  bytes public_key = 2;
+  // DiscoverPaths is a list of all known hardened coin type paths.
+  repeated string discovered_paths = 2;
 
-  // Algorithm is the algorithm of the wallet.
+  // Algorithm is the algorithm of the wallet. CMP is the default.
   string algorithm = 3;
 
-  // CID is the CID of the wallet.
-  string cid = 4;
+  // CreatedAt is the time the wallet was created.
+  int64 created_at = 4;
 
-  // Accounts is the map of accounts associated with the wallet.
-  map<string, AccountConfig> accounts = 5;
+  // LastUpdated is the last time the wallet was updated.
+  int64 last_updated = 5;
 }
