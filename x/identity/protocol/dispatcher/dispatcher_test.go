@@ -75,10 +75,6 @@ func TestNewWallet(t *testing.T) {
 	}
 }
 
-func TestListAccounts(t *testing.T) {
-	// wallet.GetAccountsByCoinType(walletPath string, coinType crypto.CoinType)
-}
-
 func TestDispatcherSignature(t *testing.T) {
 	t.Logf("Initialize new DID Controller...")
 	startTime := time.Now()
