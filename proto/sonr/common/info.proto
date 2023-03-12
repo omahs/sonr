@@ -45,7 +45,7 @@ message WalletInfo {
   string controller = 1;
 
   // DiscoverPaths is a list of all known hardened coin type paths.
-  repeated string discovered_paths = 2;
+  repeated int32 discovered_paths = 2;
 
   // Algorithm is the algorithm of the wallet. CMP is the default.
   string algorithm = 3;

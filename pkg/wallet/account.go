@@ -2,7 +2,6 @@ package v2
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -214,14 +213,4 @@ func isDir(p string) bool {
 		return false
 	}
 	return true
-}
-
-// hasShare checks if the directory contains at least one MPC shard file
-func hasShare(files []fs.FileInfo) bool {
-	for _, f := range files {
-		if !f.IsDir() && filepath.Ext(f.Name()) == ".key" {
-			return true
-		}
-	}
-	return false
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
@@ -17,6 +18,9 @@ type Wallet interface {
 
 	// Count returns the number of accounts in the wallet for the given coin type
 	Count(coin crypto.CoinType) int
+
+	// Size returns the disk size of the wallet
+	Size() (int64, error)
 
 	// CreateAccount creates a new account for the given coin type
 	CreateAccount(coin crypto.CoinType) (Account, error)
@@ -33,17 +37,17 @@ type Wallet interface {
 	// GetAccount returns the account for the given coin type and account index
 	GetAccount(coin crypto.CoinType, index int) (Account, error)
 
-	// GetAccountByIndex returns the account for the given coin type and account name
-	GetAccountByName(coin crypto.CoinType, name string) (Account, error)
-
 	// GetAccountByAddress returns the account for the given address and parses the coin type from the address
 	GetAccountByAddress(address string) (Account, error)
 
 	// GetAccountByDID returns the account for the given DID and parses the coin type from the DID
 	GetAccountByDID(did string) (Account, error)
 
-	// GetAccountByPublicKey returns the account for the given public key and parses the coin type from the public key
-	GetAccountByPublicKey(key string) (Account, error)
+	// SignWithDID signs the given message with the private key of the account with the given DID
+	SignWithDID(did string, msg []byte) ([]byte, error)
+
+	// VerifyWithDID verifies the given signature with the public key of the account with the given DID
+	VerifyWithDID(did string, msg, sig []byte) (bool, error)
 }
 
 type wallet struct {
@@ -69,20 +73,32 @@ func NewWallet(currentId string, threshold int) (Wallet, error) {
 	w := &wallet{
 		currentId: currentId,
 		threshold: threshold,
-		info:      &common.WalletInfo{},
 		fileStore: fs,
+		path:      path,
 	}
 
 	// Call Handler for keygen
-	confs, err := mpc.Keygen(crypto.PartyID(currentId), threshold, []crypto.PartyID{"default", "vault"})
+	confs, err := mpc.Keygen(crypto.PartyID(currentId), threshold, []crypto.PartyID{"vault"})
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = w.fileStore.WriteCmpConfigs(crypto.SONRCoinType, confs)
+	// Write the config to the file store
+	acc, err := w.fileStore.WriteCmpConfigs(crypto.SONRCoinType, confs)
 	if err != nil {
 		return nil, err
 	}
+
+	info := &common.WalletInfo{
+		DiscoveredPaths: []int32{
+			crypto.SONRCoinType.BipPath(),
+		},
+		Algorithm:   "mpc/cmp",
+		Controller:  acc.DID(),
+		CreatedAt:   time.Now().Unix(),
+		LastUpdated: time.Now().Unix(),
+	}
+	w.info = info
 	return w, nil
 }
 
@@ -117,6 +133,15 @@ func (w *wallet) Count(coin crypto.CoinType) int {
 		return 0
 	}
 	return len(accs)
+}
+
+// Size returns the disk size of the wallet
+func (w *wallet) Size() (int64, error) {
+	info, err := os.Stat(w.path)
+	if err != nil {
+		return 0, err
+	}
+	return info.Size(), nil
 }
 
 // CreateAccount creates a new account for the given coin type
@@ -233,6 +258,24 @@ func (w *wallet) RenameAccount(coin crypto.CoinType, name, newName string) error
 	return acc.Rename(newName)
 }
 
+// SignWithDID signs the given message with the account for the given DID
+func (w *wallet) SignWithDID(did string, msg []byte) ([]byte, error) {
+	acc, err := w.GetAccountByDID(did)
+	if err != nil {
+		return nil, err
+	}
+	return acc.Sign(msg)
+}
+
+// VerifyWithDID verifies the given signature for the given message with the account for the given DID
+func (w *wallet) VerifyWithDID(did string, msg, sig []byte) (bool, error) {
+	acc, err := w.GetAccountByDID(did)
+	if err != nil {
+		return false, err
+	}
+	return acc.Verify(msg, sig)
+}
+
 // findCoinTypeFromAddress returns the CoinType for the given address
 func findCoinTypeFromAddress(addr string) crypto.CoinType {
 	for _, ct := range crypto.AllCoinTypes() {
@@ -247,22 +290,13 @@ func findCoinTypeFromAddress(addr string) crypto.CoinType {
 func parseBlockchainAccountFromDID(did string) (string, crypto.CoinType, string) {
 	// Split the DID into its constituent parts
 	parts := strings.Split(did, ":")
+	method := parts[1]
 
 	// If the DID is for a Sonr account, there will only be two parts: "did" and the address
 	if len(parts) == 3 && parts[1] == "sonr" {
 		return parts[2], crypto.CoinTypeFromDidMethod(parts[1]), ""
 	}
 
-	// If the DID is for a non-Sonr account, there will be three parts: "did", the coin type, and the address
-	if len(parts) == 4 && parts[1] != "sonr" {
-		// Split the account identifier into its constituent parts
-		accountParts := strings.Split(parts[3], "#")
-		if len(accountParts) == 1 {
-			return parts[2], crypto.CoinTypeFromDidMethod(parts[1]), ""
-		}
-		return parts[2], crypto.CoinTypeFromDidMethod(parts[1]), accountParts[1]
-	}
-
-	// If the DID is not in the expected format, return empty strings
-	return "", crypto.TestCoinType, ""
+	accountParts := strings.Split(parts[2], "#")
+	return accountParts[0], crypto.CoinTypeFromDidMethod(method), accountParts[1]
 }
