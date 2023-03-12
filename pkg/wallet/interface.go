@@ -138,3 +138,22 @@ type Store interface {
 	// VerifyJWKClaims verifies the JWKClaims for the store
 	VerifyJWKClaims(claims string, acc Account) error
 }
+
+type Wallet interface {
+	// GetAccount returns the account with the given name
+	GetAccount(name string) (Account, error)
+
+	// GetAccountByAddress returns the account with the given address
+	GetAccountByAddress(addr string) (Account, error)
+
+	// GetAccountByDID returns the account with the given DID
+	GetAccountByDID(did string) (Account, error)
+
+	// GetAccountByPubKey returns the account with the given public key
+	GetAccountByPubKey(pubKey *crypto.PubKey) (Account, error)
+
+	// GetAccountByType returns the account with the given Coin Type
+	GetAccountByType(coinType crypto.CoinType) (Account, error)
+
+
+}

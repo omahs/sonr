@@ -27,6 +27,9 @@ var (
 	kDefaultGroup = []crypto.PartyID{crypto.PartyID("vault")}
 )
 
+// OnConfigGenerated is a callback function that is called when a new account is generated.
+type OnConfigGenerated func(*cmp.Config) error
+
 // KeygenOption is a function that configures an account.
 type KeygenOption func(*KeygenOpts)
 
@@ -100,6 +103,31 @@ func Keygen(accName string, current crypto.PartyID, threshold int, peers []crypt
 		return nil, err
 	}
 	return conf, nil
+}
+
+// KeygenV2 Generates a new ECDSA private key shared among all the given participants.
+func KeygenV2(current crypto.PartyID, threshold int, peers []crypto.PartyID) ([]*cmp.Config, error) {
+	group := utils.EnsureSelfIDInGroup(current, peers)
+	net := network.NewOfflineNetwork(group...)
+	var mtx sync.Mutex
+	var wg sync.WaitGroup
+	confs := make([]*cmp.Config, 0)
+	for _, id := range net.Ls() {
+		wg.Add(1)
+		go func(id party.ID) {
+			pl := pool.NewPool(0)
+			defer pl.TearDown()
+			conf, err := algorithm.CmpKeygen(id, net.Ls(), net, threshold, &wg, pl)
+			if err != nil {
+				return
+			}
+			mtx.Lock()
+			confs = append(confs, conf)
+			mtx.Unlock()
+		}(id)
+	}
+	wg.Wait()
+	return confs, nil
 }
 
 // KeygenOpts is the configuration of an account.

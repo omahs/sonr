@@ -78,6 +78,11 @@ func CoinTypeFromBipPath(i int32) CoinType {
 	return types.CoinTypeFromBipPath(i)
 }
 
+// CoinTypeFromDidMethod returns the CoinType from the DID Method (btc, eth).
+func CoinTypeFromDidMethod(str string) CoinType {
+	return types.CoinTypeFromDidMethod(str)
+}
+
 // CoinTypeFromName returns the CoinType from the Blockchain name (Bitcoin, Ethereum).
 func CoinTypeFromName(str string) CoinType {
 	return types.CoinTypeFromName(str)
@@ -87,7 +92,6 @@ func CoinTypeFromName(str string) CoinType {
 func CoinTypeFromTicker(str string) CoinType {
 	return types.CoinTypeFromTicker(str)
 }
-
 
 // Secp256k1KeyType is the key type for secp256k1.
 const Secp256k1KeyType = types.KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019

@@ -41,6 +41,17 @@ func CoinTypeFromBipPath(i int32) CoinType {
 	return CoinType_CoinType_TESTNET
 }
 
+// CoinTypeFromDIDMethod returns the CoinType from the DID method.
+func CoinTypeFromDidMethod(str string) CoinType {
+	coins := AllCoinTypes()
+	for _, coin := range coins {
+		if strings.ToLower(coin.DidMethod()) == strings.ToLower(str) {
+			return coin
+		}
+	}
+	return CoinType_CoinType_TESTNET
+}
+
 // CoinTypeFromName returns the CoinType from the name.
 func CoinTypeFromName(str string) CoinType {
 	coins := AllCoinTypes()
