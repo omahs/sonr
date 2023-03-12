@@ -19,7 +19,7 @@ type IPFSStore struct {
 }
 
 func NewIPFSStore(node common.IPFSNode, accCfg *vaultv1.AccountConfig) (wallet.Store, error) {
-	docs, err := node.LoadKeyValueStore(accCfg.DID())
+	docs, err := node.LoadKeyValueStore(accCfg.Address().String())
 	if err != nil {
 		return nil, err
 	}
@@ -27,15 +27,17 @@ func NewIPFSStore(node common.IPFSNode, accCfg *vaultv1.AccountConfig) (wallet.S
 		accConfig:   accCfg,
 		ipfsKVStore: docs,
 	}
-	acc, err := accounts.Load(accCfg)
-	if err != nil {
-		return nil, err
-	}
-	err = ds.PutAccount(acc)
+
+	err = ds.PutAccount(accounts.Load(accCfg))
 	if err != nil {
 		return nil, err
 	}
 	return ds, nil
+}
+
+// CID returns the CID of the store
+func (ds *IPFSStore) CID() string {
+	return ""
 }
 
 func (ds *IPFSStore) GetAccount(name string) (wallet.Account, error) {
@@ -74,11 +76,16 @@ func (ds *IPFSStore) JWKClaims(acc wallet.Account) (string, error) {
 		{Cap: caps.Cap("SUPER_USER"), Rsc: ucan.NewStringLengthResource("mpc/acc", "b5:world_bank_population:*")},
 	}
 	zero := time.Time{}
-	origin, err := acc.NewOriginToken(acc.PubKey().DID(), att, nil, zero, zero)
+	origin, err := acc.NewOriginToken(string(acc.PubKey().Address()), att, nil, zero, zero)
 	if err != nil {
 		return "", err
 	}
 	return origin, nil
+}
+
+// Path returns the path of the store
+func (ds *IPFSStore) Path() string {
+	return ""
 }
 
 func exampleParser() *ucan.TokenParser {

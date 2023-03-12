@@ -8,6 +8,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.46.7
 	github.com/cosmos/gogoproto v1.4.2
 	github.com/cosmos/ibc-go/v5 v5.2.0
+	github.com/ethereum/go-ethereum v1.10.17
 	github.com/fxamacker/cbor/v2 v2.4.0
 	github.com/go-webauthn/webauthn v0.6.0
 	github.com/gogo/protobuf v1.3.3
@@ -29,7 +30,6 @@ require (
 	github.com/multiformats/go-multiaddr v0.8.0
 	github.com/multiformats/go-multibase v0.1.1
 	github.com/multiformats/go-varint v0.0.7
-	github.com/ockam-network/did v0.1.3
 	github.com/shengdoushi/base58 v1.0.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
@@ -79,6 +79,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/btcsuite/btcd v0.22.1 // indirect
+	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect

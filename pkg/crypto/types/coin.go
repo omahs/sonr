@@ -178,3 +178,72 @@ func (ct CoinType) Ticker() string {
 		return "TESTNET"
 	}
 }
+
+// IsBitcoin returns true if the coin type is bitcoin.
+func (c CoinType) IsBitcoin() bool {
+	return c == CoinType_CoinType_BITCOIN
+}
+
+// IsCosmos returns true if the coin type is cosmos.
+func (c CoinType) IsCosmos() bool {
+	return c == CoinType_CoinType_COSMOS
+}
+
+// IsEthereum returns true if the coin type is ethereum.
+func (c CoinType) IsEthereum() bool {
+	return c == CoinType_CoinType_ETHEREUM
+}
+
+// IsFilecoin returns true if the coin type is filecoin.
+func (c CoinType) IsFilecoin() bool {
+	return c == CoinType_CoinType_FILECOIN
+}
+
+// IsHandshake returns true if the coin type is handshake.
+func (c CoinType) IsHandshake() bool {
+	return c == CoinType_CoinType_HNS
+}
+
+// IsLitecoin returns true if the coin type is litecoin.
+func (c CoinType) IsLitecoin() bool {
+	return c == CoinType_CoinType_LITECOIN
+}
+
+// IsSolana returns true if the coin type is solana.
+func (c CoinType) IsSolana() bool {
+	return c == CoinType_CoinType_SOLANA
+}
+
+// IsRipple returns true if the coin type is ripple.
+func (c CoinType) IsRipple() bool {
+	return c == CoinType_CoinType_XRP
+}
+
+// IsTestnet returns true if the coin type is testnet.
+func (c CoinType) IsTestnet() bool {
+	return c == CoinType_CoinType_TESTNET
+}
+
+// IsDogecoin returns true if the coin type is dogecoin.
+func (c CoinType) IsDogecoin() bool {
+	return c == CoinType_CoinType_DOGE
+}
+
+// IsSonr returns true if the coin type is sonr.
+func (c CoinType) IsSonr() bool {
+	return c == CoinType_CoinType_SONR
+}
+
+// DidMethod returns the DID method for the given coin type.
+func (c CoinType) DidMethod() string {
+	if c.IsBitcoin() {
+		return "btcr"
+	}
+	if c.IsEthereum() {
+		return "ethr"
+	}
+	if c.IsSonr() {
+		return "sonr"
+	}
+	return strings.ToLower(c.Ticker())
+}

@@ -7,7 +7,6 @@ import (
 
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/wallet"
-	"github.com/sonrhq/core/pkg/wallet/accounts"
 	"github.com/sonrhq/core/pkg/wallet/stores"
 	"github.com/sonrhq/core/x/identity/types"
 )
@@ -26,7 +25,7 @@ type DIDControllerImpl struct {
 	authentication *types.VerificationMethod
 }
 
-// `New` creates a new DID controller instance
+// `New` creates a new DID controller instance and returns the path to the wallet store.
 func New(account wallet.Account, opts ...stores.Option) (DIDController, error) {
 	if account == nil {
 		return nil, errors.New("account is nil")
@@ -41,12 +40,21 @@ func New(account wallet.Account, opts ...stores.Option) (DIDController, error) {
 		primaryAccount: account,
 		store:          st,
 	}
-
-	// Create the DID document.
-	doc, err := types.NewDocument(account.PubKey())
+	pk, err := crypto.PubKeyFromCommon(account.PubKey())
 	if err != nil {
 		return nil, err
 	}
+	addr, err := pk.Bech32(crypto.SONRCoinType.AddrPrefix())
+	if err != nil {
+		return nil, err
+	}
+	id := types.NewSonrID(addr)
+	doc := types.NewBlankDocument(id)
+	vm, err := types.NewPrimaryAccountVM(pk)
+	if err != nil {
+		return nil, err
+	}
+	doc.AddAssertion(vm)
 	docc.didDocument = doc
 	return docc, nil
 }
@@ -62,7 +70,7 @@ func (d *DIDControllerImpl) ID() string {
 }
 
 // Document returns the DID document of the DID controller.
-func (d *DIDControllerImpl) Document() *types.DidDocument {
+func (d *DIDControllerImpl) DidDocument() *types.DidDocument {
 	return d.didDocument
 }
 
@@ -78,39 +86,29 @@ func (w *DIDControllerImpl) CreateAccount(name string, coinType crypto.CoinType)
 		return nil, err
 	}
 
-	vm, err := w.didDocument.SetAssertion(acc.PubKey(), types.WithBlockchainAccount(acc.Address()),
-		types.WithController(w.didDocument.Id),
-		types.WithIDFragmentSuffix(acc.Config().Name),
-	)
+	vm, err := w.didDocument.AddBlockchainAccount(acc.Name(), acc.CoinType(), acc.PubKey())
 	if err != nil {
 		return nil, err
 	}
-	vm.SetMetadataValue(kDIDMetadataKeyAccName, acc.Name())
-	vm.SetMetadataValue(kDIDMetadataKeyCoin, acc.CoinType().Name())
-	w.didDocument.UpdateAssertion(vm)
 	return vm, nil
 }
 
 // Returning the account.WalletAccount and error.
-func (w *DIDControllerImpl) GetAccount(name string) (wallet.Account, error) {
-	accs, err := w.store.ListAccounts()
+func (w *DIDControllerImpl) GetAccounts(ct crypto.CoinType) ([]wallet.Account, error) {
+	_, err := w.store.ListAccounts()
 	if err != nil {
 		return nil, err
 	}
-	for _, acc := range accs {
-		if acc.Name() == name {
-			return acc, nil
-		}
-	}
-	return nil, fmt.Errorf("account %s not found", name)
-}
 
-// Get Sonr account
-func (w *DIDControllerImpl) GetSonrAccount() (wallet.CosmosAccount, error) {
-	return accounts.GetCosmosAccount(w.primaryAccount, w.primaryAccount, nil), nil
+	return nil, fmt.Errorf("account not found")
 }
 
 // ListAccounts returns the list of accounts.
 func (w *DIDControllerImpl) ListAccounts() ([]wallet.Account, error) {
 	return w.store.ListAccounts()
+}
+
+// Path returns the path to the wallet store.
+func (w *DIDControllerImpl) Path() string {
+	return w.store.Path()
 }

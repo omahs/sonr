@@ -58,11 +58,11 @@ func defaultConfig() *config {
 
 // Keygen calls the Keygen function with the set values.
 func (c *config) Keygen() (wallet.Account, error) {
-	accConf, rootCnf, err := mpc.Keygen(c.AccName, c.SelfID(), c.Threshold, c.PartyIDs(), c.CoinType)
+	accConf, err := mpc.Keygen(c.AccName, c.SelfID(), c.Threshold, c.PartyIDs(), c.CoinType)
 	if err != nil {
 		return nil, err
 	}
-	return internal.BaseAccountFromConfig(accConf, rootCnf), nil
+	return internal.BaseAccountFromConfig(accConf), nil
 }
 
 // Keygen calls the Keygen function with the set values.

@@ -8,19 +8,18 @@ import (
 	"github.com/sonrhq/core/pkg/crypto/mpc"
 	"github.com/sonrhq/core/pkg/crypto/token"
 	"github.com/sonrhq/core/pkg/wallet"
+	"github.com/sonrhq/core/x/identity/types"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 	"github.com/ucan-wg/go-ucan"
 )
 
 // BaseAccountFromConfig returns a new base account
-func BaseAccountFromConfig(conf *v1.AccountConfig, rootCnf *cmp.Config) wallet.Account {
+func BaseAccountFromConfig(conf *v1.AccountConfig) wallet.Account {
 	return &baseAccountImpl{
 		accountConfig: conf,
 	}
 }
-
-
 
 // The baseAccountImpl type is a struct that has a single field, accountConfig, which is a pointer to
 // a v1.AccountConfig.
@@ -32,14 +31,10 @@ type baseAccountImpl struct {
 
 // Address returns the account address
 func (w *baseAccountImpl) Address() string {
-	pb, err := w.accountConfig.PubKey()
-	if err != nil {
-		return ""
+	if w.CoinType().IsEthereum() {
+		return w.PubKey().ETHAddress()
 	}
-	addr, err := pb.Bech32(w.CoinType().AddrPrefix())
-	if err != nil {
-		return ""
-	}
+	addr, _ := w.PubKey().Bech32(w.CoinType().AddrPrefix())
 	return addr
 }
 
@@ -53,7 +48,7 @@ func (w *baseAccountImpl) Bip32Derive(name string, coinType crypto.CoinType) (wa
 	if err != nil {
 		return nil, err
 	}
-	return BaseAccountFromConfig(deri, newCnf), nil
+	return BaseAccountFromConfig(deri), nil
 }
 
 // CoinType returns the account coin type
@@ -68,17 +63,15 @@ func (w *baseAccountImpl) Config() *v1.AccountConfig {
 
 // DID returns the account DID
 func (w *baseAccountImpl) DID() string {
-	return w.accountConfig.DID()
+	return types.NewBlockchainID(w.Address(), w.Name())
 }
 
 // Info returns the account information
 func (w *baseAccountImpl) Info() map[string]string {
-	addr, _ := w.accountConfig.Address()
-
 	return map[string]string{
 		"name":    w.accountConfig.Name,
 		"network": w.accountConfig.CoinType().Name(),
-		"address": addr,
+		"address": w.Address(),
 	}
 }
 
@@ -90,19 +83,6 @@ func (w *baseAccountImpl) Marshal() ([]byte, error) {
 // Name returns the account name
 func (w *baseAccountImpl) Name() string {
 	return w.accountConfig.Name
-}
-
-// NewOriginToken returns a new origin token for the account.
-func (w *baseAccountImpl) NewOriginToken(audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (string, error) {
-	return token.NewUnsignedUCAN(w.accountConfig, audienceDID, nil, att, fct, notBefore, expires)
-}
-
-// NewAttenuatedToken returns a new attenuated token for the account.
-func (w *baseAccountImpl) NewAttenuatedToken(parent *ucan.Token, audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (string, error) {
-	if !parent.Attenuations.Contains(att) {
-		return "", fmt.Errorf("scope of ucan attenuations must be less than it's parent")
-	}
-	return token.NewUnsignedUCAN(w.accountConfig, audienceDID, append(parent.Proofs, ucan.Proof(parent.Raw)), att, fct, notBefore, expires)
 }
 
 // PubKey returns secp256k1 public key
@@ -155,4 +135,17 @@ func (w *baseAccountImpl) rootCmpConf() *cmp.Config {
 		}
 	}
 	return cmps[0]
+}
+
+// NewOriginToken returns a new origin token for the account.
+func (w *baseAccountImpl) NewOriginToken(audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (string, error) {
+	return token.NewUnsignedUCAN(w.accountConfig, audienceDID, nil, att, fct, notBefore, expires)
+}
+
+// NewAttenuatedToken returns a new attenuated token for the account.
+func (w *baseAccountImpl) NewAttenuatedToken(parent *ucan.Token, audienceDID string, att ucan.Attenuations, fct []ucan.Fact, notBefore, expires time.Time) (string, error) {
+	if !parent.Attenuations.Contains(att) {
+		return "", fmt.Errorf("scope of ucan attenuations must be less than it's parent")
+	}
+	return token.NewUnsignedUCAN(w.accountConfig, audienceDID, append(parent.Proofs, ucan.Proof(parent.Raw)), att, fct, notBefore, expires)
 }

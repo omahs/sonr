@@ -44,8 +44,9 @@ func TestNewWallet(t *testing.T) {
 	checkErr(t, err)
 	w, err := d.BuildNewDIDController("prad's iphone", stores.SetFileStorePath(homeDir, "Desktop"))
 	checkErr(t, err)
-	t.Logf("(%s) - Root Identifier", w.ID())
-	t.Logf("Address: %s", w.Address())
+	t.Logf("[ROOT-ACC] %s", w.ID())
+	t.Logf("\t↪ Address: %s", w.Address())
+	t.Logf("\t↪ Path: %s", w.Path())
 	t.Logf("DONE! Time elapsed: %s\n", time.Since(startTime))
 
 	un := usedNetworks()
@@ -64,7 +65,6 @@ func TestNewWallet(t *testing.T) {
 
 	t.Logf("\nGet %s accounts....", un)
 	accs, err := w.ListAccounts()
-	t.Logf("DONE! Time elapsed: %s\n", time.Since(startTime))
 	checkErr(t, err)
 	for i, acc := range accs {
 		t.Logf("\t* [%d] #%s", i, acc.DID())

@@ -2,10 +2,13 @@ package types
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"errors"
+	"hash"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 	mb "github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-varint"
@@ -13,6 +16,7 @@ import (
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	tmcrypto "github.com/tendermint/tendermint/crypto"
+	"golang.org/x/crypto/ripemd160"
 )
 
 type (
@@ -38,19 +42,21 @@ func NewPubKey(bz []byte, kt KeyType) *PubKey {
 
 // Creating a new method called Address() that returns an Address type.
 func (pk *PubKey) Address() Address {
-	return tmcrypto.AddressHash(pk.Bytes())
+	sha := sha256.Sum256(pk.Bytes())
+	hasherRIPEMD160 := ripemd160.New()
+	hasherRIPEMD160.Write(sha[:]) // does not error
+	return tmcrypto.Address(hasherRIPEMD160.Sum(nil))
 }
 
-// Bech32 returns the bech32 encoding of the key.
+// Bech32 returns the bech32 encoding of the key. This is used for the Cosmos address.
 func (pk *PubKey) Bech32(pfix string) (string, error) {
 	return bech32.ConvertAndEncode(pfix, pk.Address().Bytes())
 }
 
-// DID returns the DID of the verification method
-func (pk *PubKey) DID(opts ...common.DIDOption) string {
-	c := common.DefaultDidUriConfig()
-	opts = append(opts, common.WithIdentifier(pk.Multibase()))
-	return c.Apply(opts...)
+// ETHAddress returns the keccak256 hash of the key. This is used for the Ethereum address.
+func (pk *PubKey) ETHAddress() string {
+	hash := ethcrypto.Keccak256(pk.Bytes())
+	return "0x" + string(hash[len(hash)-20:])
 }
 
 // Multibase returns the Base58 encoding the key.
@@ -141,6 +147,12 @@ func (pk *PubKey) VerifySignature(msg []byte, sig []byte) bool {
 		}
 	}
 	return false
+}
+
+// Calculate the hash of hasher over buf.
+func calcHash(buf []byte, hasher hash.Hash) []byte {
+	hasher.Write(buf)
+	return hasher.Sum(nil)
 }
 
 // SerializeSignature marshals an ECDSA signature to DER format for use with the CMP protocol

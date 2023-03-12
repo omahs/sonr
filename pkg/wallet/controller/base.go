@@ -6,15 +6,6 @@ import (
 	"github.com/sonrhq/core/x/identity/types"
 )
 
-// DID Metadata Key for VerificationMethod Blockchain Coin
-const kDIDMetadataKeyCoin = "blockchain.coin"
-
-// DID Metadata Key for VerificationMethod Blockchain Address
-const kDIDMetadataKeyAccName = "blockchain.label"
-
-// rootWalletAccountName is the name of the root account
-const rootWalletAccountName = "Primary"
-
 // `DIDController` is a type that is both a `wallet.Wallet` and a `store.WalletStore`.
 // @property GetChallengeResponse - This method is used to get the challenge response from the DID
 // controller.
@@ -31,19 +22,19 @@ type DIDController interface {
 	ID() string
 
 	// DID Document
-	Document() *types.DidDocument
+	DidDocument() *types.DidDocument
 
 	// Creates a new account and returns the address of the account.
 	CreateAccount(name string, coinType crypto.CoinType) (*types.VerificationMethod, error)
 
 	// Gets an account by name
-	GetAccount(name string) (wallet.Account, error)
-
-	// Gets Cosmos account
-	GetSonrAccount() (wallet.CosmosAccount, error)
+	GetAccounts(ct crypto.CoinType) ([]wallet.Account, error)
 
 	// Gets all accounts
 	ListAccounts() ([]wallet.Account, error)
+
+	// Path returns the path of the wallet store
+	Path() string
 
 	// Sign a message with the primary account
 	SignWithAccount(message []byte, account string) ([]byte, error)

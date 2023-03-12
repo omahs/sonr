@@ -1,16 +1,18 @@
 package v1
 
 import (
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/sonrhq/core/pkg/common"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/pkg/party"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
+	tmcrypto "github.com/tendermint/tendermint/crypto"
+	"golang.org/x/crypto/ripemd160"
 )
 
 // It takes a name, index, address prefix, and a slice of shares, and returns an account config
@@ -54,37 +56,16 @@ func NewAccountConfigFromShares(name string, coinType crypto.CoinType, shares []
 }
 
 // Returning the address of the account.
-func (a *AccountConfig) Address() (string, error) {
-	pub, err := a.PubKey()
-	if err != nil {
-		return "", err
-	}
-	return pub.Bech32(a.CoinType().AddrPrefix())
+func (a *AccountConfig) Address() tmcrypto.Address {
+	sha := sha256.Sum256(a.PublicKey)
+	hasherRIPEMD160 := ripemd160.New()
+	hasherRIPEMD160.Write(sha[:]) // does not error
+	return tmcrypto.Address(hasherRIPEMD160.Sum(nil))
 }
 
 // Returning the coin type of the account.
 func (a *AccountConfig) CoinType() crypto.CoinType {
 	return crypto.CoinTypeFromBipPath(a.CoinTypeIndex)
-}
-
-// DID returns the DID of the account. It is the DID of the public key followed by the name of the account.
-func (a *AccountConfig) DID(opts ...common.DIDOption) string {
-	pub, err := a.PubKey()
-	if err != nil {
-		return ""
-	}
-	return pub.DID()
-}
-
-// Key returns the key of the account. It is the DID of the public key followed by the name of the account.
-func (a *AccountConfig) Key() string {
-	return a.DID(common.WithFragment(a.Name))
-}
-
-// Value returns the value of the account. This is a byte slice of the account config.
-func (a *AccountConfig) Value() []byte {
-	b, _ := a.Marshal()
-	return b
 }
 
 // GetConfigAtIndex returns the config at the given index.

@@ -120,11 +120,17 @@ type ETHAccount interface {
 
 // Store is the interface that defines the methods that a wallet store must implement.
 type Store interface {
+	// CID returns the content identifier of the store
+	CID() string
+
 	// GetShare returns a *cmp.Config for the given name
 	ListAccounts() ([]Account, error)
 
 	// PutShare stores the given *cmp.Config under the given name
 	PutAccount(acc Account) error
+
+	// Path returns the local path of the store
+	Path() string
 
 	// JWKClaims returns the JWKClaims for the store to be signed by the identity
 	JWKClaims(aacc Account) (string, error)

@@ -22,15 +22,15 @@ func NewFileStore(p string, accCfg *vaultv1.AccountConfig) (wallet.Store, error)
 		sonrAcc:  accCfg,
 		basePath: p,
 	}
-	acc, err := accounts.Load(accCfg)
-	if err != nil {
-		return nil, err
-	}
-	err = ds.PutAccount(acc)
+	err := ds.PutAccount(accounts.Load(accCfg))
 	if err != nil {
 		return nil, err
 	}
 	return ds, nil
+}
+
+func (ds *FileStore) CID() string {
+	return ""
 }
 
 func (ds *FileStore) ListAccounts() ([]wallet.Account, error) {
@@ -56,11 +56,16 @@ func (ds *FileStore) JWKClaims(acc wallet.Account) (string, error) {
 		{Cap: caps.Cap("SUPER_USER"), Rsc: ucan.NewStringLengthResource("mpc/acc", "b5:world_bank_population:*")},
 	}
 	zero := time.Time{}
-	origin, err := acc.NewOriginToken(acc.PubKey().DID(), att, nil, zero, zero)
+	origin, err := acc.NewOriginToken(acc.PubKey().Address().String(), att, nil, zero, zero)
 	if err != nil {
 		return "", err
 	}
 	return origin, nil
+}
+
+// Path returns the path of the store
+func (ds *FileStore) Path() string {
+	return ds.basePath
 }
 
 // VerifyJWKClaims verifies the JWKClaims for the store

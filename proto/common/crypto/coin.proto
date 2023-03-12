@@ -42,3 +42,4 @@ enum CoinType {
   // Ripple coin type is 144
   CoinType_XRP = 10;
 }
+

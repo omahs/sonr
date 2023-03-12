@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sonrhq/core/pkg/client/rosetta"
 	"github.com/sonrhq/core/pkg/wallet"
 	"github.com/sonrhq/core/pkg/wallet/accounts/internal"
 	v1 "github.com/sonrhq/core/x/identity/types/vault/v1"
@@ -20,18 +19,9 @@ func New(opts ...Option) (wallet.Account, error) {
 	return c.Keygen()
 }
 
-// GetCosmosAccount returns a cosmos account.
-func GetCosmosAccount(root wallet.Account, cosmos wallet.Account, client rosetta.Client) wallet.CosmosAccount {
-	return internal.LoadCosmosAccount(root, cosmos, client)
-}
-
 // Load loads an account from a *crypto.AccountConfig.
-func Load(ac *wallet.AccountConfig) (wallet.Account, error) {
-	shares, err := v1.DeserializeConfigList(ac.Shares)
-	if err != nil {
-		return nil, fmt.Errorf("failed to deserialize shares: %w", err)
-	}
-	return internal.BaseAccountFromConfig(ac, shares[0]), nil
+func Load(ac *wallet.AccountConfig) wallet.Account {
+	return internal.BaseAccountFromConfig(ac)
 }
 
 // LoadFromBytes loads an account from a byte slice.
@@ -40,7 +30,7 @@ func LoadFromBytes(b []byte) (wallet.Account, error) {
 	if err := accCfg.Unmarshal(b); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal account config: %w", err)
 	}
-	return Load(accCfg)
+	return Load(accCfg), nil
 }
 
 // LoadFromPath loads an account from a file path.
@@ -59,5 +49,5 @@ func LoadFromPath(path string) (wallet.Account, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Load(&accountConfig)
+	return Load(&accountConfig), nil
 }

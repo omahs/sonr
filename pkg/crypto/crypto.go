@@ -65,6 +65,9 @@ const SOLCoinType = types.CoinType_CoinType_SOLANA
 // XRPCoinType is the CoinType for XRP.
 const XRPCoinType = types.CoinType_CoinType_XRP
 
+// AllCoinTypes is a slice of all CoinTypes.
+var AllCoinTypes = types.AllCoinTypes
+
 // CoinTypeFromAddrPrefix returns the CoinType from the public key address prefix (btc, eth).
 func CoinTypeFromAddrPrefix(str string) CoinType {
 	return types.CoinTypeFromAddrPrefix(str)
@@ -84,6 +87,7 @@ func CoinTypeFromName(str string) CoinType {
 func CoinTypeFromTicker(str string) CoinType {
 	return types.CoinTypeFromTicker(str)
 }
+
 
 // Secp256k1KeyType is the key type for secp256k1.
 const Secp256k1KeyType = types.KeyType_KeyType_ECDSA_SECP256K1_VERIFICATION_KEY_2019

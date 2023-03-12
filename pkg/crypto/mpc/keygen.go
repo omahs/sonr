@@ -69,11 +69,10 @@ func WithCoinType(coinType crypto.CoinType) KeygenOption {
 }
 
 // Keygen Generates a new ECDSA private key shared among all the given participants.
-func Keygen(accName string, current crypto.PartyID, threshold int, peers []crypto.PartyID, coinType crypto.CoinType) (*v1.AccountConfig, *cmp.Config, error) {
+func Keygen(accName string, current crypto.PartyID, threshold int, peers []crypto.PartyID, coinType crypto.CoinType) (*v1.AccountConfig, error) {
 	group := utils.EnsureSelfIDInGroup(current, peers)
 	net := network.NewOfflineNetwork(group...)
 	var mtx sync.Mutex
-	var selfConf *cmp.Config
 	configs := make(map[party.ID]*cmp.Config)
 	var wg sync.WaitGroup
 	for _, id := range net.Ls() {
@@ -84,9 +83,6 @@ func Keygen(accName string, current crypto.PartyID, threshold int, peers []crypt
 			conf, err := algorithm.CmpKeygen(id, net.Ls(), net, threshold, &wg, pl)
 			if err != nil {
 				return
-			}
-			if id == current {
-				selfConf = conf
 			}
 			mtx.Lock()
 			configs[conf.ID] = conf
@@ -101,9 +97,9 @@ func Keygen(accName string, current crypto.PartyID, threshold int, peers []crypt
 	}
 	conf, err := v1.NewAccountConfigFromShares(accName, coinType, shares)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return conf, selfConf, nil
+	return conf, nil
 }
 
 // KeygenOpts is the configuration of an account.

@@ -120,11 +120,7 @@ func ListAccounts() ([]wallet.Account, error) {
 		if err != nil {
 			return nil, err
 		}
-		acc, err := accounts.Load(&account)
-		if err != nil {
-			return nil, err
-		}
-		accs = append(accs, acc)
+		accs = append(accs, accounts.Load(&account))
 	}
 
 	return accs, nil

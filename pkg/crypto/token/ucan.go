@@ -52,7 +52,7 @@ func NewUnsignedUCAN(a *v1.AccountConfig, audienceDID string, prf []ucan.Proof, 
 	// set our claims
 	t.Claims = &ucan.Claims{
 		StandardClaims: &jwt.StandardClaims{
-			Issuer:    pub.DID(),
+			Issuer:    pub.Address().String(),
 			Audience:  audienceDID,
 			NotBefore: nbfUnix,
 			// set the expire time
