@@ -3,6 +3,7 @@ package crypto
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"hash"
 
@@ -43,10 +44,21 @@ func NewPubKey(bz []byte, kt KeyType) *PubKey {
 
 // Creating a new method called Address() that returns an Address type.
 func (pk *PubKey) Address() Address {
-	sha := sha256.Sum256(pk.Bytes())
+	// Get base64 encoding of the key
+	b64 := pk.Base64()
+	// Get the sha256 hash of the key
+	hasher := sha256.New()
+	hasher.Write([]byte(b64))
+	// Get the ripemd160 hash of the sha256 hash
 	hasherRIPEMD160 := ripemd160.New()
-	hasherRIPEMD160.Write(sha[:]) // does not error
+	hasherRIPEMD160.Write(hasher.Sum(nil))
+	// Return the ripemd160 hash
 	return tmcrypto.Address(hasherRIPEMD160.Sum(nil))
+}
+
+// Base64 returns the base64 encoding of the key.
+func (pk *PubKey) Base64() string {
+	return base64.RawStdEncoding.EncodeToString(pk.Bytes())
 }
 
 // Bech32 returns the bech32 encoding of the key. This is used for the Cosmos address.
