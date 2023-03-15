@@ -79,7 +79,7 @@ func (wa *walletAccount) Address() string {
 	// 	return ""
 	// }
 	// return addr
-	addr, _ := wa.PubKey().Bech32(wa.CoinType().AddrPrefix())
+	addr, _ := wa.PubKey().AddrString(wa.CoinType())
 	return addr
 }
 

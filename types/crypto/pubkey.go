@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"hash"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 	mb "github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-varint"
-	"github.com/shengdoushi/base58"
 	common "github.com/sonrhq/core/types/common"
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
@@ -56,6 +56,14 @@ func (pk *PubKey) Address() Address {
 	return tmcrypto.Address(hasherRIPEMD160.Sum(nil))
 }
 
+// AddrString returns the address of the key.
+func (pk *PubKey) AddrString(ct CoinType) (string, error) {
+	if ct.IsEthereum() {
+		return pk.Keccak256(), nil
+	}
+	return pk.Bech32(ct.AddrPrefix())
+}
+
 // Base64 returns the base64 encoding of the key.
 func (pk *PubKey) Base64() string {
 	return base64.RawStdEncoding.EncodeToString(pk.Bytes())
@@ -63,13 +71,16 @@ func (pk *PubKey) Base64() string {
 
 // Bech32 returns the bech32 encoding of the key. This is used for the Cosmos address.
 func (pk *PubKey) Bech32(pfix string) (string, error) {
-	return bech32.ConvertAndEncode(pfix, pk.Address().Bytes())
+	return bech32.ConvertAndEncode(pfix, pk.Bytes())
 }
 
-// ETHAddress returns the keccak256 hash of the key. This is used for the Ethereum address.
-func (pk *PubKey) ETHAddress() string {
-	hash := ethcrypto.Keccak256(pk.Bytes())
-	return "0x" + base58.Encode(hash[len(hash)-20:], base58.BitcoinAlphabet)
+// Keccak256 returns the keccak256 hash of the key. This is used for the Ethereum address.
+func (pk *PubKey) Keccak256() string {
+	hash := ethcrypto.Keccak256(pk.Bytes()[1:])
+	addressBytes := hash[len(hash)-20:]
+	// Convert the address bytes to a hexadecimal string
+	address := hex.EncodeToString(addressBytes)
+	return "0x" + address
 }
 
 // Multibase returns the Base58 encoding the key.
