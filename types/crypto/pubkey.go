@@ -19,6 +19,7 @@ import (
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	tmcrypto "github.com/tendermint/tendermint/crypto"
 	"golang.org/x/crypto/ripemd160"
+	"lukechampine.com/blake3"
 )
 
 type (
@@ -72,6 +73,13 @@ func (pk *PubKey) Base64() string {
 // Bech32 returns the bech32 encoding of the key. This is used for the Cosmos address.
 func (pk *PubKey) Bech32(pfix string) (string, error) {
 	return bech32.ConvertAndEncode(pfix, pk.Bytes())
+}
+
+// Blake3 returns the blake3 hash of the key.
+func (pk *PubKey) Blake3() string {
+	hasher := blake3.New(32, nil)
+	hasher.Write(pk.Bytes())
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 // Keccak256 returns the keccak256 hash of the key. This is used for the Ethereum address.
