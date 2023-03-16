@@ -161,7 +161,7 @@ func RegisterVaultStorageHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_VaultStorage_RefreshShares_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sonr", "vault", "storage", "refresh"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_VaultStorage_RefreshShares_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sonr", "vault", "storage", "refresh"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
