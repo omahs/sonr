@@ -392,13 +392,13 @@ func RegisterVaultAuthenticationHandlerClient(ctx context.Context, mux *runtime.
 }
 
 var (
-	pattern_VaultAuthentication_LoginStart_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"sonr", "vault", "auth", "login", "start"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_VaultAuthentication_LoginStart_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"sonr", "vault", "auth", "login", "start"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_VaultAuthentication_LoginFinish_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"sonr", "vault", "auth", "login", "finish"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_VaultAuthentication_LoginFinish_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"sonr", "vault", "auth", "login", "finish"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_VaultAuthentication_RegisterStart_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"sonr", "vault", "auth", "register", "start"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_VaultAuthentication_RegisterStart_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"sonr", "vault", "auth", "register", "start"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_VaultAuthentication_RegisterFinish_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"sonr", "vault", "auth", "register", "finish"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_VaultAuthentication_RegisterFinish_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"sonr", "vault", "auth", "register", "finish"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

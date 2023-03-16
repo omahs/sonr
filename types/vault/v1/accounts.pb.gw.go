@@ -526,13 +526,13 @@ func RegisterVaultAccountsHandlerClient(ctx context.Context, mux *runtime.ServeM
 }
 
 var (
-	pattern_VaultAccounts_CreateAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"sonr", "vault", "accounts", "sonr_id", "create"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_VaultAccounts_CreateAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"sonr", "vault", "accounts", "sonr_id", "create"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_VaultAccounts_ListAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"sonr", "vault", "accounts", "sonr_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_VaultAccounts_ListAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"sonr", "vault", "accounts", "sonr_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_VaultAccounts_GetAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"sonr", "vault", "accounts", "sonr_id", "coin_type"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_VaultAccounts_GetAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"sonr", "vault", "accounts", "sonr_id", "coin_type"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_VaultAccounts_DeleteAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"sonr", "vault", "accounts", "target_did", "delete"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_VaultAccounts_DeleteAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"sonr", "vault", "accounts", "target_did", "delete"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

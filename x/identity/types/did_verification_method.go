@@ -62,7 +62,7 @@ func NewVerificationMethodFromPubKey(pk *crypto.PubKey, method DIDMethod, opts .
 
 // NewVerificationMethodFromSonrAcc creates a verification method from the default wallet account
 func NewVerificationMethodFromSonrAcc(pk *crypto.PubKey, options ...FormatOption) (*VerificationMethod, error) {
-	accAddress, err := pk.Bech32(crypto.SONRCoinType.AddrPrefix())
+	accAddress, err := bech32.ConvertAndEncode("snr", pk.Bytes())
 	if err != nil {
 		return nil, err
 	}

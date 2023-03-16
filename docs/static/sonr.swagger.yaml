@@ -499,32 +499,27 @@ definitions:
       authentication:
         type: array
         items:
-          type: object
-          $ref: '#/definitions/identityVerificationRelationship'
+          type: string
         title: optional
       assertionMethod:
         type: array
         items:
-          type: object
-          $ref: '#/definitions/identityVerificationRelationship'
+          type: string
         title: optional
       capabilityInvocation:
         type: array
         items:
-          type: object
-          $ref: '#/definitions/identityVerificationRelationship'
+          type: string
         title: optional
       capabilityDelegation:
         type: array
         items:
-          type: object
-          $ref: '#/definitions/identityVerificationRelationship'
+          type: string
         title: optional
       keyAgreement:
         type: array
         items:
-          type: object
-          $ref: '#/definitions/identityVerificationRelationship'
+          type: string
         title: optional
       service:
         type: array
