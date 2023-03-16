@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/sonrhq/core/x/identity/types"
@@ -13,7 +11,7 @@ func (k Keeper) SetService(ctx sdk.Context, Service types.Service) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ServiceKeyPrefix))
 	b := k.cdc.MustMarshal(&Service)
 	store.Set(types.ServiceKey(
-		cleanServiceDomain(Service.Origin),
+		Service.Origin,
 	), b)
 }
 
@@ -25,7 +23,7 @@ func (k Keeper) GetService(
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ServiceKeyPrefix))
 
 	b := store.Get(types.ServiceKey(
-		cleanServiceDomain(origin),
+		origin,
 	))
 	if b == nil {
 		return val, false
@@ -34,7 +32,6 @@ func (k Keeper) GetService(
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
 }
-
 
 // GetAllServices returns all Services
 func (k Keeper) GetAllServices(ctx sdk.Context) (list []types.Service) {
@@ -49,16 +46,4 @@ func (k Keeper) GetAllServices(ctx sdk.Context) (list []types.Service) {
 		list = append(list, val)
 	}
 	return
-}
-
-// cleanServiceDomain removes the url scheme and path from a service origin
-func cleanServiceDomain(origin string) string {
-	// Remove url scheme
-	r := strings.NewReplacer("https://", "", "http://", "")
-	origin = r.Replace(origin)
-
-	if strings.Contains(origin, "/") {
-		return strings.Split(origin, "/")[0]
-	}
-	return origin
 }

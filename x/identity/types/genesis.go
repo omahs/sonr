@@ -13,7 +13,7 @@ func DefaultServices() []Service {
 		{
 			Id:     "did:web:sonr.io",
 			Type:   "LinkedDomains",
-			Origin: "https://sonr.io",
+			Origin: "sonr.io",
 			Name:   "Sonr Home",
 		},
 		{
@@ -25,7 +25,7 @@ func DefaultServices() []Service {
 		{
 			Id:     "did:web:mind.sonr.io",
 			Type:   "LinkedDomains",
-			Origin: "https://mind.sonr.io",
+			Origin: "mind.sonr.io",
 			Name:   "Sonr Mind",
 		},
 		{
