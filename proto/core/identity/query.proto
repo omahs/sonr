@@ -181,7 +181,7 @@ message QueryGetDidRequest {
 message QueryGetDidResponse {
 
   // A DIDDocument is a JSON-LD object that contains a set of public keys
-  DidDocument didDocument = 1 [(gogoproto.nullable) = false];
+  ResolvedDidDocument didDocument = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryDidByKeyIDRequest {
@@ -193,7 +193,7 @@ message QueryDidByKeyIDRequest {
 message QueryDidByKeyIDResponse {
 
   // A DIDDocument is a JSON-LD object that contains a set of public keys
-  DidDocument didDocument = 1 [(gogoproto.nullable) = false];
+  ResolvedDidDocument didDocument = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryDidByAlsoKnownAsRequest {
@@ -205,7 +205,7 @@ message QueryDidByAlsoKnownAsRequest {
 message QueryDidByAlsoKnownAsResponse {
 
   // A DIDDocument is a JSON-LD object that contains a set of public keys
-  DidDocument didDocument = 1 [(gogoproto.nullable) = false];
+  ResolvedDidDocument didDocument = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryAllDidRequest {
@@ -251,6 +251,7 @@ message QueryDidByPubKeyRequest {
 
 message QueryDidByPubKeyResponse {}
 
+// ResolvedDidDocument is a JSON-LD object that contains a set of public keys and verification methods that are used to authenticate the DID subject.
 message ResolvedDidDocument {
   repeated string context = 1;
   string id = 2;

@@ -18,7 +18,7 @@ func NewClient(apiEndpoint APIEndpoint) *SonrQueryClient {
 }
 
 // GetDID returns the DID document with the given id
-func (c *SonrQueryClient) GetDID(ctx context.Context, id string) (*types.DidDocument, error) {
+func (c *SonrQueryClient) GetDID(ctx context.Context, id string) (*types.ResolvedDidDocument, error) {
 	conn, err := grpc.Dial(c.APIEndpoint, grpc.WithInsecure())
 	if err != nil {
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
