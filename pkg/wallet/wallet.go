@@ -14,6 +14,7 @@ import (
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
 	"github.com/sonrhq/core/types/common"
+	"github.com/sonrhq/core/x/identity/types"
 )
 
 type Wallet interface {
@@ -51,7 +52,7 @@ type Wallet interface {
 	GetAccountByDID(did string) (Account, error)
 
 	// SetAuthentication sets the authentication method for the wallet
-	SetAuthentication(credential *crypto.WebauthnCredential) error
+	SetAuthentication(credential *crypto.WebauthnCredential) (*types.DidDocument, error)
 
 	// SignWithDID signs the given message with the private key of the account with the given DID
 	SignWithDID(did string, msg []byte) ([]byte, error)
@@ -113,28 +114,46 @@ func NewWallet(currentId string, threshold int) (Wallet, error) {
 }
 
 // SetAuthentication sets the authentication method for the wallet
-func (w *wallet) SetAuthentication(credential *crypto.WebauthnCredential) error {
+func (w *wallet) SetAuthentication(credential *crypto.WebauthnCredential) (*types.DidDocument, error) {
 	accs, err := w.fileStore.ListAccountsForToken(crypto.SONRCoinType)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	var accDids []*types.VerificationMethod
+	doneChan := make(chan bool)
+	go func() {
+		for _, acc := range accs {
+			accDids = append(accDids, acc.VerificationMethod(w.Controller()))
+		}
+		doneChan <- true
+	}()
 
 	// Set the authentication method for all accounts
 	for _, acc := range accs {
 		ks, err := acc.ListKeyshares()
 		if err != nil {
-			return err
+			return nil, err
 		}
 		for _, k := range ks {
 			if k.AccountName() != "vault" {
 				err := k.Encrypt(credential)
 				if err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return nil
+	<-doneChan
+	did := types.NewSonrID(w.Controller())
+	doc := types.NewBlankDocument(did)
+	doc.ImportVerificationMethods(accDids...)
+
+	_, err = doc.SetAuthentication(credential.PubKey())
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
 }
 
 // LoadWallet loads a wallet from the given path

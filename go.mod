@@ -32,7 +32,6 @@ require (
 	github.com/multiformats/go-multiaddr v0.8.0
 	github.com/multiformats/go-multibase v0.1.1
 	github.com/multiformats/go-varint v0.0.7
-	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/shengdoushi/base58 v1.0.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1

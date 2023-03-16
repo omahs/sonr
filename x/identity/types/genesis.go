@@ -53,7 +53,8 @@ func DefaultGenesis() *GenesisState {
 func (gs GenesisState) Validate() error {
 	relationshipMap := make(map[string]struct{})
 	for _, elem := range gs.Relationships {
-		if _, ok := relationshipMap[elem.Reference]; ok {
+		index := string(RelationshipKey(elem.Reference))
+		if _, ok := relationshipMap[index]; ok {
 			return fmt.Errorf("duplicated id for relationship")
 		}
 		relationshipMap[elem.Reference] = struct{}{}

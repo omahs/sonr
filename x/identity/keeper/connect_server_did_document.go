@@ -36,7 +36,6 @@ func (s *msgServerConnectWrapper) CreateDidDocument(
 	return res, nil
 }
 
-
 func (s *msgServerConnectWrapper) UpdateDidDocument(
 	ctx context.Context,
 	req *connect.Request[types.MsgUpdateDidDocument],
@@ -64,8 +63,6 @@ func (s *msgServerConnectWrapper) UpdateDidDocument(
 	res := connect.NewResponse(&types.MsgUpdateDidDocumentResponse{})
 	return res, nil
 }
-
-
 
 func (s *msgServerConnectWrapper) DeleteDidDocument(
 	ctx context.Context,

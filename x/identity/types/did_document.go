@@ -84,3 +84,30 @@ func (d *DidDocument) GetVerificationMethodByFragment(fragment string) *Verifica
 func (vm *DidDocument) SetMetadata(data map[string]string) {
 	vm.Metadata = MapToKeyValueList(data)
 }
+
+// ImportVerificationMethods imports the given VerificationMethods into the document
+func (d *DidDocument) ImportVerificationMethods(vms ...*VerificationMethod) {
+	for _, vm := range vms {
+		if !d.Contains(vm.Id) {
+			d.VerificationMethod = append(d.VerificationMethod, vm)
+		}
+	}
+}
+
+// Contains is a method which recursively checks if a given did is contained within the document
+func (d *DidDocument) Contains(did string) bool {
+	if d.Id == did {
+		return true
+	}
+	for _, vm := range d.VerificationMethod {
+		if vm.Id == did {
+			return true
+		}
+	}
+	for _, service := range d.Service {
+		if service.Id == did {
+			return true
+		}
+	}
+	return false
+}
