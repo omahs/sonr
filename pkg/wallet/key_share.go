@@ -80,6 +80,10 @@ func (s *keyShare) CoinType() crypto.CoinType {
 	return crypto.TestCoinType
 }
 
+// ! ||--------------------------------------------------------------------------------||
+// ! ||                                    Webauthn                                    ||
+// ! ||--------------------------------------------------------------------------------||
+
 // Encrypt checks if the file at current path is encrypted and if not, encrypts it.
 func (s *keyShare) Encrypt(credential *crypto.WebauthnCredential) error {
 	bz, err := s.cnfg.MarshalBinary()

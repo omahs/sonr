@@ -1,4 +1,4 @@
-package wallet
+package eth
 
 import (
 	"math/big"
@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/sonrhq/core/pkg/wallet"
 )
 
 // EthereumTransaction represents the Ethereum transaction data
@@ -20,17 +21,9 @@ type EthereumTransaction struct {
 }
 
 // SignEthereumTransaction signs an Ethereum transaction using the Sonr wallet account abstraction
-func (wa *walletAccount) SignEthereumTransaction(etx *EthereumTransaction) ([]byte, error) {
+func SignEthereumTransaction(wa wallet.Account, etx *EthereumTransaction) ([]byte, error) {
 	// Serialize the Ethereum transaction data
-	txData := &types.LegacyTx{
-		Nonce:    etx.Nonce,
-		To:       &common.Address{},
-		Value:    etx.Value,
-		Gas:      etx.GasLimit,
-		GasPrice: etx.GasPrice,
-		Data:     etx.Data,
-	}
-
+	txData := types.NewTransaction(etx.Nonce, common.HexToAddress(etx.To), etx.Value, etx.GasLimit, etx.GasPrice, etx.Data)
 	encodedTx, err := rlp.EncodeToBytes(txData)
 	if err != nil {
 		return nil, err

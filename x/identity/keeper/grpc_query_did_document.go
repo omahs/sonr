@@ -54,7 +54,7 @@ func (k Keeper) Did(c context.Context, req *types.QueryGetDidRequest) (*types.Qu
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
-	vrs, err := k.fetchVerificationRelationships(ctx, req.Did)
+	vrs, err := k.GetVerificationRelationshipsFromList(ctx, req.Did)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -78,7 +78,7 @@ func (k Keeper) DidByKeyID(c context.Context, req *types.QueryDidByKeyIDRequest)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
-	vrs, err := k.fetchVerificationRelationships(ctx, did)
+	vrs, err := k.GetVerificationRelationshipsFromList(ctx, did)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -87,7 +87,6 @@ func (k Keeper) DidByKeyID(c context.Context, req *types.QueryDidByKeyIDRequest)
 }
 
 func (k Keeper) DidByAlsoKnownAs(c context.Context, req *types.QueryDidByAlsoKnownAsRequest) (*types.QueryDidByAlsoKnownAsResponse, error) {
-
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -97,7 +96,7 @@ func (k Keeper) DidByAlsoKnownAs(c context.Context, req *types.QueryDidByAlsoKno
 		ctx,
 		req.AkaId,
 	)
-	vrs, err := k.fetchVerificationRelationships(ctx, val.Id)
+	vrs, err := k.GetVerificationRelationshipsFromList(ctx, val.Id)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -107,6 +106,7 @@ func (k Keeper) DidByAlsoKnownAs(c context.Context, req *types.QueryDidByAlsoKno
 	}
 	return &types.QueryDidByAlsoKnownAsResponse{DidDocument: *rdoc}, nil
 }
+
 func (k Keeper) DidByPubKey(goCtx context.Context, req *types.QueryDidByPubKeyRequest) (*types.QueryDidByPubKeyResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -133,52 +133,4 @@ func (k Keeper) DidByPubKey(goCtx context.Context, req *types.QueryDidByPubKeyRe
 		return nil, status.Error(codes.NotFound, "Document not found, created new account with supplied public key")
 	}
 	return nil, status.Error(codes.NotFound, "Document not found")
-}
-
-func (k Keeper) Service(c context.Context, req *types.QueryGetServiceRequest) (*types.QueryGetServiceResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-	ctx := sdk.UnwrapSDKContext(c)
-
-	//Gets `did:snr:addr` from `did:snr:addr#svc`
-	val, found := k.GetService(
-		ctx,
-		req.Origin,
-	)
-	if !found {
-		return nil, status.Error(codes.NotFound, "not found")
-	}
-	chal, err := val.IssueChallenge()
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-	return &types.QueryGetServiceResponse{Service: val, Challenge: chal.String()}, nil
-}
-
-func (k Keeper) ServiceAll(goCtx context.Context, req *types.QueryAllServiceRequest) (*types.QueryAllServiceResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// TODO: Process the query
-	_ = ctx
-
-	return &types.QueryAllServiceResponse{}, nil
-}
-
-func (k Keeper) fetchVerificationRelationships(ctx sdk.Context, addrs ...string) ([]types.VerificationRelationship, error) {
-	vrs := make([]types.VerificationRelationship, 0, len(addrs))
-
-	for _, addr := range addrs {
-		if vr, found := k.GetVerificationRelationship(sdk.UnwrapSDKContext(ctx), addr); found {
-			vrs = append(vrs, vr)
-		} else {
-			return nil, status.Error(codes.NotFound, "not found")
-		}
-	}
-
-	return vrs, nil
 }

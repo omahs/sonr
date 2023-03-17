@@ -1,9 +1,13 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/sonrhq/core/x/identity/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // HasVerificationRelationship checks if the element exists in the store
@@ -46,4 +50,34 @@ func (k Keeper) GetAllVerificationRelationships(ctx sdk.Context) (list []types.V
 	}
 
 	return
+}
+
+func (k Keeper) ResolveDidDocument(ctx sdk.Context, doc types.DidDocument) (types.ResolvedDidDocument, error) {
+	resolvedDidDocument := doc.ToResolved()
+
+	vrs := []types.VerificationRelationship{}
+	for _, relationship := range doc.VerificationMethod {
+		vr, ok := k.GetVerificationRelationship(ctx, relationship.Id)
+		if !ok {
+			return types.ResolvedDidDocument{}, status.Error(codes.NotFound, fmt.Sprintf("verification relationship %s not found", relationship.Id))
+		}
+		vrs = append(vrs, vr)
+	}
+
+	resolvedDidDocument.AddVerificationRelationship(vrs)
+	return *resolvedDidDocument, nil
+}
+
+func (k Keeper) GetVerificationRelationshipsFromList(ctx sdk.Context, addrs ...string) ([]types.VerificationRelationship, error) {
+	vrs := make([]types.VerificationRelationship, 0, len(addrs))
+
+	for _, addr := range addrs {
+		if vr, found := k.GetVerificationRelationship(sdk.UnwrapSDKContext(ctx), addr); found {
+			vrs = append(vrs, vr)
+		} else {
+			return nil, status.Error(codes.NotFound, "not found")
+		}
+	}
+
+	return vrs, nil
 }
