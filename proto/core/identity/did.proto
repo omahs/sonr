@@ -35,6 +35,7 @@ message VerificationMethod {
 message VerificationRelationship {
   VerificationMethod verification_method = 1;
   string reference = 2;
+  string type = 3;
 }
 
 message Service {

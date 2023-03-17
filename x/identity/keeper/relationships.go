@@ -10,21 +10,49 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// HasVerificationRelationship checks if the element exists in the store
-func (k Keeper) HasVerificationRelationship(ctx sdk.Context, reference string) bool {
+// HasRelationship checks if the element exists in the store
+func (k Keeper) HasRelationship(ctx sdk.Context, reference string) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RelationshipKeyPrefix))
 	return store.Has(types.RelationshipKey(reference))
 }
 
-// SetVerificationRelationship set a specific Service in the store from its index
-func (k Keeper) SetVerificationRelationship(ctx sdk.Context, VerificationRelationship types.VerificationRelationship) {
+// Set Resolved Document sets all the relationships in the document
+func (k Keeper) SetResolvedDocument(ctx sdk.Context, doc types.ResolvedDidDocument) {
+	// Set AssertionMethod
+	for _, v := range doc.AssertionMethod {
+		k.SetRelationship(ctx, *v)
+	}
+
+	// Set Authentication
+	for _, v := range doc.Authentication {
+		k.SetRelationship(ctx, *v)
+	}
+
+	// Set CapabilityDelegation
+	for _, v := range doc.CapabilityDelegation {
+		k.SetRelationship(ctx, *v)
+	}
+
+	// Set CapabilityInvocation
+	for _, v := range doc.CapabilityInvocation {
+		k.SetRelationship(ctx, *v)
+	}
+
+	// Set KeyAgreement
+	for _, v := range doc.KeyAgreement {
+		k.SetRelationship(ctx, *v)
+	}
+}
+
+// SetRelationship set a specific Service in the store from its index
+func (k Keeper) SetRelationship(ctx sdk.Context, VerificationRelationship types.VerificationRelationship) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RelationshipKeyPrefix))
 	b := k.cdc.MustMarshal(&VerificationRelationship)
 	store.Set(types.RelationshipKey(VerificationRelationship.Reference), b)
 }
 
-// GetVerificationRelationship returns a Service from its index
-func (k Keeper) GetVerificationRelationship(ctx sdk.Context, reference string) (val types.VerificationRelationship, found bool) {
+// GetRelationship returns a Service from its index
+func (k Keeper) GetRelationship(ctx sdk.Context, reference string) (val types.VerificationRelationship, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RelationshipKeyPrefix))
 
 	b := store.Get(types.RelationshipKey(reference))
@@ -36,8 +64,8 @@ func (k Keeper) GetVerificationRelationship(ctx sdk.Context, reference string) (
 	return val, true
 }
 
-// GetAllVerificationRelationships returns all Relationship
-func (k Keeper) GetAllVerificationRelationships(ctx sdk.Context) (list []types.VerificationRelationship) {
+// GetAllRelationships returns all Relationship
+func (k Keeper) GetAllRelationships(ctx sdk.Context) (list []types.VerificationRelationship) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RelationshipKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -57,7 +85,7 @@ func (k Keeper) ResolveDidDocument(ctx sdk.Context, doc types.DidDocument) (type
 
 	vrs := []types.VerificationRelationship{}
 	for _, relationship := range doc.VerificationMethod {
-		vr, ok := k.GetVerificationRelationship(ctx, relationship.Id)
+		vr, ok := k.GetRelationship(ctx, relationship.Id)
 		if !ok {
 			return types.ResolvedDidDocument{}, status.Error(codes.NotFound, fmt.Sprintf("verification relationship %s not found", relationship.Id))
 		}
@@ -68,11 +96,11 @@ func (k Keeper) ResolveDidDocument(ctx sdk.Context, doc types.DidDocument) (type
 	return *resolvedDidDocument, nil
 }
 
-func (k Keeper) GetVerificationRelationshipsFromList(ctx sdk.Context, addrs ...string) ([]types.VerificationRelationship, error) {
+func (k Keeper) GetRelationshipsFromList(ctx sdk.Context, addrs ...string) ([]types.VerificationRelationship, error) {
 	vrs := make([]types.VerificationRelationship, 0, len(addrs))
 
 	for _, addr := range addrs {
-		if vr, found := k.GetVerificationRelationship(sdk.UnwrapSDKContext(ctx), addr); found {
+		if vr, found := k.GetRelationship(sdk.UnwrapSDKContext(ctx), addr); found {
 			vrs = append(vrs, vr)
 		} else {
 			return nil, status.Error(codes.NotFound, "not found")

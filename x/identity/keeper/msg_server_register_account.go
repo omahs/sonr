@@ -35,18 +35,15 @@ func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgRegister
 
 	select {
 	case wall := <-wallChan:
-		doc, err := wall.Assign(cred)
+		doc, vms, err := wall.Assign(cred)
 		if err != nil {
 			return nil, fmt.Errorf("failed to set authentication: %w", err)
 		}
 		k.SetDidDocument(ctx, *doc)
-		resolved, err := k.ResolveDidDocument(ctx, *doc)
-		if err != nil {
-			return nil, fmt.Errorf("failed to resolve did document: %w", err)
-		}
+		resolved := doc.ResolveMethods(vms)
 		return &types.MsgRegisterAccountResponse{
 			Did:      doc.Id,
-			Document: &resolved,
+			Document: resolved,
 		}, nil
 	case err := <-errChan:
 		return nil, fmt.Errorf("failed to create wallet: %w", err)

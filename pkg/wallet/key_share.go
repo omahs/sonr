@@ -30,6 +30,8 @@ type KeyShare interface {
 
 	// Encrypt checks if the file at current path is encrypted and if not, encrypts it.
 	Decrypt(credential *crypto.WebauthnCredential) error
+
+	IsEncrypted() bool
 }
 
 type keyShare struct {
@@ -132,6 +134,9 @@ func (s *keyShare) Decrypt(credential *crypto.WebauthnCredential) error {
 
 // IsEncrypted checks if the file at current path is encrypted.
 func (s *keyShare) IsEncrypted() bool {
+	if s.Name() == "vault" {
+		return false
+	}
 	bz, err := os.ReadFile(s.p)
 	if err != nil {
 		return false

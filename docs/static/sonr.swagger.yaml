@@ -951,6 +951,8 @@ definitions:
         $ref: '#/definitions/identityVerificationMethod'
       reference:
         type: string
+      type:
+        type: string
   protobufAny:
     type: object
     properties:

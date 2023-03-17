@@ -123,13 +123,26 @@ func (wa *walletAccount) Sign(bz []byte) ([]byte, error) {
 	return mpc.SignCMP(configs, bz, wa.PartyIDs())
 }
 
-// Verifies a signature
+// Verifies a signature using first unlocked keyshare
 func (wa *walletAccount) Verify(bz []byte, sig []byte) (bool, error) {
 	kss, err := wa.ListKeyshares()
 	if err != nil {
 		return false, err
 	}
-	return mpc.VerifyCMP(kss[0].Config(), bz, sig)
+
+	// Find first unlocked keyshare
+	var uks KeyShare
+	for _, ks := range kss {
+		if ks.IsEncrypted() {
+			continue
+		}
+		uks = ks
+		break
+	}
+	if uks == nil {
+		return false, fmt.Errorf("no unlocked keyshares")
+	}
+	return mpc.VerifyCMP(uks.Config(), bz, sig)
 }
 
 // ! ||--------------------------------------------------------------------------------||

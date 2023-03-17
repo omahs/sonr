@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -54,7 +55,7 @@ func (k Keeper) Did(c context.Context, req *types.QueryGetDidRequest) (*types.Qu
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
-	vrs, err := k.GetVerificationRelationshipsFromList(ctx, req.Did)
+	vrs, err := k.GetRelationshipsFromList(ctx, req.Did)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -78,7 +79,7 @@ func (k Keeper) DidByKeyID(c context.Context, req *types.QueryDidByKeyIDRequest)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
-	vrs, err := k.GetVerificationRelationshipsFromList(ctx, did)
+	vrs, err := k.GetRelationshipsFromList(ctx, did)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -96,7 +97,7 @@ func (k Keeper) DidByAlsoKnownAs(c context.Context, req *types.QueryDidByAlsoKno
 		ctx,
 		req.AkaId,
 	)
-	vrs, err := k.GetVerificationRelationshipsFromList(ctx, val.Id)
+	vrs, err := k.GetRelationshipsFromList(ctx, val.Id)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -130,7 +131,7 @@ func (k Keeper) DidByPubKey(goCtx context.Context, req *types.QueryDidByPubKeyRe
 
 		// Set the new account in the store
 		k.accountKeeper.SetAccount(ctx, newAccount)
-		return nil, status.Error(codes.NotFound, "Document not found, created new account with supplied public key")
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("Document not found, created new account with supplied public key \nAddress :%s\nPubKey: %s", accAddress, req.Pubkey))
 	}
 	return nil, status.Error(codes.NotFound, "Document not found")
 }

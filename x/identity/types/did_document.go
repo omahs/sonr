@@ -86,11 +86,25 @@ func (vm *DidDocument) SetMetadata(data map[string]string) {
 }
 
 // ImportVerificationMethods imports the given VerificationMethods into the document
-func (d *DidDocument) ImportVerificationMethods(vms ...*VerificationMethod) {
+func (d *DidDocument) ImportVerificationMethods(category string, vms ...VerificationMethod) {
+	idList := []string{}
 	for _, vm := range vms {
 		if !d.Contains(vm.Id) {
-			d.VerificationMethod = append(d.VerificationMethod, vm)
+			d.VerificationMethod = append(d.VerificationMethod, &vm)
+			idList = append(idList, vm.Id)
 		}
+	}
+	switch strings.ToLower(category) {
+	case "authentication":
+		d.Authentication = append(d.Authentication, idList...)
+	case "assertionmethod":
+		d.AssertionMethod = append(d.AssertionMethod, idList...)
+	case "capabilityinvocation":
+		d.CapabilityInvocation = append(d.CapabilityInvocation, idList...)
+	case "capabilitydelegation":
+		d.CapabilityDelegation = append(d.CapabilityDelegation, idList...)
+	case "keyagreement":
+		d.KeyAgreement = append(d.KeyAgreement, idList...)
 	}
 }
 
@@ -131,4 +145,54 @@ func (d *DidDocument) ToResolved() *ResolvedDidDocument {
 		})
 	}
 	return resolved.AddVerificationRelationship(vms)
+}
+
+// IsAuthentication checks if the given VerificationMethod is used for authentication
+func (d *DidDocument) IsAuthentication(vm *VerificationMethod) bool {
+	for _, auth := range d.Authentication {
+		if auth == vm.Id {
+			return true
+		}
+	}
+	return false
+}
+
+// IsAssertionMethod checks if the given VerificationMethod is used for assertion
+func (d *DidDocument) IsAssertionMethod(vm *VerificationMethod) bool {
+	for _, auth := range d.AssertionMethod {
+		if auth == vm.Id {
+			return true
+		}
+	}
+	return false
+}
+
+// IsCapabilityInvocation checks if the given VerificationMethod is used for capability invocation
+func (d *DidDocument) IsCapabilityInvocation(vm *VerificationMethod) bool {
+	for _, auth := range d.CapabilityInvocation {
+		if auth == vm.Id {
+			return true
+		}
+	}
+	return false
+}
+
+// IsCapabilityDelegation checks if the given VerificationMethod is used for capability delegation
+func (d *DidDocument) IsCapabilityDelegation(vm *VerificationMethod) bool {
+	for _, auth := range d.CapabilityDelegation {
+		if auth == vm.Id {
+			return true
+		}
+	}
+	return false
+}
+
+// IsKeyAgreement checks if the given VerificationMethod is used for key agreement
+func (d *DidDocument) IsKeyAgreement(vm *VerificationMethod) bool {
+	for _, auth := range d.KeyAgreement {
+		if auth == vm.Id {
+			return true
+		}
+	}
+	return false
 }

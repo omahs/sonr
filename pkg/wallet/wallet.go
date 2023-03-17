@@ -24,7 +24,7 @@ type Wallet interface {
 	Size() (int64, error)
 
 	// Assign sets the authentication method for the wallet
-	Assign(credential *crypto.WebauthnCredential) (*types.DidDocument, error)
+	Assign(credential *crypto.WebauthnCredential) (*types.DidDocument, []types.VerificationMethod, error)
 
 	// Unlock unlocks the wallet with the given webauthn credential
 	Unlock(credential *crypto.WebauthnCredential) error
@@ -167,17 +167,17 @@ func (w *wallet) Size() (int64, error) {
 }
 
 // Assign sets the authentication method for the wallet
-func (w *wallet) Assign(credential *crypto.WebauthnCredential) (*types.DidDocument, error) {
+func (w *wallet) Assign(credential *crypto.WebauthnCredential) (*types.DidDocument, []types.VerificationMethod, error) {
 	accs, err := w.fileStore.ListAccountsForToken(crypto.SONRCoinType)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var accDids []*types.VerificationMethod
+	var accDids []types.VerificationMethod
 	doneChan := make(chan bool)
 	go func() {
 		for _, acc := range accs {
-			accDids = append(accDids, acc.VerificationMethod(w.Controller()))
+			accDids = append(accDids, *acc.VerificationMethod(w.Controller()))
 		}
 		doneChan <- true
 	}()
@@ -186,7 +186,7 @@ func (w *wallet) Assign(credential *crypto.WebauthnCredential) (*types.DidDocume
 	for _, acc := range accs {
 		err := acc.Lock(credential)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 	<-doneChan
@@ -196,12 +196,12 @@ func (w *wallet) Assign(credential *crypto.WebauthnCredential) (*types.DidDocume
 
 	did := types.NewSonrID(w.Controller())
 	doc := types.NewBlankDocument(did)
-	doc.ImportVerificationMethods(accDids...)
+	doc.ImportVerificationMethods("assertionmethod", accDids...)
 	_, err = doc.SetAuthentication(credential.PubKey())
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return doc, nil
+	return doc, accDids, nil
 }
 
 // Lock locks the wallet by encrypting all keyshares
@@ -361,7 +361,7 @@ func (w *wallet) RenameAccount(coin crypto.CoinType, name, newName string) error
 
 // SignWithDID signs the given message with the account for the given DID
 func (w *wallet) SignWithDID(did string, msg []byte) ([]byte, error) {
-	if w.isLocked {
+	if w.IsLocked() {
 		return nil, fmt.Errorf("wallet is locked")
 	}
 	acc, err := w.GetAccountByDID(did)
@@ -373,9 +373,6 @@ func (w *wallet) SignWithDID(did string, msg []byte) ([]byte, error) {
 
 // VerifyWithDID verifies the given signature for the given message with the account for the given DID
 func (w *wallet) VerifyWithDID(did string, msg, sig []byte) (bool, error) {
-	if w.isLocked {
-		return false, fmt.Errorf("wallet is locked")
-	}
 	acc, err := w.GetAccountByDID(did)
 	if err != nil {
 		return false, err
