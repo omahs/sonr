@@ -35,7 +35,7 @@ func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgRegister
 
 	select {
 	case wall := <-wallChan:
-		doc, err := wall.SetAuthentication(cred)
+		doc, err := wall.Assign(cred)
 		if err != nil {
 			return nil, fmt.Errorf("failed to set authentication: %w", err)
 		}

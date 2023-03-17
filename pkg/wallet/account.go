@@ -63,12 +63,17 @@ type Account interface {
 
 	// Verifies a signature
 	Verify(bz []byte, sig []byte) (bool, error)
+
+	// Lock locks the account
+	Lock(c *crypto.WebauthnCredential) error
+
+	// Unlock unlocks the account
+	Unlock(c *crypto.WebauthnCredential) error
 }
 
 type walletAccount struct {
 	p string
-
-	ethNonce uint64
+	n uint64
 }
 
 // ! ||--------------------------------------------------------------------------------||
@@ -173,12 +178,15 @@ func (wa *walletAccount) VerificationMethod(controller string) *types.Verificati
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                            Ethereum specific methods                           ||
 // ! ||--------------------------------------------------------------------------------||
+
+// Nonce returns the nonce of the account
 func (wa *walletAccount) Nonce() uint64 {
-	return wa.ethNonce
+	return wa.n
 }
 
+// IncrementNonce increments the nonce of the account
 func (wa *walletAccount) IncrementNonce() {
-	wa.ethNonce++
+	wa.n++
 }
 
 //
@@ -279,6 +287,38 @@ func (wa *walletAccount) Rename(name string) error {
 
 	// Rename the directory to the new name
 	return os.Rename(wa.p, newPath)
+}
+
+// Lock locks the account
+func (wa *walletAccount) Lock(c *crypto.WebauthnCredential) error {
+	ks, err := wa.ListKeyshares()
+	if err != nil {
+		return err
+	}
+
+	// Encrypt all keyshares for user
+	for _, k := range ks {
+		if err := k.Encrypt(c); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Unlock unlocks the account
+func (wa *walletAccount) Unlock(c *crypto.WebauthnCredential) error {
+	ks, err := wa.ListKeyshares()
+	if err != nil {
+		return err
+	}
+
+	// Decrypt all keyshares for user
+	for _, k := range ks {
+		if err := k.Decrypt(c); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 //

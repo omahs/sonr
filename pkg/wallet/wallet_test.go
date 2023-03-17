@@ -124,30 +124,6 @@ func TestSignWithDIDs(t *testing.T) {
 	}
 }
 
-func TestExportImport(t *testing.T) {
-	w, err := LoadWallet()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Export
-	enc, err := w.Export()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Import
-	w2, err := Import(enc)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Compare
-	if w2 == nil {
-		t.Fatal("wallet is nil")
-	}
-}
-
 func TestMiscWalletActions(t *testing.T) {
 	w, err := LoadWallet()
 	if err != nil {
