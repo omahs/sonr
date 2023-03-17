@@ -7,12 +7,40 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/sonrhq/core/pkg/wallet"
 )
 
-// SignCosmosTransaction signs a Cosmos transaction
-func SignCosmosTransaction(wa wallet.Account, msgs ...sdk.Msg) ([]byte, error) {
+// SignTransaction signs a Cosmos transaction for Token Transfer
+func SignTransaction(wa wallet.Account, to string, amount sdk.Int, denom string) ([]byte, error) {
+	// Build the transaction body
+	txBody, err := buildTxBody(&banktypes.MsgSend{
+		FromAddress: wa.Address(),
+		ToAddress:   to,
+		Amount:      sdk.NewCoins(sdk.NewCoin(denom, amount)),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Sign the transaction body
+	bodyBz, sig, err := signTxBodyBytes(wa, txBody)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the raw transaction bytes
+	rawTxBytes, err := createRawTxBytes(bodyBz, sig, wa)
+	if err != nil {
+		return nil, err
+	}
+
+	return rawTxBytes, nil
+}
+
+// SignAnyTransactions signs a Cosmos transaction for a list of arbitrary messages
+func SignAnyTransactions(wa wallet.Account, msgs ...sdk.Msg) ([]byte, error) {
 	// Build the transaction body
 	txBody, err := buildTxBody(msgs...)
 	if err != nil {

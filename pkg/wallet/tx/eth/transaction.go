@@ -20,8 +20,22 @@ type EthereumTransaction struct {
 	Data     []byte
 }
 
-// SignEthereumTransaction signs an Ethereum transaction using the Sonr wallet account abstraction
-func SignEthereumTransaction(wa wallet.Account, etx *EthereumTransaction) ([]byte, error) {
+// SignEthereumTransaction signs an Ethereum transaction using the wallet account abstraction
+func SignEthereumTransaction(wa wallet.Account, to string, amount *big.Int) ([]byte, error) {
+	// Set default gas limit and gas price
+	defaultGasLimit := uint64(21000)
+	defaultGasPrice := big.NewInt(20000000000) // 20 Gwei
+
+	// Create EthereumTransaction
+	etx := &EthereumTransaction{
+		Nonce:    0,
+		To:       to,
+		Value:    amount,
+		GasLimit: defaultGasLimit,
+		GasPrice: defaultGasPrice,
+		Data:     []byte{},
+	}
+
 	// Serialize the Ethereum transaction data
 	txData := types.NewTransaction(etx.Nonce, common.HexToAddress(etx.To), etx.Value, etx.GasLimit, etx.GasPrice, etx.Data)
 	encodedTx, err := rlp.EncodeToBytes(txData)
@@ -42,6 +56,5 @@ func SignEthereumTransaction(wa wallet.Account, etx *EthereumTransaction) ([]byt
 	}
 
 	signedTx[64] = recId - byte(27)
-
 	return signedTx, nil
 }

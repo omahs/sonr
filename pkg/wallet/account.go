@@ -43,6 +43,9 @@ type Account interface {
 	// PartyIDs returns the party IDs of the account
 	PartyIDs() []crypto.PartyID
 
+	Nonce() uint64
+	IncrementNonce()
+
 	// PubKey returns secp256k1 public key
 	PubKey() *crypto.PubKey
 
@@ -64,6 +67,8 @@ type Account interface {
 
 type walletAccount struct {
 	p string
+
+	ethNonce uint64
 }
 
 // ! ||--------------------------------------------------------------------------------||
@@ -166,6 +171,55 @@ func (wa *walletAccount) VerificationMethod(controller string) *types.Verificati
 }
 
 // ! ||--------------------------------------------------------------------------------||
+// ! ||                            Ethereum specific methods                           ||
+// ! ||--------------------------------------------------------------------------------||
+func (wa *walletAccount) Nonce() uint64 {
+	return wa.ethNonce
+}
+
+func (wa *walletAccount) IncrementNonce() {
+	wa.ethNonce++
+}
+
+//
+// ! ||--------------------------------------------------------------------------------||
+// ! ||                              Cosmos specific methods                           ||
+// ! ||--------------------------------------------------------------------------------||
+//
+
+// GetAuthInfo creates an AuthInfo instance for this account with the specified gas amount.
+func (wa *walletAccount) GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error) {
+	// Build signerInfo parameters
+	anyPubKey, err := codectypes.NewAnyWithValue(wa.PubKey())
+	if err != nil {
+		return nil, err
+	}
+
+	// Create AuthInfo
+	authInfo := txtypes.AuthInfo{
+		SignerInfos: []*txtypes.SignerInfo{
+			{
+				PublicKey: anyPubKey,
+				ModeInfo: &txtypes.ModeInfo{
+					Sum: &txtypes.ModeInfo_Single_{
+						Single: &txtypes.ModeInfo_Single{
+							Mode: 1,
+						},
+					},
+				},
+				Sequence: 0,
+			},
+		},
+		Fee: &txtypes.Fee{
+			Amount:   gas,
+			GasLimit: uint64(300000),
+			Payer:    wa.Address(),
+		},
+	}
+	return &authInfo, nil
+}
+
+// ! ||--------------------------------------------------------------------------------||
 // ! ||                             Multi-Party Computation                            ||
 // ! ||--------------------------------------------------------------------------------||
 
@@ -225,44 +279,6 @@ func (wa *walletAccount) Rename(name string) error {
 
 	// Rename the directory to the new name
 	return os.Rename(wa.p, newPath)
-}
-
-//
-// ! ||--------------------------------------------------------------------------------||
-// ! ||                              Cosmos specific methods                           ||
-// ! ||--------------------------------------------------------------------------------||
-//
-
-// GetAuthInfo creates an AuthInfo instance for this account with the specified gas amount.
-func (wa *walletAccount) GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error) {
-	// Build signerInfo parameters
-	anyPubKey, err := codectypes.NewAnyWithValue(wa.PubKey())
-	if err != nil {
-		return nil, err
-	}
-
-	// Create AuthInfo
-	authInfo := txtypes.AuthInfo{
-		SignerInfos: []*txtypes.SignerInfo{
-			{
-				PublicKey: anyPubKey,
-				ModeInfo: &txtypes.ModeInfo{
-					Sum: &txtypes.ModeInfo_Single_{
-						Single: &txtypes.ModeInfo_Single{
-							Mode: 1,
-						},
-					},
-				},
-				Sequence: 0,
-			},
-		},
-		Fee: &txtypes.Fee{
-			Amount:   gas,
-			GasLimit: uint64(300000),
-			Payer:    wa.Address(),
-		},
-	}
-	return &authInfo, nil
 }
 
 //
