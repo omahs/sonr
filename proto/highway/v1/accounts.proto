@@ -34,7 +34,8 @@ message Account {
 // KeygenRequest is the request to generate a keypair.
 message KeygenRequest {
   string uuid = 1;
-  string credential_response = 2;
+  string origin = 2;
+  string credential_response = 3;
 }
 
 // KeygenResponse is the response to a Keygen request.
@@ -49,6 +50,7 @@ message KeygenResponse {
 message CreateAccountRequest {
   string sonr_id = 1;
   string coin_type = 2;
+  bytes key_share = 3;
 }
 
 // CreateAccountResponse is the response to a CreateAccount request.
@@ -63,6 +65,7 @@ message CreateAccountResponse {
 message GetAccountRequest {
   string sonr_id = 1;
   string coin_type = 2;
+  string did = 3;
 }
 
 // GetAccountResponse is the response to a GetAccount request.
@@ -94,6 +97,35 @@ message DeleteAccountResponse {
   bool success = 1;
   core.identity.DidDocument did_document = 2;
   repeated Account accounts = 3;
+}
+
+// SignMessageRequest is the request to sign a message with an account.
+message SignMessageRequest {
+  string sonr_id = 1;
+  bytes key_share = 2;
+  string did = 3;
+  string message = 4;
+}
+
+// SignMessageResponse is the response to a SignWithAccount request.
+message SignMessageResponse {
+  bool success = 1;
+  string signature = 2;
+  string did = 3;
+}
+
+// VerifyWithAccountRequest is the request to verify a signature with an account.
+message VerifyMessageRequest {
+  string sonr_id = 1;
+  string did = 2;
+  string message = 3;
+  string signature = 4;
+}
+
+// VerifyWithAccountResponse is the response to a VerifyWithAccount request.
+message VerifyMessageResponse {
+  bool success = 1;
+  string did = 2;
 }
 
 // ==================================================================
@@ -184,6 +216,50 @@ service Mpc {
   rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse) {
     option (google.api.http) = {
       post: "/sonr/vault/accounts/{target_did}/delete"
+      body: "*"
+    };
+  }
+
+  // Sign a message with an account
+  //
+  // {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+  // It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+  //
+  // #### {{.RequestType.Name}}
+  // | Name | Type | Description |
+  // | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+  // | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+  //
+  //
+  // #### {{.ResponseType.Name}}
+  // | Name | Type | Description |
+  // | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+  // | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+  rpc SignMessage(SignMessageRequest) returns (SignMessageResponse) {
+    option (google.api.http) = {
+      post: "/sonr/vault/accounts/{sonr_id}/{coin_type}/sign"
+      body: "*"
+    };
+  }
+
+  // Verify a message with an account
+  //
+  // {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+  // It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+  //
+  // #### {{.RequestType.Name}}
+  // | Name | Type | Description |
+  // | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+  // | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+  //
+  //
+  // #### {{.ResponseType.Name}}
+  // | Name | Type | Description |
+  // | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+  // | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+  rpc VerifyMessage(VerifyMessageRequest) returns (VerifyMessageResponse) {
+    option (google.api.http) = {
+      post: "/sonr/vault/accounts/{sonr_id}/{coin_type}/verify"
       body: "*"
     };
   }
