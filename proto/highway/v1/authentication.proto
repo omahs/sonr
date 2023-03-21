@@ -1,13 +1,13 @@
 syntax = "proto3";
 
 // Package Motor is used for defining a Motor node and its properties.
-package sonrhq.sonr.vault.v1;
+package sonrhq.highway.v1;
 
 import "core/identity/did.proto";
 import "google/api/annotations.proto";
 import "sonr/common/info.proto";
 
-option go_package = "github.com/sonrhq/core/types/vault/v1";
+option go_package = "github.com/sonrhq/core/types/highway/v1;highwayv1";
 
 // RegisterStartRequest is the request to register a new account.
 message RegisterStartRequest {
@@ -20,11 +20,8 @@ message RegisterStartRequest {
   // The security threshold for the wallet account.
   int32 security_threshold = 3;
 
-  // The recovery passcode for the wallet account.
-  string passcode = 4;
-
   // The Unique Identifier for the client device. Typically in a cookie.
-  string uuid = 5;
+  string uuid = 4;
 }
 
 // RegisterStartResponse is the response to a Register request.
@@ -137,7 +134,7 @@ message LoginFinishResponse {
 // ==================================================================
 
 // Vault is the service used for managing a node's keypair.
-service VaultAuthentication {
+service Authentication {
   // Login Start
   //
   // {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.

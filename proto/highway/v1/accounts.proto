@@ -1,11 +1,11 @@
 syntax = "proto3";
-package sonrhq.core.identity;
+package sonrhq.highway.v1;
 
 import "gogoproto/gogo.proto";
 import "core/identity/did.proto";
 import "google/api/annotations.proto";
 
-option go_package = "github.com/sonrhq/core/x/identity/types";
+option go_package = "github.com/sonrhq/core/types/highway/v1;highwayv1";
 
 // Account represents a user's account on a blockchain or network. It contains the user's address, name, DID, and other information that is used to identify and manage the account.
 message Account {
@@ -31,6 +31,19 @@ message Account {
     string type = 7;
 }
 
+// KeygenRequest is the request to generate a keypair.
+message KeygenRequest {
+  string uuid = 1;
+  string credential_response = 2;
+}
+
+// KeygenResponse is the response to a Keygen request.
+message KeygenResponse {
+  bool success = 1;
+  bytes key_share = 2;
+  string public_key = 3;
+  string vault_cid = 4;
+}
 
 // CreateAccountRequest is the request to create an account.
 message CreateAccountRequest {
@@ -42,7 +55,7 @@ message CreateAccountRequest {
 message CreateAccountResponse {
   bool success = 1;
   string coin_type = 2;
-  DidDocument did_document = 3;
+  core.identity.DidDocument did_document = 3;
   repeated Account accounts = 4;
 }
 
@@ -79,7 +92,7 @@ message DeleteAccountRequest {
 // DeleteAccountResponse is the response to a DeleteAccount request.
 message DeleteAccountResponse {
   bool success = 1;
-  DidDocument did_document = 2;
+  core.identity.DidDocument did_document = 2;
   repeated Account accounts = 3;
 }
 
@@ -87,8 +100,8 @@ message DeleteAccountResponse {
 // GRPC/REST SERVICE
 // ==================================================================
 
-// Vault is the service used for managing a node's keypair.
-service Vault {
+// Mpc is the service used for managing a node's keypair.
+service Mpc {
   // Create a new account
   //
   // {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.

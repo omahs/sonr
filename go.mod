@@ -6,6 +6,7 @@ require (
 	berty.tech/go-orbit-db v1.19.1
 	cosmossdk.io/math v1.0.0-beta.4
 	github.com/btcsuite/btcd v0.22.1
+	github.com/bufbuild/connect-go v1.0.0
 	github.com/cosmos/cosmos-sdk v0.46.7
 	github.com/cosmos/gogoproto v1.4.2
 	github.com/cosmos/ibc-go/v5 v5.2.0
@@ -43,6 +44,7 @@ require (
 	golang.org/x/crypto v0.5.0
 	google.golang.org/genproto v0.0.0-20230223222841-637eb2293923
 	google.golang.org/grpc v1.53.0
+	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
 	lukechampine.com/blake3 v1.1.7
 )
 
@@ -385,7 +387,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.110.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
