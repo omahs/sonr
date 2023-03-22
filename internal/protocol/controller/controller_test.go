@@ -32,11 +32,9 @@ func TestTree(t *testing.T) {
 	}
 
 	for _, ks := range kss {
-		t.Logf("keyshare coin type: %s", ks.CoinType())
-		t.Logf("keyshare account name: %s", ks.AccountName())
 		t.Logf("keyshare key id: %s", ks.Did())
 	}
-	acc := NewAccount(kss)
+	acc := NewAccount(kss, crypto.SONRCoinType)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,4 +62,86 @@ func TestController(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("controller: %v", controller.Did())
+
+	err = controller.CreateAccount("ethTest", crypto.ETHCoinType)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	acc, err := controller.GetAccount("ethTest", crypto.ETHCoinType)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("account: %v", acc.Address())
+
+	msg := []byte("hello world")
+	sig, err := acc.Sign(msg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("signature: %x", sig)
+
+	ok, err := acc.Verify(msg, sig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("verify: %v", ok)
+
+	sig2, err := controller.Sign("ethTest", crypto.ETHCoinType, msg)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ok, err = controller.Verify("ethTest", crypto.ETHCoinType, msg, sig2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("verify: %v", ok)
+
+	err = controller.CreateAccount("btcTest", crypto.BTCCoinType)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	acc2, err := controller.GetAccount("btcTest", crypto.BTCCoinType)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("account: %v", acc2.Address())
+
+	did := controller.Did()
+	t.Logf("did: %s", did)
+
+	didDoc := controller.DidDocument()
+	t.Logf("did doc: %v", didDoc.String())
+}
+
+func TestNewLoad(t *testing.T) {
+	randUuid := rand.Str(4)
+	cred := &crypto.WebauthnCredential{
+		Id: []byte(randUuid),
+	}
+
+	cn, err := NewController(context.Background(), cred)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("controller: %v", cn.Did())
+	didDoc := cn.DidDocument()
+
+	err = cn.CreateAccount("ethTest", crypto.ETHCoinType)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cn2, err := LoadController(context.Background(), cred, didDoc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	acc, err := cn2.GetAccount("ethTest", crypto.ETHCoinType)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("account: %v", acc.Address())
 }

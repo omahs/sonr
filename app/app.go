@@ -916,11 +916,6 @@ func shouldAllowGasless(tx sdk.Tx) bool {
 		if _, ok := msg.(*identitymoduletypes.MsgCreateDidDocument); ok {
 			return true
 		}
-
-		// Check if the message is of type MsgRegisterAccount
-		if _, ok := msg.(*identitymoduletypes.MsgRegisterAccount); ok {
-			return true
-		}
 	}
 
 	// Return false if no Account creation message was found

@@ -3,7 +3,6 @@ package node
 import (
 	"context"
 
-	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/x/identity/types"
 )
 
@@ -53,14 +52,14 @@ type ipfsStore struct {
 	record   *types.Service
 }
 
-func makeIpfsStore(store iPFSKVStore, controller *crypto.PubKey) IPFSStore {
+func makeIpfsStore(store iPFSKVStore, controller string) IPFSStore {
 	return &ipfsStore{
 		address:  store.Address().String(),
 		dbName:   store.DBName(),
 		identity: store.Identity().ID,
 		pubKey:   store.Identity().PublicKey,
 		store:    store,
-		record:   types.NewIPFSStoreService(store.Address().String(), controller),
+		record:   types.NewIPFSStoreService(store.Address().String(), types.NewSonrID(controller)),
 	}
 }
 

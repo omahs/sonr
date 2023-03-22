@@ -9,12 +9,13 @@ import (
 
 type KeyShareParseResult struct {
 	CoinType     crypto.CoinType
+	AccountAddress  string
 	AccountName  string
 	KeyShareName string
 }
 
 // ParseKeyShareDid parses a keyshare DID into its components. The DID format is:
-// did:{coin_type}:{account_address}#ks-{keyshare_name}
+// did:{coin_type}:{account_address}#ks-{account_name}-{keyshare_name}
 func ParseKeyShareDid(name string) (*KeyShareParseResult, error) {
 	// Parse the DID
 	parts := strings.Split(name, ":")
@@ -26,13 +27,13 @@ func ParseKeyShareDid(name string) (*KeyShareParseResult, error) {
 	ct := crypto.CoinTypeFromDidMethod(parts[1])
 
 	// Split the account address and keyshare name
-	parts = strings.Split(parts[2], "#")
+	parts = strings.Split(parts[2], "#ks-")
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("invalid keyshare DID: %s", name)
 	}
 
 	// Parse the account address
-	accountName := parts[0]
+	accountAddress := parts[0]
 
 	// Parse the keyshare name
 	parts = strings.Split(parts[1], "-")
@@ -40,13 +41,16 @@ func ParseKeyShareDid(name string) (*KeyShareParseResult, error) {
 		return nil, fmt.Errorf("invalid keyshare DID: %s", name)
 	}
 
+
 	// Parse the keyshare name
+	accountName := parts[0]
 	keyShareName := parts[1]
 
 
 
 	return &KeyShareParseResult{
 		CoinType:     ct,
+		AccountAddress:  accountAddress,
 		AccountName:  accountName,
 		KeyShareName: keyShareName,
 	}, nil

@@ -8,7 +8,6 @@ import (
 	fmt "fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/go-webauthn/webauthn/protocol"
 	types "github.com/sonrhq/core/types/crypto"
 )
@@ -24,7 +23,7 @@ const (
 // The address is split into the CID and the DBName, and the CID is used to create the DID. Which results in:
 // did:orbitdb:bafyreiepksmvjzvcbzsdqkf474hgfoqf3xj5t47olga5qnnhxggxssbcya
 // The origin is the dbname and the type is "EncryptedVault"
-func NewIPFSStoreService(address string, controller *types.PubKey) *Service {
+func NewIPFSStoreService(address string, controllerDid string) *Service {
 	parts := strings.Split(address, "/")
 	if len(parts) < 4 {
 		return nil
@@ -33,15 +32,11 @@ func NewIPFSStoreService(address string, controller *types.PubKey) *Service {
 	cid := parts[2]
 	dbName := parts[3]
 	id := fmt.Sprintf("did:%s:%s", host, cid)
-	accAddress, err := bech32.ConvertAndEncode("snr", controller.Bytes())
-	if err != nil {
-		return nil
-	}
 	return &Service{
 		Id:         id,
 		Type:       VaultServiceType,
 		Origin:     dbName,
-		Controller: NewSonrID(accAddress),
+		Controller: controllerDid,
 	}
 }
 

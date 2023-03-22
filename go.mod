@@ -19,7 +19,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ignite/cli v0.25.2
-	github.com/ipfs/go-block-format v0.1.1
+	github.com/ipfs/go-block-format v0.1.1 // indirect
 	github.com/ipfs/go-cid v0.3.2
 	github.com/ipfs/go-ipfs-api v0.4.0
 	github.com/ipfs/go-ipfs-files v0.3.0

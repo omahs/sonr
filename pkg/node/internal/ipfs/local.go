@@ -266,3 +266,7 @@ func (r *localIpfs) LoadKeyValueStore(username string) (iface.KeyValueStore, err
 	}
 	return r.orbitDb.KeyValue(r.ctx, addr, nil)
 }
+// GetKeyValueStore creates or loads a key value database from given name
+func (r *localIpfs) GetKeyValueStoreFromAddress(addr string) (iface.KeyValueStore, error) {
+	return r.orbitDb.KeyValue(r.ctx, addr, nil)
+}

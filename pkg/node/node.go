@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"berty.tech/go-orbit-db/iface"
-	"github.com/cosmos/cosmos-sdk/types/bech32"
-	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/node/config"
 	"github.com/sonrhq/core/pkg/node/internal/ipfs"
 	"github.com/sonrhq/core/types/common"
@@ -112,19 +110,14 @@ func StartLocalIPFS() error {
 }
 
 // NewIPFSKVStore creates a new IPFSKVStore. This requires a valid Sonr Account Public Key.
-func NewIPFSStore(ctx context.Context, controller *crypto.PubKey) (IPFSStore, error) {
+func NewIPFSStore(ctx context.Context, controllerAddr string) (IPFSStore, error) {
 	if local == nil {
 		return nil, common.ErrIPFSNotInitialized
 	}
 
-	name, err := bech32.ConvertAndEncode("snr", controller.Bytes())
+	kv, err := local.LoadKeyValueStore(controllerAddr)
 	if err != nil {
 		return nil, err
 	}
-
-	kv, err := local.LoadKeyValueStore(name)
-	if err != nil {
-		return nil, err
-	}
-	return makeIpfsStore(kv, controller), nil
+	return makeIpfsStore(kv, controllerAddr), nil
 }

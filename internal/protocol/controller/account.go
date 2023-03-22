@@ -72,6 +72,7 @@ type account struct {
 	kss []KeyShare
 	n   uint64
 	p   string
+	ct crypto.CoinType
 }
 
 // ! ||--------------------------------------------------------------------------------||
@@ -79,8 +80,8 @@ type account struct {
 // ! ||--------------------------------------------------------------------------------||
 
 // NewAccount creates a new account
-func NewAccount(kss []KeyShare) Account {
-	return &account{kss: kss, n: 0, p: ""}
+func NewAccount(kss []KeyShare, ct crypto.CoinType) Account {
+	return &account{kss: kss, n: 0, p: "", ct: ct}
 }
 
 // Sync pushes all keyshares to the IPFSStore regardless of whether they are encrypted or not
@@ -91,6 +92,7 @@ func (wa *account) Sync(store node.IPFSStore) error {
 			return err
 		}
 	}
+	store.Close()
 	return nil
 }
 
@@ -149,15 +151,12 @@ func (a *account) Address() string {
 
 // CoinType returns the coin type of the account
 func (a *account) CoinType() crypto.CoinType {
-	return a.kss[0].CoinType()
+	return a.ct
 }
 
 // DID returns the DID of the account
 func (wa *account) DID() string {
-	if wa.CoinType().IsSonr() {
-		return fmt.Sprintf("did:%s:%s", wa.CoinType().DidMethod(), wa.Address())
-	}
-	return fmt.Sprintf("did:%s:%s#%s", wa.CoinType().DidMethod(), wa.Address(), wa.Name())
+	return fmt.Sprintf("did:%s:%s", wa.CoinType().DidMethod(), wa.Address())
 }
 
 // Type returns the type of the account
@@ -256,7 +255,11 @@ func (wa *account) Name() string {
 	if err != nil {
 		return ""
 	}
-	return ks.AccountName()
+	kspr, err := ParseKeyShareDid(ks.Did())
+	if err != nil {
+		return ""
+	}
+	return kspr.AccountName
 }
 
 // Lock locks the account

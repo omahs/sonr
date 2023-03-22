@@ -893,17 +893,6 @@ definitions:
     type: object
   identityMsgDeleteDidDocumentResponse:
     type: object
-  identityMsgRegisterAccountResponse:
-    type: object
-    properties:
-      success:
-        type: boolean
-      did:
-        type: string
-        description: The DID of the user.
-      document:
-        $ref: '#/definitions/identityResolvedDidDocument'
-        description: The ResolvedDidDocument of the user.
   identityMsgRegisterServiceResponse:
     type: object
   identityMsgUpdateDidDocumentResponse:

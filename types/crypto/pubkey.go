@@ -119,7 +119,7 @@ func (pk *PubKey) Secp256k1() (*secp256k1.PubKey, error) {
 	return pubKey, nil
 }
 
-// // Returning the type of the key.
+// Returning the type of the key.
 func (pk *PubKey) Type() string {
 	return pk.KeyType
 }

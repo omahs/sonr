@@ -5,9 +5,6 @@ import (
 	"strings"
 	"time"
 
-	blocks "github.com/ipfs/go-block-format"
-	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/schema"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
@@ -35,12 +32,6 @@ type KeyShare interface {
 
 	// Config returns the cmp.Config.
 	Config() *cmp.Config
-
-	// CoinType returns the coin type based on the account directories parent
-	CoinType() crypto.CoinType
-
-	// AccountName returns the account name based on the account directory name
-	AccountName() string
 
 	// Did returns the cid of the keyshare
 	Did() string
@@ -73,7 +64,8 @@ type Foobar struct {
 	Bar string
 }
 
-// Keyshare name format is a DID did:{coin_type}:{account_address}#ks-{keyshare_name}
+// Keyshare name format is a DID did:{coin_type}:{account_address}#ks-{account_name}-{keyshare_name}
+// did:{coin_type}:{account_address}#ks-{account_name}-{keyshare_name}
 func NewKeyshare(id string, bytes []byte, coinType crypto.CoinType, accName string) (KeyShare, error) {
 	conf := cmp.EmptyConfig(curve.Secp256k1{})
 	err := conf.UnmarshalBinary(bytes)
@@ -86,7 +78,7 @@ func NewKeyshare(id string, bytes []byte, coinType crypto.CoinType, accName stri
 		lastUsed: uint32(time.Now().Unix()),
 	}
 	addr := coinType.FormatAddress(ks.PubKey())
-	ks.name = fmt.Sprintf("did:%s:%s#ks-%s", coinType.DidMethod(), addr, string(conf.ID))
+	ks.name = fmt.Sprintf("did:%s:%s#ks-%s-%s", coinType.DidMethod(), addr, accName, string(conf.ID))
 	return ks, nil
 }
 
@@ -148,24 +140,6 @@ func (ks *keyShare) Config() *cmp.Config {
 	return cnfg
 }
 
-// CoinType returns the coin type based on the account directories parent
-func (ks *keyShare) CoinType() crypto.CoinType {
-	res, err := ParseKeyShareDid(ks.name)
-	if err != nil {
-		panic(err)
-	}
-	return res.CoinType
-}
-
-// AccountName returns the account name based on the account directory name
-func (ks *keyShare) AccountName() string {
-	res, err := ParseKeyShareDid(ks.name)
-	if err != nil {
-		panic(err)
-	}
-	return res.AccountName
-}
-
 // Keyshare name format is /{purpose}/{coin_type}/{account_name}/{keyshare_name}
 func (ks *keyShare) KeyID() string {
 	return ks.name
@@ -224,14 +198,6 @@ func (ks *keyShare) Decrypt(credential *crypto.WebauthnCredential) error {
 	return nil
 }
 
-// IPLD returns the ipld node of the keyshare
-func (ks *keyShare) Block() blocks.Block {
-	bz, err := ipld.Marshal(dagjson.Encode, ks, ControllerTypeSystem.TypeByName("keyShare"))
-	if err != nil {
-		panic(err)
-	}
-	return blocks.NewBlock(bz)
-}
 
 // A Keyshare is encrypted if its name contains an apostrophe at the end.
 func (ks *keyShare) IsEncrypted() bool {

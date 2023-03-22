@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
@@ -11,6 +12,8 @@ import (
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
+
+const PrimaryAccountName = "primary"
 
 type Controller interface {
 	// Get the controller's DID
@@ -26,16 +29,16 @@ type Controller interface {
 	CreateAccount(name string, coinType crypto.CoinType) error
 
 	// GetAccount returns the controller's account
-	GetAccount(did string) (Account, error)
+	GetAccount(name string, coinType crypto.CoinType) (Account, error)
 
 	// ListAccounts returns the controller's accounts
-	ListAccounts() ([]Account, error)
+	ListAccounts(ct crypto.CoinType) ([]Account, error)
 
 	// Sign signs a message with the controller's account
-	Sign(did string, msg []byte) ([]byte, error)
+	Sign(name string, coinType crypto.CoinType, msg []byte) ([]byte, error)
 
 	// Verify verifies a signature with the controller's account
-	Verify(did string, msg []byte, sig []byte) (bool, error)
+	Verify(name string, coinType crypto.CoinType, msg []byte, sig []byte) (bool, error)
 }
 
 type didController struct {
@@ -58,18 +61,40 @@ func NewController(ctx context.Context, credential *crypto.WebauthnCredential) (
 	}
 }
 
-func LoadController(ctx context.Context, credential *crypto.WebauthnCredential, address string) (Controller, error) {
-	doneCh := make(chan Account)
-	errCh := make(chan error)
+// LoadController loads a controller from the given DID document using the underlying IPFS store
+func LoadController(ctx context.Context, credential *crypto.WebauthnCredential, didDoc *types.DidDocument) (Controller, error) {
+	if len(didDoc.Service) == 0 {
+		return nil, fmt.Errorf("no service found in DID document")
+	}
 
-	go generateInitialAccount(ctx, credential, doneCh, errCh)
-
-	select {
-	case acc := <-doneCh:
-		return setupController(ctx, credential, acc)
-	case err := <-errCh:
+	// Get the IPFS store service
+	ipfsStore, err := node.NewIPFSStore(ctx, strings.Split( didDoc.Id, ":")[len(strings.Split( didDoc.Id, ":"))-1])
+	if err != nil {
 		return nil, err
 	}
+
+	// Get the primary account
+	mapKv := ipfsStore.All()
+	mapKv = filterByCoin(mapKv, crypto.SONRCoinType)
+	if len(mapKv) == 0 {
+		return nil, fmt.Errorf("no primary account found")
+	}
+
+	// Get the primary account
+	var kss []KeyShare
+	for k, v := range mapKv {
+		ks, err := LoadKeyshareFromStore(k, v)
+		if err != nil {
+			return nil, err
+		}
+		kss = append(kss, ks)
+	}
+	primary := NewAccount(kss, crypto.SONRCoinType)
+	return &didController{
+		ipfsStore: ipfsStore,
+		primary: primary,
+		didDoc: didDoc,
+	}, nil
 }
 
 func (dc *didController) Did() string {
@@ -110,15 +135,15 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) er
 		}
 		newKss = append(newKss, ks)
 	}
-	newAcc := NewAccount(newKss)
+	newAcc := NewAccount(newKss, coinType)
 	newAcc.Sync(dc.ipfsStore)
 	return nil
 }
 
 // GetAccount returns the controller's account from the Address
-func (dc *didController) GetAccount(address string) (Account, error) {
+func (dc *didController) GetAccount(name string, coinType crypto.CoinType) (Account, error) {
 	mapkv := dc.ipfsStore.All()
-	mapkv = filterByAccountName(mapkv, address)
+	mapkv = filterByCoinAndAccountName(mapkv, coinType, name)
 	if len(mapkv) == 0 {
 		return nil, fmt.Errorf("account not found")
 	}
@@ -130,32 +155,16 @@ func (dc *didController) GetAccount(address string) (Account, error) {
 		}
 		kss = append(kss, ks)
 	}
-	return NewAccount(kss), nil
+	return NewAccount(kss, coinType), nil
 }
 
 // ListAccounts returns the controller's accounts
-func (dc *didController) ListAccounts() ([]Account, error) {
+func (dc *didController) ListAccounts(ct crypto.CoinType) ([]Account, error) {
 	mapkv := dc.ipfsStore.All()
 	var accs []Account
-	mapkv = filterByCoin(mapkv, crypto.SONRCoinType)
+	mapkv = filterByCoin(mapkv, ct)
 	for k := range mapkv {
-		acc, err := dc.GetAccount(k)
-		if err != nil {
-			return nil, err
-		}
-		accs = append(accs, acc)
-	}
-	mapkv = filterByCoin(mapkv, crypto.ETHCoinType)
-	for k := range mapkv {
-		acc, err := dc.GetAccount(k)
-		if err != nil {
-			return nil, err
-		}
-		accs = append(accs, acc)
-	}
-	mapkv = filterByCoin(mapkv, crypto.BTCCoinType)
-	for k := range mapkv {
-		acc, err := dc.GetAccount(k)
+		acc, err := dc.GetAccount(k, ct)
 		if err != nil {
 			return nil, err
 		}
@@ -164,12 +173,22 @@ func (dc *didController) ListAccounts() ([]Account, error) {
 	return accs, nil
 }
 
-func (dc *didController) Sign(did string, msg []byte) ([]byte, error) {
-	return nil, nil
+// Sign signs a message with the controller's selected account
+func (dc *didController) Sign(name string, coinType crypto.CoinType, msg []byte) ([]byte, error) {
+	acc, err := dc.GetAccount(name, coinType)
+	if err != nil {
+		return nil, err
+	}
+	return acc.Sign(msg)
 }
 
-func (dc *didController) Verify(did string, msg []byte, sig []byte) (bool, error) {
-	return false, nil
+// Verify verifies a signature with the controller's selected account
+func (dc *didController) Verify(name string, coinType crypto.CoinType, msg []byte, sig []byte) (bool, error) {
+	acc, err := dc.GetAccount(name, coinType)
+	if err != nil {
+		return false, err
+	}
+	return acc.Verify(msg, sig)
 }
 
 // ! ||--------------------------------------------------------------------------------||
@@ -197,13 +216,13 @@ func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCred
 		}
 		kss = append(kss, ks)
 	}
-	doneCh <- NewAccount(kss)
+	doneCh <- NewAccount(kss, crypto.SONRCoinType)
 }
 
 func setupController(ctx context.Context, credential *crypto.WebauthnCredential,  primary Account) (Controller, error) {
 	didDoc := types.NewBlankDocument(primary.DID())
 
-	st, err := node.NewIPFSStore(context.Background(), primary.PubKey())
+	st, err := node.NewIPFSStore(context.Background(), primary.Address())
 	if err != nil {
 		return nil, err
 	}
@@ -268,3 +287,14 @@ func filterByAccountName(m map[string][]byte, name string) map[string][]byte {
 		return ksr.AccountName == name
 	})
 }
+
+func filterByCoinAndAccountName(m map[string][]byte, ct crypto.CoinType, name string) map[string][]byte {
+	return filterMap(m, func(k string) bool {
+		ksr, err := ParseKeyShareDid(k)
+		if err != nil {
+			return false
+		}
+		return ksr.CoinType == ct && ksr.AccountName == name
+	})
+}
+
