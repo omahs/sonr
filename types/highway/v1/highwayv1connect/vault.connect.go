@@ -27,6 +27,21 @@ const (
 
 // VaultClient is a client for the sonrhq.highway.v1.Vault service.
 type VaultClient interface {
+	// Assign Key
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	Assign(context.Context, *connect_go.Request[v1.AssignKeyRequest]) (*connect_go.Response[v1.AssignKeyResponse], error)
 	// Login Start
 	//
 	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
@@ -84,6 +99,11 @@ type VaultClient interface {
 func NewVaultClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) VaultClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &vaultClient{
+		assign: connect_go.NewClient[v1.AssignKeyRequest, v1.AssignKeyResponse](
+			httpClient,
+			baseURL+"/sonrhq.highway.v1.Vault/Assign",
+			opts...,
+		),
 		upload: connect_go.NewClient[v1.UploadShareRequest, v1.UploadShareResponse](
 			httpClient,
 			baseURL+"/sonrhq.highway.v1.Vault/Upload",
@@ -104,9 +124,15 @@ func NewVaultClient(httpClient connect_go.HTTPClient, baseURL string, opts ...co
 
 // vaultClient implements VaultClient.
 type vaultClient struct {
+	assign  *connect_go.Client[v1.AssignKeyRequest, v1.AssignKeyResponse]
 	upload  *connect_go.Client[v1.UploadShareRequest, v1.UploadShareResponse]
 	sync    *connect_go.Client[v1.SyncShareRequest, v1.SyncShareResponse]
 	refresh *connect_go.Client[v1.RefreshShareRequest, v1.RefreshShareResponse]
+}
+
+// Assign calls sonrhq.highway.v1.Vault.Assign.
+func (c *vaultClient) Assign(ctx context.Context, req *connect_go.Request[v1.AssignKeyRequest]) (*connect_go.Response[v1.AssignKeyResponse], error) {
+	return c.assign.CallUnary(ctx, req)
 }
 
 // Upload calls sonrhq.highway.v1.Vault.Upload.
@@ -126,6 +152,21 @@ func (c *vaultClient) Refresh(ctx context.Context, req *connect_go.Request[v1.Re
 
 // VaultHandler is an implementation of the sonrhq.highway.v1.Vault service.
 type VaultHandler interface {
+	// Assign Key
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	Assign(context.Context, *connect_go.Request[v1.AssignKeyRequest]) (*connect_go.Response[v1.AssignKeyResponse], error)
 	// Login Start
 	//
 	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
@@ -180,6 +221,11 @@ type VaultHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewVaultHandler(svc VaultHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
+	mux.Handle("/sonrhq.highway.v1.Vault/Assign", connect_go.NewUnaryHandler(
+		"/sonrhq.highway.v1.Vault/Assign",
+		svc.Assign,
+		opts...,
+	))
 	mux.Handle("/sonrhq.highway.v1.Vault/Upload", connect_go.NewUnaryHandler(
 		"/sonrhq.highway.v1.Vault/Upload",
 		svc.Upload,
@@ -200,6 +246,10 @@ func NewVaultHandler(svc VaultHandler, opts ...connect_go.HandlerOption) (string
 
 // UnimplementedVaultHandler returns CodeUnimplemented from all methods.
 type UnimplementedVaultHandler struct{}
+
+func (UnimplementedVaultHandler) Assign(context.Context, *connect_go.Request[v1.AssignKeyRequest]) (*connect_go.Response[v1.AssignKeyResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("sonrhq.highway.v1.Vault.Assign is not implemented"))
+}
 
 func (UnimplementedVaultHandler) Upload(context.Context, *connect_go.Request[v1.UploadShareRequest]) (*connect_go.Response[v1.UploadShareResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("sonrhq.highway.v1.Vault.Upload is not implemented"))

@@ -14,7 +14,6 @@ import (
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
 
-
 var ControllerTypeSystem = schema.MustTypeSystem(
 	schema.SpawnStruct("keyShare",
 		[]schema.StructField{
@@ -69,7 +68,6 @@ type keyShare struct {
 	lastUsed uint32
 }
 
-
 type Foobar struct {
 	Foo string
 	Bar string
@@ -109,6 +107,24 @@ func LoadKeyshareFromStore(key string, value []byte) (KeyShare, error) {
 		name:     ksr.KeyShareName,
 		lastUsed: uint32(time.Now().Unix()),
 	}, nil
+}
+
+// LoadKeySharePubKeyFromConfigBytes loads a public key from a cmp.Config file.
+func LoadKeySharePubKeyFromConfigBytes(bytes []byte) (*crypto.PubKey, error) {
+	conf := cmp.EmptyConfig(curve.Secp256k1{})
+	err := conf.UnmarshalBinary(bytes)
+	if err != nil {
+		return nil, err
+	}
+	skPP, ok := conf.PublicPoint().(*curve.Secp256k1Point)
+	if !ok {
+		return nil, fmt.Errorf("invalid public point type")
+	}
+	bz, err := skPP.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+	return crypto.NewSecp256k1PubKey(bz), nil
 }
 
 // Cid returns the cid of the keyshare

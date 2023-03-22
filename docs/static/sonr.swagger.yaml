@@ -14,6 +14,41 @@ consumes:
 produces:
   - application/json
 paths:
+  /highway/vault/assign:
+    post:
+      summary: Assign Key
+      description: |-
+        {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+        It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+
+        #### {{.RequestType.Name}}
+        | Name | Type | Description |
+        | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+        | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+
+
+        #### {{.ResponseType.Name}}
+        | Name | Type | Description |
+        | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+        | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+      operationId: Vault_Assign
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1AssignKeyResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1AssignKeyRequest'
+      tags:
+        - Vault
   /highway/vault/refresh:
     post:
       summary: Register Start
@@ -1144,6 +1179,35 @@ definitions:
         type: string
         description: This field stores the type of the public key. It is used to differentiate between various public key types, such as secp256k1, ed25519, and sr25519.
     description: Account represents a user's account on a blockchain or network. It contains the user's address, name, DID, and other information that is used to identify and manage the account.
+  v1AssignKeyRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of the IPNS record.
+      publicKey:
+        type: string
+        format: byte
+        description: The public key to assign to the IPNS record. This is the public key of the MPC keypair.
+      ttl:
+        type: string
+        format: int64
+        description: TTL is the time to live for the IPNS record.
+    title: AssignKeyRequest is a request to set the name of an IPNS record
+  v1AssignKeyResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: Success is true if the name was set.
+      name:
+        type: string
+        description: The name of the IPNS record.
+      publicKey:
+        type: string
+        format: byte
+        description: The public key to assign to the IPNS record. This is the public key of the MPC keypair.
+    title: AssignKeyResponse is a response to a request to set the name of an IPNS record
   v1CreateAccountResponse:
     type: object
     properties:

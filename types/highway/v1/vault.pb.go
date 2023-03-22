@@ -32,6 +32,134 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// AssignKeyRequest is a request to set the name of an IPNS record
+type AssignKeyRequest struct {
+	// The name of the IPNS record.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// The public key to assign to the IPNS record. This is the public key of the MPC keypair.
+	PublicKey []byte `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	// TTL is the time to live for the IPNS record.
+	Ttl int64 `protobuf:"varint,3,opt,name=ttl,proto3" json:"ttl,omitempty"`
+}
+
+func (m *AssignKeyRequest) Reset()         { *m = AssignKeyRequest{} }
+func (m *AssignKeyRequest) String() string { return proto.CompactTextString(m) }
+func (*AssignKeyRequest) ProtoMessage()    {}
+func (*AssignKeyRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4761d9884e4d1728, []int{0}
+}
+func (m *AssignKeyRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AssignKeyRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AssignKeyRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AssignKeyRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AssignKeyRequest.Merge(m, src)
+}
+func (m *AssignKeyRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *AssignKeyRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AssignKeyRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AssignKeyRequest proto.InternalMessageInfo
+
+func (m *AssignKeyRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *AssignKeyRequest) GetPublicKey() []byte {
+	if m != nil {
+		return m.PublicKey
+	}
+	return nil
+}
+
+func (m *AssignKeyRequest) GetTtl() int64 {
+	if m != nil {
+		return m.Ttl
+	}
+	return 0
+}
+
+// AssignKeyResponse is a response to a request to set the name of an IPNS record
+type AssignKeyResponse struct {
+	// Success is true if the name was set.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// The name of the IPNS record.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// The public key to assign to the IPNS record. This is the public key of the MPC keypair.
+	PublicKey []byte `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+}
+
+func (m *AssignKeyResponse) Reset()         { *m = AssignKeyResponse{} }
+func (m *AssignKeyResponse) String() string { return proto.CompactTextString(m) }
+func (*AssignKeyResponse) ProtoMessage()    {}
+func (*AssignKeyResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4761d9884e4d1728, []int{1}
+}
+func (m *AssignKeyResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AssignKeyResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AssignKeyResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AssignKeyResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AssignKeyResponse.Merge(m, src)
+}
+func (m *AssignKeyResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *AssignKeyResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AssignKeyResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AssignKeyResponse proto.InternalMessageInfo
+
+func (m *AssignKeyResponse) GetSuccess() bool {
+	if m != nil {
+		return m.Success
+	}
+	return false
+}
+
+func (m *AssignKeyResponse) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *AssignKeyResponse) GetPublicKey() []byte {
+	if m != nil {
+		return m.PublicKey
+	}
+	return nil
+}
+
 // UploadShareRequest is the request to register a new account.
 type UploadShareRequest struct {
 	// The origin of the request. This is used to query the Blockchain for the Service DID.
@@ -48,7 +176,7 @@ func (m *UploadShareRequest) Reset()         { *m = UploadShareRequest{} }
 func (m *UploadShareRequest) String() string { return proto.CompactTextString(m) }
 func (*UploadShareRequest) ProtoMessage()    {}
 func (*UploadShareRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4761d9884e4d1728, []int{0}
+	return fileDescriptor_4761d9884e4d1728, []int{2}
 }
 func (m *UploadShareRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -119,7 +247,7 @@ func (m *UploadShareResponse) Reset()         { *m = UploadShareResponse{} }
 func (m *UploadShareResponse) String() string { return proto.CompactTextString(m) }
 func (*UploadShareResponse) ProtoMessage()    {}
 func (*UploadShareResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4761d9884e4d1728, []int{1}
+	return fileDescriptor_4761d9884e4d1728, []int{3}
 }
 func (m *UploadShareResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -183,7 +311,7 @@ func (m *SyncShareRequest) Reset()         { *m = SyncShareRequest{} }
 func (m *SyncShareRequest) String() string { return proto.CompactTextString(m) }
 func (*SyncShareRequest) ProtoMessage()    {}
 func (*SyncShareRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4761d9884e4d1728, []int{2}
+	return fileDescriptor_4761d9884e4d1728, []int{4}
 }
 func (m *SyncShareRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -253,7 +381,7 @@ func (m *SyncShareResponse) Reset()         { *m = SyncShareResponse{} }
 func (m *SyncShareResponse) String() string { return proto.CompactTextString(m) }
 func (*SyncShareResponse) ProtoMessage()    {}
 func (*SyncShareResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4761d9884e4d1728, []int{3}
+	return fileDescriptor_4761d9884e4d1728, []int{5}
 }
 func (m *SyncShareResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -336,7 +464,7 @@ func (m *RefreshShareRequest) Reset()         { *m = RefreshShareRequest{} }
 func (m *RefreshShareRequest) String() string { return proto.CompactTextString(m) }
 func (*RefreshShareRequest) ProtoMessage()    {}
 func (*RefreshShareRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4761d9884e4d1728, []int{4}
+	return fileDescriptor_4761d9884e4d1728, []int{6}
 }
 func (m *RefreshShareRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -397,7 +525,7 @@ func (m *RefreshShareResponse) Reset()         { *m = RefreshShareResponse{} }
 func (m *RefreshShareResponse) String() string { return proto.CompactTextString(m) }
 func (*RefreshShareResponse) ProtoMessage()    {}
 func (*RefreshShareResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4761d9884e4d1728, []int{5}
+	return fileDescriptor_4761d9884e4d1728, []int{7}
 }
 func (m *RefreshShareResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -462,6 +590,8 @@ func (m *RefreshShareResponse) GetRpName() string {
 }
 
 func init() {
+	proto.RegisterType((*AssignKeyRequest)(nil), "sonrhq.highway.v1.AssignKeyRequest")
+	proto.RegisterType((*AssignKeyResponse)(nil), "sonrhq.highway.v1.AssignKeyResponse")
 	proto.RegisterType((*UploadShareRequest)(nil), "sonrhq.highway.v1.UploadShareRequest")
 	proto.RegisterType((*UploadShareResponse)(nil), "sonrhq.highway.v1.UploadShareResponse")
 	proto.RegisterType((*SyncShareRequest)(nil), "sonrhq.highway.v1.SyncShareRequest")
@@ -473,51 +603,56 @@ func init() {
 func init() { proto.RegisterFile("highway/v1/vault.proto", fileDescriptor_4761d9884e4d1728) }
 
 var fileDescriptor_4761d9884e4d1728 = []byte{
-	// 690 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcd, 0x6e, 0xd4, 0x3a,
-	0x14, 0x6e, 0xa6, 0xf3, 0x73, 0xeb, 0x56, 0x6d, 0xc7, 0x73, 0xef, 0x34, 0x9a, 0x7b, 0x15, 0x4d,
-	0x73, 0x81, 0x96, 0x4a, 0x24, 0x9a, 0xb2, 0x83, 0x15, 0xa8, 0x0b, 0x10, 0x08, 0xa4, 0xb4, 0x74,
-	0xc1, 0x26, 0x72, 0x6d, 0x77, 0x62, 0x91, 0xb1, 0x53, 0xc7, 0x19, 0x34, 0x0b, 0x36, 0x3c, 0x01,
-	0x82, 0x77, 0xe1, 0x19, 0x58, 0x56, 0x62, 0xc3, 0x06, 0x09, 0xb5, 0x3c, 0x02, 0x0f, 0x80, 0x9c,
-	0x38, 0xcd, 0x4c, 0x3b, 0xa2, 0xdd, 0xc5, 0xdf, 0x39, 0x39, 0xdf, 0x77, 0xce, 0xf9, 0x6c, 0xd0,
-	0x8d, 0xd8, 0x30, 0x7a, 0x8b, 0x26, 0xfe, 0x78, 0xe0, 0x8f, 0x51, 0x16, 0x2b, 0x2f, 0x91, 0x42,
-	0x09, 0xd8, 0x4e, 0x05, 0x97, 0xd1, 0x89, 0x67, 0xc2, 0xde, 0x78, 0xd0, 0xdb, 0xc0, 0x42, 0x52,
-	0x9f, 0x11, 0xca, 0x15, 0x53, 0x13, 0x9f, 0x30, 0x52, 0xe4, 0xf6, 0xfe, 0x1b, 0x0a, 0x31, 0x8c,
-	0xa9, 0x8f, 0x12, 0xe6, 0x23, 0xce, 0x85, 0x42, 0x8a, 0x09, 0x9e, 0x9a, 0x68, 0x57, 0x57, 0xf2,
-	0xb1, 0x18, 0x8d, 0x04, 0xf7, 0x19, 0x3f, 0x16, 0x05, 0xee, 0x7e, 0xb4, 0x00, 0x7c, 0x95, 0xc4,
-	0x02, 0x91, 0xfd, 0x08, 0x49, 0x1a, 0xd0, 0x93, 0x8c, 0xa6, 0x0a, 0x76, 0x41, 0x53, 0x48, 0x36,
-	0x64, 0xdc, 0xb6, 0xfa, 0xd6, 0xf6, 0x52, 0x60, 0x4e, 0x70, 0x13, 0xac, 0x10, 0x3a, 0x66, 0x98,
-	0x86, 0x31, 0x3a, 0xa2, 0xb1, 0x5d, 0xcb, 0xa3, 0xcb, 0x05, 0xf6, 0x5c, 0x43, 0xf0, 0x1e, 0x80,
-	0x29, 0xc5, 0x99, 0x64, 0x6a, 0x12, 0xaa, 0x48, 0xd2, 0x34, 0x12, 0x31, 0xb1, 0x17, 0xfb, 0xd6,
-	0x76, 0x23, 0x68, 0x97, 0x91, 0x83, 0x32, 0x00, 0x21, 0xa8, 0x67, 0x19, 0x23, 0x76, 0x3d, 0xaf,
-	0x94, 0x7f, 0xbb, 0x1c, 0x74, 0x66, 0x34, 0xa5, 0x89, 0xe0, 0x29, 0x85, 0x77, 0xc1, 0x3a, 0x96,
-	0x34, 0x6f, 0x2b, 0x14, 0x49, 0xde, 0x9d, 0x91, 0xb7, 0x56, 0xe2, 0x2f, 0x0b, 0x18, 0x76, 0x40,
-	0x43, 0x26, 0x21, 0x23, 0x46, 0x60, 0x5d, 0x26, 0x4f, 0x09, 0xdc, 0x00, 0x2d, 0x99, 0x84, 0x1c,
-	0x8d, 0x68, 0x2e, 0x67, 0x29, 0x68, 0xca, 0xe4, 0x05, 0x1a, 0x51, 0x57, 0x80, 0xf5, 0xfd, 0x09,
-	0xc7, 0x33, 0x13, 0x28, 0x75, 0x59, 0x95, 0x2e, 0xe8, 0x83, 0x0e, 0x96, 0x34, 0x1f, 0x3d, 0x8a,
-	0x43, 0x69, 0x74, 0x19, 0x0e, 0x58, 0x85, 0x2e, 0x14, 0x57, 0x63, 0x5c, 0x9c, 0x1e, 0xa3, 0xfb,
-	0xdd, 0x02, 0xed, 0x29, 0x46, 0x93, 0xbd, 0x0a, 0x6a, 0x86, 0x70, 0x25, 0xa8, 0x31, 0x02, 0x6d,
-	0xd0, 0x42, 0x84, 0x48, 0x9a, 0xa6, 0x86, 0xa2, 0x3c, 0x56, 0xed, 0x2d, 0xce, 0x6f, 0xaf, 0x3e,
-	0xdd, 0x1e, 0xdc, 0x03, 0x2b, 0x84, 0x91, 0x90, 0x08, 0x9c, 0x8d, 0x28, 0x57, 0x76, 0xa3, 0x6f,
-	0x6d, 0x2f, 0xef, 0x6e, 0x7a, 0xc6, 0x5c, 0xda, 0x50, 0x5e, 0x69, 0x28, 0x6f, 0x8f, 0x91, 0x3d,
-	0x93, 0x18, 0x2c, 0x93, 0xea, 0x00, 0x77, 0x40, 0x3b, 0xc3, 0x88, 0x87, 0x4a, 0xbc, 0xa1, 0x3c,
-	0x8c, 0x28, 0x22, 0x54, 0xda, 0xad, 0x5c, 0xec, 0x9a, 0x0e, 0x1c, 0x68, 0xfc, 0x49, 0x0e, 0xbb,
-	0x87, 0xa0, 0x13, 0xd0, 0x63, 0xbd, 0xe2, 0x1b, 0xb9, 0x6a, 0x0b, 0xac, 0x21, 0x8c, 0x45, 0xc6,
-	0x55, 0x38, 0xdb, 0xf0, 0xaa, 0x81, 0x1f, 0x15, 0xa8, 0xfb, 0xd9, 0x02, 0x7f, 0xcf, 0x16, 0x36,
-	0xa3, 0xb3, 0x41, 0x2b, 0xcd, 0x30, 0xd6, 0x7f, 0xea, 0xd2, 0x7f, 0x05, 0xe5, 0xf1, 0xc6, 0xb5,
-	0xb5, 0x6f, 0xa7, 0x96, 0x5b, 0xfa, 0xab, 0x18, 0x70, 0xbb, 0x8a, 0x5c, 0x71, 0x58, 0x7d, 0xfe,
-	0x0a, 0x1a, 0xd3, 0x2b, 0xd8, 0xfd, 0x55, 0x03, 0x8d, 0x43, 0x7d, 0xb1, 0xe1, 0x04, 0x34, 0x0b,
-	0x6f, 0xc3, 0xdb, 0xde, 0x95, 0xdb, 0xed, 0x5d, 0xbd, 0x8a, 0xbd, 0x3b, 0xd7, 0xa5, 0x15, 0x23,
-	0x70, 0xfb, 0xef, 0xbf, 0xfe, 0xfc, 0x54, 0xeb, 0x3d, 0xb0, 0x76, 0xdc, 0x7f, 0xfc, 0x8b, 0xf7,
-	0x44, 0x73, 0xfa, 0x59, 0x41, 0x78, 0x02, 0xea, 0xda, 0x74, 0xf0, 0xff, 0x39, 0x15, 0x2f, 0xfb,
-	0xbf, 0x77, 0xeb, 0xcf, 0x49, 0x86, 0xd4, 0xc9, 0x49, 0x6d, 0x4d, 0xda, 0xb9, 0x44, 0x9a, 0x6a,
-	0xaa, 0x77, 0xa0, 0x65, 0xf6, 0x05, 0xe7, 0xf5, 0x31, 0xc7, 0x24, 0xbd, 0xad, 0x6b, 0xf3, 0x0c,
-	0xf7, 0x66, 0xce, 0xfd, 0xaf, 0xe6, 0xee, 0x5e, 0xe2, 0x96, 0x45, 0xfe, 0xe3, 0x67, 0x5f, 0xce,
-	0x1c, 0xeb, 0xf4, 0xcc, 0xb1, 0x7e, 0x9c, 0x39, 0xd6, 0x87, 0x73, 0x67, 0xe1, 0xf4, 0xdc, 0x59,
-	0xf8, 0x76, 0xee, 0x2c, 0xbc, 0x1e, 0x0c, 0x99, 0x8a, 0xb2, 0x23, 0x0f, 0x8b, 0x91, 0x5f, 0xf0,
-	0xf9, 0xf9, 0xc3, 0xaa, 0x26, 0x09, 0x4d, 0xab, 0x6a, 0x83, 0x87, 0xe6, 0x73, 0x3c, 0x38, 0x6a,
-	0xe6, 0x2f, 0xe6, 0xfd, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x8d, 0x24, 0x96, 0x53, 0xad, 0x05,
-	0x00, 0x00,
+	// 771 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x95, 0xcd, 0x6e, 0xeb, 0x44,
+	0x14, 0x80, 0xeb, 0x38, 0x3f, 0xdc, 0x69, 0x74, 0x9b, 0x4c, 0x20, 0xd7, 0x0a, 0x10, 0xa5, 0xe6,
+	0xe7, 0x86, 0x2b, 0x61, 0x2b, 0x65, 0x07, 0xab, 0xa2, 0x2e, 0x40, 0x45, 0x20, 0xb9, 0xa5, 0x48,
+	0x6c, 0xcc, 0xc4, 0x33, 0x8d, 0x47, 0x75, 0x66, 0xdc, 0xf1, 0x38, 0xc8, 0x0b, 0x36, 0x3c, 0x01,
+	0x82, 0x77, 0xe1, 0x19, 0x58, 0x56, 0x62, 0xc3, 0x06, 0x09, 0xb5, 0xec, 0x78, 0x09, 0x34, 0x9e,
+	0x71, 0xf3, 0x0b, 0xe9, 0x6e, 0xe6, 0x9c, 0xa3, 0xf3, 0x9d, 0xdf, 0x19, 0xd0, 0x8f, 0xe9, 0x2c,
+	0xfe, 0x1e, 0x15, 0xfe, 0x62, 0xe2, 0x2f, 0x50, 0x9e, 0x48, 0x2f, 0x15, 0x5c, 0x72, 0xd8, 0xcd,
+	0x38, 0x13, 0xf1, 0xad, 0x67, 0xd4, 0xde, 0x62, 0x32, 0x78, 0x11, 0x71, 0x41, 0x7c, 0x8a, 0x09,
+	0x93, 0x54, 0x16, 0x3e, 0xa6, 0x58, 0xdb, 0x0e, 0xde, 0x9a, 0x71, 0x3e, 0x4b, 0x88, 0x8f, 0x52,
+	0xea, 0x23, 0xc6, 0xb8, 0x44, 0x92, 0x72, 0x96, 0x19, 0x6d, 0x5f, 0x79, 0xf2, 0x23, 0x3e, 0x9f,
+	0x73, 0xe6, 0x53, 0x76, 0xcd, 0xb5, 0xdc, 0xfd, 0x06, 0x74, 0x4e, 0xb3, 0x8c, 0xce, 0xd8, 0x39,
+	0x29, 0x02, 0x72, 0x9b, 0x93, 0x4c, 0x42, 0x08, 0xea, 0x0c, 0xcd, 0x89, 0x63, 0x8d, 0xac, 0xf1,
+	0xb3, 0xa0, 0x3c, 0xc3, 0xb7, 0x01, 0x48, 0xf3, 0x69, 0x42, 0xa3, 0xf0, 0x86, 0x14, 0x4e, 0x6d,
+	0x64, 0x8d, 0xdb, 0xc1, 0x33, 0x2d, 0x39, 0x27, 0x05, 0xec, 0x00, 0x5b, 0xca, 0xc4, 0xb1, 0x47,
+	0xd6, 0xd8, 0x0e, 0xd4, 0xd1, 0xfd, 0x0e, 0x74, 0x57, 0x1c, 0x67, 0x29, 0x67, 0x19, 0x81, 0x0e,
+	0x68, 0x65, 0x79, 0x14, 0x91, 0x2c, 0x2b, 0x9d, 0xbf, 0x16, 0x54, 0xd7, 0x47, 0x66, 0xed, 0x3f,
+	0x99, 0xf6, 0x06, 0xd3, 0xfd, 0xd9, 0x02, 0xf0, 0xeb, 0x34, 0xe1, 0x08, 0x5f, 0xc4, 0x48, 0x90,
+	0x2a, 0xfa, 0x3e, 0x68, 0x72, 0x41, 0x67, 0x94, 0x99, 0xf8, 0xcd, 0x0d, 0x1e, 0x83, 0x36, 0x26,
+	0x0b, 0x1a, 0x91, 0x30, 0x41, 0x53, 0x92, 0x18, 0xd2, 0xa1, 0x96, 0x7d, 0xa1, 0x44, 0xf0, 0x43,
+	0x00, 0x33, 0x12, 0xe5, 0x82, 0xca, 0x22, 0x94, 0xb1, 0x20, 0x59, 0xcc, 0x13, 0x5c, 0x82, 0x1b,
+	0x41, 0xb7, 0xd2, 0x5c, 0x56, 0x0a, 0x15, 0x73, 0x9e, 0x53, 0xec, 0xd4, 0x75, 0xcc, 0xea, 0xec,
+	0x32, 0xd0, 0x5b, 0x8b, 0xc9, 0x24, 0xfe, 0x01, 0xe8, 0x44, 0x82, 0x94, 0x1d, 0x09, 0x79, 0x5a,
+	0x36, 0xc6, 0x84, 0x77, 0x54, 0xc9, 0xbf, 0xd2, 0x62, 0xd8, 0x03, 0x0d, 0x91, 0x86, 0x14, 0x57,
+	0xa5, 0x10, 0xe9, 0xe7, 0x18, 0xbe, 0x00, 0x2d, 0x91, 0x86, 0x65, 0x85, 0x6c, 0x9d, 0x95, 0x48,
+	0xbf, 0x44, 0x73, 0xe2, 0x72, 0xd0, 0xb9, 0x28, 0x58, 0xb4, 0x56, 0x81, 0x2a, 0x2e, 0x6b, 0x19,
+	0x17, 0xf4, 0x41, 0x2f, 0x12, 0xa4, 0x9c, 0x1a, 0x94, 0x84, 0xc2, 0xc4, 0x65, 0x18, 0x70, 0xa9,
+	0x7a, 0x8c, 0x78, 0x59, 0x46, 0x7b, 0xb5, 0x8c, 0xee, 0x9f, 0x16, 0xe8, 0xae, 0x10, 0x8d, 0xf5,
+	0x73, 0x50, 0x33, 0xc0, 0x76, 0x50, 0xa3, 0x58, 0x35, 0x1a, 0x61, 0x2c, 0x54, 0xa3, 0x35, 0xa2,
+	0xba, 0x2e, 0xd3, 0xb3, 0x77, 0xa7, 0x57, 0x5f, 0x4d, 0x0f, 0x9e, 0x81, 0x36, 0xa6, 0x38, 0xc4,
+	0x3c, 0xca, 0xe7, 0x84, 0x49, 0xa7, 0x31, 0xb2, 0xc6, 0x87, 0x27, 0xc7, 0x9e, 0xd9, 0x0b, 0xb5,
+	0x0b, 0x5e, 0xb5, 0x0b, 0xde, 0x19, 0xc5, 0x67, 0xc6, 0x30, 0x38, 0xc4, 0xcb, 0x0b, 0x7c, 0x05,
+	0xba, 0x79, 0x84, 0x58, 0x28, 0xf9, 0x0d, 0x61, 0x61, 0x4c, 0x10, 0x26, 0xc2, 0x69, 0x95, 0xc1,
+	0x1e, 0x29, 0xc5, 0xa5, 0x92, 0x7f, 0x56, 0x8a, 0xdd, 0x2b, 0xd0, 0x0b, 0xc8, 0xb5, 0x6a, 0xf1,
+	0x93, 0xa6, 0xea, 0x25, 0x38, 0x42, 0x51, 0xc4, 0x73, 0x26, 0xc3, 0xf5, 0x84, 0x9f, 0x1b, 0xf1,
+	0xa9, 0x96, 0xba, 0xbf, 0x5a, 0xe0, 0xf5, 0x75, 0xc7, 0x7b, 0x77, 0xe2, 0xa9, 0xbe, 0xd5, 0xdc,
+	0xae, 0x34, 0xb7, 0x9a, 0x2f, 0x5d, 0xe0, 0xee, 0x52, 0xb3, 0x35, 0x61, 0xf5, 0xdd, 0x2d, 0x68,
+	0xac, 0xb6, 0xe0, 0xe4, 0x1f, 0x1b, 0x34, 0xae, 0xd4, 0x9b, 0x04, 0x73, 0xd0, 0xd4, 0x2b, 0x0d,
+	0xdf, 0xf1, 0xb6, 0x1e, 0x26, 0x6f, 0xf3, 0x19, 0x19, 0xbc, 0xfb, 0xff, 0x46, 0x3a, 0x7d, 0x77,
+	0xf4, 0xe3, 0xef, 0x7f, 0xff, 0x52, 0x1b, 0x7c, 0x6c, 0xbd, 0x72, 0xdf, 0xf0, 0x1f, 0x9f, 0x41,
+	0xc5, 0xf3, 0x91, 0x86, 0x15, 0xa0, 0xa9, 0x57, 0x0a, 0xbe, 0xb7, 0xc3, 0xe3, 0xf6, 0x0b, 0x30,
+	0x78, 0x7f, 0x9f, 0xd9, 0x7e, 0x74, 0xae, 0x81, 0xb7, 0xa0, 0xae, 0x66, 0x7d, 0x67, 0xbe, 0x9b,
+	0x6b, 0xb7, 0x33, 0xdf, 0xad, 0x4d, 0x71, 0x87, 0x25, 0xd4, 0x51, 0xd0, 0xde, 0x06, 0x34, 0x53,
+	0xa8, 0x1f, 0x40, 0xcb, 0x8c, 0x09, 0xdc, 0x95, 0xc7, 0x8e, 0xd9, 0x1c, 0xbc, 0xdc, 0x6b, 0x67,
+	0xd8, 0xc7, 0x25, 0xfb, 0x4d, 0xc5, 0xee, 0x6f, 0xb0, 0x85, 0xb6, 0xff, 0xf4, 0xfc, 0xb7, 0xfb,
+	0xa1, 0x75, 0x77, 0x3f, 0xb4, 0xfe, 0xba, 0x1f, 0x5a, 0x3f, 0x3d, 0x0c, 0x0f, 0xee, 0x1e, 0x86,
+	0x07, 0x7f, 0x3c, 0x0c, 0x0f, 0xbe, 0x9d, 0xcc, 0xa8, 0x8c, 0xf3, 0xa9, 0x17, 0xf1, 0xb9, 0xaf,
+	0x79, 0x7e, 0xf9, 0x15, 0xc9, 0x22, 0x25, 0xd9, 0xd2, 0xdb, 0xe4, 0x13, 0x73, 0x5c, 0x4c, 0xa6,
+	0xcd, 0xf2, 0x8f, 0xf9, 0xe8, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xae, 0x9a, 0xa5, 0x1b, 0xdf,
+	0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -532,7 +667,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type VaultClient interface {
-	// Login Start
+	// Assign Key
 	//
 	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
 	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
@@ -542,6 +677,20 @@ type VaultClient interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	Assign(ctx context.Context, in *AssignKeyRequest, opts ...grpc.CallOption) (*AssignKeyResponse, error)
+	// Login Start
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
@@ -558,7 +707,6 @@ type VaultClient interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -574,7 +722,6 @@ type VaultClient interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -588,6 +735,15 @@ type vaultClient struct {
 
 func NewVaultClient(cc grpc1.ClientConn) VaultClient {
 	return &vaultClient{cc}
+}
+
+func (c *vaultClient) Assign(ctx context.Context, in *AssignKeyRequest, opts ...grpc.CallOption) (*AssignKeyResponse, error) {
+	out := new(AssignKeyResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.highway.v1.Vault/Assign", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *vaultClient) Upload(ctx context.Context, in *UploadShareRequest, opts ...grpc.CallOption) (*UploadShareResponse, error) {
@@ -619,7 +775,7 @@ func (c *vaultClient) Refresh(ctx context.Context, in *RefreshShareRequest, opts
 
 // VaultServer is the server API for Vault service.
 type VaultServer interface {
-	// Login Start
+	// Assign Key
 	//
 	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
 	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
@@ -629,6 +785,20 @@ type VaultServer interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	Assign(context.Context, *AssignKeyRequest) (*AssignKeyResponse, error)
+	// Login Start
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
@@ -645,7 +815,6 @@ type VaultServer interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -661,7 +830,6 @@ type VaultServer interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -673,6 +841,9 @@ type VaultServer interface {
 type UnimplementedVaultServer struct {
 }
 
+func (*UnimplementedVaultServer) Assign(ctx context.Context, req *AssignKeyRequest) (*AssignKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Assign not implemented")
+}
 func (*UnimplementedVaultServer) Upload(ctx context.Context, req *UploadShareRequest) (*UploadShareResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Upload not implemented")
 }
@@ -685,6 +856,24 @@ func (*UnimplementedVaultServer) Refresh(ctx context.Context, req *RefreshShareR
 
 func RegisterVaultServer(s grpc1.Server, srv VaultServer) {
 	s.RegisterService(&_Vault_serviceDesc, srv)
+}
+
+func _Vault_Assign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssignKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VaultServer).Assign(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.highway.v1.Vault/Assign",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VaultServer).Assign(ctx, req.(*AssignKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Vault_Upload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -746,6 +935,10 @@ var _Vault_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*VaultServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Assign",
+			Handler:    _Vault_Assign_Handler,
+		},
+		{
 			MethodName: "Upload",
 			Handler:    _Vault_Upload_Handler,
 		},
@@ -760,6 +953,95 @@ var _Vault_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "highway/v1/vault.proto",
+}
+
+func (m *AssignKeyRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AssignKeyRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AssignKeyRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Ttl != 0 {
+		i = encodeVarintVault(dAtA, i, uint64(m.Ttl))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.PublicKey) > 0 {
+		i -= len(m.PublicKey)
+		copy(dAtA[i:], m.PublicKey)
+		i = encodeVarintVault(dAtA, i, uint64(len(m.PublicKey)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintVault(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AssignKeyResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AssignKeyResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AssignKeyResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PublicKey) > 0 {
+		i -= len(m.PublicKey)
+		copy(dAtA[i:], m.PublicKey)
+		i = encodeVarintVault(dAtA, i, uint64(len(m.PublicKey)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintVault(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Success {
+		i--
+		if m.Success {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *UploadShareRequest) Marshal() (dAtA []byte, err error) {
@@ -1078,6 +1360,46 @@ func encodeVarintVault(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *AssignKeyRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovVault(uint64(l))
+	}
+	l = len(m.PublicKey)
+	if l > 0 {
+		n += 1 + l + sovVault(uint64(l))
+	}
+	if m.Ttl != 0 {
+		n += 1 + sovVault(uint64(m.Ttl))
+	}
+	return n
+}
+
+func (m *AssignKeyResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Success {
+		n += 2
+	}
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovVault(uint64(l))
+	}
+	l = len(m.PublicKey)
+	if l > 0 {
+		n += 1 + l + sovVault(uint64(l))
+	}
+	return n
+}
+
 func (m *UploadShareRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1227,6 +1549,277 @@ func sovVault(x uint64) (n int) {
 }
 func sozVault(x uint64) (n int) {
 	return sovVault(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *AssignKeyRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowVault
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AssignKeyRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AssignKeyRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVault
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthVault
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVault
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublicKey", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVault
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthVault
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVault
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublicKey = append(m.PublicKey[:0], dAtA[iNdEx:postIndex]...)
+			if m.PublicKey == nil {
+				m.PublicKey = []byte{}
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ttl", wireType)
+			}
+			m.Ttl = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVault
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Ttl |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipVault(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthVault
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AssignKeyResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowVault
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AssignKeyResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AssignKeyResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Success", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVault
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Success = bool(v != 0)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVault
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthVault
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVault
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PublicKey", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVault
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthVault
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVault
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PublicKey = append(m.PublicKey[:0], dAtA[iNdEx:postIndex]...)
+			if m.PublicKey == nil {
+				m.PublicKey = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipVault(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthVault
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *UploadShareRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)

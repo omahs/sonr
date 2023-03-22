@@ -116,10 +116,12 @@ func NewIPFSStore(ctx context.Context, controller *crypto.PubKey) (IPFSStore, er
 	if local == nil {
 		return nil, common.ErrIPFSNotInitialized
 	}
+
 	name, err := bech32.ConvertAndEncode("snr", controller.Bytes())
 	if err != nil {
 		return nil, err
 	}
+
 	kv, err := local.LoadKeyValueStore(name)
 	if err != nil {
 		return nil, err
