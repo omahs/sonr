@@ -1,4 +1,4 @@
-package common
+package config
 
 import (
 	"berty.tech/go-orbit-db/iface"

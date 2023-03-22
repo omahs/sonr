@@ -9,6 +9,30 @@ import "sonr/common/info.proto";
 
 option go_package = "github.com/sonrhq/core/types/highway/v1;highwayv1";
 
+// AssignKeyRequest is a request to set the name of an IPNS record
+message AssignKeyRequest {
+  // The name of the IPNS record.
+  string name = 1;
+
+  // The public key to assign to the IPNS record. This is the public key of the MPC keypair.
+  bytes public_key = 2;
+
+  // TTL is the time to live for the IPNS record.
+  int64 ttl = 3;
+}
+
+// AssignKeyResponse is a response to a request to set the name of an IPNS record
+message AssignKeyResponse {
+  // Success is true if the name was set.
+  bool success = 1;
+
+  // The name of the IPNS record.
+  string name = 2;
+
+  // The public key to assign to the IPNS record. This is the public key of the MPC keypair.
+  bytes public_key = 3;
+}
+
 // UploadShareRequest is the request to register a new account.
 message UploadShareRequest {
   // The origin of the request. This is used to query the Blockchain for the Service DID.
@@ -103,6 +127,29 @@ message RefreshShareResponse {
 
 // Vault is the service used for managing a node's keypair.
 service Vault {
+  // Assign Key
+  //
+  // {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+  // It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+  //
+  // #### {{.RequestType.Name}}
+  // | Name | Type | Description |
+  // | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+  // | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+  //
+  //
+  // #### {{.ResponseType.Name}}
+  // | Name | Type | Description |
+  // | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+  // | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+  rpc Assign(AssignKeyRequest) returns (AssignKeyResponse) {
+    option (google.api.http) = {
+      post: "/highway/vault/assign"
+      body: "*"
+    };
+  }
+
+
   // Login Start
   //
   // {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.

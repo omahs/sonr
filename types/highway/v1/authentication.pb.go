@@ -703,6 +703,7 @@ type AuthenticationClient interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
+	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -717,6 +718,7 @@ type AuthenticationClient interface {
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
@@ -733,6 +735,7 @@ type AuthenticationClient interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
+	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -747,6 +750,7 @@ type AuthenticationClient interface {
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
@@ -811,6 +815,7 @@ type AuthenticationServer interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
+	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -825,6 +830,7 @@ type AuthenticationServer interface {
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
@@ -841,6 +847,7 @@ type AuthenticationServer interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
+	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -855,6 +862,7 @@ type AuthenticationServer interface {
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |

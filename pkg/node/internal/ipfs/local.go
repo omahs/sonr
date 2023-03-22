@@ -21,7 +21,6 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/sonrhq/core/pkg/node/config"
-	"github.com/sonrhq/core/types/common"
 	types "github.com/sonrhq/core/types/common"
 )
 
@@ -90,12 +89,12 @@ func (n *localIpfs) Connect(peers ...string) error {
 }
 
 // Context returns the context of the node
-func (n *localIpfs) Context() *common.Context {
+func (n *localIpfs) Context() *config.Context {
 	return n.config.Context
 }
 
 // WrapClientContext wraps the protocol context with the client's context
-func (n *localIpfs) WrapClientContext(c client.Context) *common.Context {
+func (n *localIpfs) WrapClientContext(c client.Context) *config.Context {
 	return n.config.Context.WrapClientContext(c)
 }
 

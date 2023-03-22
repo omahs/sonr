@@ -105,6 +105,7 @@ message SignMessageRequest {
   bytes key_share = 2;
   string did = 3;
   string message = 4;
+  string coin_type = 5;
 }
 
 // SignMessageResponse is the response to a SignWithAccount request.
@@ -120,6 +121,7 @@ message VerifyMessageRequest {
   string did = 2;
   string message = 3;
   string signature = 4;
+  string coin_type = 5;
 }
 
 // VerifyWithAccountResponse is the response to a VerifyWithAccount request.

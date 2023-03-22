@@ -1,4 +1,4 @@
-package common
+package config
 
 import (
 	"context"
@@ -127,10 +127,6 @@ func (ctx *Context) initialize() (*Context, error) {
 			cfg.Experimental.FilestoreEnabled = true
 			// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#ipfs-urlstore
 			cfg.Experimental.UrlstoreEnabled = true
-			// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#ipfs-p2p
-			cfg.Experimental.Libp2pStreamMounting = true
-			// https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#p2p-http-proxy
-			cfg.Experimental.P2pHttpProxy = true
 
 			// Create the repo with the config
 			err = fsrepo.Init(ctx.RepoPath, cfg)

@@ -146,24 +146,6 @@ func (k msgServer) RegisterAccount(goCtx context.Context, msg *types.MsgRegister
 	}
 }
 
-func (k msgServer) DeletePublicKey(goCtx context.Context, msg *types.MsgDeletePublicKey) (*types.MsgDeletePublicKeyResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// TODO: Handling the message
-	_ = ctx
-
-	return &types.MsgDeletePublicKeyResponse{}, nil
-}
-
-func (k msgServer) ImportPublicKey(goCtx context.Context, msg *types.MsgImportPublicKey) (*types.MsgImportPublicKeyResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// TODO: Handling the message
-	_ = ctx
-
-	return &types.MsgImportPublicKeyResponse{}, nil
-}
-
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                      Service Message Server Implementation                     ||
 // ! ||--------------------------------------------------------------------------------||

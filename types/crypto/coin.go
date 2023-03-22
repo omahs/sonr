@@ -1,6 +1,10 @@
 package crypto
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/cosmos/cosmos-sdk/types/bech32"
+)
 
 // AllCoinTypes returns all the coin types.
 func AllCoinTypes() []CoinType {
@@ -265,6 +269,14 @@ func (c CoinType) FormatAddress(pk *PubKey) string {
 	}
 	if c.IsEthereum() {
 		return EthereumAddress(pk)
+	}
+	if c.IsSonr() {
+		addr, _ :=bech32.ConvertAndEncode("snr", pk.Bytes())
+		return addr
+	}
+	if c.IsCosmos() {
+		addr, _ := bech32.ConvertAndEncode("cosmos", pk.Bytes())
+		return addr
 	}
 	return pk.Address().String()
 }

@@ -19,8 +19,6 @@ service Msg {
 
   // this line is used by starport scaffolding # proto/tx/rpc
   rpc RegisterAccount (MsgRegisterAccount) returns (MsgRegisterAccountResponse);
-  rpc ImportPublicKey (MsgImportPublicKey) returns (MsgImportPublicKeyResponse);
-  rpc DeletePublicKey (MsgDeletePublicKey) returns (MsgDeletePublicKeyResponse);
 }
 message MsgCreateDidDocument {
   string      creator  = 1;
@@ -96,16 +94,3 @@ message MsgRegisterAccountResponse {
   // The ResolvedDidDocument of the user.
   ResolvedDidDocument document = 3;
 }
-
-message MsgImportPublicKey {
-  string creator = 1;
-}
-
-message MsgImportPublicKeyResponse {}
-
-message MsgDeletePublicKey {
-  string creator = 1;
-}
-
-message MsgDeletePublicKeyResponse {}
-

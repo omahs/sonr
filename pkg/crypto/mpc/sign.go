@@ -1,7 +1,6 @@
 package mpc
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/sonrhq/core/pkg/crypto"
@@ -29,20 +28,8 @@ func SerializeECDSASecp256k1Signature(sig *crypto.MPCECDSASignature) ([]byte, er
 	return sigBytes, nil
 }
 
-// ConfigFunc is a function type that returns a *cmp.Config.
-type ConfigFunc func() *cmp.Config
-
 // SignCMP signs a message with the given private key using the CMP protocol.
-func SignCMP(configProviders []interface{}, m []byte) ([]byte, error) {
-    configs := make([]*cmp.Config, len(configProviders))
-    for i, cp := range configProviders {
-        confProvider, ok := cp.(ConfigFunc)
-        if !ok {
-            return nil, fmt.Errorf("invalid config provider at index %d", i)
-        }
-        configs[i] = confProvider()
-    }
-
+func SignCMP(configs []*cmp.Config, m []byte) ([]byte, error) {
     peers := make([]crypto.PartyID, len(configs))
     for i, c := range configs {
         peers[i] = c.ID

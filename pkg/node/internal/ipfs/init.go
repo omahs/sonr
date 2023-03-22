@@ -3,6 +3,7 @@ package ipfs
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -11,18 +12,17 @@ import (
 	"berty.tech/go-orbit-db/iface"
 	files "github.com/ipfs/go-ipfs-files"
 	icore "github.com/ipfs/interface-go-ipfs-core"
+	"github.com/ipfs/kubo/config"
 	"github.com/ipfs/kubo/core"
 	"github.com/ipfs/kubo/core/coreapi"
 	klibp2p "github.com/ipfs/kubo/core/node/libp2p"
 	"github.com/ipfs/kubo/plugin/loader"
 	"github.com/ipfs/kubo/repo/fsrepo"
 	nodeconfig "github.com/sonrhq/core/pkg/node/config"
-	snrConfig "github.com/sonrhq/core/pkg/node/config"
-	"github.com/sonrhq/core/types/common"
 )
 
 // Initialize creates a new local IPFS node
-func Initialize(c *snrConfig.Config) (common.IPFSNode, error) {
+func Initialize(c *nodeconfig.Config) (nodeconfig.IPFSNode, error) {
 	// Apply the options
 	n := defaultNode(c)
 	err := n.initialize()
@@ -53,7 +53,7 @@ type TopicMessageHandler func(topic string, msg icore.PubSubMessage) error
 //
 
 // defaultNode creates a new node with default options
-func defaultNode(cnfg *snrConfig.Config) *localIpfs {
+func defaultNode(cnfg *nodeconfig.Config) *localIpfs {
 	return &localIpfs{
 		ctx:    cnfg.Context.Ctx,
 		config: cnfg,
@@ -69,6 +69,23 @@ func (c *localIpfs) initialize() error {
 	})
 	if onceErr != nil {
 		return onceErr
+	}
+	// Delete the repo if it already exists
+	err := os.RemoveAll(c.config.Context.RepoPath)
+	if err != nil {
+		return err
+	}
+
+	// Create a config with default options and a 2048 bit key
+	cfg, err := config.Init(io.Discard, 2048)
+	if err != nil {
+		return err
+	}
+
+	// Create the repo with the config
+	err = fsrepo.Init(c.config.Context.RepoPath, cfg)
+	if err != nil {
+		return err
 	}
 
 	node, err := createNode(c.ctx, c.config.Context.RepoPath)

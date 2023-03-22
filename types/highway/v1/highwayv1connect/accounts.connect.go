@@ -87,6 +87,36 @@ type MpcClient interface {
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	DeleteAccount(context.Context, *connect_go.Request[v1.DeleteAccountRequest]) (*connect_go.Response[v1.DeleteAccountResponse], error)
+	// Sign a message with an account
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	SignMessage(context.Context, *connect_go.Request[v1.SignMessageRequest]) (*connect_go.Response[v1.SignMessageResponse], error)
+	// Verify a message with an account
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	VerifyMessage(context.Context, *connect_go.Request[v1.VerifyMessageRequest]) (*connect_go.Response[v1.VerifyMessageResponse], error)
 }
 
 // NewMpcClient constructs a client for the sonrhq.highway.v1.Mpc service. By default, it uses the
@@ -119,6 +149,16 @@ func NewMpcClient(httpClient connect_go.HTTPClient, baseURL string, opts ...conn
 			baseURL+"/sonrhq.highway.v1.Mpc/DeleteAccount",
 			opts...,
 		),
+		signMessage: connect_go.NewClient[v1.SignMessageRequest, v1.SignMessageResponse](
+			httpClient,
+			baseURL+"/sonrhq.highway.v1.Mpc/SignMessage",
+			opts...,
+		),
+		verifyMessage: connect_go.NewClient[v1.VerifyMessageRequest, v1.VerifyMessageResponse](
+			httpClient,
+			baseURL+"/sonrhq.highway.v1.Mpc/VerifyMessage",
+			opts...,
+		),
 	}
 }
 
@@ -128,6 +168,8 @@ type mpcClient struct {
 	listAccounts  *connect_go.Client[v1.ListAccountsRequest, v1.ListAccountsResponse]
 	getAccount    *connect_go.Client[v1.GetAccountRequest, v1.GetAccountResponse]
 	deleteAccount *connect_go.Client[v1.DeleteAccountRequest, v1.DeleteAccountResponse]
+	signMessage   *connect_go.Client[v1.SignMessageRequest, v1.SignMessageResponse]
+	verifyMessage *connect_go.Client[v1.VerifyMessageRequest, v1.VerifyMessageResponse]
 }
 
 // CreateAccount calls sonrhq.highway.v1.Mpc.CreateAccount.
@@ -148,6 +190,16 @@ func (c *mpcClient) GetAccount(ctx context.Context, req *connect_go.Request[v1.G
 // DeleteAccount calls sonrhq.highway.v1.Mpc.DeleteAccount.
 func (c *mpcClient) DeleteAccount(ctx context.Context, req *connect_go.Request[v1.DeleteAccountRequest]) (*connect_go.Response[v1.DeleteAccountResponse], error) {
 	return c.deleteAccount.CallUnary(ctx, req)
+}
+
+// SignMessage calls sonrhq.highway.v1.Mpc.SignMessage.
+func (c *mpcClient) SignMessage(ctx context.Context, req *connect_go.Request[v1.SignMessageRequest]) (*connect_go.Response[v1.SignMessageResponse], error) {
+	return c.signMessage.CallUnary(ctx, req)
+}
+
+// VerifyMessage calls sonrhq.highway.v1.Mpc.VerifyMessage.
+func (c *mpcClient) VerifyMessage(ctx context.Context, req *connect_go.Request[v1.VerifyMessageRequest]) (*connect_go.Response[v1.VerifyMessageResponse], error) {
+	return c.verifyMessage.CallUnary(ctx, req)
 }
 
 // MpcHandler is an implementation of the sonrhq.highway.v1.Mpc service.
@@ -212,6 +264,36 @@ type MpcHandler interface {
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	DeleteAccount(context.Context, *connect_go.Request[v1.DeleteAccountRequest]) (*connect_go.Response[v1.DeleteAccountResponse], error)
+	// Sign a message with an account
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	SignMessage(context.Context, *connect_go.Request[v1.SignMessageRequest]) (*connect_go.Response[v1.SignMessageResponse], error)
+	// Verify a message with an account
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	VerifyMessage(context.Context, *connect_go.Request[v1.VerifyMessageRequest]) (*connect_go.Response[v1.VerifyMessageResponse], error)
 }
 
 // NewMpcHandler builds an HTTP handler from the service implementation. It returns the path on
@@ -241,6 +323,16 @@ func NewMpcHandler(svc MpcHandler, opts ...connect_go.HandlerOption) (string, ht
 		svc.DeleteAccount,
 		opts...,
 	))
+	mux.Handle("/sonrhq.highway.v1.Mpc/SignMessage", connect_go.NewUnaryHandler(
+		"/sonrhq.highway.v1.Mpc/SignMessage",
+		svc.SignMessage,
+		opts...,
+	))
+	mux.Handle("/sonrhq.highway.v1.Mpc/VerifyMessage", connect_go.NewUnaryHandler(
+		"/sonrhq.highway.v1.Mpc/VerifyMessage",
+		svc.VerifyMessage,
+		opts...,
+	))
 	return "/sonrhq.highway.v1.Mpc/", mux
 }
 
@@ -261,4 +353,12 @@ func (UnimplementedMpcHandler) GetAccount(context.Context, *connect_go.Request[v
 
 func (UnimplementedMpcHandler) DeleteAccount(context.Context, *connect_go.Request[v1.DeleteAccountRequest]) (*connect_go.Response[v1.DeleteAccountResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("sonrhq.highway.v1.Mpc.DeleteAccount is not implemented"))
+}
+
+func (UnimplementedMpcHandler) SignMessage(context.Context, *connect_go.Request[v1.SignMessageRequest]) (*connect_go.Response[v1.SignMessageResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("sonrhq.highway.v1.Mpc.SignMessage is not implemented"))
+}
+
+func (UnimplementedMpcHandler) VerifyMessage(context.Context, *connect_go.Request[v1.VerifyMessageRequest]) (*connect_go.Response[v1.VerifyMessageResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("sonrhq.highway.v1.Mpc.VerifyMessage is not implemented"))
 }

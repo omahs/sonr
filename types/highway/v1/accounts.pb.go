@@ -133,7 +133,8 @@ func (m *Account) GetType() string {
 // KeygenRequest is the request to generate a keypair.
 type KeygenRequest struct {
 	Uuid               string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	CredentialResponse string `protobuf:"bytes,2,opt,name=credential_response,json=credentialResponse,proto3" json:"credential_response,omitempty"`
+	Origin             string `protobuf:"bytes,2,opt,name=origin,proto3" json:"origin,omitempty"`
+	CredentialResponse string `protobuf:"bytes,3,opt,name=credential_response,json=credentialResponse,proto3" json:"credential_response,omitempty"`
 }
 
 func (m *KeygenRequest) Reset()         { *m = KeygenRequest{} }
@@ -172,6 +173,13 @@ var xxx_messageInfo_KeygenRequest proto.InternalMessageInfo
 func (m *KeygenRequest) GetUuid() string {
 	if m != nil {
 		return m.Uuid
+	}
+	return ""
+}
+
+func (m *KeygenRequest) GetOrigin() string {
+	if m != nil {
+		return m.Origin
 	}
 	return ""
 }
@@ -256,6 +264,7 @@ func (m *KeygenResponse) GetVaultCid() string {
 type CreateAccountRequest struct {
 	SonrId   string `protobuf:"bytes,1,opt,name=sonr_id,json=sonrId,proto3" json:"sonr_id,omitempty"`
 	CoinType string `protobuf:"bytes,2,opt,name=coin_type,json=coinType,proto3" json:"coin_type,omitempty"`
+	KeyShare []byte `protobuf:"bytes,3,opt,name=key_share,json=keyShare,proto3" json:"key_share,omitempty"`
 }
 
 func (m *CreateAccountRequest) Reset()         { *m = CreateAccountRequest{} }
@@ -303,6 +312,13 @@ func (m *CreateAccountRequest) GetCoinType() string {
 		return m.CoinType
 	}
 	return ""
+}
+
+func (m *CreateAccountRequest) GetKeyShare() []byte {
+	if m != nil {
+		return m.KeyShare
+	}
+	return nil
 }
 
 // CreateAccountResponse is the response to a CreateAccount request.
@@ -378,6 +394,7 @@ func (m *CreateAccountResponse) GetAccounts() []*Account {
 type GetAccountRequest struct {
 	SonrId   string `protobuf:"bytes,1,opt,name=sonr_id,json=sonrId,proto3" json:"sonr_id,omitempty"`
 	CoinType string `protobuf:"bytes,2,opt,name=coin_type,json=coinType,proto3" json:"coin_type,omitempty"`
+	Did      string `protobuf:"bytes,3,opt,name=did,proto3" json:"did,omitempty"`
 }
 
 func (m *GetAccountRequest) Reset()         { *m = GetAccountRequest{} }
@@ -423,6 +440,13 @@ func (m *GetAccountRequest) GetSonrId() string {
 func (m *GetAccountRequest) GetCoinType() string {
 	if m != nil {
 		return m.CoinType
+	}
+	return ""
+}
+
+func (m *GetAccountRequest) GetDid() string {
+	if m != nil {
+		return m.Did
 	}
 	return ""
 }
@@ -700,6 +724,274 @@ func (m *DeleteAccountResponse) GetAccounts() []*Account {
 	return nil
 }
 
+// SignMessageRequest is the request to sign a message with an account.
+type SignMessageRequest struct {
+	SonrId   string `protobuf:"bytes,1,opt,name=sonr_id,json=sonrId,proto3" json:"sonr_id,omitempty"`
+	KeyShare []byte `protobuf:"bytes,2,opt,name=key_share,json=keyShare,proto3" json:"key_share,omitempty"`
+	Did      string `protobuf:"bytes,3,opt,name=did,proto3" json:"did,omitempty"`
+	Message  string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	CoinType string `protobuf:"bytes,5,opt,name=coin_type,json=coinType,proto3" json:"coin_type,omitempty"`
+}
+
+func (m *SignMessageRequest) Reset()         { *m = SignMessageRequest{} }
+func (m *SignMessageRequest) String() string { return proto.CompactTextString(m) }
+func (*SignMessageRequest) ProtoMessage()    {}
+func (*SignMessageRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_687f6e9029c45927, []int{11}
+}
+func (m *SignMessageRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SignMessageRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SignMessageRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SignMessageRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SignMessageRequest.Merge(m, src)
+}
+func (m *SignMessageRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *SignMessageRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SignMessageRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SignMessageRequest proto.InternalMessageInfo
+
+func (m *SignMessageRequest) GetSonrId() string {
+	if m != nil {
+		return m.SonrId
+	}
+	return ""
+}
+
+func (m *SignMessageRequest) GetKeyShare() []byte {
+	if m != nil {
+		return m.KeyShare
+	}
+	return nil
+}
+
+func (m *SignMessageRequest) GetDid() string {
+	if m != nil {
+		return m.Did
+	}
+	return ""
+}
+
+func (m *SignMessageRequest) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *SignMessageRequest) GetCoinType() string {
+	if m != nil {
+		return m.CoinType
+	}
+	return ""
+}
+
+// SignMessageResponse is the response to a SignWithAccount request.
+type SignMessageResponse struct {
+	Success   bool   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Signature string `protobuf:"bytes,2,opt,name=signature,proto3" json:"signature,omitempty"`
+	Did       string `protobuf:"bytes,3,opt,name=did,proto3" json:"did,omitempty"`
+}
+
+func (m *SignMessageResponse) Reset()         { *m = SignMessageResponse{} }
+func (m *SignMessageResponse) String() string { return proto.CompactTextString(m) }
+func (*SignMessageResponse) ProtoMessage()    {}
+func (*SignMessageResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_687f6e9029c45927, []int{12}
+}
+func (m *SignMessageResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SignMessageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SignMessageResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SignMessageResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SignMessageResponse.Merge(m, src)
+}
+func (m *SignMessageResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *SignMessageResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SignMessageResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SignMessageResponse proto.InternalMessageInfo
+
+func (m *SignMessageResponse) GetSuccess() bool {
+	if m != nil {
+		return m.Success
+	}
+	return false
+}
+
+func (m *SignMessageResponse) GetSignature() string {
+	if m != nil {
+		return m.Signature
+	}
+	return ""
+}
+
+func (m *SignMessageResponse) GetDid() string {
+	if m != nil {
+		return m.Did
+	}
+	return ""
+}
+
+// VerifyWithAccountRequest is the request to verify a signature with an account.
+type VerifyMessageRequest struct {
+	SonrId    string `protobuf:"bytes,1,opt,name=sonr_id,json=sonrId,proto3" json:"sonr_id,omitempty"`
+	Did       string `protobuf:"bytes,2,opt,name=did,proto3" json:"did,omitempty"`
+	Message   string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Signature string `protobuf:"bytes,4,opt,name=signature,proto3" json:"signature,omitempty"`
+	CoinType  string `protobuf:"bytes,5,opt,name=coin_type,json=coinType,proto3" json:"coin_type,omitempty"`
+}
+
+func (m *VerifyMessageRequest) Reset()         { *m = VerifyMessageRequest{} }
+func (m *VerifyMessageRequest) String() string { return proto.CompactTextString(m) }
+func (*VerifyMessageRequest) ProtoMessage()    {}
+func (*VerifyMessageRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_687f6e9029c45927, []int{13}
+}
+func (m *VerifyMessageRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *VerifyMessageRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_VerifyMessageRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *VerifyMessageRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifyMessageRequest.Merge(m, src)
+}
+func (m *VerifyMessageRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *VerifyMessageRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_VerifyMessageRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_VerifyMessageRequest proto.InternalMessageInfo
+
+func (m *VerifyMessageRequest) GetSonrId() string {
+	if m != nil {
+		return m.SonrId
+	}
+	return ""
+}
+
+func (m *VerifyMessageRequest) GetDid() string {
+	if m != nil {
+		return m.Did
+	}
+	return ""
+}
+
+func (m *VerifyMessageRequest) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *VerifyMessageRequest) GetSignature() string {
+	if m != nil {
+		return m.Signature
+	}
+	return ""
+}
+
+func (m *VerifyMessageRequest) GetCoinType() string {
+	if m != nil {
+		return m.CoinType
+	}
+	return ""
+}
+
+// VerifyWithAccountResponse is the response to a VerifyWithAccount request.
+type VerifyMessageResponse struct {
+	Success bool   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Did     string `protobuf:"bytes,2,opt,name=did,proto3" json:"did,omitempty"`
+}
+
+func (m *VerifyMessageResponse) Reset()         { *m = VerifyMessageResponse{} }
+func (m *VerifyMessageResponse) String() string { return proto.CompactTextString(m) }
+func (*VerifyMessageResponse) ProtoMessage()    {}
+func (*VerifyMessageResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_687f6e9029c45927, []int{14}
+}
+func (m *VerifyMessageResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *VerifyMessageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_VerifyMessageResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *VerifyMessageResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifyMessageResponse.Merge(m, src)
+}
+func (m *VerifyMessageResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *VerifyMessageResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_VerifyMessageResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_VerifyMessageResponse proto.InternalMessageInfo
+
+func (m *VerifyMessageResponse) GetSuccess() bool {
+	if m != nil {
+		return m.Success
+	}
+	return false
+}
+
+func (m *VerifyMessageResponse) GetDid() string {
+	if m != nil {
+		return m.Did
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*Account)(nil), "sonrhq.highway.v1.Account")
 	proto.RegisterType((*KeygenRequest)(nil), "sonrhq.highway.v1.KeygenRequest")
@@ -712,60 +1004,75 @@ func init() {
 	proto.RegisterType((*ListAccountsResponse)(nil), "sonrhq.highway.v1.ListAccountsResponse")
 	proto.RegisterType((*DeleteAccountRequest)(nil), "sonrhq.highway.v1.DeleteAccountRequest")
 	proto.RegisterType((*DeleteAccountResponse)(nil), "sonrhq.highway.v1.DeleteAccountResponse")
+	proto.RegisterType((*SignMessageRequest)(nil), "sonrhq.highway.v1.SignMessageRequest")
+	proto.RegisterType((*SignMessageResponse)(nil), "sonrhq.highway.v1.SignMessageResponse")
+	proto.RegisterType((*VerifyMessageRequest)(nil), "sonrhq.highway.v1.VerifyMessageRequest")
+	proto.RegisterType((*VerifyMessageResponse)(nil), "sonrhq.highway.v1.VerifyMessageResponse")
 }
 
 func init() { proto.RegisterFile("highway/v1/accounts.proto", fileDescriptor_687f6e9029c45927) }
 
 var fileDescriptor_687f6e9029c45927 = []byte{
-	// 761 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x41, 0x4f, 0x13, 0x41,
-	0x14, 0x66, 0xdb, 0x4a, 0xdb, 0x07, 0x18, 0x19, 0x4a, 0x58, 0x8a, 0x34, 0xb8, 0x11, 0x68, 0x88,
-	0xee, 0xd8, 0x92, 0x78, 0xd0, 0x93, 0xd2, 0xc4, 0x10, 0xd0, 0x43, 0xe5, 0xe4, 0x65, 0xb3, 0xec,
-	0x4c, 0xb6, 0x13, 0xca, 0x6e, 0xd9, 0x9d, 0xad, 0xd9, 0x10, 0x2e, 0x72, 0xf0, 0x64, 0x62, 0xa2,
-	0x89, 0x3f, 0xc3, 0x8b, 0x3f, 0xc2, 0x83, 0x07, 0x12, 0x2f, 0x1e, 0x0d, 0xf8, 0x43, 0xcc, 0xcc,
-	0xee, 0xb6, 0xb4, 0xac, 0x16, 0xc4, 0xdb, 0xbc, 0x37, 0xaf, 0xdf, 0x7c, 0xef, 0x9b, 0xef, 0xed,
-	0x14, 0xe6, 0x5b, 0xcc, 0x6e, 0xbd, 0x36, 0x43, 0xdc, 0xad, 0x61, 0xd3, 0xb2, 0xdc, 0xc0, 0xe1,
-	0xbe, 0xde, 0xf1, 0x5c, 0xee, 0xa2, 0x69, 0xdf, 0x75, 0xbc, 0xd6, 0x81, 0x1e, 0x57, 0xe8, 0xdd,
-	0x5a, 0xb9, 0x64, 0xbb, 0xb6, 0x2b, 0x77, 0xb1, 0x58, 0x45, 0x85, 0xe5, 0x39, 0xcb, 0xf5, 0x28,
-	0x66, 0x84, 0x3a, 0x9c, 0xf1, 0x10, 0x13, 0x46, 0xe2, 0x8d, 0xdb, 0xb6, 0xeb, 0xda, 0x6d, 0x8a,
-	0xcd, 0x0e, 0xc3, 0xa6, 0xe3, 0xb8, 0xdc, 0xe4, 0xcc, 0x75, 0x62, 0x7c, 0xed, 0x8b, 0x02, 0xf9,
-	0x27, 0xd1, 0x91, 0x48, 0x85, 0xbc, 0x49, 0x88, 0x47, 0x7d, 0x5f, 0x55, 0x96, 0x94, 0x6a, 0xb1,
-	0x99, 0x84, 0x08, 0x41, 0xce, 0x31, 0xf7, 0xa9, 0x9a, 0x91, 0x69, 0xb9, 0x46, 0xb7, 0x20, 0x4b,
-	0x18, 0x51, 0xb3, 0x32, 0x25, 0x96, 0x68, 0x01, 0x8a, 0x96, 0xcb, 0x1c, 0x83, 0x87, 0x1d, 0xaa,
-	0xe6, 0x64, 0xbe, 0x20, 0x12, 0x3b, 0x61, 0x87, 0xa2, 0x79, 0x28, 0x58, 0x2d, 0x93, 0x39, 0x06,
-	0x23, 0xea, 0x8d, 0x08, 0x5d, 0xc6, 0x9b, 0x04, 0x2d, 0x02, 0x74, 0x82, 0xdd, 0x36, 0xb3, 0x8c,
-	0x3d, 0x1a, 0xaa, 0xe3, 0x72, 0xb3, 0x18, 0x65, 0xb6, 0x68, 0x28, 0x0e, 0x97, 0x88, 0xf9, 0xe8,
-	0x70, 0xb1, 0xd6, 0x76, 0x60, 0x6a, 0x8b, 0x86, 0x36, 0x75, 0x9a, 0xf4, 0x20, 0xa0, 0x3e, 0x17,
-	0x45, 0x41, 0xc0, 0x48, 0x4c, 0x5c, 0xae, 0x11, 0x86, 0x19, 0xcb, 0xa3, 0x52, 0x11, 0xb3, 0x6d,
-	0x78, 0xd4, 0xef, 0xb8, 0x8e, 0x9f, 0x34, 0x81, 0xfa, 0x5b, 0xcd, 0x78, 0x47, 0x3b, 0x56, 0xe0,
-	0x66, 0x02, 0x1b, 0xa5, 0x84, 0x26, 0x7e, 0x60, 0x59, 0x89, 0x26, 0x85, 0x66, 0x12, 0x8a, 0x6e,
-	0xf7, 0x68, 0x68, 0xf8, 0x2d, 0xd3, 0x8b, 0x30, 0x27, 0x9b, 0x85, 0x3d, 0x1a, 0xbe, 0x14, 0xf1,
-	0x50, 0x4b, 0xd9, 0xe1, 0x96, 0x16, 0xa0, 0xd8, 0x35, 0x83, 0x36, 0x37, 0x2c, 0x46, 0x12, 0xa5,
-	0x64, 0x62, 0x83, 0x11, 0x6d, 0x1b, 0x4a, 0x1b, 0x1e, 0x35, 0x39, 0x8d, 0xef, 0x25, 0x69, 0x71,
-	0x0e, 0xf2, 0xc2, 0x0c, 0x46, 0xaf, 0xcb, 0x71, 0x11, 0x6e, 0x0e, 0xe9, 0x9e, 0x19, 0xd4, 0x5d,
-	0xfb, 0xa6, 0xc0, 0xec, 0x10, 0xdc, 0x65, 0x5a, 0xfb, 0x23, 0x20, 0x6a, 0xc0, 0x24, 0x61, 0xc4,
-	0x20, 0xae, 0x15, 0xec, 0x53, 0x87, 0xcb, 0xe6, 0x26, 0xea, 0x77, 0xf4, 0xd8, 0xa8, 0xc2, 0x86,
-	0x7a, 0x62, 0x43, 0xbd, 0xc1, 0x48, 0x23, 0x2e, 0x6c, 0x4e, 0x90, 0x7e, 0x80, 0x1e, 0x42, 0x21,
-	0x71, 0xba, 0x9a, 0x5b, 0xca, 0x56, 0x27, 0xea, 0x65, 0xfd, 0x82, 0xd5, 0xf5, 0x84, 0x72, 0xaf,
-	0x56, 0xdb, 0x84, 0xe9, 0x67, 0x94, 0xff, 0x17, 0x65, 0x8e, 0x15, 0x40, 0xe7, 0xb1, 0xae, 0x27,
-	0xcb, 0xbf, 0x36, 0xa4, 0xc3, 0xcc, 0x36, 0xf3, 0x13, 0x16, 0xfe, 0xa8, 0x96, 0xb4, 0x16, 0x94,
-	0x06, 0xeb, 0x47, 0xd2, 0x3e, 0xcf, 0x2c, 0x7b, 0x05, 0x66, 0x2f, 0xa0, 0xd4, 0xa0, 0x6d, 0x7a,
-	0x79, 0x1f, 0x2e, 0x02, 0x70, 0xd3, 0xb3, 0x29, 0x37, 0xc4, 0x87, 0x21, 0x12, 0xa8, 0x18, 0x65,
-	0x1a, 0x8c, 0x68, 0x9f, 0x15, 0x98, 0x1d, 0x02, 0x1c, 0xc9, 0x7d, 0xd8, 0x6c, 0x99, 0x6b, 0x9b,
-	0xed, 0x0a, 0x0a, 0xd4, 0x4f, 0x72, 0x90, 0x7d, 0xde, 0xb1, 0xd0, 0x47, 0x05, 0xa6, 0x06, 0x66,
-	0x08, 0xad, 0xa6, 0xfc, 0x3e, 0x6d, 0x68, 0xcb, 0xd5, 0xd1, 0x85, 0xf1, 0xc7, 0xe7, 0xc1, 0x9b,
-	0xef, 0xbf, 0x3e, 0x64, 0xd6, 0x1e, 0x29, 0x6b, 0xda, 0x32, 0x16, 0x3f, 0xc2, 0xf2, 0x8b, 0xd0,
-	0x7b, 0x10, 0xf0, 0x61, 0xac, 0xfa, 0x11, 0xb6, 0x24, 0x00, 0x7a, 0xab, 0xc0, 0xe4, 0x79, 0x2f,
-	0xa0, 0x95, 0x94, 0xc3, 0x52, 0xcc, 0x55, 0x5e, 0x1d, 0x59, 0x17, 0x73, 0x5a, 0x91, 0x9c, 0x96,
-	0x50, 0xe5, 0xef, 0x84, 0xd0, 0x3b, 0x05, 0xa0, 0x3f, 0x4a, 0xe8, 0x6e, 0x0a, 0xfe, 0x85, 0xa9,
-	0x2d, 0x2f, 0x8f, 0xa8, 0x8a, 0x39, 0xd4, 0x25, 0x87, 0x7b, 0x68, 0x6d, 0x84, 0x28, 0x87, 0xbd,
-	0xd9, 0x3c, 0x42, 0x9f, 0x14, 0x98, 0x1a, 0xb0, 0x5a, 0xea, 0x85, 0xa5, 0xb9, 0x3b, 0xf5, 0xc2,
-	0x52, 0x5d, 0xab, 0xad, 0x4b, 0x62, 0xf7, 0xc5, 0x85, 0x55, 0xd3, 0xb9, 0xf5, 0xa7, 0xe1, 0x08,
-	0x13, 0x89, 0xf1, 0x74, 0xeb, 0xeb, 0x69, 0x45, 0x39, 0x39, 0xad, 0x28, 0x3f, 0x4f, 0x2b, 0xca,
-	0xfb, 0xb3, 0xca, 0xd8, 0xc9, 0x59, 0x65, 0xec, 0xc7, 0x59, 0x65, 0xec, 0x55, 0xcd, 0x66, 0xbc,
-	0x15, 0xec, 0xea, 0x96, 0xbb, 0x8f, 0x23, 0x0a, 0x58, 0x3e, 0xe9, 0xa2, 0x23, 0x1f, 0xf7, 0xff,
-	0x21, 0x3c, 0x8e, 0x97, 0xdd, 0xda, 0xee, 0xb8, 0x7c, 0xc3, 0xd7, 0x7f, 0x07, 0x00, 0x00, 0xff,
-	0xff, 0xa6, 0xf6, 0x8f, 0x3c, 0x40, 0x08, 0x00, 0x00,
+	// 942 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x4f, 0x6f, 0x1b, 0x45,
+	0x14, 0xcf, 0x78, 0xd3, 0xd8, 0x7e, 0x49, 0x10, 0x9d, 0x38, 0x74, 0xeb, 0xb6, 0x56, 0x58, 0xd1,
+	0x34, 0x8a, 0x60, 0x07, 0xa7, 0xa8, 0x87, 0xc2, 0x05, 0x62, 0x09, 0x55, 0xa1, 0x1c, 0x5c, 0xc4,
+	0x01, 0x0e, 0xab, 0xcd, 0xce, 0xb0, 0x1e, 0xc5, 0xd9, 0x75, 0xf7, 0x8f, 0xd1, 0xaa, 0xca, 0x05,
+	0x0e, 0x9c, 0x40, 0x48, 0x45, 0xc0, 0x91, 0x6f, 0xc0, 0x85, 0x0f, 0xc1, 0x81, 0x43, 0x25, 0x2e,
+	0x1c, 0x51, 0xc2, 0x07, 0x41, 0x33, 0x3b, 0x1b, 0x67, 0xd7, 0xd3, 0xae, 0x43, 0xb9, 0xcd, 0x7b,
+	0xf3, 0xfc, 0xde, 0xef, 0xfd, 0xe6, 0xf7, 0x9e, 0x17, 0xae, 0x8f, 0xb8, 0x3f, 0xfa, 0xd2, 0xcd,
+	0xc8, 0xb4, 0x4f, 0x5c, 0xcf, 0x0b, 0xd3, 0x20, 0x89, 0xed, 0x49, 0x14, 0x26, 0x21, 0xbe, 0x1a,
+	0x87, 0x41, 0x34, 0x7a, 0x6c, 0xab, 0x08, 0x7b, 0xda, 0xef, 0x76, 0xfc, 0xd0, 0x0f, 0xe5, 0x2d,
+	0x11, 0xa7, 0x3c, 0xb0, 0x7b, 0xcd, 0x0b, 0x23, 0x46, 0x38, 0x65, 0x41, 0xc2, 0x93, 0x8c, 0x50,
+	0x4e, 0xd5, 0xc5, 0x4d, 0x3f, 0x0c, 0xfd, 0x31, 0x23, 0xee, 0x84, 0x13, 0x37, 0x08, 0xc2, 0xc4,
+	0x4d, 0x78, 0x18, 0xa8, 0xfc, 0xd6, 0x6f, 0x08, 0x9a, 0xef, 0xe7, 0x25, 0xb1, 0x09, 0x4d, 0x97,
+	0xd2, 0x88, 0xc5, 0xb1, 0x89, 0xb6, 0xd0, 0x4e, 0x7b, 0x58, 0x98, 0x18, 0xc3, 0x72, 0xe0, 0x1e,
+	0x33, 0xb3, 0x21, 0xdd, 0xf2, 0x8c, 0x5f, 0x05, 0x83, 0x72, 0x6a, 0x1a, 0xd2, 0x25, 0x8e, 0xf8,
+	0x06, 0xb4, 0xbd, 0x90, 0x07, 0x4e, 0x92, 0x4d, 0x98, 0xb9, 0x2c, 0xfd, 0x2d, 0xe1, 0xf8, 0x24,
+	0x9b, 0x30, 0x7c, 0x1d, 0x5a, 0xde, 0xc8, 0xe5, 0x81, 0xc3, 0xa9, 0x79, 0x25, 0xcf, 0x2e, 0xed,
+	0x07, 0x14, 0xdf, 0x02, 0x98, 0xa4, 0x87, 0x63, 0xee, 0x39, 0x47, 0x2c, 0x33, 0x57, 0xe4, 0x65,
+	0x3b, 0xf7, 0x1c, 0xb0, 0x4c, 0x14, 0x97, 0x19, 0x9b, 0x79, 0x71, 0x71, 0xb6, 0xc6, 0xb0, 0x7e,
+	0xc0, 0x32, 0x9f, 0x05, 0x43, 0xf6, 0x38, 0x65, 0x71, 0x22, 0x82, 0xd2, 0x94, 0x53, 0x05, 0x5c,
+	0x9e, 0xf1, 0x6b, 0xb0, 0x12, 0x46, 0xdc, 0xe7, 0x81, 0xc2, 0xad, 0x2c, 0x4c, 0x60, 0xc3, 0x8b,
+	0x98, 0x64, 0xca, 0x1d, 0x3b, 0x11, 0x8b, 0x27, 0x61, 0x10, 0x33, 0xd5, 0x09, 0x9e, 0x5d, 0x0d,
+	0xd5, 0x8d, 0xf5, 0x35, 0x82, 0x57, 0x8a, 0x72, 0xb9, 0x4b, 0x70, 0x15, 0xa7, 0x9e, 0x57, 0x70,
+	0xd5, 0x1a, 0x16, 0xa6, 0x60, 0xe1, 0x88, 0x65, 0x4e, 0x3c, 0x72, 0xa3, 0x9c, 0xb0, 0xb5, 0x61,
+	0xeb, 0x88, 0x65, 0x8f, 0x84, 0x5d, 0x69, 0xd5, 0xa8, 0xb6, 0x7a, 0x03, 0xda, 0x53, 0x37, 0x1d,
+	0x27, 0x8e, 0xc7, 0x69, 0xc1, 0xa0, 0x74, 0xec, 0x73, 0x6a, 0x71, 0xe8, 0xec, 0x47, 0xcc, 0x4d,
+	0x98, 0x7a, 0xaf, 0xa2, 0xf5, 0x6b, 0xd0, 0x14, 0x22, 0x71, 0xce, 0xbb, 0x5f, 0x11, 0xe6, 0x83,
+	0xca, 0x7b, 0x34, 0x2a, 0xef, 0x51, 0x82, 0x69, 0x94, 0x61, 0x5a, 0x7f, 0x20, 0xd8, 0xac, 0xd4,
+	0x5a, 0xa4, 0xef, 0xe7, 0x57, 0x1b, 0xc0, 0x1a, 0xe5, 0xd4, 0xa1, 0xa1, 0x97, 0x1e, 0xb3, 0x20,
+	0x91, 0x05, 0x57, 0xf7, 0x5e, 0xb7, 0x95, 0xba, 0x85, 0x76, 0xed, 0x42, 0xbb, 0xf6, 0x80, 0xd3,
+	0x81, 0x0a, 0x1c, 0xae, 0xd2, 0x99, 0x81, 0xef, 0x41, 0xab, 0x18, 0x0f, 0x73, 0x79, 0xcb, 0xd8,
+	0x59, 0xdd, 0xeb, 0xda, 0x73, 0xf3, 0x61, 0x17, 0x90, 0xcf, 0x63, 0xad, 0xcf, 0xe1, 0xea, 0x87,
+	0x2c, 0xf9, 0x5f, 0x68, 0x9b, 0x53, 0xbd, 0x10, 0x07, 0xbe, 0x98, 0xfd, 0xe5, 0x88, 0xfa, 0xaf,
+	0x2d, 0xda, 0xb0, 0xf1, 0x11, 0x8f, 0x0b, 0x14, 0x71, 0x5d, 0x93, 0xd6, 0x08, 0x3a, 0xe5, 0xf8,
+	0x5a, 0xd8, 0x17, 0x91, 0x19, 0x97, 0x40, 0xf6, 0x31, 0x74, 0x06, 0x6c, 0xcc, 0x16, 0x97, 0xed,
+	0x2d, 0x80, 0xc4, 0x8d, 0x7c, 0x96, 0x38, 0x82, 0xe9, 0x9c, 0xa0, 0x76, 0xee, 0x19, 0x70, 0x6a,
+	0xfd, 0x8a, 0x60, 0xb3, 0x92, 0xb0, 0x16, 0x7b, 0x55, 0x7e, 0x8d, 0x97, 0x96, 0xdf, 0x65, 0x18,
+	0x78, 0x8a, 0x00, 0x3f, 0xe2, 0x7e, 0xf0, 0x90, 0xc5, 0xb1, 0xeb, 0xb3, 0x45, 0x04, 0xf8, 0xfc,
+	0x0d, 0x32, 0xbf, 0x76, 0x4d, 0x68, 0x1e, 0xe7, 0x99, 0xd5, 0xca, 0x28, 0xcc, 0xb2, 0xd2, 0xae,
+	0x94, 0x95, 0x66, 0x39, 0xb0, 0x51, 0x02, 0x55, 0x4b, 0xe2, 0x4d, 0x68, 0xc7, 0xdc, 0x0f, 0xdc,
+	0x24, 0x8d, 0x0a, 0xdd, 0xce, 0x1c, 0x9a, 0xc1, 0xf8, 0x11, 0x41, 0xe7, 0x53, 0x16, 0xf1, 0x2f,
+	0xb2, 0x45, 0x1b, 0x57, 0x39, 0x1a, 0xda, 0xde, 0x8c, 0x72, 0x6f, 0x25, 0x34, 0xcb, 0x55, 0x34,
+	0x2f, 0xec, 0x7c, 0x1f, 0x36, 0x2b, 0xb8, 0x6a, 0x7b, 0x9f, 0x43, 0xb6, 0xf7, 0x5d, 0x13, 0x8c,
+	0x87, 0x13, 0x0f, 0xff, 0x80, 0x60, 0xbd, 0xb4, 0x2a, 0xf1, 0x1d, 0x8d, 0x28, 0x74, 0x8b, 0xbb,
+	0xbb, 0x53, 0x1f, 0xa8, 0xfe, 0x80, 0xde, 0xfe, 0xea, 0xcf, 0x7f, 0x9e, 0x36, 0x76, 0xef, 0xa3,
+	0x5d, 0xeb, 0x36, 0x11, 0x3f, 0x22, 0xf2, 0x5f, 0xe1, 0xfc, 0x63, 0x81, 0x3c, 0x51, 0x84, 0x9e,
+	0x10, 0x4f, 0x26, 0xc0, 0xdf, 0x20, 0x58, 0xbb, 0x38, 0xe0, 0x78, 0x5b, 0x53, 0x4c, 0xb3, 0x31,
+	0xba, 0x77, 0x6a, 0xe3, 0x14, 0xa6, 0x6d, 0x89, 0x69, 0x0b, 0xf7, 0x5e, 0x0c, 0x08, 0x7f, 0x8b,
+	0x00, 0x66, 0xfb, 0x11, 0xbf, 0xa1, 0xc9, 0x3f, 0xb7, 0x9c, 0xbb, 0xb7, 0x6b, 0xa2, 0x14, 0x86,
+	0x3d, 0x89, 0xe1, 0x4d, 0xbc, 0x5b, 0x43, 0xca, 0x93, 0x73, 0x31, 0x9c, 0xe0, 0x9f, 0x10, 0xac,
+	0x97, 0xf6, 0x87, 0xf6, 0xc1, 0x74, 0x2b, 0x4b, 0xfb, 0x60, 0xda, 0x55, 0x64, 0xdd, 0x95, 0xc0,
+	0xde, 0x12, 0x0f, 0xb6, 0xa3, 0xc7, 0x36, 0x5b, 0x71, 0x27, 0x84, 0xca, 0x1c, 0xf8, 0x67, 0x04,
+	0xab, 0x17, 0x46, 0x12, 0xeb, 0x48, 0x98, 0xdf, 0x23, 0xdd, 0xed, 0xba, 0x30, 0x85, 0xe9, 0xbe,
+	0xc4, 0xf4, 0x8e, 0xc0, 0x44, 0x16, 0xe7, 0x8b, 0x88, 0xa1, 0xc2, 0xbf, 0x20, 0x58, 0x2f, 0xcd,
+	0x8c, 0x96, 0x34, 0xdd, 0xb4, 0x6b, 0x49, 0xd3, 0x8e, 0x9f, 0xf5, 0x9e, 0x04, 0x78, 0x4f, 0x00,
+	0xec, 0x5f, 0x02, 0xe0, 0x54, 0x26, 0xfb, 0xe0, 0xe0, 0xf7, 0xd3, 0x1e, 0x7a, 0x76, 0xda, 0x43,
+	0x7f, 0x9f, 0xf6, 0xd0, 0xf7, 0x67, 0xbd, 0xa5, 0x67, 0x67, 0xbd, 0xa5, 0xbf, 0xce, 0x7a, 0x4b,
+	0x9f, 0xf5, 0x7d, 0x9e, 0x8c, 0xd2, 0x43, 0xdb, 0x0b, 0x8f, 0x49, 0x8e, 0x85, 0xc8, 0x8f, 0x65,
+	0xf1, 0xf3, 0x98, 0xcc, 0xbe, 0xbd, 0xdf, 0x55, 0xc7, 0x69, 0xff, 0x70, 0x45, 0x7e, 0x1d, 0xdf,
+	0xfd, 0x37, 0x00, 0x00, 0xff, 0xff, 0xbe, 0x4f, 0xa5, 0xb7, 0x9a, 0x0b, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -790,7 +1097,6 @@ type MpcClient interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -805,7 +1111,6 @@ type MpcClient interface {
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
-	//
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
@@ -822,7 +1127,6 @@ type MpcClient interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -838,12 +1142,41 @@ type MpcClient interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountResponse, error)
+	// Sign a message with an account
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	SignMessage(ctx context.Context, in *SignMessageRequest, opts ...grpc.CallOption) (*SignMessageResponse, error)
+	// Verify a message with an account
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	VerifyMessage(ctx context.Context, in *VerifyMessageRequest, opts ...grpc.CallOption) (*VerifyMessageResponse, error)
 }
 
 type mpcClient struct {
@@ -890,6 +1223,24 @@ func (c *mpcClient) DeleteAccount(ctx context.Context, in *DeleteAccountRequest,
 	return out, nil
 }
 
+func (c *mpcClient) SignMessage(ctx context.Context, in *SignMessageRequest, opts ...grpc.CallOption) (*SignMessageResponse, error) {
+	out := new(SignMessageResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.highway.v1.Mpc/SignMessage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mpcClient) VerifyMessage(ctx context.Context, in *VerifyMessageRequest, opts ...grpc.CallOption) (*VerifyMessageResponse, error) {
+	out := new(VerifyMessageResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.highway.v1.Mpc/VerifyMessage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MpcServer is the server API for Mpc service.
 type MpcServer interface {
 	// Create a new account
@@ -901,7 +1252,6 @@ type MpcServer interface {
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
-	//
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
@@ -918,7 +1268,6 @@ type MpcServer interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
@@ -933,7 +1282,6 @@ type MpcServer interface {
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
-	//
 	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
@@ -950,12 +1298,41 @@ type MpcServer interface {
 	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	//
-	//
 	// #### {{.ResponseType.Name}}
 	// | Name | Type | Description |
 	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
 	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
 	DeleteAccount(context.Context, *DeleteAccountRequest) (*DeleteAccountResponse, error)
+	// Sign a message with an account
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	SignMessage(context.Context, *SignMessageRequest) (*SignMessageResponse, error)
+	// Verify a message with an account
+	//
+	// {{.MethodDescriptorProto.Name}} is a call with the method(s) {{$first := true}}{{range .Bindings}}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.HTTPMethod}}{{end}} within the "{{.Service.Name}}" service.
+	// It takes in "{{.RequestType.Name}}" and returns a "{{.ResponseType.Name}}".
+	//
+	// #### {{.RequestType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .RequestType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	//
+	// #### {{.ResponseType.Name}}
+	// | Name | Type | Description |
+	// | ---- | ---- | ----------- |{{range .ResponseType.Fields}}
+	// | {{.Name}} | {{if eq .Label.String "LABEL_REPEATED"}}[]{{end}}{{.Type}} | {{fieldcomments .Message .}} | {{end}}
+	VerifyMessage(context.Context, *VerifyMessageRequest) (*VerifyMessageResponse, error)
 }
 
 // UnimplementedMpcServer can be embedded to have forward compatible implementations.
@@ -973,6 +1350,12 @@ func (*UnimplementedMpcServer) GetAccount(ctx context.Context, req *GetAccountRe
 }
 func (*UnimplementedMpcServer) DeleteAccount(ctx context.Context, req *DeleteAccountRequest) (*DeleteAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
+}
+func (*UnimplementedMpcServer) SignMessage(ctx context.Context, req *SignMessageRequest) (*SignMessageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignMessage not implemented")
+}
+func (*UnimplementedMpcServer) VerifyMessage(ctx context.Context, req *VerifyMessageRequest) (*VerifyMessageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyMessage not implemented")
 }
 
 func RegisterMpcServer(s grpc1.Server, srv MpcServer) {
@@ -1051,6 +1434,42 @@ func _Mpc_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Mpc_SignMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MpcServer).SignMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.highway.v1.Mpc/SignMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MpcServer).SignMessage(ctx, req.(*SignMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Mpc_VerifyMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MpcServer).VerifyMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.highway.v1.Mpc/VerifyMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MpcServer).VerifyMessage(ctx, req.(*VerifyMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Mpc_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "sonrhq.highway.v1.Mpc",
 	HandlerType: (*MpcServer)(nil),
@@ -1070,6 +1489,14 @@ var _Mpc_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteAccount",
 			Handler:    _Mpc_DeleteAccount_Handler,
+		},
+		{
+			MethodName: "SignMessage",
+			Handler:    _Mpc_SignMessage_Handler,
+		},
+		{
+			MethodName: "VerifyMessage",
+			Handler:    _Mpc_VerifyMessage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1173,6 +1600,13 @@ func (m *KeygenRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.CredentialResponse)
 		i = encodeVarintAccounts(dAtA, i, uint64(len(m.CredentialResponse)))
 		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Origin) > 0 {
+		i -= len(m.Origin)
+		copy(dAtA[i:], m.Origin)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Origin)))
+		i--
 		dAtA[i] = 0x12
 	}
 	if len(m.Uuid) > 0 {
@@ -1259,6 +1693,13 @@ func (m *CreateAccountRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.KeyShare) > 0 {
+		i -= len(m.KeyShare)
+		copy(dAtA[i:], m.KeyShare)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.KeyShare)))
+		i--
+		dAtA[i] = 0x1a
+	}
 	if len(m.CoinType) > 0 {
 		i -= len(m.CoinType)
 		copy(dAtA[i:], m.CoinType)
@@ -1362,6 +1803,13 @@ func (m *GetAccountRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Did) > 0 {
+		i -= len(m.Did)
+		copy(dAtA[i:], m.Did)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Did)))
+		i--
+		dAtA[i] = 0x1a
+	}
 	if len(m.CoinType) > 0 {
 		i -= len(m.CoinType)
 		copy(dAtA[i:], m.CoinType)
@@ -1606,6 +2054,209 @@ func (m *DeleteAccountResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *SignMessageRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SignMessageRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SignMessageRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.CoinType) > 0 {
+		i -= len(m.CoinType)
+		copy(dAtA[i:], m.CoinType)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.CoinType)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Message) > 0 {
+		i -= len(m.Message)
+		copy(dAtA[i:], m.Message)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Message)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Did) > 0 {
+		i -= len(m.Did)
+		copy(dAtA[i:], m.Did)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Did)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.KeyShare) > 0 {
+		i -= len(m.KeyShare)
+		copy(dAtA[i:], m.KeyShare)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.KeyShare)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SonrId) > 0 {
+		i -= len(m.SonrId)
+		copy(dAtA[i:], m.SonrId)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.SonrId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *SignMessageResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SignMessageResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SignMessageResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Did) > 0 {
+		i -= len(m.Did)
+		copy(dAtA[i:], m.Did)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Did)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Signature) > 0 {
+		i -= len(m.Signature)
+		copy(dAtA[i:], m.Signature)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Signature)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Success {
+		i--
+		if m.Success {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *VerifyMessageRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *VerifyMessageRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *VerifyMessageRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.CoinType) > 0 {
+		i -= len(m.CoinType)
+		copy(dAtA[i:], m.CoinType)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.CoinType)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Signature) > 0 {
+		i -= len(m.Signature)
+		copy(dAtA[i:], m.Signature)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Signature)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Message) > 0 {
+		i -= len(m.Message)
+		copy(dAtA[i:], m.Message)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Message)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Did) > 0 {
+		i -= len(m.Did)
+		copy(dAtA[i:], m.Did)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Did)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SonrId) > 0 {
+		i -= len(m.SonrId)
+		copy(dAtA[i:], m.SonrId)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.SonrId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *VerifyMessageResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *VerifyMessageResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *VerifyMessageResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Did) > 0 {
+		i -= len(m.Did)
+		copy(dAtA[i:], m.Did)
+		i = encodeVarintAccounts(dAtA, i, uint64(len(m.Did)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Success {
+		i--
+		if m.Success {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintAccounts(dAtA []byte, offset int, v uint64) int {
 	offset -= sovAccounts(v)
 	base := offset
@@ -1664,6 +2315,10 @@ func (m *KeygenRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovAccounts(uint64(l))
 	}
+	l = len(m.Origin)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
 	l = len(m.CredentialResponse)
 	if l > 0 {
 		n += 1 + l + sovAccounts(uint64(l))
@@ -1709,6 +2364,10 @@ func (m *CreateAccountRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovAccounts(uint64(l))
 	}
+	l = len(m.KeyShare)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
 	return n
 }
 
@@ -1749,6 +2408,10 @@ func (m *GetAccountRequest) Size() (n int) {
 		n += 1 + l + sovAccounts(uint64(l))
 	}
 	l = len(m.CoinType)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.Did)
 	if l > 0 {
 		n += 1 + l + sovAccounts(uint64(l))
 	}
@@ -1843,6 +2506,100 @@ func (m *DeleteAccountResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovAccounts(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *SignMessageRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SonrId)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.KeyShare)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.Did)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.Message)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.CoinType)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	return n
+}
+
+func (m *SignMessageResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Success {
+		n += 2
+	}
+	l = len(m.Signature)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.Did)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	return n
+}
+
+func (m *VerifyMessageRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SonrId)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.Did)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.Message)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.Signature)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	l = len(m.CoinType)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
+	}
+	return n
+}
+
+func (m *VerifyMessageResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Success {
+		n += 2
+	}
+	l = len(m.Did)
+	if l > 0 {
+		n += 1 + l + sovAccounts(uint64(l))
 	}
 	return n
 }
@@ -2190,6 +2947,38 @@ func (m *KeygenRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Origin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Origin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialResponse", wireType)
 			}
 			var stringLen uint64
@@ -2502,6 +3291,40 @@ func (m *CreateAccountRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.CoinType = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field KeyShare", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.KeyShare = append(m.KeyShare[:0], dAtA[iNdEx:postIndex]...)
+			if m.KeyShare == nil {
+				m.KeyShare = []byte{}
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAccounts(dAtA[iNdEx:])
@@ -2787,6 +3610,38 @@ func (m *GetAccountRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.CoinType = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Did", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Did = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3363,6 +4218,664 @@ func (m *DeleteAccountResponse) Unmarshal(dAtA []byte) error {
 			if err := m.Accounts[len(m.Accounts)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAccounts(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SignMessageRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAccounts
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SignMessageRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SignMessageRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SonrId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SonrId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field KeyShare", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.KeyShare = append(m.KeyShare[:0], dAtA[iNdEx:postIndex]...)
+			if m.KeyShare == nil {
+				m.KeyShare = []byte{}
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Did", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Did = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Message", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Message = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CoinType", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CoinType = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAccounts(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SignMessageResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAccounts
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SignMessageResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SignMessageResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Success", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Success = bool(v != 0)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signature", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signature = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Did", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Did = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAccounts(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *VerifyMessageRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAccounts
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: VerifyMessageRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: VerifyMessageRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SonrId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SonrId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Did", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Did = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Message", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Message = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signature", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signature = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CoinType", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CoinType = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAccounts(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *VerifyMessageResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAccounts
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: VerifyMessageResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: VerifyMessageResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Success", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Success = bool(v != 0)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Did", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAccounts
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAccounts
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Did = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

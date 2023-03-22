@@ -1,19 +1,16 @@
-package wallet
+package controller
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"strconv"
-	"strings"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
+	"github.com/sonrhq/core/pkg/node"
 	"github.com/sonrhq/core/x/identity/types"
-	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
 
@@ -37,9 +34,6 @@ type Account interface {
 	// Name returns the name of the account
 	Name() string
 
-	// Path returns the path of the account
-	Path() string
-
 	// PartyIDs returns the party IDs of the account
 	PartyIDs() []crypto.PartyID
 
@@ -51,9 +45,6 @@ type Account interface {
 
 	// PubKey returns secp256k1 public key
 	PubKey() *crypto.PubKey
-
-	// Rename renames the account
-	Rename(name string) error
 
 	// Signs a message
 	Sign(bz []byte) ([]byte, error)
@@ -68,53 +59,52 @@ type Account interface {
 	Verify(bz []byte, sig []byte) (bool, error)
 
 	// Lock locks the account
-	Lock(c *crypto.WebauthnCredential) error
+	Lock(c *crypto.WebauthnCredential, rootDir string) error
 
 	// Unlock unlocks the account
-	Unlock(c *crypto.WebauthnCredential) error
+	Unlock(c *crypto.WebauthnCredential, rootDir string) error
+
+	// Sync pushes all keyshares to the IPFSStore regardless of whether they are encrypted or not
+	Sync(store node.IPFSStore) error
 }
 
-type walletAccount struct {
-	p string
-	n uint64
+type account struct {
+	kss []KeyShare
+	n   uint64
+	p   string
 }
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                                     General                                    ||
 // ! ||--------------------------------------------------------------------------------||
 
-// NewWalletAccount loads an accound directory and returns a WalletAccount
-func NewWalletAccount(p string) (Account, error) {
-	// Check if the path is a directory
-	if !isDir(p) {
-		return nil, fmt.Errorf("path %s is not a directory", p)
+// NewAccount creates a new account
+func NewAccount(kss []KeyShare) Account {
+	return &account{kss: kss, n: 0, p: ""}
+}
+
+// Sync pushes all keyshares to the IPFSStore regardless of whether they are encrypted or not
+func (wa *account) Sync(store node.IPFSStore) error {
+	for _, ks := range wa.kss {
+		err := store.Put(ks.Did(), ks.Bytes())
+		if err != nil {
+			return err
+		}
 	}
-	return &walletAccount{p: p}, nil
+	return nil
 }
 
 // PubKey returns secp256k1 public key
-func (wa *walletAccount) PubKey() *crypto.PubKey {
-	files, err := os.ReadDir(wa.p)
+func (wa *account) PubKey() *crypto.PubKey {
+	tks, err := getFirstDecryptedKeyshare(wa.kss)
 	if err != nil {
 		return nil
 	}
-	ks, err := NewKeyshare(filepath.Join(wa.p, files[0].Name()))
-	if err != nil {
-		return nil
-	}
-	skPP, ok := ks.Config().PublicPoint().(*curve.Secp256k1Point)
-	if !ok {
-		return nil
-	}
-	bz, err := skPP.MarshalBinary()
-	if err != nil {
-		return nil
-	}
-	return crypto.NewSecp256k1PubKey(bz)
+	return tks.PubKey()
 }
 
 // Signs a message using the account
-func (wa *walletAccount) Sign(bz []byte) ([]byte, error) {
+func (wa *account) Sign(bz []byte) ([]byte, error) {
 	kss, err := wa.ListKeyshares()
 	if err != nil {
 		return nil, err
@@ -127,7 +117,7 @@ func (wa *walletAccount) Sign(bz []byte) ([]byte, error) {
 }
 
 // Verifies a signature using first unlocked keyshare
-func (wa *walletAccount) Verify(bz []byte, sig []byte) (bool, error) {
+func (wa *account) Verify(bz []byte, sig []byte) (bool, error) {
 	kss, err := wa.ListKeyshares()
 	if err != nil {
 		return false, err
@@ -153,22 +143,17 @@ func (wa *walletAccount) Verify(bz []byte, sig []byte) (bool, error) {
 // ! ||--------------------------------------------------------------------------------||
 
 // Address returns the address of the account based on the coin type
-func (wa *walletAccount) Address() string {
-	return wa.CoinType().FormatAddress(wa.PubKey())
+func (a *account) Address() string {
+	return a.CoinType().FormatAddress(a.PubKey())
 }
 
 // CoinType returns the coin type of the account
-func (wa *walletAccount) CoinType() crypto.CoinType {
-	coinBipStr := filepath.Base(filepath.Dir(wa.p))
-	coinBip, err := strconv.Atoi(coinBipStr)
-	if err != nil {
-		return crypto.TestCoinType
-	}
-	return crypto.CoinTypeFromBipPath(int32(coinBip))
+func (a *account) CoinType() crypto.CoinType {
+	return a.kss[0].CoinType()
 }
 
 // DID returns the DID of the account
-func (wa *walletAccount) DID() string {
+func (wa *account) DID() string {
 	if wa.CoinType().IsSonr() {
 		return fmt.Sprintf("did:%s:%s", wa.CoinType().DidMethod(), wa.Address())
 	}
@@ -176,12 +161,12 @@ func (wa *walletAccount) DID() string {
 }
 
 // Type returns the type of the account
-func (wa *walletAccount) Type() string {
+func (wa *account) Type() string {
 	return fmt.Sprintf("%s/ecdsa-secp256k1", wa.CoinType().Name())
 }
 
 // VerificationMethod returns the verification method of the account
-func (wa *walletAccount) VerificationMethod(controller string) *types.VerificationMethod {
+func (wa *account) VerificationMethod(controller string) *types.VerificationMethod {
 	return &types.VerificationMethod{
 		Id:                  wa.DID(),
 		Type:                crypto.Secp256k1KeyType.FormatString(),
@@ -196,12 +181,12 @@ func (wa *walletAccount) VerificationMethod(controller string) *types.Verificati
 // ! ||--------------------------------------------------------------------------------||
 
 // Nonce returns the nonce of the account
-func (wa *walletAccount) Nonce() uint64 {
+func (wa *account) Nonce() uint64 {
 	return wa.n
 }
 
 // IncrementNonce increments the nonce of the account
-func (wa *walletAccount) IncrementNonce() {
+func (wa *account) IncrementNonce() {
 	wa.n++
 }
 
@@ -212,7 +197,7 @@ func (wa *walletAccount) IncrementNonce() {
 //
 
 // GetAuthInfo creates an AuthInfo instance for this account with the specified gas amount.
-func (wa *walletAccount) GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error) {
+func (wa *account) GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error) {
 	// Build signerInfo parameters
 	anyPubKey, err := codectypes.NewAnyWithValue(wa.PubKey())
 	if err != nil {
@@ -248,38 +233,17 @@ func (wa *walletAccount) GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error) {
 // ! ||--------------------------------------------------------------------------------||
 
 // PartyIDs returns the party IDs of the account
-func (wa *walletAccount) PartyIDs() []crypto.PartyID {
-	files, err := os.ReadDir(wa.p)
-	if err != nil {
-		return nil
+func (wa *account) PartyIDs() []crypto.PartyID {
+	var ids []crypto.PartyID
+	for _, ks := range wa.kss {
+		ids = append(ids, ks.PartyID())
 	}
-	var partyIDs []crypto.PartyID
-	for _, f := range files {
-		if !f.IsDir() && filepath.Ext(f.Name()) == ".key" {
-			id := strings.TrimRight(f.Name(), ".key")
-			partyIDs = append(partyIDs, crypto.PartyID(id))
-		}
-	}
-	return partyIDs
+	return ids
 }
 
 // ListKeyshares returns a list of keyshares for the account
-func (wa *walletAccount) ListKeyshares() ([]KeyShare, error) {
-	files, err := os.ReadDir(wa.p)
-	if err != nil {
-		return nil, err
-	}
-	var keyshares []KeyShare
-	for _, f := range files {
-		if !f.IsDir() && filepath.Ext(f.Name()) == ".key" {
-			ks, err := NewKeyshare(filepath.Join(wa.p, f.Name()))
-			if err != nil {
-				return nil, err
-			}
-			keyshares = append(keyshares, ks)
-		}
-	}
-	return keyshares, nil
+func (wa *account) ListKeyshares() ([]KeyShare, error) {
+	return wa.kss, nil
 }
 
 // ! ||--------------------------------------------------------------------------------||
@@ -287,26 +251,16 @@ func (wa *walletAccount) ListKeyshares() ([]KeyShare, error) {
 // ! ||--------------------------------------------------------------------------------||
 
 // Name returns the name of the account
-func (wa *walletAccount) Name() string {
-	return filepath.Base(wa.p)
-}
-
-// Path returns the path of the account
-func (wa *walletAccount) Path() string {
-	return wa.p
-}
-
-// Rename renames the account
-func (wa *walletAccount) Rename(name string) error {
-	parentDir := filepath.Dir(wa.p)
-	newPath := filepath.Join(parentDir, name)
-
-	// Rename the directory to the new name
-	return os.Rename(wa.p, newPath)
+func (wa *account) Name() string {
+	ks, err := getFirstDecryptedKeyshare(wa.kss)
+	if err != nil {
+		return ""
+	}
+	return ks.AccountName()
 }
 
 // Lock locks the account
-func (wa *walletAccount) Lock(c *crypto.WebauthnCredential) error {
+func (wa *account) Lock(c *crypto.WebauthnCredential, rootDir string) error {
 	ks, err := wa.ListKeyshares()
 	if err != nil {
 		return err
@@ -322,7 +276,7 @@ func (wa *walletAccount) Lock(c *crypto.WebauthnCredential) error {
 }
 
 // Unlock unlocks the account
-func (wa *walletAccount) Unlock(c *crypto.WebauthnCredential) error {
+func (wa *account) Unlock(c *crypto.WebauthnCredential, rootDir string) error {
 	ks, err := wa.ListKeyshares()
 	if err != nil {
 		return err
@@ -337,20 +291,16 @@ func (wa *walletAccount) Unlock(c *crypto.WebauthnCredential) error {
 	return nil
 }
 
-//
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                                  Helper functions                              ||
 // ! ||--------------------------------------------------------------------------------||
-//
 
-// isDir checks if the path is a directory and contains at least one MPC shard file
-func isDir(p string) bool {
-	fi, err := os.Stat(p)
-	if err != nil {
-		return false
+// getFirstDecryptedKeyshare returns the first decrypted keyshare
+func getFirstDecryptedKeyshare(kss []KeyShare) (KeyShare, error) {
+	for _, ks := range kss {
+		if !ks.IsEncrypted() {
+			return ks, nil
+		}
 	}
-	if !fi.IsDir() {
-		return false
-	}
-	return true
+	return nil, fmt.Errorf("no decrypted keyshares found")
 }
