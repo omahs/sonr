@@ -16,7 +16,7 @@ import (
 
 func Keygen(c *fiber.Ctx) error {
 	req := &v1.KeygenRequest{}
-	err := req.Unmarshal(c.Body())
+	err := req.Unmarshal(c.Request().Body())
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func Keygen(c *fiber.Ctx) error {
 
 func Login(c *fiber.Ctx) error {
 	req := &v1.LoginRequest{}
-	err := req.Unmarshal(c.Body())
+	err := req.Unmarshal(c.Request().Body())
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,7 @@ func VerifyMessage(c *fiber.Ctx) error {
 
 func AddShare(c *fiber.Ctx) error {
 	req := &v1.AddShareRequest{}
-	err := req.Unmarshal(c.Body())
+	err := req.Unmarshal(c.Request().Body())
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func AddShare(c *fiber.Ctx) error {
 
 func SyncShare(c *fiber.Ctx) error {
 	req := &v1.SyncShareRequest{}
-	err := req.Unmarshal(c.Body())
+	err := req.Unmarshal(c.Request().Body())
 	if err != nil {
 		return err
 	}
