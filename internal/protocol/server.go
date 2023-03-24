@@ -17,23 +17,23 @@ import (
 func Keygen(c *fiber.Ctx) error {
 	req := new(v1.KeygenRequest)
 	if err := c.BodyParser(req); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(400).SendString(err.Error())
 	}
 
 	// Get the origin from the request.
 	service, err := resolver.GetService(context.Background(), req.Origin)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(404).SendString(err.Error())
 	}
 	// Generate the keypair.
-		cred, err := service.VerifyCreationChallenge(req.GetCredentialResponse())
+	cred, err := service.VerifyCreationChallenge(req.GetCredentialResponse())
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(401).SendString(err.Error())
 	}
 
 	cont, err := controller.NewController(context.Background(), cred)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).SendString(err.Error())
 	}
 	res := &v1.KeygenResponse{
 		Success: true,
@@ -46,13 +46,13 @@ func Keygen(c *fiber.Ctx) error {
 func Login(c *fiber.Ctx) error {
 	req := new(v1.LoginRequest)
 	if err := c.BodyParser(req); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(400).SendString(err.Error())
 	}
 
 	// Get the origin from the request.
 	_, err := resolver.GetService(context.Background(), req.Origin)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(404).SendString(err.Error())
 	}
 	return nil
 }
@@ -63,7 +63,7 @@ func QueryDocument(c *fiber.Ctx) error {
 	// Get the origin from the request.
 	doc, err := resolver.GetDID(context.Background(), did)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(404).SendString(err.Error())
 	}
 	resp := &v1.QueryDocumentResponse{
 		Success:        (doc != nil),
@@ -78,11 +78,11 @@ func QueryService(c *fiber.Ctx) error {
 	// Get the origin from the request.
 	service, err := resolver.GetService(context.Background(), origin)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(404).SendString(err.Error())
 	}
 	challenge, err := service.IssueChallenge()
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).SendString(err.Error())
 	}
 	resp := &v1.QueryServiceResponse{
 		Challenge: string(challenge),
@@ -126,11 +126,11 @@ func VerifyMessage(c *fiber.Ctx) error {
 func AddShare(c *fiber.Ctx) error {
 	req := new(v1.AddShareRequest)
 	if err := c.BodyParser(req); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(400).SendString(err.Error())
 	}
 	err := resolver.InsertRecord(req.Key, req.Value)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).SendString(err.Error())
 	}
 	return c.JSON(&v1.AddShareResponse{
 		Success: true,
@@ -141,11 +141,11 @@ func AddShare(c *fiber.Ctx) error {
 func SyncShare(c *fiber.Ctx) error {
 	req := new(v1.SyncShareRequest)
 	if err := c.BodyParser(req); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(400).SendString(err.Error())
 	}
 	record,err := resolver.GetRecord(req.Key)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(404).SendString(err.Error())
 	}
 	return c.JSON(&v1.SyncShareResponse{
 		Success: true,

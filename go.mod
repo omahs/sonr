@@ -6,7 +6,6 @@ require (
 	berty.tech/go-orbit-db v1.19.1
 	cosmossdk.io/math v1.0.0-beta.4
 	github.com/btcsuite/btcd v0.22.1
-	github.com/bufbuild/connect-go v1.5.2
 	github.com/cosmos/cosmos-sdk v0.46.7
 	github.com/cosmos/ibc-go/v5 v5.2.0
 	github.com/ethereum/go-ethereum v1.10.17
@@ -52,6 +51,7 @@ require (
 require (
 	github.com/cosmos/gogoproto v1.4.2
 	github.com/derekparker/trie v0.0.0-20221221181808-1424fce0c981
+	github.com/goccy/go-json v0.9.11
 	github.com/gofiber/fiber/v2 v2.42.0
 	github.com/gofiber/helmet/v2 v2.2.24
 	golang.org/x/net v0.7.0
@@ -147,7 +147,6 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0 // indirect
 	github.com/go-webauthn/revoke v0.1.6 // indirect
-	github.com/goccy/go-json v0.9.11 // indirect
 	github.com/goccy/go-yaml v1.9.4 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
