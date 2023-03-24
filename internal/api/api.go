@@ -7,6 +7,9 @@ import (
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+
 	highway "github.com/sonrhq/core/types/highway/v1/highwayv1connect"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -22,15 +25,40 @@ type Protocol struct {
 }
 
 func RegisterHighway(ctx client.Context) {
+	if isFiber() {
+		setupFiber(ctx)
+
+	} else {
+		setupConnect(ctx)
+	}
+}
+
+func setupConnect(ctx client.Context) {
 	hway = &Protocol{ctx: ctx}
 	mux := http.NewServeMux()
 	mux.Handle(AuthenticationHandler())
 	mux.Handle(MpcHandler())
 	mux.Handle(VaultHandler())
-	go hway.serveConnectHTTP(mux)
+	go hway.serveConnect(mux)
 }
 
-func (p *Protocol) serveConnectHTTP(mux *http.ServeMux) {
+func setupFiber(ctx client.Context) {
+	hway = &Protocol{ctx: ctx}
+	app := fiber.New()
+	app.Use(cors.New())
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendString("OK")
+	})
+	app.Post("/highway/auth/keygen", Keygen)
+	app.Post("/highway/auth/login", Login)
+	app.Get("/highway/auth/service/:origin", QueryService)
+	app.Get("/highway/auth/document/:did", QueryDocument)
+	app.Post("/highway/vault/add", AddShare)
+	app.Post("/highway/vault/sync", SyncShare)
+	go hway.serveFiber(app)
+}
+
+func (p *Protocol) serveConnect(mux *http.ServeMux) {
 	if hasTLSCert() {
 		http.ListenAndServeTLS(
 			fmt.Sprintf(":%s", getServerPort()),
@@ -40,18 +68,24 @@ func (p *Protocol) serveConnectHTTP(mux *http.ServeMux) {
 		)
 	} else {
 		http.ListenAndServe(
-			fmt.Sprintf("%s:%s", getServerHost(), getServerPort()),
+			fmt.Sprintf(":%s", getServerPort()),
 			h2c.NewHandler(mux, &http2.Server{}),
 		)
 	}
 }
 
-func getServerHost() string {
-	if host := os.Getenv("CONNECT_SERVER_ADDRESS"); host != "" {
-		log.Printf("using CONNECT_SERVER_ADDRESS: %s", host)
-		return host
+func (p *Protocol) serveFiber(app *fiber.App) {
+	if hasTLSCert() {
+		app.ListenTLS(
+			fmt.Sprintf(":%s", getServerPort()),
+			getTLSCert(),
+			getTLSKey(),
+		)
+	} else {
+		app.Listen(
+			fmt.Sprintf(":%s", getServerPort()),
+		)
 	}
-	return "localhost"
 }
 
 func getServerPort() string {
@@ -84,4 +118,8 @@ func hasTLSCert() bool {
 
 func isDev() bool {
 	return os.Getenv("ENVIRONMENT") == "dev"
+}
+
+func isFiber() bool {
+	return os.Getenv("HIGHWAY_MODE") != "connect"
 }
