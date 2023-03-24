@@ -97,6 +97,7 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
+	snrapi "github.com/sonrhq/core/internal/api"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -141,9 +142,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
-
-	// hway is the reference to the highway protocol instance used by the app
-	hway *Protocol
 
 	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration
@@ -840,7 +838,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// If found, register swagger UI and swagger.json.
 	apiSvr.Router.Handle("/static/openapi.yaml", http.FileServer(http.FS(docs.Docs)))
 	apiSvr.Router.HandleFunc("/", openapiconsole.Handler(Name, "/static/openapi.yaml"))
-	RegisterHighway(clientCtx)
+	snrapi.RegisterHighway(clientCtx)
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
