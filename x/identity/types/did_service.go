@@ -99,16 +99,6 @@ func (vm *Service) VerifyCreationChallenge(resp string) (*types.WebauthnCredenti
 	if err != nil {
 		return nil, err
 	}
-
-	chal, err := vm.IssueChallenge()
-	if err != nil {
-		return nil, err
-	}
-
-	err = pcc.Verify(chal.String(), false, vm.Id, []string{vm.Origin})
-	if err != nil {
-		return nil, err
-	}
 	return makeCredentialFromCreationData(pcc), nil
 }
 

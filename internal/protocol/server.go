@@ -26,9 +26,9 @@ func Keygen(c *fiber.Ctx) error {
 		return c.Status(404).SendString(err.Error())
 	}
 	// Generate the keypair.
-	cred, err := service.VerifyCreationChallenge(req.GetCredentialResponse())
+	cred, err := service.VerifyCreationChallenge(req.CredentialResponse)
 	if err != nil {
-		return c.Status(401).SendString(err.Error())
+		return c.Status(403).SendString(err.Error())
 	}
 
 	cont, err := controller.NewController(context.Background(), cred)
@@ -36,8 +36,8 @@ func Keygen(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 	}
 	res := &v1.KeygenResponse{
-		Success: true,
-		Did:     cont.DidDocument().Id,
+		Success:     true,
+		Did:         cont.DidDocument().Id,
 		DidDocument: cont.DidDocument(),
 	}
 	return c.JSON(res)
@@ -57,9 +57,27 @@ func Login(c *fiber.Ctx) error {
 	return nil
 }
 
+// ! ||--------------------------------------------------------------------------------||
+// ! ||                        Query Method for the Highway API                        ||
+// ! ||--------------------------------------------------------------------------------||
+
+func QueryAccount(c *fiber.Ctx) error {
+	did := c.Params("did")
+	// Get the origin from the request.
+	doc, err := resolver.GetDID(context.Background(), did)
+	if err != nil {
+		return c.Status(404).SendString(err.Error())
+	}
+	resp := &v1.QueryDocumentResponse{
+		Success:        (doc != nil),
+		AccountAddress: doc.DIDIdentifier(),
+		DidDocument:    doc,
+	}
+	return c.JSON(resp)
+}
+
 func QueryDocument(c *fiber.Ctx) error {
 	did := c.Params("did")
-
 	// Get the origin from the request.
 	doc, err := resolver.GetDID(context.Background(), did)
 	if err != nil {
@@ -134,7 +152,7 @@ func AddShare(c *fiber.Ctx) error {
 	}
 	return c.JSON(&v1.AddShareResponse{
 		Success: true,
-		Key: req.Key,
+		Key:     req.Key,
 	})
 }
 
@@ -143,17 +161,17 @@ func SyncShare(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	record,err := resolver.GetRecord(req.Key)
+	record, err := resolver.GetRecord(req.Key)
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
 	return c.JSON(&v1.SyncShareResponse{
 		Success: true,
-		Value: base64.StdEncoding.EncodeToString(record),
-		Key: req.Key,
+		Value:   base64.StdEncoding.EncodeToString(record),
+		Key:     req.Key,
 	})
 }
 
 func RefreshShare(c *fiber.Ctx) error {
-		return c.Status(500).JSON(fiber.Map{"error": "not implemented"})
+	return c.Status(500).JSON(fiber.Map{"error": "not implemented"})
 }
