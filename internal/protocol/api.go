@@ -1,4 +1,4 @@
-package api
+package protocol
 
 import (
 	"fmt"
@@ -9,8 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-
-	highway "github.com/sonrhq/core/types/highway/v1/highwayv1connect"
+	"github.com/gofiber/helmet/v2"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -19,9 +18,6 @@ var hway *Protocol
 
 type Protocol struct {
 	ctx client.Context
-	highway.UnimplementedMpcHandler
-	highway.UnimplementedAuthenticationHandler
-	highway.UnimplementedVaultHandler
 }
 
 func RegisterHighway(ctx client.Context) {
@@ -29,23 +25,18 @@ func RegisterHighway(ctx client.Context) {
 		setupFiber(ctx)
 
 	} else {
-		setupConnect(ctx)
+		setupFiber(ctx)
 	}
 }
 
-func setupConnect(ctx client.Context) {
-	hway = &Protocol{ctx: ctx}
-	mux := http.NewServeMux()
-	mux.Handle(AuthenticationHandler())
-	mux.Handle(MpcHandler())
-	mux.Handle(VaultHandler())
-	go hway.serveConnect(mux)
-}
+
 
 func setupFiber(ctx client.Context) {
 	hway = &Protocol{ctx: ctx}
 	app := fiber.New()
 	app.Use(cors.New())
+
+	app.Use(helmet.New())
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.SendString("OK")
 	})

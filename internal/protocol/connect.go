@@ -1,17 +1,15 @@
-package api
+package protocol
 
 import (
 	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"net/http"
 
 	"github.com/bufbuild/connect-go"
 	"github.com/sonrhq/core/internal/controller"
 	"github.com/sonrhq/core/internal/resolver"
 	v1 "github.com/sonrhq/core/types/highway/v1"
-	highway "github.com/sonrhq/core/types/highway/v1/highwayv1connect"
 )
 
 // ! ||--------------------------------------------------------------------------------||
@@ -44,10 +42,6 @@ func NewAuthInterceptor() connect.UnaryInterceptorFunc {
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                             Authentication Handler                             ||
 // ! ||--------------------------------------------------------------------------------||
-
-func AuthenticationHandler() (string, http.Handler) {
-	return highway.NewAuthenticationHandler(hway)
-}
 
 func (p *Protocol) Keygen(ctx context.Context, req *connect.Request[v1.KeygenRequest]) (*connect.Response[v1.KeygenResponse], error) {
 	service, err := resolver.GetService(ctx, req.Msg.GetOrigin())
@@ -130,9 +124,6 @@ func (p *Protocol) QueryService(ctx context.Context, req *connect.Request[v1.Que
 // ! ||                                Accounts handler                                ||
 // ! ||--------------------------------------------------------------------------------||
 
-func MpcHandler() (string, http.Handler) {
-	return highway.NewMpcHandler(hway, connect.WithInterceptors(NewAuthInterceptor()))
-}
 
 func (p *Protocol) CreateAccount(context.Context, *connect.Request[v1.CreateAccountRequest]) (*connect.Response[v1.CreateAccountResponse], error) {
 	return nil, nil
@@ -156,10 +147,6 @@ func (p *Protocol) VerifyMessage(context.Context, *connect.Request[v1.VerifyMess
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                                  Vault handler                                 ||
 // ! ||--------------------------------------------------------------------------------||
-
-func VaultHandler() (string, http.Handler) {
-	return highway.NewVaultHandler(hway)
-}
 
 func (p *Protocol) Add(ctx context.Context, req *connect.Request[v1.AddShareRequest]) (*connect.Response[v1.AddShareResponse], error) {
 	err := resolver.InsertRecord(req.Msg.Key, req.Msg.Value)
