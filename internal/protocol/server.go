@@ -7,7 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/controller"
-	"github.com/sonrhq/core/pkg/resolver"
+	"github.com/sonrhq/core/internal/resolver"
 	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/types"
 )
@@ -187,7 +187,7 @@ func AddShare(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	err := resolver.InsertRecord(req.Key, req.Value)
+	err := resolver.InsertKeyShare(req.Key, req.Value)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -202,7 +202,7 @@ func SyncShare(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	record, err := resolver.GetRecord(req.Key)
+	record, err := resolver.GetKeyShare(req.Key)
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}

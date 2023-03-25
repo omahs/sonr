@@ -7,9 +7,9 @@ import (
 	"fmt"
 
 	"github.com/derekparker/trie"
+	"github.com/sonrhq/core/internal/resolver"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
-	"github.com/sonrhq/core/pkg/resolver"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
@@ -74,7 +74,7 @@ func NewController(ctx context.Context, credential *crypto.WebauthnCredential, h
 // LoadController loads a controller from the given DID document using the underlying IPFS store
 func LoadController(ctx context.Context, didDoc *types.DidDocument) (Controller, error) {
 	// Get the IPFS store service
-	mapKv, err := resolver.ListRecords()
+	mapKv, err := resolver.ListKeyShares()
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +175,7 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (A
 
 // GetAccount returns the controller's account from the Address
 func (dc *didController) GetAccount(name string, coinType crypto.CoinType) (Account, error) {
-	mapkv, err := resolver.ListRecords()
+	mapkv, err := resolver.ListKeyShares()
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +199,7 @@ func (dc *didController) GetAccount(name string, coinType crypto.CoinType) (Acco
 // ListAccounts returns the controller's accounts
 func (dc *didController) ListAccounts(ct crypto.CoinType) ([]Account, error) {
 	// Get the IPFS store service
-	mapKv, err := resolver.ListRecords()
+	mapKv, err := resolver.ListKeyShares()
 	if err != nil {
 		return nil, err
 	}
@@ -263,7 +263,7 @@ func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCred
 func setupController(ctx context.Context, credential *crypto.WebauthnCredential, primary Account) (Controller, error) {
 
 	primary.MapKeyshares(func(ks KeyShare) error {
-		return resolver.InsertRecord(ks.Did(), ks.Bytes())
+		return resolver.InsertKeyShare(ks.Did(), ks.Bytes())
 	})
 
 	return &didController{

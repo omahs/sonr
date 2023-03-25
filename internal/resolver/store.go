@@ -5,17 +5,17 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/pkg/node"
-	"github.com/sonrhq/core/x/identity/types"
 )
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                          Global Resolver Store Methods                         ||
 // ! ||--------------------------------------------------------------------------------||
 
-// InsertRecord inserts a record into the IPFS store for the given controller
-func InsertRecord(key string, value interface{}) error {
-	err := setupOrbit()
+// InsertKeyShare inserts a record into the IPFS store for the given controller
+func InsertKeyShare(key string, value interface{}) error {
+	err := setupKeyshareStore()
 	if err != nil {
 		return err
 	}
@@ -33,39 +33,39 @@ func InsertRecord(key string, value interface{}) error {
 	default:
 		return fmt.Errorf("value must be a string or []byte")
 	}
-	return store.Put(key, vBiz)
+	return ksStore.Put(key, vBiz)
 }
 
-// GetRecord gets a record from the IPFS store for the given controller
-func GetRecord(key string) ([]byte, error) {
-	err := setupOrbit()
+// GetKeyShare gets a record from the IPFS store for the given controller
+func GetKeyShare(key string) ([]byte, error) {
+	err := setupKeyshareStore()
 	if err != nil {
 		return nil, err
 	}
-	vBiz, err := store.Get(key)
+	vBiz, err := ksStore.Get(key)
 	if err != nil {
 		return nil, err
 	}
 	return vBiz, nil
 }
 
-// DeleteRecord deletes a record from the IPFS store for the given controller
-func DeleteRecord(key string) error {
-	err := setupOrbit()
+// DeleteKeyShare deletes a record from the IPFS store for the given controller
+func DeleteKeyShare(key string) error {
+	err := setupKeyshareStore()
 	if err != nil {
 		return err
 	}
-	return store.Delete(key)
+	return ksStore.Delete(key)
 }
 
-// ListRecords lists all records in the IPFS store for the given controller
-func ListRecords() (map[string][]byte, error) {
-	err := setupOrbit()
+// ListKeyShares lists all records in the IPFS store for the given controller
+func ListKeyShares() (map[string][]byte, error) {
+	err := setupKeyshareStore()
 	if err != nil {
 		return nil, err
 	}
 	m := make(map[string][]byte)
-	for k, v := range store.All() {
+	for k, v := range ksStore.All() {
 		m[k] = v
 	}
 	return m, nil
@@ -75,56 +75,56 @@ func ListRecords() (map[string][]byte, error) {
 // ! ||              IPFS Based Wallet Store Implementation using OrbitDB              ||
 // ! ||--------------------------------------------------------------------------------||
 
-type ipfsStore struct {
+type ipfsKsStore struct {
 	controller string
 	node.IPFSKVStore
 }
 
-func makeIpfsStore(store node.IPFSKVStore, controller string) *ipfsStore {
-	return &ipfsStore{
+func makeIpfsKsStore(store node.IPFSKVStore, controller string) *ipfsKsStore {
+	return &ipfsKsStore{
 		IPFSKVStore: store,
 		controller:  controller,
 	}
 }
 
-func (s *ipfsStore) All() map[string][]byte {
+func (s *ipfsKsStore) All() map[string][]byte {
 	return s.IPFSKVStore.All()
 }
 
-func (s *ipfsStore) Address() string {
+func (s *ipfsKsStore) Address() string {
 	return s.IPFSKVStore.Address().String()
 }
 
-func (s *ipfsStore) DBName() string {
+func (s *ipfsKsStore) DBName() string {
 	return s.IPFSKVStore.DBName()
 }
 
-func (s *ipfsStore) Identity() string {
+func (s *ipfsKsStore) Identity() string {
 	return s.IPFSKVStore.Identity().ID
 }
 
-func (s *ipfsStore) PublicKey() []byte {
+func (s *ipfsKsStore) PublicKey() []byte {
 	return s.IPFSKVStore.Identity().PublicKey
 }
 
-func (s *ipfsStore) Type() string {
+func (s *ipfsKsStore) Type() string {
 	return s.IPFSKVStore.Type()
 }
 
-func (s *ipfsStore) Close() error {
+func (s *ipfsKsStore) Close() error {
 	return s.Close()
 }
 
-func (s *ipfsStore) Get(key string) ([]byte, error) {
+func (s *ipfsKsStore) Get(key string) ([]byte, error) {
 	return s.IPFSKVStore.Get(context.Background(), key)
 }
 
-func (s *ipfsStore) Put(key string, value []byte) error {
+func (s *ipfsKsStore) Put(key string, value []byte) error {
 	_, err := s.IPFSKVStore.Put(context.Background(), key, value)
 	return err
 }
 
-func (s *ipfsStore) Delete(key string) error {
+func (s *ipfsKsStore) Delete(key string) error {
 	_, err := s.IPFSKVStore.Delete(context.Background(), key)
 	return err
 }
@@ -133,18 +133,20 @@ func (s *ipfsStore) Delete(key string) error {
 // ! ||                         Helper Methods for Module Setup                        ||
 // ! ||--------------------------------------------------------------------------------||
 var (
-	store *ipfsStore
+	ksStore *ipfsKsStore
+	inStore node.IPFSDocsStore
 )
 
-func setupOrbit() error {
-	if store != nil {
+// setupKeyshareStore initializes the global keyshare store
+func setupKeyshareStore() error {
+	if ksStore != nil {
 		return nil
 	}
-	params := types.DefaultParams()
-	kv, err := node.OpenKeyValueStore(context.Background(), params.GetOrbitDbStoreName())
+	snrctx := local.NewContext()
+	kv, err := node.OpenKeyValueStore(context.Background(), snrctx.GlobalKsStore)
 	if err != nil {
 		return err
 	}
-	store = makeIpfsStore(kv, params.GetOrbitDbStoreName())
+	ksStore = makeIpfsKsStore(kv, snrctx.GlobalKsStore)
 	return nil
 }

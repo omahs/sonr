@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/sonrhq/core/internal/controller"
+	"github.com/sonrhq/core/internal/resolver"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
-	"github.com/sonrhq/core/pkg/resolver"
 	"github.com/sonrhq/core/pkg/tx/cosmos"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/tendermint/tendermint/libs/rand"
