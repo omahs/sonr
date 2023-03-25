@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/derekparker/trie"
 	"github.com/sonrhq/core/internal/resolver"
@@ -80,14 +81,16 @@ func LoadController(ctx context.Context, didDoc *types.DidDocument) (Controller,
 	}
 
 	// Get the primary account
-	mapKv = filterByCoin(mapKv, crypto.SONRCoinType)
+	filtered := fuzzySearch(mapKv, didDoc.Id, FilterOptions{
+		CoinType: crypto.SONRCoinType,
+	})
 	if len(mapKv) == 0 {
 		return nil, fmt.Errorf("no primary account found")
 	}
 
 	// Get the primary account
 	var kss []KeyShare
-	for k, v := range mapKv {
+	for k, v := range filtered {
 		ks, err := LoadKeyshareFromStore(k, v)
 		if err != nil {
 			return nil, err
@@ -179,14 +182,14 @@ func (dc *didController) GetAccount(name string, coinType crypto.CoinType) (Acco
 	if err != nil {
 		return nil, err
 	}
-	mapkv = fuzzySearch(mapkv, name, FilterOptions{
+	filtered := fuzzySearch(mapkv, name, FilterOptions{
 		CoinType: coinType,
 	})
 	if len(mapkv) == 0 {
 		return nil, fmt.Errorf("account not found")
 	}
 	var kss []KeyShare
-	for k, v := range mapkv {
+	for k, v := range filtered {
 		ks, err := LoadKeyshareFromStore(k, v)
 		if err != nil {
 			return nil, err
@@ -204,8 +207,8 @@ func (dc *didController) ListAccounts(ct crypto.CoinType) ([]Account, error) {
 		return nil, err
 	}
 	var accs []Account
-	mapKv = filterByCoin(mapKv, ct)
-	for k := range mapKv {
+	filtered := fuzzySearch(mapKv, dc.Address(), FilterOptions{})
+	for k := range filtered {
 		acc, err := dc.GetAccount(k, ct)
 		if err != nil {
 			return nil, err
@@ -263,7 +266,7 @@ func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCred
 func setupController(ctx context.Context, credential *crypto.WebauthnCredential, primary Account) (Controller, error) {
 
 	primary.MapKeyshares(func(ks KeyShare) error {
-		return resolver.InsertKeyShare(ks.Did(), ks.Bytes())
+		return resolver.InsertKeyShare(ks)
 	})
 
 	return &didController{
@@ -280,11 +283,11 @@ type FilterOptions struct {
 	Index       *int
 }
 
-func fuzzySearch(m map[string][]byte, query string, options FilterOptions) map[string][]byte {
+func fuzzySearch(m []resolver.KVStoreItem, query string, options FilterOptions) map[string][]byte {
 	// Create a trie and insert keys
 	t := trie.New()
-	for k := range m {
-		t.Add(k, k)
+	for _, i := range m {
+		t.Add(i.Did(), i.Bytes())
 	}
 
 	// Perform fuzzy search with a query
@@ -303,65 +306,16 @@ func fuzzySearch(m map[string][]byte, query string, options FilterOptions) map[s
 		if options.AccountName != nil && ksr.AccountName != *options.AccountName {
 			continue
 		}
-		results[match] = m[match]
 	}
 
+	for _, i := range m {
+		if strings.Contains(i.Did(), query) {
+			results[i.Did()] = i.Bytes()
+		}
+	}
 	return results
 }
 
-func filterMap(m map[string][]byte, f func(string) bool) map[string][]byte {
-	n := make(map[string][]byte)
-	for k, v := range m {
-		if f(k) {
-			n[k] = v
-		}
-	}
-	return n
-}
-
-func filterByCoin(m map[string][]byte, ct crypto.CoinType) map[string][]byte {
-	return filterMap(m, func(k string) bool {
-		ksr, err := ParseKeyShareDid(k)
-		if err != nil {
-			return false
-		}
-		return ksr.CoinType == ct
-	})
-}
-
-func filterByCoinAndIndex(m map[string][]byte, ct crypto.CoinType, idx int) map[string][]byte {
-	i := 0
-	return filterMap(m, func(k string) bool {
-		ksr, err := ParseKeyShareDid(k)
-		if err != nil {
-			return false
-		}
-		if ksr.CoinType == ct {
-			i++
-		}
-		return ksr.CoinType == ct && i == idx
-	})
-}
-
-func filterByAccountName(m map[string][]byte, name string) map[string][]byte {
-	return filterMap(m, func(k string) bool {
-		ksr, err := ParseKeyShareDid(k)
-		if err != nil {
-			return false
-		}
-		return ksr.AccountName == name
-	})
-}
-
-func filterByCoinAndAccountName(m map[string][]byte, ct crypto.CoinType, name string) map[string][]byte {
-	return filterMap(m, func(k string) bool {
-		ksr, err := ParseKeyShareDid(k)
-		if err != nil {
-			return false
-		}
-		return ksr.CoinType == ct && ksr.AccountName == name
-	})
-}
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                       WebauthnCredential utility methods                       ||

@@ -2,38 +2,48 @@ package resolver
 
 import (
 	"context"
-	"encoding/base64"
-	"fmt"
 
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/pkg/node"
 )
+
+type KVStoreItem interface {
+	Bytes() []byte
+	Did() string
+}
+
+type BasicStoreItem struct {
+	did  string
+	data []byte
+}
+
+func (i *BasicStoreItem) Bytes() []byte {
+	return i.data
+}
+
+func (i *BasicStoreItem) Did() string {
+	return i.did
+}
+
+func NewBasicStoreItem(did string, data []byte) *BasicStoreItem {
+	return &BasicStoreItem{
+		did:  did,
+		data: data,
+	}
+}
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                          Global Resolver Store Methods                         ||
 // ! ||--------------------------------------------------------------------------------||
 
 // InsertKeyShare inserts a record into the IPFS store for the given controller
-func InsertKeyShare(key string, value interface{}) error {
+func InsertKeyShare(i KVStoreItem) error {
 	err := setupKeyshareStore()
 	if err != nil {
 		return err
 	}
 
-	var vBiz []byte
-	switch value.(type) {
-	case string:
-		v, err := base64.StdEncoding.DecodeString(value.(string))
-		if err != nil {
-			return err
-		}
-		vBiz = v
-	case []byte:
-		vBiz = value.([]byte)
-	default:
-		return fmt.Errorf("value must be a string or []byte")
-	}
-	return ksStore.Put(key, vBiz)
+	return ksStore.Put(i.Did(), i.Bytes())
 }
 
 // GetKeyShare gets a record from the IPFS store for the given controller
@@ -59,14 +69,14 @@ func DeleteKeyShare(key string) error {
 }
 
 // ListKeyShares lists all records in the IPFS store for the given controller
-func ListKeyShares() (map[string][]byte, error) {
+func ListKeyShares() ([]KVStoreItem, error) {
 	err := setupKeyshareStore()
 	if err != nil {
 		return nil, err
 	}
-	m := make(map[string][]byte)
+	m := make([]KVStoreItem, 0)
 	for k, v := range ksStore.All() {
-		m[k] = v
+		m = append(m, NewBasicStoreItem(k, v))
 	}
 	return m, nil
 }

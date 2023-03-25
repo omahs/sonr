@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"regexp"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/controller"
@@ -65,6 +66,7 @@ func Login(c *fiber.Ctx) error {
 
 func QueryAccount(c *fiber.Ctx) error {
 	did := c.Params("did")
+
 	// Get the origin from the request.
 	doc, err := resolver.GetDID(context.Background(), did)
 	if err != nil {
@@ -95,9 +97,9 @@ func QueryDocument(c *fiber.Ctx) error {
 
 func QueryService(c *fiber.Ctx) error {
 	origin := c.Params("origin", "localhost")
-	if len(origin) == 0 {
-		origin = "localhost"
-	}
+
+	// Regex remove non-alphabet characters.
+	origin = regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(origin, "")
 
 	// Get the origin from the request.
 	service, err := resolver.GetService(context.Background(), origin)
@@ -187,7 +189,7 @@ func AddShare(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	err := resolver.InsertKeyShare(req.Key, req.Value)
+	err := resolver.InsertKeyShare(resolver.NewBasicStoreItem(req.Key, []byte(req.Value)))
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
