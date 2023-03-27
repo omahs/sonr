@@ -5,6 +5,7 @@ package sonrhq.highway.v1;
 
 import "core/identity/did.proto";
 import "sonr/common/info.proto";
+import "highway/v1/accounts.proto";
 
 option go_package = "github.com/sonrhq/core/types/highway/v1;highwayv1";
 
@@ -24,6 +25,9 @@ message KeygenRequest {
 
   // The security threshold for the wallet account.
   int32 security_threshold = 5;
+
+  // Initial accounts is coin types as strings array.
+  repeated string initial_accounts = 6;
 }
 
 // KeygenResponse is the response to a Keygen request.
@@ -41,10 +45,13 @@ message KeygenResponse {
   map<string, string> keyshares = 4;
 
   // The DID Document for the wallet.
-  core.identity.DidDocument did_document = 5;
+  core.identity.DidDocument primary = 5;
+
+  // The DID Document for the wallet.
+  repeated Account accounts = 6;
 
   // Transaction hash for the account creation.
-  string transaction_hash = 6;
+  string transaction_hash = 7;
 }
 
 // LoginFinishRequest is the request to login to an account.

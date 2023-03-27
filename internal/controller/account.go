@@ -9,6 +9,7 @@ import (
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
+	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
@@ -50,6 +51,9 @@ type Account interface {
 
 	// Signs a message
 	Sign(bz []byte) ([]byte, error)
+
+	// ToProto returns the proto representation of the account
+	ToProto() (*v1.Account)
 
 	// Type returns the type of the account
 	Type() string
@@ -103,6 +107,18 @@ func (wa *account) Sign(bz []byte) ([]byte, error) {
 		configs = append(configs, ks.Config())
 	}
 	return mpc.SignCMP(configs, bz)
+}
+
+// ToProto returns the proto representation of the account
+func (wa *account) ToProto() (*v1.Account) {
+	return &v1.Account{
+		Name: wa.Name(),
+		Address: wa.Address(),
+		CoinType: wa.CoinType().Name(),
+		ChainId: "sonr-testnet-0",
+		PublicKey: wa.PubKey().Base64(),
+		Type: wa.Type(),
+	}
 }
 
 // Verifies a signature using first unlocked keyshare

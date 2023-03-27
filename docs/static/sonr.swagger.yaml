@@ -682,8 +682,14 @@ definitions:
         additionalProperties:
           type: string
         description: The keyshares for the account. The keyshares are encoded as base64 strings.
-      didDocument:
+      primary:
         $ref: '#/definitions/identityDidDocument'
+        description: The DID Document for the wallet.
+      accounts:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Account'
         description: The DID Document for the wallet.
       transactionHash:
         type: string

@@ -34,14 +34,21 @@ func Keygen(c *fiber.Ctx) error {
 		return c.Status(403).SendString(err.Error())
 	}
 
-	cont, acc, err := controller.NewController(context.Background(), cred)
+	cont, acc, err := controller.NewController(context.Background(), cred, controller.WithInitialAccounts(req.InitialAccounts...))
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
+	accs := make([]*v1.Account, 0)
+	lclAccs := cont.ListLocalAccounts()
+	for _, lclAcc := range lclAccs {
+		accs = append(accs, lclAcc.ToProto())
+	}
+
 	res := &v1.KeygenResponse{
 		Success:     true,
 		Did:         acc.DID(),
-		DidDocument: cont.DidDocument(),
+		Primary: cont.DidDocument(),
+		Accounts: accs,
 	}
 	return c.JSON(res)
 }

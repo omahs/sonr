@@ -38,6 +38,9 @@ type Controller interface {
 	// ListAccounts returns the controller's accounts
 	ListAccounts(ct crypto.CoinType) ([]Account, error)
 
+	// ListLocalAccounts returns the controller's local accounts (WARNING: this is not secure)
+	ListLocalAccounts() ([]Account)
+
 	// Sign signs a message with the controller's account
 	Sign(name string, coinType crypto.CoinType, msg []byte) ([]byte, error)
 
@@ -47,9 +50,36 @@ type Controller interface {
 
 type didController struct {
 	primary Account
+	blockchain []Account
 }
 
-func NewController(ctx context.Context, credential *crypto.WebauthnCredential, handlers ...mpc.OnConfigGenerated) (Controller, Account, error) {
+type Options struct {
+	// The controller's DID document
+	GenerateInitialAccounts []string
+
+	// The controller's on config generated handler
+	OnConfigGenerated []mpc.OnConfigGenerated
+}
+
+type Option func(*Options)
+
+func WithInitialAccounts(accounts ...string) Option {
+	return func(o *Options) {
+		o.GenerateInitialAccounts = accounts
+	}
+}
+
+func WithOnConfigGenerated(handlers ...mpc.OnConfigGenerated) Option {
+	return func(o *Options) {
+		o.OnConfigGenerated = handlers
+	}
+}
+
+func NewController(ctx context.Context, credential *crypto.WebauthnCredential, options ...Option) (Controller, Account, error) {
+	opts := &Options{}
+	for _, option := range options {
+		option(opts)
+	}
 	cred, err := ValidateWebauthnCredential(credential)
 	if err != nil {
 		fmt.Println("Warning - Error validating webauthn credential: ", err)
@@ -57,7 +87,7 @@ func NewController(ctx context.Context, credential *crypto.WebauthnCredential, h
 	doneCh := make(chan Account)
 	errCh := make(chan error)
 
-	go generateInitialAccount(ctx, cred, doneCh, errCh)
+	go generateInitialAccount(ctx, cred, doneCh, errCh, opts.OnConfigGenerated...)
 
 	select {
 	case acc := <-doneCh:
@@ -81,7 +111,7 @@ func LoadController(ctx context.Context, didDoc *types.DidDocument) (Controller,
 
 	// Get the primary account
 	filtered := fuzzySearch(mapKv, didDoc.Id, FilterOptions{
-		CoinType: crypto.SONRCoinType,
+		CoinType:    crypto.SONRCoinType,
 		AccountName: &PrimaryAccountName,
 	})
 	if len(mapKv) == 0 {
@@ -119,6 +149,10 @@ func (dc *didController) DidDocument() *types.DidDocument {
 
 func (dc *didController) Authorize(cred *crypto.WebauthnCredential) error {
 	return nil
+}
+
+func (dc *didController) ListLocalAccounts() []Account {
+	return dc.blockchain
 }
 
 func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (Account, error) {
@@ -173,7 +207,7 @@ func (dc *didController) GetAccount(name string, coinType crypto.CoinType) (Acco
 		return nil, err
 	}
 	filtered := fuzzySearch(mapkv, name, FilterOptions{
-		CoinType: coinType,
+		CoinType:    coinType,
 		AccountName: &name,
 	})
 	if len(mapkv) == 0 {
@@ -246,15 +280,30 @@ func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCred
 	doneCh <- NewAccount(kss, crypto.SONRCoinType)
 }
 
-func setupController(ctx context.Context, credential *crypto.WebauthnCredential, primary Account) (Controller, error) {
-
+func setupController(ctx context.Context, credential *crypto.WebauthnCredential, primary Account, initialAccounts ...string) (Controller, error) {
 	primary.MapKeyshares(func(ks KeyShare) error {
 		return resolver.InsertKeyShare(ks)
 	})
 
-	return &didController{
+	cont := &didController{
 		primary: primary,
-	}, nil
+		blockchain: []Account{},
+	}
+
+	if len(initialAccounts) > 0 {
+		cts := []crypto.CoinType{}
+		for _, ct := range initialAccounts {
+			cts = append(cts, crypto.CoinTypeFromName(ct))
+		}
+		for _, ct := range cts {
+			acc, err := cont.CreateAccount("Account 1", ct)
+			if err != nil {
+				return nil, err
+			}
+			cont.blockchain = append(cont.blockchain, acc)
+		}
+	}
+	return cont, nil
 }
 
 // ! ||--------------------------------------------------------------------------------||
@@ -265,42 +314,41 @@ type FilterOptions struct {
 	AccountName *string
 	Index       *int
 }
+
 func fuzzySearch(m []resolver.KVStoreItem, query string, options FilterOptions) []KeyShare {
 	mapKv := make(map[string][]byte)
-    // Create a trie and insert keys
-    t := trie.New()
-    for _, i := range m {
-        t.Add(i.Did(), i.Bytes())
+	// Create a trie and insert keys
+	t := trie.New()
+	for _, i := range m {
+		t.Add(i.Did(), i.Bytes())
 		mapKv[i.Did()] = i.Bytes()
-    }
+	}
 
-    // Perform fuzzy search with a query
-    matches := t.FuzzySearch(query)
+	// Perform fuzzy search with a query
+	matches := t.FuzzySearch(query)
 
-    // Filter results based on the provided options
-    results := make([]KeyShare, 0)
-    for _, match := range matches {
-        ksr, err := ParseKeyShareDid(match)
-        if err != nil {
-            continue
-        }
-        if ksr.CoinType != options.CoinType {
-            continue
-        }
-        if options.AccountName != nil && ksr.AccountName != *options.AccountName {
-            continue
-        }
-        ks, err := NewKeyshare(ksr.DID, mapKv[match], ksr.CoinType, ksr.AccountName)
+	// Filter results based on the provided options
+	results := make([]KeyShare, 0)
+	for _, match := range matches {
+		ksr, err := ParseKeyShareDid(match)
+		if err != nil {
+			continue
+		}
+		if ksr.CoinType != options.CoinType {
+			continue
+		}
+		if options.AccountName != nil && ksr.AccountName != *options.AccountName {
+			continue
+		}
+		ks, err := NewKeyshare(ksr.DID, mapKv[match], ksr.CoinType, ksr.AccountName)
 		if err != nil {
 			continue
 		}
 		results = append(results, ks)
-    }
+	}
 
-    return results
+	return results
 }
-
-
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                       WebauthnCredential utility methods                       ||
