@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/derekparker/trie"
 	"github.com/sonrhq/core/internal/resolver"
@@ -15,7 +14,7 @@ import (
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
 
-const PrimaryAccountName = "primary"
+var PrimaryAccountName string = "primary"
 
 type Controller interface {
 	// Address returns the controller's address
@@ -83,21 +82,12 @@ func LoadController(ctx context.Context, didDoc *types.DidDocument) (Controller,
 	// Get the primary account
 	filtered := fuzzySearch(mapKv, didDoc.Id, FilterOptions{
 		CoinType: crypto.SONRCoinType,
+		AccountName: &PrimaryAccountName,
 	})
 	if len(mapKv) == 0 {
 		return nil, fmt.Errorf("no primary account found")
 	}
-
-	// Get the primary account
-	var kss []KeyShare
-	for k, v := range filtered {
-		ks, err := LoadKeyshareFromStore(k, v)
-		if err != nil {
-			return nil, err
-		}
-		kss = append(kss, ks)
-	}
-	primary := NewAccount(kss, crypto.SONRCoinType)
+	primary := NewAccount(filtered, crypto.SONRCoinType)
 	return &didController{
 		primary: primary,
 	}, nil
@@ -184,19 +174,12 @@ func (dc *didController) GetAccount(name string, coinType crypto.CoinType) (Acco
 	}
 	filtered := fuzzySearch(mapkv, name, FilterOptions{
 		CoinType: coinType,
+		AccountName: &name,
 	})
 	if len(mapkv) == 0 {
 		return nil, fmt.Errorf("account not found")
 	}
-	var kss []KeyShare
-	for k, v := range filtered {
-		ks, err := LoadKeyshareFromStore(k, v)
-		if err != nil {
-			return nil, err
-		}
-		kss = append(kss, ks)
-	}
-	return NewAccount(kss, coinType), nil
+	return NewAccount(filtered, coinType), nil
 }
 
 // ListAccounts returns the controller's accounts
@@ -208,8 +191,8 @@ func (dc *didController) ListAccounts(ct crypto.CoinType) ([]Account, error) {
 	}
 	var accs []Account
 	filtered := fuzzySearch(mapKv, dc.Address(), FilterOptions{})
-	for k := range filtered {
-		acc, err := dc.GetAccount(k, ct)
+	for _, k := range filtered {
+		acc, err := dc.GetAccount(k.AccountName(), ct)
 		if err != nil {
 			return nil, err
 		}
@@ -282,39 +265,41 @@ type FilterOptions struct {
 	AccountName *string
 	Index       *int
 }
+func fuzzySearch(m []resolver.KVStoreItem, query string, options FilterOptions) []KeyShare {
+	mapKv := make(map[string][]byte)
+    // Create a trie and insert keys
+    t := trie.New()
+    for _, i := range m {
+        t.Add(i.Did(), i.Bytes())
+		mapKv[i.Did()] = i.Bytes()
+    }
 
-func fuzzySearch(m []resolver.KVStoreItem, query string, options FilterOptions) map[string][]byte {
-	// Create a trie and insert keys
-	t := trie.New()
-	for _, i := range m {
-		t.Add(i.Did(), i.Bytes())
-	}
+    // Perform fuzzy search with a query
+    matches := t.FuzzySearch(query)
 
-	// Perform fuzzy search with a query
-	matches := t.FuzzySearch(query)
-
-	// Filter results based on the provided options
-	results := make(map[string][]byte)
-	for _, match := range matches {
-		ksr, err := ParseKeyShareDid(match)
+    // Filter results based on the provided options
+    results := make([]KeyShare, 0)
+    for _, match := range matches {
+        ksr, err := ParseKeyShareDid(match)
+        if err != nil {
+            continue
+        }
+        if ksr.CoinType != options.CoinType {
+            continue
+        }
+        if options.AccountName != nil && ksr.AccountName != *options.AccountName {
+            continue
+        }
+        ks, err := NewKeyshare(ksr.DID, mapKv[match], ksr.CoinType, ksr.AccountName)
 		if err != nil {
 			continue
 		}
-		if ksr.CoinType != options.CoinType {
-			continue
-		}
-		if options.AccountName != nil && ksr.AccountName != *options.AccountName {
-			continue
-		}
-	}
+		results = append(results, ks)
+    }
 
-	for _, i := range m {
-		if strings.Contains(i.Did(), query) {
-			results[i.Did()] = i.Bytes()
-		}
-	}
-	return results
+    return results
 }
+
 
 
 // ! ||--------------------------------------------------------------------------------||

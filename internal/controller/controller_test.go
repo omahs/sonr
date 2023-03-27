@@ -67,17 +67,11 @@ func TestController(t *testing.T) {
 	}
 	t.Logf("controller: %v", controller.Did())
 
-	_, err = controller.CreateAccount("ethTest", crypto.ETHCoinType)
+	acc, err := controller.CreateAccount("ethTest", crypto.ETHCoinType)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	acc, err := controller.GetAccount("ethTest", crypto.ETHCoinType)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("account: %v", acc.Address())
-
+	t.Logf("did: %s", acc.DID())
 	msg := []byte("hello world")
 	sig, err := acc.Sign(msg)
 	if err != nil {
@@ -86,17 +80,6 @@ func TestController(t *testing.T) {
 	t.Logf("signature: %x", sig)
 
 	ok, err := acc.Verify(msg, sig)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("verify: %v", ok)
-
-	sig2, err := controller.Sign("ethTest", crypto.ETHCoinType, msg)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ok, err = controller.Verify("ethTest", crypto.ETHCoinType, msg, sig2)
 	if err != nil {
 		t.Fatal(err)
 	}

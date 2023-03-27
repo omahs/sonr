@@ -143,7 +143,12 @@ func (a *account) CoinType() crypto.CoinType {
 
 // DID returns the DID of the account
 func (wa *account) DID() string {
-	return fmt.Sprintf("did:%s:%s", wa.CoinType().DidMethod(), wa.Address())
+	tks, err := getFirstDecryptedKeyshare(wa.kss)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("did:%s:%s", tks.CoinType().DidMethod(), wa.Address())
 }
 
 // Type returns the type of the account
