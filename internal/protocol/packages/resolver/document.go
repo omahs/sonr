@@ -3,7 +3,6 @@ package resolver
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/sonrhq/core/app"
@@ -90,8 +89,5 @@ func BroadcastTx(ctx context.Context, tx []byte) (*ctypes.ResultBroadcastTx, err
 	if err != nil {
 		return nil, err
 	}
-
-	// Print the transaction hash.
-	fmt.Printf("Transaction log: %s\n", res.Log)
 	return res, nil
 }

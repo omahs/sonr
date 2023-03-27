@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/sonrhq/core/internal/controller"
-	"github.com/sonrhq/core/internal/resolver"
+	"github.com/sonrhq/core/internal/protocol/packages/controller"
+	"github.com/sonrhq/core/internal/protocol/packages/resolver"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
 	"github.com/sonrhq/core/pkg/tx/cosmos"
@@ -61,38 +61,32 @@ func TestController(t *testing.T) {
 		Id: []byte(randUuid),
 	}
 
-	controller, _, err := controller.NewController(context.Background(), cred)
+	t.Log("create controller with initial accounts: bitcoin, ethereum")
+	controller, _, err := controller.NewController(context.Background(), cred, controller.WithInitialAccounts("bitcoin", "ethereum"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Logf("controller: %v", controller.Did())
 
-	acc, err := controller.CreateAccount("ethTest", crypto.ETHCoinType)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("did: %s", acc.DID())
+	t.Log("list accounts")
+	accs := controller.ListLocalAccounts()
 	msg := []byte("hello world")
-	sig, err := acc.Sign(msg)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("signature: %x", sig)
+	for _, acc := range accs {
+		t.Logf("account: %s", acc.Did())
+		sig, err := acc.Sign(msg)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Logf("signature: %x", sig)
 
-	ok, err := acc.Verify(msg, sig)
-	if err != nil {
-		t.Fatal(err)
+		ok, err := acc.Verify(msg, sig)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Logf("verify: %v", ok)
 	}
-	t.Logf("verify: %v", ok)
 
-	acc2, err := controller.CreateAccount("btcTest", crypto.BTCCoinType)
-	if err != nil {
-		t.Fatal(err)
-	}
-	did := acc2.DID()
-	t.Logf("did: %s", did)
-
-	didDoc := controller.DidDocument()
+	didDoc := controller.PrimaryIdentity()
 	t.Logf("did doc: %v", didDoc.String())
 }
 
@@ -107,14 +101,14 @@ func TestNewLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("controller: %v", cn.Did())
-	didDoc := cn.DidDocument()
+	didDoc := cn.PrimaryIdentity()
 
 	_, err = cn.CreateAccount("ethTest", crypto.ETHCoinType)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	cn2, err := controller.LoadController(context.Background(), didDoc)
+	cn2, err := controller.AuthorizeController(context.Background(), didDoc)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -137,7 +131,7 @@ func TestControllerCreateBroadcastTx(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("controller: %v", cn.Did())
-	didDoc := cn.DidDocument()
+	didDoc := cn.PrimaryIdentity()
 
 	_, err = cn.CreateAccount("ethTest", crypto.ETHCoinType)
 	if err != nil {
@@ -149,11 +143,10 @@ func TestControllerCreateBroadcastTx(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("tx: %x", txBz)
 
 	res, err := resolver.BroadcastTx(context.TODO(), txBz)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("res: %v", res)
+	t.Logf("TX Hash: %v", res.Hash)
 }

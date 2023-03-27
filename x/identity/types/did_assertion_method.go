@@ -5,7 +5,7 @@ package types
 import "github.com/sonrhq/core/pkg/crypto"
 
 // AddBlockchainAccount creates a verification method from a new wallet account
-func (d *DidDocument) AddBlockchainAccount(accName string, ct crypto.CoinType, pk *crypto.PubKey, metadata ...*KeyValuePair) (*VerificationMethod, error) {
+func (d *DidDocument) AddBlockchainAccount(accName string, ct crypto.CoinType, pk *crypto.PubKey, metadata ...*KeyValuePair) (*VerificationMethod) {
 	accDid, accAddress := ct.FormatDID(pk)
 	vm := &VerificationMethod{
 		Id:                  accDid,
@@ -16,7 +16,7 @@ func (d *DidDocument) AddBlockchainAccount(accName string, ct crypto.CoinType, p
 		Metadata:            metadata,
 	}
 	d.AddAssertion(vm)
-	return vm, nil
+	return vm
 }
 
 // AssertionMethodCount returns the number of Assertion Methods
@@ -32,4 +32,14 @@ func (d *DidDocument) AddAssertion(v *VerificationMethod) {
 	}
 	d.VerificationMethod = append(d.VerificationMethod, v)
 	d.AssertionMethod = append(d.AssertionMethod, v.Id)
+}
+
+// GetAssertionAtIndex returns the Assertion Method at the given index
+func (d *DidDocument) GetAssertion(id string) *VerificationMethod {
+	for _, vm := range d.VerificationMethod {
+		if vm.Id == id {
+			return vm
+		}
+	}
+	return nil
 }

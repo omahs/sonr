@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/derekparker/trie"
-	"github.com/sonrhq/core/internal/resolver"
+	"github.com/sonrhq/core/internal/protocol/packages/resolver"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
 	"github.com/sonrhq/core/x/identity/types"
@@ -24,7 +24,10 @@ type Controller interface {
 	Did() string
 
 	// Get the controller's DID document
-	DidDocument() *types.DidDocument
+	PrimaryIdentity() *types.DidDocument
+
+	// Blockchain returns the controller's blockchain identities
+	BlockchainIdentities() []*types.DidDocument
 
 	// Authorize the client to access the controller's account
 	Authorize(cred *crypto.WebauthnCredential) error
@@ -39,7 +42,7 @@ type Controller interface {
 	ListAccounts(ct crypto.CoinType) ([]Account, error)
 
 	// ListLocalAccounts returns the controller's local accounts (WARNING: this is not secure)
-	ListLocalAccounts() ([]Account)
+	ListLocalAccounts() []Account
 
 	// Sign signs a message with the controller's account
 	Sign(name string, coinType crypto.CoinType, msg []byte) ([]byte, error)
@@ -49,7 +52,7 @@ type Controller interface {
 }
 
 type didController struct {
-	primary Account
+	primary    Account
 	blockchain []Account
 }
 
@@ -91,7 +94,7 @@ func NewController(ctx context.Context, credential *crypto.WebauthnCredential, o
 
 	select {
 	case acc := <-doneCh:
-		cn, err := setupController(ctx, cred, acc)
+		cn, err := setupController(ctx, cred, acc, opts.GenerateInitialAccounts...)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -101,23 +104,24 @@ func NewController(ctx context.Context, credential *crypto.WebauthnCredential, o
 	}
 }
 
-// LoadController loads a controller from the given DID document using the underlying IPFS store
-func LoadController(ctx context.Context, didDoc *types.DidDocument) (Controller, error) {
+// AuthorizeController loads a controller from the given DID document using the underlying IPFS store
+func AuthorizeController(ctx context.Context, didDoc *types.DidDocument) (Controller, error) {
 	// Get the IPFS store service
-	mapKv, err := resolver.ListKeyShares()
+	ksm, err := resolver.ListKeyShares(didDoc.Id)
 	if err != nil {
 		return nil, err
 	}
 
 	// Get the primary account
-	filtered := fuzzySearch(mapKv, didDoc.Id, FilterOptions{
-		CoinType:    crypto.SONRCoinType,
-		AccountName: &PrimaryAccountName,
-	})
-	if len(mapKv) == 0 {
-		return nil, fmt.Errorf("no primary account found")
+	kss := make([]KeyShare, 0)
+	for did, bz := range ksm {
+		ks, err := NewKeyshare(did, bz, crypto.SONRCoinType, PrimaryAccountName)
+		if err != nil {
+			return nil, err
+		}
+		kss = append(kss, ks)
 	}
-	primary := NewAccount(filtered, crypto.SONRCoinType)
+	primary := NewAccount(kss, crypto.SONRCoinType)
 	return &didController{
 		primary: primary,
 	}, nil
@@ -128,23 +132,19 @@ func (dc *didController) Address() string {
 }
 
 func (dc *didController) Did() string {
-	return dc.primary.DID()
+	return dc.primary.Did()
 }
 
-func (dc *didController) DidDocument() *types.DidDocument {
-	didDoc := types.NewBlankDocument(dc.Did())
-	var vms []types.VerificationMethod
-	accs, err := dc.ListAccounts(crypto.SONRCoinType)
-	if err != nil {
-		return nil
-	}
+func (dc *didController) PrimaryIdentity() *types.DidDocument {
+	return dc.primary.DidDocument("")
+}
 
-	for _, acc := range accs {
-		vms = append(vms, *acc.VerificationMethod(dc.Did()))
+func (dc *didController) BlockchainIdentities() []*types.DidDocument {
+	var docs []*types.DidDocument
+	for _, acc := range dc.blockchain {
+		docs = append(docs, acc.DidDocument(dc.Did()))
 	}
-
-	didDoc.ImportVerificationMethods("assertionmethod", vms...)
-	return didDoc
+	return docs
 }
 
 func (dc *didController) Authorize(cred *crypto.WebauthnCredential) error {
@@ -193,7 +193,10 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (A
 	// Create the new account and map the keyshares to the resolver
 	select {
 	case newAcc := <-newAccCh:
-		fmt.Printf("new account created: %s", newAcc.Address())
+		err = resolver.InsertAccountInfo(newAcc.ToStore())
+		if err != nil {
+			return nil, err
+		}
 		return newAcc, nil
 	case err := <-errCh:
 		return nil, err
@@ -202,36 +205,25 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (A
 
 // GetAccount returns the controller's account from the Address
 func (dc *didController) GetAccount(name string, coinType crypto.CoinType) (Account, error) {
-	mapkv, err := resolver.ListKeyShares()
-	if err != nil {
-		return nil, err
-	}
-	filtered := fuzzySearch(mapkv, name, FilterOptions{
-		CoinType:    coinType,
-		AccountName: &name,
-	})
-	if len(mapkv) == 0 {
-		return nil, fmt.Errorf("account not found")
-	}
-	return NewAccount(filtered, coinType), nil
+	return nil, fmt.Errorf("account not found")
 }
 
 // ListAccounts returns the controller's accounts
 func (dc *didController) ListAccounts(ct crypto.CoinType) ([]Account, error) {
 	// Get the IPFS store service
-	mapKv, err := resolver.ListKeyShares()
-	if err != nil {
-		return nil, err
-	}
+	// mapKv, err := resolver.ListKeyShares()
+	// if err != nil {
+	// 	return nil, err
+	// }
 	var accs []Account
-	filtered := fuzzySearch(mapKv, dc.Address(), FilterOptions{})
-	for _, k := range filtered {
-		acc, err := dc.GetAccount(k.AccountName(), ct)
-		if err != nil {
-			return nil, err
-		}
-		accs = append(accs, acc)
-	}
+	// filtered := fuzzySearch(mapKv, dc.Address(), FilterOptions{})
+	// for _, k := range filtered {
+	// 	acc, err := dc.GetAccount(k.AccountName(), ct)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	accs = append(accs, acc)
+	// }
 	return accs, nil
 }
 
@@ -265,13 +257,24 @@ func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCred
 		errChan <- err
 	}
 
+	pubKey, err := crypto.NewPubKeyFromCmpConfig(confs[0])
+	if err != nil {
+		errChan <- err
+	}
+
+	rootDid, _ := crypto.SONRCoinType.FormatDID(pubKey)
 	var kss []KeyShare
 	for _, conf := range confs {
 		ksb, err := conf.MarshalBinary()
 		if err != nil {
 			errChan <- err
 		}
-		ks, err := NewKeyshare(string(conf.ID), ksb, crypto.SONRCoinType, "Primary")
+		ksDid := fmt.Sprintf("%s#%s", rootDid, conf.ID)
+		err = resolver.InsertKSItem(ksDid, ksb)
+		if err != nil {
+			errChan <- err
+		}
+		ks, err := NewKeyshare(ksDid, ksb, crypto.SONRCoinType, "Primary")
 		if err != nil {
 			errChan <- err
 		}
@@ -281,27 +284,25 @@ func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCred
 }
 
 func setupController(ctx context.Context, credential *crypto.WebauthnCredential, primary Account, initialAccounts ...string) (Controller, error) {
-	primary.MapKeyshares(func(ks KeyShare) error {
-		return resolver.InsertKeyShare(ks)
-	})
-
+	err := resolver.InsertAccountInfo(primary.ToStore())
+	if err != nil {
+		return nil, err
+	}
 	cont := &didController{
-		primary: primary,
+		primary:    primary,
 		blockchain: []Account{},
 	}
+	cts := []crypto.CoinType{}
+	for _, ct := range initialAccounts {
+		cts = append(cts, crypto.CoinTypeFromName(ct))
+	}
 
-	if len(initialAccounts) > 0 {
-		cts := []crypto.CoinType{}
-		for _, ct := range initialAccounts {
-			cts = append(cts, crypto.CoinTypeFromName(ct))
+	for _, ct := range cts {
+		acc, err := cont.CreateAccount("Account 1", ct)
+		if err != nil {
+			return nil, err
 		}
-		for _, ct := range cts {
-			acc, err := cont.CreateAccount("Account 1", ct)
-			if err != nil {
-				return nil, err
-			}
-			cont.blockchain = append(cont.blockchain, acc)
-		}
+		cont.blockchain = append(cont.blockchain, acc)
 	}
 	return cont, nil
 }

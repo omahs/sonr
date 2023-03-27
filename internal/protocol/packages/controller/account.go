@@ -23,7 +23,10 @@ type Account interface {
 	CoinType() crypto.CoinType
 
 	// DID returns the DID of the account
-	DID() string
+	Did() string
+
+	// Get the controller's DID document
+	DidDocument(controller string) *types.DidDocument
 
 	// GetAuthInfo creates an AuthInfo for a transaction
 	GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error)
@@ -55,11 +58,11 @@ type Account interface {
 	// ToProto returns the proto representation of the account
 	ToProto() (*v1.Account)
 
+	// ToStore returns the store representation of the account
+	ToStore() (string, []string)
+
 	// Type returns the type of the account
 	Type() string
-
-	// VerificationMethod returns the verification method for the account
-	VerificationMethod(controller string) *types.VerificationMethod
 
 	// Verifies a signature
 	Verify(bz []byte, sig []byte) (bool, error)
@@ -86,6 +89,7 @@ type account struct {
 func NewAccount(kss []KeyShare, ct crypto.CoinType) Account {
 	return &account{kss: kss, n: 0, p: "", ct: ct}
 }
+
 
 // PubKey returns secp256k1 public key
 func (wa *account) PubKey() *crypto.PubKey {
@@ -119,6 +123,15 @@ func (wa *account) ToProto() (*v1.Account) {
 		PublicKey: wa.PubKey().Base64(),
 		Type: wa.Type(),
 	}
+}
+
+func (wa *account) ToStore() (string, []string) {
+	selfDid := wa.Did()
+	ksDids := make([]string, 0)
+	for _, ks := range wa.kss {
+		ksDids = append(ksDids, ks.Did())
+	}
+	return selfDid, ksDids
 }
 
 // Verifies a signature using first unlocked keyshare
@@ -158,13 +171,22 @@ func (a *account) CoinType() crypto.CoinType {
 }
 
 // DID returns the DID of the account
-func (wa *account) DID() string {
+func (wa *account) Did() string {
 	tks, err := getFirstDecryptedKeyshare(wa.kss)
 	if err != nil {
 		return ""
 	}
-
 	return fmt.Sprintf("did:%s:%s", tks.CoinType().DidMethod(), wa.Address())
+}
+
+// DidDocument returns the DID document of the account
+func (wa *account) DidDocument(controller string) *types.DidDocument {
+	doc := types.NewBlankDocument(wa.Did())
+	doc.AddBlockchainAccount(wa.Address(), wa.CoinType(), wa.PubKey())
+	if controller != "" {
+		doc.Controller = append(doc.Controller, controller)
+	}
+	return doc
 }
 
 // Type returns the type of the account
@@ -175,7 +197,7 @@ func (wa *account) Type() string {
 // VerificationMethod returns the verification method of the account
 func (wa *account) VerificationMethod(controller string) *types.VerificationMethod {
 	return &types.VerificationMethod{
-		Id:                  wa.DID(),
+		Id:                  wa.Did(),
 		Type:                crypto.Secp256k1KeyType.FormatString(),
 		Controller:          controller,
 		PublicKeyMultibase:  wa.PubKey().Multibase(),

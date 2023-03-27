@@ -21,3 +21,7 @@ func (d *DidDocument) AddCapabilityInvocation(v *VerificationMethod) {
 	d.VerificationMethod = append(d.VerificationMethod, v)
 	d.CapabilityInvocation = append(d.CapabilityDelegation, v.Id)
 }
+
+func (d *DidDocument) ListBlockchainIdentities() []string {
+	return d.CapabilityDelegation
+}

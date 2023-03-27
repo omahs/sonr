@@ -1,4 +1,4 @@
-package protocol
+package rest
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"regexp"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sonrhq/core/internal/controller"
-	"github.com/sonrhq/core/internal/resolver"
+	"github.com/sonrhq/core/internal/protocol/packages/controller"
+	"github.com/sonrhq/core/internal/protocol/packages/resolver"
 	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/types"
 )
@@ -46,8 +46,8 @@ func Keygen(c *fiber.Ctx) error {
 
 	res := &v1.KeygenResponse{
 		Success:     true,
-		Did:         acc.DID(),
-		Primary: cont.DidDocument(),
+		Did:         acc.Did(),
+		Primary: cont.PrimaryIdentity(),
 		Accounts: accs,
 	}
 	return c.JSON(res)

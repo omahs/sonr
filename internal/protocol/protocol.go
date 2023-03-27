@@ -11,6 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/timeout"
 	"github.com/gofiber/helmet/v2"
 	"github.com/sonrhq/core/internal/local"
+	"github.com/sonrhq/core/internal/protocol/transport/rest"
 )
 
 var hway *Protocol
@@ -41,14 +42,14 @@ func setupFiber(ctx client.Context) {
 	})
 
 	// Query Methods
-	app.Get("/highway/query/service/:origin", timeout.New(QueryService, time.Second*5))
-	app.Get("/highway/query/document/:did", timeout.New(QueryDocument, time.Second*5))
+	app.Get("/highway/query/service/:origin", timeout.New(rest.QueryService, time.Second*5))
+	app.Get("/highway/query/document/:did", timeout.New(rest.QueryDocument, time.Second*5))
 
 	// Auth Methods
-	app.Post("/highway/auth/keygen", timeout.New(Keygen, time.Second*10))
-	app.Post("/highway/auth/login", timeout.New(Login, time.Second*10))
-	app.Post("/highway/vault/add", timeout.New(AddShare, time.Second*5))
-	app.Post("/highway/vault/sync", timeout.New(SyncShare, time.Second*5))
+	app.Post("/highway/auth/keygen", timeout.New(rest.Keygen, time.Second*10))
+	app.Post("/highway/auth/login", timeout.New(rest.Login, time.Second*10))
+	app.Post("/highway/vault/add", timeout.New(rest.AddShare, time.Second*5))
+	app.Post("/highway/vault/sync", timeout.New(rest.SyncShare, time.Second*5))
 	go hway.serveFiber(app)
 }
 

@@ -9,37 +9,39 @@ import (
 
 // Context is a struct that holds the current context of the application.
 type Context struct {
-	grpcApiEndpoint   string
-	rpcApiEndpoint    string
-	highwayServerPort string
-	TlsCertPath       string
-	TlsKeyPath        string
-	GlobalKsStore     string
-	GlobalInboxStore  string
-	HighwayMode       string
-	HomeDir           string
-	NodeHome          string
-	IPFSRepoPath      string
-	Rendevouz         string
-	BsMultiaddrs      []string
+	grpcApiEndpoint        string
+	rpcApiEndpoint         string
+	highwayServerPort      string
+	TlsCertPath            string
+	TlsKeyPath             string
+	GlobalKvKsStore        string
+	GlobalInboxDocsStore   string
+	GlobalInboxEventsStore string
+	HighwayMode            string
+	HomeDir                string
+	NodeHome               string
+	IPFSRepoPath           string
+	Rendevouz              string
+	BsMultiaddrs           []string
 }
 
 func NewContext() Context {
 	params := types.DefaultParams()
 	return Context{
-		grpcApiEndpoint:   currGrpcEndpoint(),
-		rpcApiEndpoint:    currRpcEndpoint(),
-		highwayServerPort: getServerPort(),
-		TlsCertPath:       getTLSCert(),
-		TlsKeyPath:        getTLSKey(),
-		GlobalKsStore:     params.DidMethodName + "-" + params.DidMethodVersion + "/kvstore#mpc",
-		GlobalInboxStore:  params.DidMethodName + "-" + params.DidMethodVersion + "/docsstore#inbox",
-		HighwayMode:       "fiber",
-		HomeDir:           filepath.Join(getHomeDir()),
-		NodeHome:          filepath.Join(getHomeDir(), ".sonr"),
-		IPFSRepoPath:      filepath.Join(getHomeDir(), ".sonr", "adapters", "ipfs"),
-		Rendevouz:         defaultRendezvousString,
-		BsMultiaddrs:      defaultBootstrapMultiaddrs,
+		grpcApiEndpoint:        currGrpcEndpoint(),
+		rpcApiEndpoint:         currRpcEndpoint(),
+		highwayServerPort:      getServerPort(),
+		TlsCertPath:            getTLSCert(),
+		TlsKeyPath:             getTLSKey(),
+		GlobalKvKsStore:        params.DidMethodName + "-" + params.DidMethodVersion + "/keyvalue#ks",
+		GlobalInboxDocsStore:   params.DidMethodName + "-" + params.DidMethodVersion + "/docsstore#inbox",
+		GlobalInboxEventsStore: params.DidMethodName + "-" + params.DidMethodVersion + "/eventlog#inbox",
+		HighwayMode:            "fiber",
+		HomeDir:                filepath.Join(getHomeDir()),
+		NodeHome:               filepath.Join(getHomeDir(), ".sonr"),
+		IPFSRepoPath:           filepath.Join(getHomeDir(), ".sonr", "adapters", "ipfs"),
+		Rendevouz:              defaultRendezvousString,
+		BsMultiaddrs:           defaultBootstrapMultiaddrs,
 	}
 }
 
