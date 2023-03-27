@@ -56,23 +56,18 @@ func TestTree(t *testing.T) {
 }
 
 func TestController(t *testing.T) {
-	randUuid := rand.Str(4)
-	cred := &crypto.WebauthnCredential{
-		Id: []byte(randUuid),
-	}
-
 	t.Log("create controller with initial accounts: bitcoin, ethereum")
-	controller, _, err := controller.NewController(context.Background(), cred, controller.WithInitialAccounts("bitcoin", "ethereum"))
+	controller, _, err := controller.NewController(context.Background(), controller.WithInitialAccounts("bitcoin", "ethereum"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Logf("controller: %v", controller.Did())
-
+	t.Logf("controller doc: %v", controller.PrimaryIdentity().String())
 	t.Log("list accounts")
 	accs := controller.ListLocalAccounts()
 	msg := []byte("hello world")
 	for _, acc := range accs {
-		t.Logf("account: %s", acc.Did())
+		t.Logf("did: %s", acc.Did())
 		sig, err := acc.Sign(msg)
 		if err != nil {
 			t.Fatal(err)
@@ -84,6 +79,9 @@ func TestController(t *testing.T) {
 			t.Fatal(err)
 		}
 		t.Logf("verify: %v", ok)
+
+		doc := acc.DidDocument(controller.Did())
+		t.Logf("did doc: %v", doc.String())
 	}
 
 	didDoc := controller.PrimaryIdentity()
@@ -91,42 +89,22 @@ func TestController(t *testing.T) {
 }
 
 func TestNewLoad(t *testing.T) {
-	randUuid := rand.Str(4)
-	cred := &crypto.WebauthnCredential{
-		Id: []byte(randUuid),
-	}
-
-	cn, _, err := controller.NewController(context.Background(), cred)
+	cn, _, err := controller.NewController(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Logf("controller: %v", cn.Did())
 	didDoc := cn.PrimaryIdentity()
 
-	_, err = cn.CreateAccount("ethTest", crypto.ETHCoinType)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	cn2, err := controller.AuthorizeController(context.Background(), didDoc)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	acc, err := cn2.GetAccount("ethTest", crypto.ETHCoinType)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("account: %v", acc.Address())
+	t.Logf("account: %v", cn2.Did())
 }
 
 func TestControllerCreateBroadcastTx(t *testing.T) {
-	randUuid := rand.Str(4)
-	cred := &crypto.WebauthnCredential{
-		Id: []byte(randUuid),
-	}
-
-	cn, prim, err := controller.NewController(context.Background(), cred)
+	cn, prim, err := controller.NewController(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}

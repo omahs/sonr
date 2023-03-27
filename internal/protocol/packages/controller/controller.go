@@ -53,6 +53,7 @@ type Controller interface {
 
 type didController struct {
 	primary    Account
+	primaryDoc *types.DidDocument
 	blockchain []Account
 }
 
@@ -62,6 +63,9 @@ type Options struct {
 
 	// The controller's on config generated handler
 	OnConfigGenerated []mpc.OnConfigGenerated
+
+	// Credential to authorize the controller
+	WebauthnCredential *crypto.WebauthnCredential
 }
 
 type Option func(*Options)
@@ -72,29 +76,35 @@ func WithInitialAccounts(accounts ...string) Option {
 	}
 }
 
-func WithOnConfigGenerated(handlers ...mpc.OnConfigGenerated) Option {
+func WithConfigHandlers(handlers ...mpc.OnConfigGenerated) Option {
 	return func(o *Options) {
 		o.OnConfigGenerated = handlers
 	}
 }
 
-func NewController(ctx context.Context, credential *crypto.WebauthnCredential, options ...Option) (Controller, Account, error) {
+func WithWebauthnCredential(cred *crypto.WebauthnCredential) Option {
+	return func(o *Options) {
+		o.WebauthnCredential = cred
+	}
+}
+
+func NewController(ctx context.Context, options ...Option) (Controller, Account, error) {
 	opts := &Options{}
 	for _, option := range options {
 		option(opts)
 	}
-	cred, err := ValidateWebauthnCredential(credential)
+	cred, err := ValidateWebauthnCredential(opts.WebauthnCredential)
 	if err != nil {
 		fmt.Println("Warning - Error validating webauthn credential: ", err)
 	}
 	doneCh := make(chan Account)
 	errCh := make(chan error)
 
-	go generateInitialAccount(ctx, cred, doneCh, errCh, opts.OnConfigGenerated...)
+	go generateInitialAccount(ctx, cred, doneCh, errCh, opts)
 
 	select {
 	case acc := <-doneCh:
-		cn, err := setupController(ctx, cred, acc, opts.GenerateInitialAccounts...)
+		cn, err := setupController(ctx, acc, opts)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -115,7 +125,7 @@ func AuthorizeController(ctx context.Context, didDoc *types.DidDocument) (Contro
 	// Get the primary account
 	kss := make([]KeyShare, 0)
 	for did, bz := range ksm {
-		ks, err := NewKeyshare(did, bz, crypto.SONRCoinType, PrimaryAccountName)
+		ks, err := LoadKeyshareFromStore(did, bz)
 		if err != nil {
 			return nil, err
 		}
@@ -124,6 +134,8 @@ func AuthorizeController(ctx context.Context, didDoc *types.DidDocument) (Contro
 	primary := NewAccount(kss, crypto.SONRCoinType)
 	return &didController{
 		primary: primary,
+		primaryDoc: didDoc,
+		blockchain: []Account{},
 	}, nil
 }
 
@@ -136,7 +148,7 @@ func (dc *didController) Did() string {
 }
 
 func (dc *didController) PrimaryIdentity() *types.DidDocument {
-	return dc.primary.DidDocument("")
+	return dc.primaryDoc
 }
 
 func (dc *didController) BlockchainIdentities() []*types.DidDocument {
@@ -197,6 +209,8 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (A
 		if err != nil {
 			return nil, err
 		}
+		dc.blockchain = append(dc.blockchain, newAcc)
+		dc.primaryDoc.AddBlockchainIdentity(newAcc.DidDocument(dc.Did()))
 		return newAcc, nil
 	case err := <-errCh:
 		return nil, err
@@ -249,10 +263,10 @@ func (dc *didController) Verify(name string, coinType crypto.CoinType, msg []byt
 // ! ||                          Helper Methods for Controller                         ||
 // ! ||--------------------------------------------------------------------------------||
 
-func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCredential, doneCh chan Account, errChan chan error, handlers ...mpc.OnConfigGenerated) {
+func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCredential, doneCh chan Account, errChan chan error, opts *Options) {
 	shardName := crypto.PartyID(base64.RawStdEncoding.EncodeToString(credential.Id))
 	// Call Handler for keygen
-	confs, err := mpc.Keygen(shardName, 1, []crypto.PartyID{"vault"}, handlers...)
+	confs, err := mpc.Keygen(shardName, 1, []crypto.PartyID{"vault"}, opts.OnConfigGenerated...)
 	if err != nil {
 		errChan <- err
 	}
@@ -283,17 +297,31 @@ func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCred
 	doneCh <- NewAccount(kss, crypto.SONRCoinType)
 }
 
-func setupController(ctx context.Context, credential *crypto.WebauthnCredential, primary Account, initialAccounts ...string) (Controller, error) {
+func setupController(ctx context.Context, primary Account, opts *Options) (Controller, error) {
 	err := resolver.InsertAccountInfo(primary.ToStore())
 	if err != nil {
 		return nil, err
 	}
+
+	var doc *types.DidDocument
+	if opts.WebauthnCredential != nil {
+		cvm, err := resolver.EncodeCredentialVerificationMethod(opts.WebauthnCredential, primary.Did())
+		if err != nil {
+			return nil, err
+		}
+		doc = types.NewPrimaryIdentity(primary.Did(), primary.PubKey(), cvm)
+	} else {
+		doc = types.NewPrimaryIdentity(primary.Did(), primary.PubKey(), nil)
+	}
+
+
 	cont := &didController{
 		primary:    primary,
 		blockchain: []Account{},
+		primaryDoc: doc,
 	}
 	cts := []crypto.CoinType{}
-	for _, ct := range initialAccounts {
+	for _, ct := range opts.GenerateInitialAccounts {
 		cts = append(cts, crypto.CoinTypeFromName(ct))
 	}
 

@@ -181,11 +181,7 @@ func (wa *account) Did() string {
 
 // DidDocument returns the DID document of the account
 func (wa *account) DidDocument(controller string) *types.DidDocument {
-	doc := types.NewBlankDocument(wa.Did())
-	doc.AddBlockchainAccount(wa.Address(), wa.CoinType(), wa.PubKey())
-	if controller != "" {
-		doc.Controller = append(doc.Controller, controller)
-	}
+	doc := types.NewBlockchainIdentity(controller, wa.CoinType(), wa.PubKey())
 	return doc
 }
 

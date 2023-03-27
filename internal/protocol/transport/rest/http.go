@@ -34,7 +34,7 @@ func Keygen(c *fiber.Ctx) error {
 		return c.Status(403).SendString(err.Error())
 	}
 
-	cont, acc, err := controller.NewController(context.Background(), cred, controller.WithInitialAccounts(req.InitialAccounts...))
+	cont, acc, err := controller.NewController(context.Background(), controller.WithInitialAccounts(req.InitialAccounts...), controller.WithWebauthnCredential(cred))
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
