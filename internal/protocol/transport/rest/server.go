@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 
 	"time"
@@ -59,6 +60,11 @@ func NewHttpTransport(ctx client.Context) *HttpTransport {
 }
 
 func (htt *HttpTransport) Challenge(c *fiber.Ctx) error {
+	store, err := htt.SessionStore.Get(c)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
 	req := new(v1.ChallengeRequest)
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
@@ -66,6 +72,8 @@ func (htt *HttpTransport) Challenge(c *fiber.Ctx) error {
 	params := types.DefaultParams()
 	// Get the origin from the request.
 	origin := regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(req.Origin, "")
+	uuid := req.Uuid
+
 	service, _ := resolver.GetService(context.Background(), origin)
 	if service == nil {
 		service, _ = resolver.GetService(context.Background(), "localhost")
@@ -79,6 +87,9 @@ func (htt *HttpTransport) Challenge(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
+
+	// Set Store origin/uuid = challenge
+	store.Set(challengeUuidStoreKey(origin, uuid), chal)
 	ops, err := params.NewWebauthnCreationOptions(service, req.Uuid, chal)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
@@ -93,4 +104,8 @@ func (htt *HttpTransport) Challenge(c *fiber.Ctx) error {
 		CredentialOptions: string(bz),
 	}
 	return c.JSON(res)
+}
+
+func challengeUuidStoreKey(origin, uuid string)	string {
+	return fmt.Sprintf("%s:%s", origin, uuid)
 }

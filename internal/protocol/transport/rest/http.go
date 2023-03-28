@@ -22,6 +22,7 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	}
 
 	// Get the origin from the request.
+	// uuid := req.Uuid
 	origin := regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(req.Origin, "")
 	service, _ := resolver.GetService(context.Background(), origin)
 	if service == nil {
