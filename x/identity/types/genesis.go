@@ -71,18 +71,8 @@ func (gs GenesisState) Validate() error {
 		didDocumentIndexMap[index] = struct{}{}
 	}
 
-	// Check for duplicated index in blockchain identities
-	for _, elem := range gs.BlockchainIdentities {
-		index := string(DidDocumentKey(elem.Id))
-		if _, ok := didDocumentIndexMap[index]; ok {
-			return fmt.Errorf("duplicated index for did")
-		}
-		didDocumentIndexMap[index] = struct{}{}
-	}
-
 	// Check for duplicated index in services
 	ServiceIndexMap := make(map[string]struct{})
-
 	for _, elem := range gs.ServiceList {
 		index := string(ServiceKey(elem.Origin))
 		if _, ok := ServiceIndexMap[index]; ok {

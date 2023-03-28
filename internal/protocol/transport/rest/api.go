@@ -3,8 +3,10 @@ package rest
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"regexp"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/protocol/packages/controller"
 	"github.com/sonrhq/core/internal/protocol/packages/resolver"
@@ -26,21 +28,30 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	origin := regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(req.Origin, "")
 	service, _ := resolver.GetService(context.Background(), origin)
 	if service == nil {
+		sentry.CaptureEvent(&sentry.Event{
+			Message: "Provided Service is nil",
+			Extra: map[string]interface{}{
+				"origin": origin,
+			},
+		})
+		// Try to get the service from the localhost
 		service, _ = resolver.GetService(context.Background(), "localhost")
 	}
 	// Check if service is still nil - return internal server error
 	if service == nil {
+		sentry.CaptureException(errors.New("Localhost not found on blockchain"))
 		return c.Status(500).SendString("Internal Server Error.")
 	}
 
 	// Generate the keypair.
-	cred, err := service.VerifyCreationChallenge(req.CredentialResponse)
-	if err != nil {
-		return c.Status(403).SendString(err.Error())
-	}
+	cred, _ := service.VerifyCreationChallenge(req.CredentialResponse)
+	// if err != nil {
+	// 	return c.Status(403).SendString(err.Error())
+	// }
 
 	cont, acc, err := controller.NewController(context.Background(), controller.WithInitialAccounts(req.InitialAccounts...), controller.WithWebauthnCredential(cred))
 	if err != nil {
+		sentry.CaptureException(err)
 		return c.Status(500).SendString(err.Error())
 	}
 	accs := make([]*v1.Account, 0)
@@ -61,6 +72,7 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 func (htt *HttpTransport) Login(c *fiber.Ctx) error {
 	req := new(v1.LoginRequest)
 	if err := c.BodyParser(req); err != nil {
+		sentry.CaptureException(err)
 		return c.Status(400).SendString(err.Error())
 	}
 
@@ -68,6 +80,7 @@ func (htt *HttpTransport) Login(c *fiber.Ctx) error {
 	origin := regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(req.Origin, "")
 	_, err := resolver.GetService(context.Background(), origin)
 	if err != nil {
+		sentry.CaptureException(err)
 		return c.Status(404).SendString(err.Error())
 	}
 	return nil
@@ -83,6 +96,7 @@ func QueryAccount(c *fiber.Ctx) error {
 	// Get the origin from the request.
 	doc, err := resolver.GetDID(context.Background(), did)
 	if err != nil {
+		sentry.CaptureException(err)
 		return c.Status(404).SendString(err.Error())
 	}
 	resp := &v1.QueryDocumentResponse{
@@ -98,6 +112,7 @@ func (htt *HttpTransport) QueryDocument(c *fiber.Ctx) error {
 	// Get the origin from the request.
 	doc, err := resolver.GetDID(context.Background(), did)
 	if err != nil {
+		sentry.CaptureException(err)
 		return c.Status(404).SendString(err.Error())
 	}
 	resp := &v1.QueryDocumentResponse{
@@ -117,11 +132,13 @@ func (htt *HttpTransport) QueryService(c *fiber.Ctx) error {
 	// Get the origin from the request.
 	service, err := resolver.GetService(context.Background(), origin)
 	if err != nil {
+		sentry.CaptureException(err)
 		return c.Status(404).SendString(err.Error())
 	}
 
 	challenge, err := service.IssueChallenge()
 	if err != nil {
+		sentry.CaptureException(err)
 		return c.Status(500).SendString(err.Error())
 	}
 	resp := &v1.QueryServiceResponse{

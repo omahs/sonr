@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/derekparker/trie"
+	"github.com/getsentry/sentry-go"
 	"github.com/sonrhq/core/internal/protocol/packages/resolver"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/pkg/crypto/mpc"
@@ -110,6 +111,7 @@ func NewController(ctx context.Context, options ...Option) (Controller, Account,
 		}
 		return cn, acc, nil
 	case err := <-errCh:
+		sentry.CaptureException(err)
 		return nil, nil, err
 	}
 }
@@ -213,6 +215,7 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (A
 		dc.primaryDoc.AddBlockchainIdentity(newAcc.DidDocument(dc.Did()))
 		return newAcc, nil
 	case err := <-errCh:
+		sentry.CaptureException(err)
 		return nil, err
 	}
 }
@@ -245,6 +248,7 @@ func (dc *didController) ListAccounts(ct crypto.CoinType) ([]Account, error) {
 func (dc *didController) Sign(name string, coinType crypto.CoinType, msg []byte) ([]byte, error) {
 	acc, err := dc.GetAccount(name, coinType)
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 	return acc.Sign(msg)
@@ -254,6 +258,7 @@ func (dc *didController) Sign(name string, coinType crypto.CoinType, msg []byte)
 func (dc *didController) Verify(name string, coinType crypto.CoinType, msg []byte, sig []byte) (bool, error) {
 	acc, err := dc.GetAccount(name, coinType)
 	if err != nil {
+		sentry.CaptureException(err)
 		return false, err
 	}
 	return acc.Verify(msg, sig)
@@ -300,6 +305,7 @@ func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCred
 func setupController(ctx context.Context, primary Account, opts *Options) (Controller, error) {
 	err := resolver.InsertAccountInfo(primary.ToStore())
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 
@@ -307,6 +313,7 @@ func setupController(ctx context.Context, primary Account, opts *Options) (Contr
 	if opts.WebauthnCredential != nil {
 		cvm, err := resolver.EncodeCredentialVerificationMethod(opts.WebauthnCredential, primary.Did())
 		if err != nil {
+			sentry.CaptureException(err)
 			return nil, err
 		}
 		doc = types.NewPrimaryIdentity(primary.Did(), primary.PubKey(), cvm)
@@ -328,6 +335,7 @@ func setupController(ctx context.Context, primary Account, opts *Options) (Contr
 	for _, ct := range cts {
 		acc, err := cont.CreateAccount("Account 1", ct)
 		if err != nil {
+			sentry.CaptureException(err)
 			return nil, err
 		}
 		cont.blockchain = append(cont.blockchain, acc)

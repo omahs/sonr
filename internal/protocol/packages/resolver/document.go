@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/getsentry/sentry-go"
 	// "github.com/sonrhq/core/app"
 	"github.com/sonrhq/core/internal/local"
 	identitytypes "github.com/sonrhq/core/x/identity/types"
@@ -17,6 +18,7 @@ func GetDID(ctx context.Context, id string) (*identitytypes.ResolvedDidDocument,
 	snrctx := local.NewContext()
 	conn, err := grpc.Dial(snrctx.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
 	}
 	resp, err := identitytypes.NewQueryClient(conn).Did(ctx, &identitytypes.QueryGetDidRequest{Did: id})
@@ -31,10 +33,12 @@ func GetAllDIDs(ctx context.Context) ([]*identitytypes.DidDocument, error) {
 	snrctx := local.NewContext()
 	conn, err := grpc.Dial(snrctx.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
 	}
 	resp, err := identitytypes.NewQueryClient(conn).DidAll(ctx, &identitytypes.QueryAllDidRequest{})
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 	list := make([]*identitytypes.DidDocument, len(resp.DidDocument))
@@ -49,10 +53,12 @@ func GetService(ctx context.Context, origin string) (*identitytypes.Service, err
 	snrctx := local.NewContext()
 	conn, err := grpc.Dial(snrctx.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
 	}
 	resp, err := identitytypes.NewQueryClient(conn).Service(ctx, &identitytypes.QueryGetServiceRequest{Origin: origin})
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 	return &resp.Service, nil
@@ -63,10 +69,12 @@ func GetAllServices(ctx context.Context) ([]*identitytypes.Service, error) {
 	snrctx := local.NewContext()
 	conn, err := grpc.Dial(snrctx.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
 	}
 	resp, err := identitytypes.NewQueryClient(conn).ServiceAll(ctx, &identitytypes.QueryAllServiceRequest{})
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 	list := make([]*identitytypes.Service, len(resp.Services))
@@ -82,11 +90,13 @@ func BroadcastTx(ctx context.Context, tx []byte) (*ctypes.ResultBroadcastTx, err
 	// endpoint := currEndpoint()
 	client, err := client.NewClientFromNode(snrctx.RpcEndpoint())
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 
 	res, err := client.BroadcastTxAsync(ctx, tx)
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 	return res, nil

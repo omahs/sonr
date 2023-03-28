@@ -10,7 +10,7 @@ import (
 )
 func RegisterHighway(ctx client.Context) {
 	app := rest.NewHttpTransport(ctx)
-	serveFiber(app.App)
+	go serveFiber(app.App)
 }
 
 func serveFiber(app *fiber.App) {
