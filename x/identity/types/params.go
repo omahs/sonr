@@ -48,17 +48,13 @@ func (p Params) Validate() error {
 }
 
 // NewWebauthnCreationOptions returns the webauthn creation options.
-func (p Params) NewWebauthnCreationOptions(s *Service, uuid string) (protocol.CredentialCreation, error) {
-	// Issue the challenge.
-	chal, err := s.IssueChallenge()
-	if err != nil {
-		return protocol.CredentialCreation{}, fmt.Errorf("failed to issue challenge: %w", err)
-	}
+func (p Params) NewWebauthnCreationOptions(s *Service, uuid string, challenge protocol.URLEncodedBase64) (protocol.CredentialCreation, error) {
+
 
 	// Build the credential creation options.
 	opts := protocol.PublicKeyCredentialCreationOptions{
 		// Generated Challenge.
-		Challenge: chal,
+		Challenge: challenge,
 
 		// Service resulting properties.
 		User: s.GetUserEntity(uuid),

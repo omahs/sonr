@@ -3,31 +3,35 @@ package rest
 import (
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"regexp"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/protocol/packages/controller"
 	"github.com/sonrhq/core/internal/protocol/packages/resolver"
 	v1 "github.com/sonrhq/core/types/highway/v1"
-	"github.com/sonrhq/core/x/identity/types"
 )
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                          Auth API Rest Implementation                          ||
 // ! ||--------------------------------------------------------------------------------||
 
-func Keygen(c *fiber.Ctx) error {
+func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	req := new(v1.KeygenRequest)
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
 
 	// Get the origin from the request.
-	service, err := resolver.GetService(context.Background(), req.Origin)
-	if err != nil {
-		return c.Status(404).SendString(err.Error())
+	origin := regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(req.Origin, "")
+	service, _ := resolver.GetService(context.Background(), origin)
+	if service == nil {
+		service, _ = resolver.GetService(context.Background(), "localhost")
 	}
+	// Check if service is still nil - return internal server error
+	if service == nil {
+		return c.Status(500).SendString("Internal Server Error.")
+	}
+
 	// Generate the keypair.
 	cred, err := service.VerifyCreationChallenge(req.CredentialResponse)
 	if err != nil {
@@ -45,22 +49,23 @@ func Keygen(c *fiber.Ctx) error {
 	}
 
 	res := &v1.KeygenResponse{
-		Success:     true,
-		Did:         acc.Did(),
-		Primary: cont.PrimaryIdentity(),
+		Success:  true,
+		Did:      acc.Did(),
+		Primary:  cont.PrimaryIdentity(),
 		Accounts: accs,
 	}
 	return c.JSON(res)
 }
 
-func Login(c *fiber.Ctx) error {
+func (htt *HttpTransport) Login(c *fiber.Ctx) error {
 	req := new(v1.LoginRequest)
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
 
 	// Get the origin from the request.
-	_, err := resolver.GetService(context.Background(), req.Origin)
+	origin := regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(req.Origin, "")
+	_, err := resolver.GetService(context.Background(), origin)
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
@@ -87,7 +92,7 @@ func QueryAccount(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-func QueryDocument(c *fiber.Ctx) error {
+func (htt *HttpTransport) QueryDocument(c *fiber.Ctx) error {
 	did := c.Params("did")
 	// Get the origin from the request.
 	doc, err := resolver.GetDID(context.Background(), did)
@@ -102,7 +107,7 @@ func QueryDocument(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-func QueryService(c *fiber.Ctx) error {
+func (htt *HttpTransport) QueryService(c *fiber.Ctx) error {
 	origin := c.Params("origin", "localhost")
 
 	// Regex remove non-alphabet characters.
@@ -126,64 +131,30 @@ func QueryService(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-
-func QueryServiceWithOptions(c *fiber.Ctx) error {
-	origin := c.Params("origin", "localhost")
-	uuid := c.Params("uuid", "")
-	// Get the origin from the request.
-	service, err := resolver.GetService(context.Background(), origin)
-	if err != nil {
-		return c.Status(404).SendString(err.Error())
-	}
-	params := types.DefaultParams()
-	if uuid == "" {
-		return c.Status(400).SendString("uuid is required")
-	}
-	ops, err := params.NewWebauthnCreationOptions(service, uuid)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	bz, err := json.MarshalIndent(ops, "", "  ")
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	challenge, err := service.IssueChallenge()
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	resp := &v1.QueryServiceResponse{
-		Challenge: string(challenge),
-		RpName:    "Sonr",
-		RpId:      service.Origin,
-		CredentialOptions: string(bz),
-	}
-	return c.JSON(resp)
-}
-
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                        Accounts API Rest Implementation                        ||
 // ! ||--------------------------------------------------------------------------------||
-func CreateAccount(c *fiber.Ctx) error {
+func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 	return nil
 }
 
-func ListAccounts(c *fiber.Ctx) error {
+func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
 	return nil
 }
 
-func GetAccount(c *fiber.Ctx) error {
+func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
 	return nil
 }
 
-func DeleteAccount(c *fiber.Ctx) error {
+func (htt *HttpTransport) DeleteAccount(c *fiber.Ctx) error {
 	return nil
 }
 
-func SignMessage(c *fiber.Ctx) error {
+func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
 	return nil
 }
 
-func VerifyMessage(c *fiber.Ctx) error {
+func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
 	return nil
 }
 
@@ -191,7 +162,7 @@ func VerifyMessage(c *fiber.Ctx) error {
 // ! ||                          Vault API Rest Implementation                         ||
 // ! ||--------------------------------------------------------------------------------||
 
-func AddShare(c *fiber.Ctx) error {
+func (htt *HttpTransport) AddShare(c *fiber.Ctx) error {
 	req := new(v1.AddShareRequest)
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
@@ -206,7 +177,7 @@ func AddShare(c *fiber.Ctx) error {
 	})
 }
 
-func SyncShare(c *fiber.Ctx) error {
+func (htt *HttpTransport) SyncShare(c *fiber.Ctx) error {
 	req := new(v1.SyncShareRequest)
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
@@ -222,6 +193,6 @@ func SyncShare(c *fiber.Ctx) error {
 	})
 }
 
-func RefreshShare(c *fiber.Ctx) error {
+func (htt *HttpTransport) RefreshShare(c *fiber.Ctx) error {
 	return c.Status(500).JSON(fiber.Map{"error": "not implemented"})
 }
