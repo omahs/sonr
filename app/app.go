@@ -104,6 +104,7 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/sonrhq/core/internal/protocol"
 	identitymodule "github.com/sonrhq/core/x/identity"
 	identitymodulekeeper "github.com/sonrhq/core/x/identity/keeper"
 	identitymoduletypes "github.com/sonrhq/core/x/identity/types"
@@ -115,6 +116,7 @@ import (
 	domainmodule "github.com/sonrhq/core/x/domain"
 	domainmodulekeeper "github.com/sonrhq/core/x/domain/keeper"
 	domainmoduletypes "github.com/sonrhq/core/x/domain/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	appparams "github.com/sonrhq/core/app/params"
@@ -881,6 +883,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// If found, register swagger UI and swagger.json.
 	apiSvr.Router.Handle("/static/sonr.swagger.yaml", http.FileServer(http.FS(docs.Docs)))
 	apiSvr.Router.HandleFunc("/", openapiconsole.Handler(Name, "/static/sonr.swagger.yaml"))
+	protocol.RegisterHighwayIdentity(clientCtx)
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
