@@ -19,12 +19,56 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
+			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
+				TLDRecordList: []types.TLDRecord{
+					{
+						Index: "0",
+					},
+					{
+						Index: "1",
+					},
+				},
+				SLDRecordList: []types.SLDRecord{
+					{
+						Index: "0",
+					},
+					{
+						Index: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated tLDRecord",
+			genState: &types.GenesisState{
+				TLDRecordList: []types.TLDRecord{
+					{
+						Index: "0",
+					},
+					{
+						Index: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated sLDRecord",
+			genState: &types.GenesisState{
+				SLDRecordList: []types.SLDRecord{
+					{
+						Index: "0",
+					},
+					{
+						Index: "0",
+					},
+				},
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {

@@ -6,8 +6,8 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	_ "github.com/cosmos/cosmos-sdk/types/query"
-	_ "github.com/gogo/protobuf/gogoproto"
+	query "github.com/cosmos/cosmos-sdk/types/query"
+	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -113,34 +113,427 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+type QueryGetTLDRecordRequest struct {
+	Index string `protobuf:"bytes,1,opt,name=index,proto3" json:"index,omitempty"`
+}
+
+func (m *QueryGetTLDRecordRequest) Reset()         { *m = QueryGetTLDRecordRequest{} }
+func (m *QueryGetTLDRecordRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetTLDRecordRequest) ProtoMessage()    {}
+func (*QueryGetTLDRecordRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8b7084fe185c90ac, []int{2}
+}
+func (m *QueryGetTLDRecordRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetTLDRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetTLDRecordRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetTLDRecordRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetTLDRecordRequest.Merge(m, src)
+}
+func (m *QueryGetTLDRecordRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetTLDRecordRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetTLDRecordRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetTLDRecordRequest proto.InternalMessageInfo
+
+func (m *QueryGetTLDRecordRequest) GetIndex() string {
+	if m != nil {
+		return m.Index
+	}
+	return ""
+}
+
+type QueryGetTLDRecordResponse struct {
+	TLDRecord TLDRecord `protobuf:"bytes,1,opt,name=tLDRecord,proto3" json:"tLDRecord"`
+}
+
+func (m *QueryGetTLDRecordResponse) Reset()         { *m = QueryGetTLDRecordResponse{} }
+func (m *QueryGetTLDRecordResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetTLDRecordResponse) ProtoMessage()    {}
+func (*QueryGetTLDRecordResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8b7084fe185c90ac, []int{3}
+}
+func (m *QueryGetTLDRecordResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetTLDRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetTLDRecordResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetTLDRecordResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetTLDRecordResponse.Merge(m, src)
+}
+func (m *QueryGetTLDRecordResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetTLDRecordResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetTLDRecordResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetTLDRecordResponse proto.InternalMessageInfo
+
+func (m *QueryGetTLDRecordResponse) GetTLDRecord() TLDRecord {
+	if m != nil {
+		return m.TLDRecord
+	}
+	return TLDRecord{}
+}
+
+type QueryAllTLDRecordRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllTLDRecordRequest) Reset()         { *m = QueryAllTLDRecordRequest{} }
+func (m *QueryAllTLDRecordRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllTLDRecordRequest) ProtoMessage()    {}
+func (*QueryAllTLDRecordRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8b7084fe185c90ac, []int{4}
+}
+func (m *QueryAllTLDRecordRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllTLDRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllTLDRecordRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllTLDRecordRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllTLDRecordRequest.Merge(m, src)
+}
+func (m *QueryAllTLDRecordRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllTLDRecordRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllTLDRecordRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllTLDRecordRequest proto.InternalMessageInfo
+
+func (m *QueryAllTLDRecordRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryAllTLDRecordResponse struct {
+	TLDRecord  []TLDRecord         `protobuf:"bytes,1,rep,name=tLDRecord,proto3" json:"tLDRecord"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllTLDRecordResponse) Reset()         { *m = QueryAllTLDRecordResponse{} }
+func (m *QueryAllTLDRecordResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllTLDRecordResponse) ProtoMessage()    {}
+func (*QueryAllTLDRecordResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8b7084fe185c90ac, []int{5}
+}
+func (m *QueryAllTLDRecordResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllTLDRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllTLDRecordResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllTLDRecordResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllTLDRecordResponse.Merge(m, src)
+}
+func (m *QueryAllTLDRecordResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllTLDRecordResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllTLDRecordResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllTLDRecordResponse proto.InternalMessageInfo
+
+func (m *QueryAllTLDRecordResponse) GetTLDRecord() []TLDRecord {
+	if m != nil {
+		return m.TLDRecord
+	}
+	return nil
+}
+
+func (m *QueryAllTLDRecordResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryGetSLDRecordRequest struct {
+	Index string `protobuf:"bytes,1,opt,name=index,proto3" json:"index,omitempty"`
+}
+
+func (m *QueryGetSLDRecordRequest) Reset()         { *m = QueryGetSLDRecordRequest{} }
+func (m *QueryGetSLDRecordRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetSLDRecordRequest) ProtoMessage()    {}
+func (*QueryGetSLDRecordRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8b7084fe185c90ac, []int{6}
+}
+func (m *QueryGetSLDRecordRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetSLDRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetSLDRecordRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetSLDRecordRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetSLDRecordRequest.Merge(m, src)
+}
+func (m *QueryGetSLDRecordRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetSLDRecordRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetSLDRecordRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetSLDRecordRequest proto.InternalMessageInfo
+
+func (m *QueryGetSLDRecordRequest) GetIndex() string {
+	if m != nil {
+		return m.Index
+	}
+	return ""
+}
+
+type QueryGetSLDRecordResponse struct {
+	SLDRecord SLDRecord `protobuf:"bytes,1,opt,name=sLDRecord,proto3" json:"sLDRecord"`
+}
+
+func (m *QueryGetSLDRecordResponse) Reset()         { *m = QueryGetSLDRecordResponse{} }
+func (m *QueryGetSLDRecordResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetSLDRecordResponse) ProtoMessage()    {}
+func (*QueryGetSLDRecordResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8b7084fe185c90ac, []int{7}
+}
+func (m *QueryGetSLDRecordResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetSLDRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetSLDRecordResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetSLDRecordResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetSLDRecordResponse.Merge(m, src)
+}
+func (m *QueryGetSLDRecordResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetSLDRecordResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetSLDRecordResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetSLDRecordResponse proto.InternalMessageInfo
+
+func (m *QueryGetSLDRecordResponse) GetSLDRecord() SLDRecord {
+	if m != nil {
+		return m.SLDRecord
+	}
+	return SLDRecord{}
+}
+
+type QueryAllSLDRecordRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllSLDRecordRequest) Reset()         { *m = QueryAllSLDRecordRequest{} }
+func (m *QueryAllSLDRecordRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllSLDRecordRequest) ProtoMessage()    {}
+func (*QueryAllSLDRecordRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8b7084fe185c90ac, []int{8}
+}
+func (m *QueryAllSLDRecordRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllSLDRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllSLDRecordRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllSLDRecordRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllSLDRecordRequest.Merge(m, src)
+}
+func (m *QueryAllSLDRecordRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllSLDRecordRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllSLDRecordRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllSLDRecordRequest proto.InternalMessageInfo
+
+func (m *QueryAllSLDRecordRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryAllSLDRecordResponse struct {
+	SLDRecord  []SLDRecord         `protobuf:"bytes,1,rep,name=sLDRecord,proto3" json:"sLDRecord"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllSLDRecordResponse) Reset()         { *m = QueryAllSLDRecordResponse{} }
+func (m *QueryAllSLDRecordResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllSLDRecordResponse) ProtoMessage()    {}
+func (*QueryAllSLDRecordResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8b7084fe185c90ac, []int{9}
+}
+func (m *QueryAllSLDRecordResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllSLDRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllSLDRecordResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllSLDRecordResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllSLDRecordResponse.Merge(m, src)
+}
+func (m *QueryAllSLDRecordResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllSLDRecordResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllSLDRecordResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllSLDRecordResponse proto.InternalMessageInfo
+
+func (m *QueryAllSLDRecordResponse) GetSLDRecord() []SLDRecord {
+	if m != nil {
+		return m.SLDRecord
+	}
+	return nil
+}
+
+func (m *QueryAllSLDRecordResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "sonrhq.core.domain.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "sonrhq.core.domain.QueryParamsResponse")
+	proto.RegisterType((*QueryGetTLDRecordRequest)(nil), "sonrhq.core.domain.QueryGetTLDRecordRequest")
+	proto.RegisterType((*QueryGetTLDRecordResponse)(nil), "sonrhq.core.domain.QueryGetTLDRecordResponse")
+	proto.RegisterType((*QueryAllTLDRecordRequest)(nil), "sonrhq.core.domain.QueryAllTLDRecordRequest")
+	proto.RegisterType((*QueryAllTLDRecordResponse)(nil), "sonrhq.core.domain.QueryAllTLDRecordResponse")
+	proto.RegisterType((*QueryGetSLDRecordRequest)(nil), "sonrhq.core.domain.QueryGetSLDRecordRequest")
+	proto.RegisterType((*QueryGetSLDRecordResponse)(nil), "sonrhq.core.domain.QueryGetSLDRecordResponse")
+	proto.RegisterType((*QueryAllSLDRecordRequest)(nil), "sonrhq.core.domain.QueryAllSLDRecordRequest")
+	proto.RegisterType((*QueryAllSLDRecordResponse)(nil), "sonrhq.core.domain.QueryAllSLDRecordResponse")
 }
 
 func init() { proto.RegisterFile("core/domain/query.proto", fileDescriptor_8b7084fe185c90ac) }
 
 var fileDescriptor_8b7084fe185c90ac = []byte{
-	// 299 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x90, 0x3f, 0x4b, 0xfc, 0x30,
-	0x18, 0xc7, 0x9b, 0x1f, 0x3f, 0x6f, 0x88, 0x5b, 0x3c, 0xf0, 0x28, 0x47, 0x94, 0x82, 0x7f, 0x70,
-	0x48, 0xb8, 0x73, 0x71, 0x13, 0xee, 0x0d, 0xa8, 0x37, 0xba, 0xa5, 0x35, 0xe4, 0x0a, 0x36, 0x4f,
-	0xda, 0xa4, 0xe2, 0x0d, 0x2e, 0x0e, 0xce, 0x82, 0x6f, 0xea, 0xc6, 0x03, 0x17, 0x27, 0x91, 0xd6,
-	0x17, 0x22, 0x6d, 0x2a, 0x78, 0x54, 0x70, 0x2b, 0xcf, 0xf7, 0xf3, 0x79, 0xfa, 0x7d, 0x82, 0x77,
-	0x13, 0x28, 0x24, 0xbf, 0x81, 0x4c, 0xa4, 0x9a, 0xe7, 0xa5, 0x2c, 0x96, 0xcc, 0x14, 0xe0, 0x80,
-	0x10, 0x0b, 0xba, 0x58, 0xe4, 0xac, 0xc9, 0x99, 0xcf, 0xc3, 0xa1, 0x02, 0x05, 0x6d, 0xcc, 0x9b,
-	0x2f, 0x4f, 0x86, 0x63, 0x05, 0xa0, 0x6e, 0x25, 0x17, 0x26, 0xe5, 0x42, 0x6b, 0x70, 0xc2, 0xa5,
-	0xa0, 0x6d, 0x97, 0x9e, 0x24, 0x60, 0x33, 0xb0, 0x3c, 0x16, 0x56, 0xfa, 0x1f, 0xf0, 0xbb, 0x49,
-	0x2c, 0x9d, 0x98, 0x70, 0x23, 0x54, 0xaa, 0x5b, 0xb8, 0x63, 0x47, 0x3f, 0xcb, 0x18, 0x51, 0x88,
-	0xac, 0xdb, 0x12, 0x0d, 0x31, 0xb9, 0x6a, 0xdc, 0xcb, 0x76, 0x38, 0x97, 0x79, 0x29, 0xad, 0x8b,
-	0x2e, 0xf0, 0xce, 0xc6, 0xd4, 0x1a, 0xd0, 0x56, 0x92, 0x33, 0x3c, 0xf0, 0xf2, 0x08, 0xed, 0xa3,
-	0xe3, 0xed, 0x69, 0xc8, 0xfa, 0xb7, 0x30, 0xef, 0xcc, 0xfe, 0xaf, 0xde, 0xf7, 0x82, 0x79, 0xc7,
-	0x4f, 0x9f, 0x10, 0xde, 0x6a, 0x37, 0x92, 0x07, 0x3c, 0xf0, 0x04, 0x39, 0xfc, 0xcd, 0xee, 0x97,
-	0x09, 0x8f, 0xfe, 0xe4, 0x7c, 0xbd, 0x28, 0x7a, 0x7c, 0xfd, 0x7c, 0xf9, 0x37, 0x26, 0x21, 0xf7,
-	0x02, 0xef, 0x5f, 0x3d, 0x3b, 0x5f, 0x55, 0x14, 0xad, 0x2b, 0x8a, 0x3e, 0x2a, 0x8a, 0x9e, 0x6b,
-	0x1a, 0xac, 0x6b, 0x1a, 0xbc, 0xd5, 0x34, 0xb8, 0x3e, 0x50, 0xa9, 0x5b, 0x94, 0x31, 0x4b, 0x20,
-	0xdb, 0xf0, 0xef, 0xbf, 0x37, 0xb8, 0xa5, 0x91, 0x36, 0x1e, 0xb4, 0xef, 0x76, 0xfa, 0x15, 0x00,
-	0x00, 0xff, 0xff, 0xc5, 0xd5, 0x19, 0xdb, 0xe0, 0x01, 0x00, 0x00,
+	// 568 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x95, 0x4f, 0x6f, 0xd3, 0x3e,
+	0x18, 0xc7, 0x9b, 0xed, 0xd7, 0x4a, 0xf5, 0x8f, 0x93, 0xa9, 0x44, 0x17, 0x8d, 0x30, 0x45, 0xa2,
+	0x9b, 0x10, 0xd8, 0x6c, 0x5c, 0xb8, 0xa1, 0x4e, 0x88, 0x5d, 0x90, 0x18, 0x31, 0x27, 0x0e, 0x20,
+	0xa7, 0xb5, 0xb2, 0x48, 0x69, 0x9c, 0xc6, 0x2e, 0xda, 0x84, 0x76, 0xe1, 0x15, 0x20, 0xed, 0xc2,
+	0x3b, 0xe0, 0xad, 0xec, 0x38, 0x89, 0x0b, 0x27, 0x84, 0x5a, 0x0e, 0xbc, 0x0c, 0x54, 0xdb, 0x6b,
+	0x13, 0x6a, 0xda, 0x46, 0x42, 0x9c, 0xda, 0xfa, 0xf9, 0xe3, 0xcf, 0xf3, 0xfd, 0xe6, 0x69, 0xc0,
+	0xad, 0x1e, 0xcf, 0x19, 0xee, 0xf3, 0x01, 0x8d, 0x53, 0x3c, 0x1c, 0xb1, 0xfc, 0x0c, 0x65, 0x39,
+	0x97, 0x1c, 0x42, 0xc1, 0xd3, 0xfc, 0x64, 0x88, 0xa6, 0x71, 0xa4, 0xe3, 0x6e, 0x2b, 0xe2, 0x11,
+	0x57, 0x61, 0x3c, 0xfd, 0xa6, 0x33, 0xdd, 0xed, 0x88, 0xf3, 0x28, 0x61, 0x98, 0x66, 0x31, 0xa6,
+	0x69, 0xca, 0x25, 0x95, 0x31, 0x4f, 0x85, 0x89, 0xde, 0xeb, 0x71, 0x31, 0xe0, 0x02, 0x87, 0x54,
+	0x30, 0x7d, 0x01, 0x7e, 0xb7, 0x1f, 0x32, 0x49, 0xf7, 0x71, 0x46, 0xa3, 0x38, 0x55, 0xc9, 0x26,
+	0x77, 0xab, 0x08, 0x13, 0xb1, 0x94, 0x89, 0xf8, 0xba, 0x4d, 0xbb, 0x18, 0xd2, 0x1f, 0x3a, 0xe2,
+	0xb7, 0x00, 0x7c, 0x39, 0x6d, 0x7b, 0x4c, 0x73, 0x3a, 0x10, 0x01, 0x1b, 0x8e, 0x98, 0x90, 0xfe,
+	0x0b, 0x70, 0xb3, 0x74, 0x2a, 0x32, 0x9e, 0x0a, 0x06, 0x1f, 0x83, 0x46, 0xa6, 0x4e, 0xda, 0xce,
+	0x8e, 0xb3, 0xf7, 0xff, 0x81, 0x8b, 0x16, 0xc7, 0x44, 0xba, 0xe6, 0xf0, 0xbf, 0xcb, 0x6f, 0x77,
+	0x6a, 0x81, 0xc9, 0xf7, 0x1f, 0x82, 0xb6, 0x6a, 0x78, 0xc4, 0xe4, 0xab, 0xe7, 0x4f, 0x03, 0xd6,
+	0xe3, 0x79, 0xdf, 0x5c, 0x06, 0x5b, 0xa0, 0x1e, 0xa7, 0x7d, 0x76, 0xaa, 0x9a, 0x36, 0x03, 0xfd,
+	0xc3, 0x7f, 0x03, 0xb6, 0x2c, 0x15, 0x06, 0xa4, 0x0b, 0x9a, 0xf2, 0xfa, 0xd0, 0xb0, 0xdc, 0xb6,
+	0xb1, 0xcc, 0x2a, 0x0d, 0xce, 0xbc, 0xca, 0x0f, 0x0d, 0x51, 0x37, 0x49, 0x16, 0x88, 0x9e, 0x01,
+	0x30, 0x57, 0xd7, 0xf4, 0xef, 0x20, 0x6d, 0x05, 0x9a, 0x5a, 0x81, 0xb4, 0xd7, 0xc6, 0x0a, 0x74,
+	0x4c, 0x23, 0x66, 0x6a, 0x83, 0x42, 0xa5, 0xff, 0xd9, 0x31, 0x43, 0x94, 0x2f, 0xb1, 0x0f, 0xb1,
+	0x59, 0x7d, 0x08, 0x78, 0x54, 0x02, 0xdd, 0x50, 0xa0, 0xbb, 0x2b, 0x41, 0xf5, 0xfd, 0x25, 0xd2,
+	0x82, 0x3f, 0xa4, 0xb2, 0x3f, 0xc4, 0x36, 0x9a, 0x58, 0xc7, 0x1f, 0xf2, 0xfb, 0x68, 0xc2, 0xe6,
+	0x0f, 0xf9, 0x17, 0xfe, 0xac, 0x1c, 0x62, 0xb3, 0xfa, 0x10, 0x7f, 0xcd, 0x9f, 0x83, 0x9f, 0x75,
+	0x50, 0x57, 0xa4, 0xf0, 0x1c, 0x34, 0xf4, 0x86, 0xc1, 0x8e, 0x0d, 0x66, 0x71, 0x99, 0xdd, 0xdd,
+	0x95, 0x79, 0xfa, 0x42, 0xdf, 0xff, 0xf0, 0xe5, 0xc7, 0xc5, 0xc6, 0x36, 0x74, 0xb1, 0x2e, 0xc0,
+	0xc5, 0x7f, 0x0d, 0xbd, 0xc8, 0xf0, 0x93, 0x03, 0x9a, 0xb3, 0x07, 0x12, 0xde, 0xff, 0x63, 0x6b,
+	0xcb, 0xa2, 0xbb, 0x0f, 0xd6, 0xcc, 0x36, 0x38, 0x48, 0xe1, 0xec, 0xc1, 0x8e, 0x0d, 0x47, 0x26,
+	0xfd, 0xb7, 0xb9, 0xca, 0xc7, 0xef, 0xd5, 0x03, 0x79, 0x0e, 0x2f, 0x1c, 0x70, 0x63, 0xd6, 0xa5,
+	0x9b, 0x24, 0x4b, 0xe8, 0x2c, 0x4b, 0xbf, 0x84, 0xce, 0xb6, 0xbd, 0x7e, 0x47, 0xd1, 0xed, 0x40,
+	0x6f, 0x39, 0x9d, 0x12, 0x8c, 0xac, 0x27, 0x18, 0xa9, 0x24, 0x18, 0xa9, 0x26, 0x98, 0xb0, 0x0b,
+	0x46, 0xd6, 0x16, 0x8c, 0x54, 0x12, 0x8c, 0x54, 0x13, 0x6c, 0x4e, 0x77, 0xf8, 0xe4, 0x72, 0xec,
+	0x39, 0x57, 0x63, 0xcf, 0xf9, 0x3e, 0xf6, 0x9c, 0x8f, 0x13, 0xaf, 0x76, 0x35, 0xf1, 0x6a, 0x5f,
+	0x27, 0x5e, 0xed, 0xf5, 0xdd, 0x28, 0x96, 0x27, 0xa3, 0x10, 0xf5, 0xf8, 0xa0, 0xd4, 0xe3, 0x74,
+	0x26, 0xfb, 0x59, 0xc6, 0x44, 0xd8, 0x50, 0x6f, 0xb6, 0x47, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff,
+	0x7f, 0x78, 0xac, 0x42, 0x9d, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -157,6 +550,12 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Queries a list of TLDRecord items.
+	TLDRecord(ctx context.Context, in *QueryGetTLDRecordRequest, opts ...grpc.CallOption) (*QueryGetTLDRecordResponse, error)
+	TLDRecordAll(ctx context.Context, in *QueryAllTLDRecordRequest, opts ...grpc.CallOption) (*QueryAllTLDRecordResponse, error)
+	// Queries a list of SLDRecord items.
+	SLDRecord(ctx context.Context, in *QueryGetSLDRecordRequest, opts ...grpc.CallOption) (*QueryGetSLDRecordResponse, error)
+	SLDRecordAll(ctx context.Context, in *QueryAllSLDRecordRequest, opts ...grpc.CallOption) (*QueryAllSLDRecordResponse, error)
 }
 
 type queryClient struct {
@@ -176,10 +575,52 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) TLDRecord(ctx context.Context, in *QueryGetTLDRecordRequest, opts ...grpc.CallOption) (*QueryGetTLDRecordResponse, error) {
+	out := new(QueryGetTLDRecordResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.core.domain.Query/TLDRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) TLDRecordAll(ctx context.Context, in *QueryAllTLDRecordRequest, opts ...grpc.CallOption) (*QueryAllTLDRecordResponse, error) {
+	out := new(QueryAllTLDRecordResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.core.domain.Query/TLDRecordAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SLDRecord(ctx context.Context, in *QueryGetSLDRecordRequest, opts ...grpc.CallOption) (*QueryGetSLDRecordResponse, error) {
+	out := new(QueryGetSLDRecordResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.core.domain.Query/SLDRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SLDRecordAll(ctx context.Context, in *QueryAllSLDRecordRequest, opts ...grpc.CallOption) (*QueryAllSLDRecordResponse, error) {
+	out := new(QueryAllSLDRecordResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.core.domain.Query/SLDRecordAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Queries a list of TLDRecord items.
+	TLDRecord(context.Context, *QueryGetTLDRecordRequest) (*QueryGetTLDRecordResponse, error)
+	TLDRecordAll(context.Context, *QueryAllTLDRecordRequest) (*QueryAllTLDRecordResponse, error)
+	// Queries a list of SLDRecord items.
+	SLDRecord(context.Context, *QueryGetSLDRecordRequest) (*QueryGetSLDRecordResponse, error)
+	SLDRecordAll(context.Context, *QueryAllSLDRecordRequest) (*QueryAllSLDRecordResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -188,6 +629,18 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) TLDRecord(ctx context.Context, req *QueryGetTLDRecordRequest) (*QueryGetTLDRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TLDRecord not implemented")
+}
+func (*UnimplementedQueryServer) TLDRecordAll(ctx context.Context, req *QueryAllTLDRecordRequest) (*QueryAllTLDRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TLDRecordAll not implemented")
+}
+func (*UnimplementedQueryServer) SLDRecord(ctx context.Context, req *QueryGetSLDRecordRequest) (*QueryGetSLDRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SLDRecord not implemented")
+}
+func (*UnimplementedQueryServer) SLDRecordAll(ctx context.Context, req *QueryAllSLDRecordRequest) (*QueryAllSLDRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SLDRecordAll not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -212,6 +665,78 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_TLDRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetTLDRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TLDRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.core.domain.Query/TLDRecord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TLDRecord(ctx, req.(*QueryGetTLDRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_TLDRecordAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllTLDRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TLDRecordAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.core.domain.Query/TLDRecordAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TLDRecordAll(ctx, req.(*QueryAllTLDRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SLDRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetSLDRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SLDRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.core.domain.Query/SLDRecord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SLDRecord(ctx, req.(*QueryGetSLDRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SLDRecordAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllSLDRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SLDRecordAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.core.domain.Query/SLDRecordAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SLDRecordAll(ctx, req.(*QueryAllSLDRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "sonrhq.core.domain.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -219,6 +744,22 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "TLDRecord",
+			Handler:    _Query_TLDRecord_Handler,
+		},
+		{
+			MethodName: "TLDRecordAll",
+			Handler:    _Query_TLDRecordAll_Handler,
+		},
+		{
+			MethodName: "SLDRecord",
+			Handler:    _Query_SLDRecord_Handler,
+		},
+		{
+			MethodName: "SLDRecordAll",
+			Handler:    _Query_SLDRecordAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -281,6 +822,300 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetTLDRecordRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetTLDRecordRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetTLDRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Index) > 0 {
+		i -= len(m.Index)
+		copy(dAtA[i:], m.Index)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Index)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetTLDRecordResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetTLDRecordResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetTLDRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.TLDRecord.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllTLDRecordRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllTLDRecordRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllTLDRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllTLDRecordResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllTLDRecordResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllTLDRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.TLDRecord) > 0 {
+		for iNdEx := len(m.TLDRecord) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.TLDRecord[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetSLDRecordRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetSLDRecordRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetSLDRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Index) > 0 {
+		i -= len(m.Index)
+		copy(dAtA[i:], m.Index)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Index)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetSLDRecordResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetSLDRecordResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetSLDRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.SLDRecord.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllSLDRecordRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllSLDRecordRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllSLDRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllSLDRecordResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllSLDRecordResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllSLDRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SLDRecord) > 0 {
+		for iNdEx := len(m.SLDRecord) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SLDRecord[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -309,6 +1144,118 @@ func (m *QueryParamsResponse) Size() (n int) {
 	_ = l
 	l = m.Params.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryGetTLDRecordRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Index)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetTLDRecordResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.TLDRecord.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryAllTLDRecordRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllTLDRecordResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.TLDRecord) > 0 {
+		for _, e := range m.TLDRecord {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetSLDRecordRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Index)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetSLDRecordResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.SLDRecord.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryAllSLDRecordRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllSLDRecordResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SLDRecord) > 0 {
+		for _, e := range m.SLDRecord {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -427,6 +1374,748 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetTLDRecordRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetTLDRecordRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetTLDRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Index = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetTLDRecordResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetTLDRecordResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetTLDRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TLDRecord", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.TLDRecord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllTLDRecordRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllTLDRecordRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllTLDRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllTLDRecordResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllTLDRecordResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllTLDRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TLDRecord", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TLDRecord = append(m.TLDRecord, TLDRecord{})
+			if err := m.TLDRecord[len(m.TLDRecord)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetSLDRecordRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetSLDRecordRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetSLDRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Index = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetSLDRecordResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetSLDRecordResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetSLDRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SLDRecord", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.SLDRecord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllSLDRecordRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllSLDRecordRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllSLDRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllSLDRecordResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllSLDRecordResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllSLDRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SLDRecord", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SLDRecord = append(m.SLDRecord, SLDRecord{})
+			if err := m.SLDRecord[len(m.SLDRecord)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

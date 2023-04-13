@@ -1,9 +1,10 @@
 swagger: "2.0"
 info:
-  title: Sonr API
-  description: Sonr is a peer-to-peer identity and asset management system that leverages DID documents, Webauthn, and IPFS — providing users with a secure, user-friendly way to manage their digital identity and assets.
+  title: core/domain/domain.proto
   version: version not set
 tags:
+  - name: Query
+  - name: Msg
   - name: Query
   - name: Msg
   - name: Query
@@ -272,6 +273,177 @@ paths:
           type: string
       tags:
         - Query
+  /sonrhq/core/domain/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Query_Params
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/coredomainQueryParamsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - Query
+  /sonrhq/core/domain/sld_record:
+    get:
+      operationId: Query_SLDRecordAll
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/domainQueryAllSLDRecordResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: |-
+            offset is a numeric offset that can be used when key is unavailable.
+            It is less efficient than using key. Only one of offset or key should
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: |-
+            limit is the total number of results to be returned in the result page.
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.countTotal
+          description: |-
+            count_total is set to true  to indicate that the result set should include
+            a count of the total number of items available for pagination in UIs.
+            count_total is only respected when offset is used. It is ignored when key
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: |-
+            reverse is set to true if results are to be returned in the descending order.
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /sonrhq/core/domain/sld_record/{index}:
+    get:
+      summary: Queries a list of SLDRecord items.
+      operationId: Query_SLDRecord
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/domainQueryGetSLDRecordResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: index
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /sonrhq/core/domain/tld_record:
+    get:
+      operationId: Query_TLDRecordAll
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/domainQueryAllTLDRecordResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: |-
+            offset is a numeric offset that can be used when key is unavailable.
+            It is less efficient than using key. Only one of offset or key should
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: |-
+            limit is the total number of results to be returned in the result page.
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.countTotal
+          description: |-
+            count_total is set to true  to indicate that the result set should include
+            a count of the total number of items available for pagination in UIs.
+            count_total is only respected when offset is used. It is ignored when key
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: |-
+            reverse is set to true if results are to be returned in the descending order.
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /sonrhq/core/domain/tld_record/{index}:
+    get:
+      summary: Queries a list of TLDRecord items.
+      operationId: Query_TLDRecord
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/domainQueryGetTLDRecordResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: index
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /sonrhq/core/service/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -288,6 +460,16 @@ paths:
       tags:
         - Query
 definitions:
+  coredomainParams:
+    type: object
+    description: Params defines the parameters for the module.
+  coredomainQueryParamsResponse:
+    type: object
+    properties:
+      params:
+        $ref: '#/definitions/coredomainParams'
+        description: params holds all the parameters of this module.
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
   coreidentityKeyValuePair:
     type: object
     properties:
@@ -350,6 +532,62 @@ definitions:
         $ref: '#/definitions/coreserviceParams'
         description: params holds all the parameters of this module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  domainMsgCreateSLDRecordResponse:
+    type: object
+  domainMsgCreateTLDRecordResponse:
+    type: object
+  domainMsgDeleteSLDRecordResponse:
+    type: object
+  domainMsgDeleteTLDRecordResponse:
+    type: object
+  domainMsgUpdateSLDRecordResponse:
+    type: object
+  domainMsgUpdateTLDRecordResponse:
+    type: object
+  domainQueryAllSLDRecordResponse:
+    type: object
+    properties:
+      sLDRecord:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/domainSLDRecord'
+      pagination:
+        $ref: '#/definitions/v1beta1PageResponse'
+  domainQueryAllTLDRecordResponse:
+    type: object
+    properties:
+      tLDRecord:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/domainTLDRecord'
+      pagination:
+        $ref: '#/definitions/v1beta1PageResponse'
+  domainQueryGetSLDRecordResponse:
+    type: object
+    properties:
+      sLDRecord:
+        $ref: '#/definitions/domainSLDRecord'
+  domainQueryGetTLDRecordResponse:
+    type: object
+    properties:
+      tLDRecord:
+        $ref: '#/definitions/domainTLDRecord'
+  domainSLDRecord:
+    type: object
+    properties:
+      index:
+        type: string
+      creator:
+        type: string
+  domainTLDRecord:
+    type: object
+    properties:
+      index:
+        type: string
+      creator:
+        type: string
   identityDidDocument:
     type: object
     properties:

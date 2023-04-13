@@ -1,7 +1,59 @@
 syntax = "proto3";
+
 package sonrhq.core.domain;
+
+import "core/domain/domain.proto";
 
 option go_package = "github.com/sonrhq/core/x/domain/types";
 
 // Msg defines the Msg service.
-service Msg {}
+service Msg {
+  rpc CreateTLDRecord (MsgCreateTLDRecord) returns (MsgCreateTLDRecordResponse);
+  rpc UpdateTLDRecord (MsgUpdateTLDRecord) returns (MsgUpdateTLDRecordResponse);
+  rpc DeleteTLDRecord (MsgDeleteTLDRecord) returns (MsgDeleteTLDRecordResponse);
+  rpc CreateSLDRecord (MsgCreateSLDRecord) returns (MsgCreateSLDRecordResponse);
+  rpc UpdateSLDRecord (MsgUpdateSLDRecord) returns (MsgUpdateSLDRecordResponse);
+  rpc DeleteSLDRecord (MsgDeleteSLDRecord) returns (MsgDeleteSLDRecordResponse);
+}
+message MsgCreateTLDRecord {
+  string creator = 1;
+  string index   = 2;
+}
+
+message MsgCreateTLDRecordResponse {}
+
+message MsgUpdateTLDRecord {
+  string creator = 1;
+  string index   = 2;
+}
+
+message MsgUpdateTLDRecordResponse {}
+
+message MsgDeleteTLDRecord {
+  string creator = 1;
+  string index   = 2;
+}
+
+message MsgDeleteTLDRecordResponse {}
+
+message MsgCreateSLDRecord {
+  string creator = 1;
+  string index   = 2;
+}
+
+message MsgCreateSLDRecordResponse {}
+
+message MsgUpdateSLDRecord {
+  string creator = 1;
+  string index   = 2;
+}
+
+message MsgUpdateSLDRecordResponse {}
+
+message MsgDeleteSLDRecord {
+  string creator = 1;
+  string index   = 2;
+}
+
+message MsgDeleteSLDRecordResponse {}
+
