@@ -119,3 +119,17 @@ func TestTLDRecordGetAll(t *testing.T) {
 		nullify.Fill(keeper.GetAllTLDRecord(ctx)),
 	)
 }
+
+
+func TestDNSRecords(t *testing.T) {
+	records, err := keeper.ResolveHNSTLD(types.WithDomains("sonr", "welcome.nb"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(records) == 0 {
+		t.Fatal("no records found")
+	}
+	for _, record := range records {
+		t.Logf("%+v", record)
+	}
+}

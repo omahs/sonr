@@ -462,6 +462,9 @@ paths:
 definitions:
   coredomainParams:
     type: object
+    properties:
+      dnsResolverIp:
+        type: string
     description: Params defines the parameters for the module.
   coredomainQueryParamsResponse:
     type: object

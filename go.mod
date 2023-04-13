@@ -49,6 +49,7 @@ require (
 )
 
 require (
+	github.com/Focinfi/go-dns-resolver v1.0.1
 	github.com/cosmos/gogoproto v1.4.2
 	github.com/goccy/go-json v0.9.11
 	github.com/gofiber/fiber/v2 v2.43.0
@@ -281,7 +282,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-zglob v0.0.3 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
-	github.com/miekg/dns v1.1.50 // indirect
+	github.com/miekg/dns v1.1.53 // indirect
 	github.com/mikioh/tcpinfo v0.0.0-20190314235526-30a79bb1804b // indirect
 	github.com/mikioh/tcpopt v0.0.0-20190314235656-172688c1accc // indirect
 	github.com/mimoo/StrobeGo v0.0.0-20210601165009-122bf33a46e0 // indirect

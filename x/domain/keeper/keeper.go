@@ -176,3 +176,20 @@ func (k Keeper) GetAllTLDRecord(ctx sdk.Context) (list []types.TLDRecord) {
 
 	return
 }
+
+// ! ||--------------------------------------------------------------------------------||
+// ! ||                                 HNS DNS Utility                                ||
+// ! ||--------------------------------------------------------------------------------||
+
+// ResolveHNSTLD resolves a HNS TLD record
+func ResolveHNSTLD(options ...types.DNSOption) ([]*types.DNSRecord, error) {
+	opts := types.DefaultDNSOptions()
+	res := opts.Apply(options...)
+	var records []*types.DNSRecord
+	for target := range res.ResMap {
+		for _, record := range res.ResMap[target] {
+			records = append(records, types.NewDNSRecordFromResultItem(target, record))
+		}
+	}
+	return records, nil
+}
