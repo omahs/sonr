@@ -1,0 +1,12 @@
+syntax = "proto3";
+package sonrhq.core.domain;
+
+import "gogoproto/gogo.proto";
+import "core/domain/params.proto";
+
+option go_package = "github.com/sonrhq/core/x/domain/types";
+
+// GenesisState defines the domain module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

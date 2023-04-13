@@ -69,7 +69,6 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 // ! ||                                Config Variables                                ||
 // ! ||--------------------------------------------------------------------------------||
 
-
 func challengeUuidStoreKey(origin, uuid string) string {
 	return fmt.Sprintf("challenge/%s:%s", origin, uuid)
 }

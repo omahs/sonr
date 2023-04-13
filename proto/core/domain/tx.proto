@@ -1,0 +1,7 @@
+syntax = "proto3";
+package sonrhq.core.domain;
+
+option go_package = "github.com/sonrhq/core/x/domain/types";
+
+// Msg defines the Msg service.
+service Msg {}

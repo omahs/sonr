@@ -102,7 +102,6 @@ func (k Keeper) SetAliasForPrimaryIdentity(ctx sdk.Context, didDocument types.Di
 	), b)
 }
 
-
 // GetDidDocument returns a didDocument from its index
 func (k Keeper) GetPrimaryIdentity(
 	ctx sdk.Context,
@@ -328,7 +327,6 @@ func (k Keeper) GetRelationshipsFromList(ctx sdk.Context, addrs ...string) ([]ty
 
 	return vrs, nil
 }
-
 
 func (k Keeper) ValidateNewPrimaryDidDocument(ctx sdk.Context, doc *types.DidDocument) error {
 	_, ok := k.GetPrimaryIdentity(ctx, doc.Id)
