@@ -14,7 +14,7 @@ import (
 	identitytypes "github.com/sonrhq/core/x/identity/types"
 )
 
-func RegisterHighwayIdentity(ctx client.Context) {
+func RegisterHighway(ctx client.Context) {
 	app := initHttpTransport(ctx)
 	node.StartLocalIPFS()
 	go serveFiber(app.App)

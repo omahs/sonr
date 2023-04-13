@@ -883,7 +883,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// If found, register swagger UI and swagger.json.
 	apiSvr.Router.Handle("/static/sonr.swagger.yaml", http.FileServer(http.FS(docs.Docs)))
 	apiSvr.Router.HandleFunc("/", openapiconsole.Handler(Name, "/static/sonr.swagger.yaml"))
-	protocol.RegisterHighwayIdentity(clientCtx)
+	protocol.RegisterHighway(clientCtx)
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
