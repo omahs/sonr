@@ -261,6 +261,34 @@ func (htt *HttpTransport) QueryServiceAssertion(c *fiber.Ctx) error {
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                        Accounts API Rest Implementation                        ||
 // ! ||--------------------------------------------------------------------------------||
+func (htt *HttpTransport) IsAuthorized(c *fiber.Ctx) error {
+    sess, err := htt.SessionStore.Get(c)
+    if err != nil {
+        return c.Status(500).SendString(err.Error())
+    }
+
+    usrVal := sess.Get("user")
+    if usrVal == nil {
+        return c.Status(401).SendString("Unauthorized")
+    }
+
+    usrBytes, ok := usrVal.([]byte)
+    if !ok {
+        return c.Status(500).SendString("Internal Server Error")
+    }
+
+    usr, err := controller.LoadUser(usrBytes)
+    if err != nil {
+        return c.Status(500).SendString(err.Error())
+    }
+
+    return c.JSON(fiber.Map{
+        "success": true,
+        "message": "User is authorized",
+        "user":    usr,
+    })
+}
+
 func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 	sess, err := htt.SessionStore.Get(c)
 	if err != nil {

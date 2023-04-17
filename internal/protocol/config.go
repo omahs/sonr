@@ -53,6 +53,7 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	rest.Post("/highway/auth/login", timeout.New(rest.Login, time.Second*10))
 
 	// MPC Methods
+	rest.Get("/highway/isAuthorized", timeout.New(rest.IsAuthorized, time.Second*5))
 	rest.Get("/highway/accounts", timeout.New(rest.ListAccounts, time.Second*5))
 	rest.Get("/highway/accounts/:address", timeout.New(rest.GetAccount, time.Second*5))
 	rest.Post("/highway/accounts/create", timeout.New(rest.CreateAccount, time.Second*5))
