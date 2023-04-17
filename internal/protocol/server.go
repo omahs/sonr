@@ -89,6 +89,7 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 		Did:      cont.Did(),
 		Primary:  cont.PrimaryIdentity(),
 		Accounts: accs,
+		TransactionHash: cont.PrimaryTxHash(),
 		Jwt:      jwt,
 	}
 	return c.JSON(res)
@@ -266,7 +267,11 @@ func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	cont, err := controller.LoadController(usr.PrimaryIdentity)
+	primeID, err := usr.PrimaryIdentity()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	cont, err := controller.LoadController(primeID)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -289,8 +294,11 @@ func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-
-	cont, err := controller.LoadController(usr.PrimaryIdentity)
+	primeID, err := usr.PrimaryIdentity()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	cont, err := controller.LoadController(primeID)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -312,11 +320,15 @@ func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	address := c.Params("address", usr.PrimaryIdentity.VerificationMethod[0].BlockchainAccountId)
-	cont, err := controller.LoadController(usr.PrimaryIdentity)
+		primeID, err := usr.PrimaryIdentity()
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
+	cont, err := controller.LoadController(primeID)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	address := c.Params("address", "")
 	acc, err := cont.GetAccount(address)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
@@ -341,7 +353,11 @@ func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	cont, err := controller.LoadController(usr.PrimaryIdentity)
+	primeID, err := usr.PrimaryIdentity()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	cont, err := controller.LoadController(primeID)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -381,7 +397,11 @@ func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	cont, err := controller.LoadController(usr.PrimaryIdentity)
+	primeID, err := usr.PrimaryIdentity()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	cont, err := controller.LoadController(primeID)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -406,7 +426,11 @@ func (htt *HttpTransport) SendMail(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	cont, err := controller.LoadController(usr.PrimaryIdentity)
+	primeID, err := usr.PrimaryIdentity()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	cont, err := controller.LoadController(primeID)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -431,7 +455,11 @@ func (htt *HttpTransport) ReadMail(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	cont, err := controller.LoadController(usr.PrimaryIdentity)
+	primeID, err := usr.PrimaryIdentity()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	cont, err := controller.LoadController(primeID)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}

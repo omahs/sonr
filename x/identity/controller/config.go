@@ -127,8 +127,13 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 		doc.AlsoKnownAs = []string{opts.Username}
 	}
 
+	txhash := ""
 	if opts.BroadcastTx {
-		go local.Context().CreatePrimaryIdentity(doc, primary, opts.Username)
+		txresp, err := local.Context().CreatePrimaryIdentity(doc, primary, opts.Username)
+		if err != nil {
+			return nil, err
+		}
+		txhash = txresp.TxResponse.TxHash
 	}
 
 	cont := &didController{
@@ -136,6 +141,7 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 		blockchain:  []models.Account{},
 		primaryDoc:  doc,
 		disableIPFS: opts.DisableIPFS,
+		txHash:      txhash,
 	}
 	return cont, nil
 }

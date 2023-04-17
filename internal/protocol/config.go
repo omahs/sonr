@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -36,9 +37,6 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	// Middleware
 	rest.Use(cors.New())
 	rest.Use(helmet.New())
-	rest.Use(jwtware.New(jwtware.Config{
-		SigningKey: []byte("secret"),
-	}))
 
 	// Status Methods
 	rest.Get("/health", func(c *fiber.Ctx) error {
@@ -57,6 +55,11 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	rest.Post("/highway/auth/keygen", timeout.New(rest.Keygen, time.Second*10))
 	rest.Post("/highway/auth/login", timeout.New(rest.Login, time.Second*10))
 
+	rest.Use(jwtware.New(jwtware.Config{
+		SigningKey: []byte("secret"),
+	}))
+
+
 	// MPC Methods
 	rest.Get("/highway/auth/check", timeout.New(rest.IsAuthorized, time.Second*5))
 	rest.Get("/highway/accounts", timeout.New(rest.ListAccounts, time.Second*5))
@@ -73,9 +76,9 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 
 func (h *HttpTransport) FetchUser(c *fiber.Ctx) (*controller.User, error) {
 	user := c.Locals("user").(*jwt.Token)
-	usr, err := controller.UserFromJWT(user)
+	usr, err := controller.LoadUser(user)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to load user using jwt token")
 	}
 	return usr, nil
 }

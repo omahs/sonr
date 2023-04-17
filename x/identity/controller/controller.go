@@ -25,6 +25,9 @@ type Controller interface {
 	// PrimaryIdentity returns the controller's DID document
 	PrimaryIdentity() *types.DidDocument
 
+	// PrimaryTxHash returns the controller's primary identity transaction hash
+	PrimaryTxHash() string
+
 	// BlockchainIdentities returns the controller's blockchain identities
 	BlockchainIdentities() []*types.DidDocument
 
@@ -57,6 +60,7 @@ type didController struct {
 
 	currCredential *crypto.WebauthnCredential
 	disableIPFS    bool
+	txHash         string
 }
 
 func NewController(options ...Option) (Controller, error) {
@@ -229,3 +233,9 @@ func (dc *didController) ReadMail(address string) ([]*models.InboxMessage, error
 	}
 	return keeper.ReadInbox(acc.Address())
 }
+
+// PrimaryTxHash returns the transaction hash of the primary models.Account
+func (dc *didController) PrimaryTxHash() string {
+	return dc.txHash
+}
+
