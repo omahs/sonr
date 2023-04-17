@@ -14,6 +14,7 @@ import (
 	"github.com/gofiber/helmet/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/x/identity/controller"
 )
 
@@ -55,8 +56,9 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	rest.Post("/highway/auth/keygen", timeout.New(rest.Keygen, time.Second*10))
 	rest.Post("/highway/auth/login", timeout.New(rest.Login, time.Second*10))
 
+	// -- RESTRICTED METHODS --
 	rest.Use(jwtware.New(jwtware.Config{
-		SigningKey: []byte("secret"),
+		SigningKey: local.Context().SigningKey(),
 	}))
 
 
@@ -74,7 +76,7 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	return rest
 }
 
-func (h *HttpTransport) FetchUser(c *fiber.Ctx) (*controller.User, error) {
+func fetchUser(c *fiber.Ctx) (*controller.User, error) {
 	user := c.Locals("user").(*jwt.Token)
 	usr, err := controller.LoadUser(user)
 	if err != nil {

@@ -74,7 +74,7 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	}
 	usr := controller.NewUser(cont, req.Username)
 	// Create the Claims
-	jwt, err := usr.JWT([]byte("secret"))
+	jwt, err := usr.JWT()
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -102,13 +102,13 @@ func (htt *HttpTransport) Login(c *fiber.Ctx) error {
 	}
 	doc, err := local.Context().GetDID(c.Context(), req.AccountAddress)
 	if err != nil {
-		return err
+		return c.Status(500).SendString(err.Error())
 	}
 
 	if doc == nil && req.GetUsername() != "" {
 		ok, ddoc, err := local.Context().CheckAlias(c.Context(), req.Username)
 		if err != nil {
-			return err
+			return c.Status(500).SendString(err.Error())
 		}
 		if !ok {
 			return c.Status(400).SendString("Username not found.")
@@ -118,13 +118,13 @@ func (htt *HttpTransport) Login(c *fiber.Ctx) error {
 
 	cont, err := controller.LoadController(doc)
 	if err != nil {
-		return err
+		return c.Status(500).SendString(err.Error())
 	}
 	usr := controller.NewUser(cont, req.GetUsername())
 	// Create the Claims
-	jwt, err := usr.JWT([]byte("secret"))
+	jwt, err := usr.JWT()
 	if err != nil {
-		return err
+		return c.Status(500).SendString(err.Error())
 	}
 
 	res := &v1.LoginResponse{
@@ -146,7 +146,6 @@ func QueryDocument(c *fiber.Ctx) error {
 	// Get the origin from the request.
 	doc, err := local.Context().GetDID(context.Background(), did)
 	if err != nil {
-
 		return c.Status(404).SendString(err.Error())
 	}
 	resp := &v1.QueryDocumentResponse{
@@ -245,7 +244,7 @@ func (htt *HttpTransport) QueryServiceAssertion(c *fiber.Ctx) error {
 // ! ||                        Accounts API Rest Implementation                        ||
 // ! ||--------------------------------------------------------------------------------||
 func (htt *HttpTransport) IsAuthorized(c *fiber.Ctx) error {
-	usr, err := htt.FetchUser(c)
+	usr, err := fetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -258,7 +257,7 @@ func (htt *HttpTransport) IsAuthorized(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
-	usr, err := htt.FetchUser(c)
+	usr, err := fetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -290,7 +289,7 @@ func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
-	usr, err := htt.FetchUser(c)
+	usr, err := fetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -316,7 +315,7 @@ func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
-	usr, err := htt.FetchUser(c)
+	usr, err := fetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -344,7 +343,7 @@ func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
-	usr, err := htt.FetchUser(c)
+	usr, err := fetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -379,7 +378,7 @@ func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
-	usr, err := htt.FetchUser(c)
+	usr, err := fetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -417,7 +416,7 @@ func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) SendMail(c *fiber.Ctx) error {
-	usr, err := htt.FetchUser(c)
+	usr, err := fetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -446,7 +445,7 @@ func (htt *HttpTransport) SendMail(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) ReadMail(c *fiber.Ctx) error {
-	usr, err := htt.FetchUser(c)
+	usr, err := fetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}

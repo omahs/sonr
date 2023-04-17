@@ -74,7 +74,7 @@ func (u *User) JWTClaims() (jwt.MapClaims) {
 func (u *User) PrimaryIdentity() (*types.DidDocument, error) {
 	return local.Context().GetDID(context.Background(), u.Did)
 }
-func (u *User) JWT(secret []byte) (string, error) {
+func (u *User) JWT() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, u.JWTClaims())
-	return token.SignedString(secret)
+	return token.SignedString(local.Context().SigningKey())
 }
