@@ -42,7 +42,7 @@ message CreateAccountResponse {
   bool success = 1;
   string coin_type = 2;
   core.identity.DidDocument did_document = 3;
-  repeated Account accounts = 4;
+  Account new_account = 4;
 }
 
 // GetAccountRequest is the request to get an account.

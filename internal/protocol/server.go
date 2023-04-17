@@ -269,11 +269,11 @@ func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 	}
 	primeID, err := usr.PrimaryIdentity()
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(404).SendString(err.Error())
 	}
 	cont, err := controller.LoadController(primeID)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(401).SendString(err.Error())
 	}
 	ct := crypto.CoinTypeFromName(req.CoinType)
 	acc, err := cont.CreateAccount(req.Name, ct)
@@ -282,9 +282,9 @@ func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 	}
 	res := &v1.CreateAccountResponse{
 		Success: true,
-		Accounts: []*v1.Account{
-			acc.ToProto(),
-		},
+		NewAccount: acc.ToProto(),
+		CoinType: req.CoinType,
+		DidDocument: cont.PrimaryIdentity(),
 	}
 	return c.JSON(res)
 }
@@ -296,11 +296,11 @@ func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
 	}
 	primeID, err := usr.PrimaryIdentity()
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(404).SendString(err.Error())
 	}
 	cont, err := controller.LoadController(primeID)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(401).SendString(err.Error())
 	}
 	accs, err := cont.ListAccounts()
 	if err != nil {
@@ -322,11 +322,11 @@ func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
 	}
 		primeID, err := usr.PrimaryIdentity()
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(404).SendString(err.Error())
 	}
 	cont, err := controller.LoadController(primeID)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(401).SendString(err.Error())
 	}
 	address := c.Params("address", "")
 	acc, err := cont.GetAccount(address)
@@ -355,11 +355,11 @@ func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
 	}
 	primeID, err := usr.PrimaryIdentity()
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(404).SendString(err.Error())
 	}
 	cont, err := controller.LoadController(primeID)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(401).SendString(err.Error())
 	}
 	bz, err := base64.RawStdEncoding.DecodeString(req.Message)
 	if err != nil {
