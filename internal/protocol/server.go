@@ -11,7 +11,6 @@ import (
 	"github.com/sonrhq/core/types/crypto"
 	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/controller"
-	identitytypes "github.com/sonrhq/core/x/identity/types"
 )
 
 func RegisterHighway(ctx client.Context) {
@@ -41,10 +40,6 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	sess, err := htt.SessionStore.Get(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
 	ok, _, err := local.Context().CheckAlias(context.Background(), req.Username)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
@@ -52,7 +47,6 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	if !ok {
 		return c.Status(400).SendString("Username already taken.")
 	}
-	sess.Set("username", req.Username)
 
 	// Get the origin from the request.
 	// uuid := req.Uuid
@@ -61,7 +55,6 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 		// Try to get the service from the localhost
 		service, _ = local.Context().GetService(context.Background(), "localhost")
 	}
-	sess.Set("service", service.Origin)
 
 	// Check if service is still nil - return internal server error
 	if service == nil {
@@ -79,30 +72,24 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	accs := make([]*v1.Account, 0)
-	lclAccs, err := cont.ListAccounts()
+	usr := controller.NewUser(cont, req.Username)
+	// Create the Claims
+	jwt, err := usr.JWT([]byte("secret"))
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	for _, lclAcc := range lclAccs {
-		accs = append(accs, lclAcc.ToProto())
+
+	accs, err := usr.ListAccounts()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
 	}
+
 	res := &v1.KeygenResponse{
 		Success:  true,
 		Did:      cont.Did(),
 		Primary:  cont.PrimaryIdentity(),
 		Accounts: accs,
-	}
-	usr := controller.NewUser(cont)
-	usrBytes, err := usr.Marshal()
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	sess.Set("address", cont.PrimaryIdentity().Id)
-	sess.Set("user", usrBytes)
-	err = sess.Save()
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		Jwt:      jwt,
 	}
 	return c.JSON(res)
 }
@@ -112,16 +99,9 @@ func (htt *HttpTransport) Login(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
-	sess, err := htt.SessionStore.Get(c)
+	doc, err := local.Context().GetDID(c.Context(), req.AccountAddress)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	var doc *identitytypes.DidDocument
-	if req.GetAccountAddress() != "" {
-		doc, err = local.Context().GetDID(c.Context(), req.AccountAddress)
-		if err != nil {
-			return err
-		}
+		return err
 	}
 
 	if doc == nil && req.GetUsername() != "" {
@@ -139,18 +119,20 @@ func (htt *HttpTransport) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	usr := controller.NewUser(cont)
-	usrBytes, err := usr.Marshal()
+	usr := controller.NewUser(cont, req.GetUsername())
+	// Create the Claims
+	jwt, err := usr.JWT([]byte("secret"))
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return err
 	}
-	sess.Set("address", cont.PrimaryIdentity().Id)
-	sess.Set("user", usrBytes)
-	err = sess.Save()
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
+
+	res := &v1.LoginResponse{
+		Success: true,
+		Did:     cont.Did(),
+		Jwt:     jwt,
+		Address: cont.Address(),
 	}
-	return c.JSON(`{"success":"true"}`)
+	return c.JSON(res)
 }
 
 // ! ||--------------------------------------------------------------------------------||
@@ -262,47 +244,20 @@ func (htt *HttpTransport) QueryServiceAssertion(c *fiber.Ctx) error {
 // ! ||                        Accounts API Rest Implementation                        ||
 // ! ||--------------------------------------------------------------------------------||
 func (htt *HttpTransport) IsAuthorized(c *fiber.Ctx) error {
-    sess, err := htt.SessionStore.Get(c)
-    if err != nil {
-        return c.Status(500).SendString(err.Error())
-    }
-
-    usrVal := sess.Get("user")
-    if usrVal == nil {
-        return c.Status(401).SendString("Unauthorized")
-    }
-
-    usrBytes, ok := usrVal.([]byte)
-    if !ok {
-        return c.Status(500).SendString("Internal Server Error")
-    }
-
-    usr, err := controller.LoadUser(usrBytes)
-    if err != nil {
-        return c.Status(500).SendString(err.Error())
-    }
-
-    return c.JSON(fiber.Map{
-        "success": true,
-        "message": "User is authorized",
-        "user":    usr,
-    })
-}
-
-func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
-	sess, err := htt.SessionStore.Get(c)
+	usr, err := htt.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	usrVal := sess.Get("user")
-	if usrVal == nil {
-		return c.Status(401).SendString("Unauthorized")
-	}
-	usrBytes, ok := usrVal.([]byte)
-	if !ok {
-		return c.Status(500).SendString("Internal Server Error")
-	}
-	usr, err := controller.LoadUser(usrBytes)
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "User is authorized",
+		"user":    usr,
+	})
+}
+
+func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
+	usr, err := htt.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -330,19 +285,7 @@ func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
-	sess, err := htt.SessionStore.Get(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	usrVal := sess.Get("user")
-	if usrVal == nil {
-		return c.Status(401).SendString("Unauthorized")
-	}
-	usrBytes, ok := usrVal.([]byte)
-	if !ok {
-		return c.Status(500).SendString("Internal Server Error")
-	}
-	usr, err := controller.LoadUser(usrBytes)
+	usr, err := htt.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -365,20 +308,7 @@ func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
-	sess, err := htt.SessionStore.Get(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	usrVal := sess.Get("user")
-	if usrVal == nil {
-		return c.Status(401).SendString("Unauthorized")
-	}
-	usrBytes, ok := usrVal.([]byte)
-	if !ok {
-		return c.Status(500).SendString("Internal Server Error")
-	}
-
-	usr, err := controller.LoadUser(usrBytes)
+	usr, err := htt.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -402,19 +332,7 @@ func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
-	sess, err := htt.SessionStore.Get(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	usrVal := sess.Get("user")
-	if usrVal == nil {
-		return c.Status(401).SendString("Unauthorized")
-	}
-	usrBytes, ok := usrVal.([]byte)
-	if !ok {
-		return c.Status(500).SendString("Internal Server Error")
-	}
-	usr, err := controller.LoadUser(usrBytes)
+	usr, err := htt.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -445,19 +363,7 @@ func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
-	sess, err := htt.SessionStore.Get(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	usrVal := sess.Get("user")
-	if usrVal == nil {
-		return c.Status(401).SendString("Unauthorized")
-	}
-	usrBytes, ok := usrVal.([]byte)
-	if !ok {
-		return c.Status(500).SendString("Internal Server Error")
-	}
-	usr, err := controller.LoadUser(usrBytes)
+	usr, err := htt.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -479,7 +385,7 @@ func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	ok, err = cont.Verify(req.Did, bz, sig)
+	ok, err := cont.Verify(req.Did, bz, sig)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -491,19 +397,7 @@ func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) SendMail(c *fiber.Ctx) error {
-	sess, err := htt.SessionStore.Get(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	usrVal := sess.Get("user")
-	if usrVal == nil {
-		return c.Status(401).SendString("Unauthorized")
-	}
-	usrBytes, ok := usrVal.([]byte)
-	if !ok {
-		return c.Status(500).SendString("Internal Server Error")
-	}
-	usr, err := controller.LoadUser(usrBytes)
+	usr, err := htt.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -528,19 +422,7 @@ func (htt *HttpTransport) SendMail(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) ReadMail(c *fiber.Ctx) error {
-	sess, err := htt.SessionStore.Get(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	usrVal := sess.Get("user")
-	if usrVal == nil {
-		return c.Status(401).SendString("Unauthorized")
-	}
-	usrBytes, ok := usrVal.([]byte)
-	if !ok {
-		return c.Status(500).SendString("Internal Server Error")
-	}
-	usr, err := controller.LoadUser(usrBytes)
+	usr, err := htt.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}

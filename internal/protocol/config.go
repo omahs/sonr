@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/goccy/go-json"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/fiber/v2/middleware/timeout"
 	"github.com/gofiber/helmet/v2"
+	jwtware "github.com/gofiber/jwt/v3"
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/sonrhq/core/x/identity/controller"
 )
 
 type HttpTransport struct {
@@ -34,6 +36,9 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	// Middleware
 	rest.Use(cors.New())
 	rest.Use(helmet.New())
+	rest.Use(jwtware.New(jwtware.Config{
+		SigningKey: []byte("secret"),
+	}))
 
 	// Status Methods
 	rest.Get("/health", func(c *fiber.Ctx) error {
@@ -53,7 +58,7 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	rest.Post("/highway/auth/login", timeout.New(rest.Login, time.Second*10))
 
 	// MPC Methods
-	rest.Get("/highway/isAuthorized", timeout.New(rest.IsAuthorized, time.Second*5))
+	rest.Get("/highway/auth/check", timeout.New(rest.IsAuthorized, time.Second*5))
 	rest.Get("/highway/accounts", timeout.New(rest.ListAccounts, time.Second*5))
 	rest.Get("/highway/accounts/:address", timeout.New(rest.GetAccount, time.Second*5))
 	rest.Post("/highway/accounts/create", timeout.New(rest.CreateAccount, time.Second*5))
@@ -64,6 +69,15 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	rest.Get("/highway/inbox/read", timeout.New(rest.ReadMail, time.Second*5))
 	rest.Post("/highway/inbox/send", timeout.New(rest.SendMail, time.Second*5))
 	return rest
+}
+
+func (h *HttpTransport) FetchUser(c *fiber.Ctx) (*controller.User, error) {
+	user := c.Locals("user").(*jwt.Token)
+	usr, err := controller.UserFromJWT(user)
+	if err != nil {
+		return nil, err
+	}
+	return usr, nil
 }
 
 // ! ||--------------------------------------------------------------------------------||

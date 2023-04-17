@@ -70,6 +70,9 @@ message KeygenResponse {
 
   // Transaction hash for the account creation.
   string transaction_hash = 6;
+
+  // JWT for the account.
+  string jwt = 7;
 }
 
 // LoginFinishRequest is the request to login to an account.
@@ -103,6 +106,9 @@ message LoginResponse {
 
   // The DID Document for the wallet.
   core.identity.DidDocument did_document = 5;
+
+  // JWT for the account.
+  string jwt = 6;
 }
 
 // QueryAliasRequest is the request to query an alias.

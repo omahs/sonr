@@ -905,6 +905,9 @@ definitions:
       transactionHash:
         type: string
         description: Transaction hash for the account creation.
+      jwt:
+        type: string
+        description: JWT for the account.
     description: KeygenResponse is the response to a Keygen request.
   v1ListAccountsResponse:
     type: object
@@ -938,6 +941,9 @@ definitions:
       didDocument:
         $ref: '#/definitions/identityDidDocument'
         description: The DID Document for the wallet.
+      jwt:
+        type: string
+        description: JWT for the account.
     description: LoginFinishResponse is the response to a Login request.
   v1QueryDocumentResponse:
     type: object
