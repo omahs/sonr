@@ -148,7 +148,11 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 	}
 
 	if opts.BroadcastTx {
-		go cont.CreatePrimaryIdentity(doc, primary, opts.Username)
+		resp, err := cont.CreatePrimaryIdentity(doc, primary, opts.Username)
+		if err != nil {
+			return nil, err
+		}
+		cont.txHash = resp.TxResponse.TxHash
 	}
 	return cont, nil
 }

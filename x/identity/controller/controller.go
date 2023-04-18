@@ -158,7 +158,7 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (m
 	// Add the new models.Account to the controller
 	dc.blockchain = append(dc.blockchain, newAcc)
 	dc.primaryDoc.AddBlockchainIdentity(newAcc.DidDocument())
-	go dc.UpdatePrimaryIdentity(newAcc.DidDocument())
+	dc.UpdatePrimaryIdentity(newAcc.DidDocument())
 	return newAcc, nil
 }
 
