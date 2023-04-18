@@ -82,6 +82,9 @@ func (p Params) NewWebauthnAssertionOptions(s *ServiceRecord, challenge protocol
 		allowedCreds = append(allowedCreds, protocol.CredentialDescriptor{
 			CredentialID: vm.WebauthnCredentialID(),
 			Type:         "public-key",
+			Transport: []protocol.AuthenticatorTransport{
+				protocol.Internal,
+			},
 		})
 	}
 
