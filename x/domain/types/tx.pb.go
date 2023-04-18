@@ -28,8 +28,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type MsgCreateTLDRecord struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Index   string `protobuf:"bytes,2,opt,name=index,proto3" json:"index,omitempty"`
+	Creator   string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	TldRecord *TLDRecord `protobuf:"bytes,2,opt,name=tld_record,json=tldRecord,proto3" json:"tld_record,omitempty"`
 }
 
 func (m *MsgCreateTLDRecord) Reset()         { *m = MsgCreateTLDRecord{} }
@@ -72,11 +72,11 @@ func (m *MsgCreateTLDRecord) GetCreator() string {
 	return ""
 }
 
-func (m *MsgCreateTLDRecord) GetIndex() string {
+func (m *MsgCreateTLDRecord) GetTldRecord() *TLDRecord {
 	if m != nil {
-		return m.Index
+		return m.TldRecord
 	}
-	return ""
+	return nil
 }
 
 type MsgCreateTLDRecordResponse struct {
@@ -116,8 +116,8 @@ func (m *MsgCreateTLDRecordResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgCreateTLDRecordResponse proto.InternalMessageInfo
 
 type MsgUpdateTLDRecord struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Index   string `protobuf:"bytes,2,opt,name=index,proto3" json:"index,omitempty"`
+	Creator   string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	TldRecord *TLDRecord `protobuf:"bytes,2,opt,name=tld_record,json=tldRecord,proto3" json:"tld_record,omitempty"`
 }
 
 func (m *MsgUpdateTLDRecord) Reset()         { *m = MsgUpdateTLDRecord{} }
@@ -160,11 +160,11 @@ func (m *MsgUpdateTLDRecord) GetCreator() string {
 	return ""
 }
 
-func (m *MsgUpdateTLDRecord) GetIndex() string {
+func (m *MsgUpdateTLDRecord) GetTldRecord() *TLDRecord {
 	if m != nil {
-		return m.Index
+		return m.TldRecord
 	}
-	return ""
+	return nil
 }
 
 type MsgUpdateTLDRecordResponse struct {
@@ -205,7 +205,7 @@ var xxx_messageInfo_MsgUpdateTLDRecordResponse proto.InternalMessageInfo
 
 type MsgDeleteTLDRecord struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Index   string `protobuf:"bytes,2,opt,name=index,proto3" json:"index,omitempty"`
+	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 }
 
 func (m *MsgDeleteTLDRecord) Reset()         { *m = MsgDeleteTLDRecord{} }
@@ -248,9 +248,9 @@ func (m *MsgDeleteTLDRecord) GetCreator() string {
 	return ""
 }
 
-func (m *MsgDeleteTLDRecord) GetIndex() string {
+func (m *MsgDeleteTLDRecord) GetName() string {
 	if m != nil {
-		return m.Index
+		return m.Name
 	}
 	return ""
 }
@@ -292,8 +292,8 @@ func (m *MsgDeleteTLDRecordResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDeleteTLDRecordResponse proto.InternalMessageInfo
 
 type MsgCreateSLDRecord struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Index   string `protobuf:"bytes,2,opt,name=index,proto3" json:"index,omitempty"`
+	Creator   string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	SldRecord *SLDRecord `protobuf:"bytes,2,opt,name=sld_record,json=sldRecord,proto3" json:"sld_record,omitempty"`
 }
 
 func (m *MsgCreateSLDRecord) Reset()         { *m = MsgCreateSLDRecord{} }
@@ -336,11 +336,11 @@ func (m *MsgCreateSLDRecord) GetCreator() string {
 	return ""
 }
 
-func (m *MsgCreateSLDRecord) GetIndex() string {
+func (m *MsgCreateSLDRecord) GetSldRecord() *SLDRecord {
 	if m != nil {
-		return m.Index
+		return m.SldRecord
 	}
-	return ""
+	return nil
 }
 
 type MsgCreateSLDRecordResponse struct {
@@ -380,8 +380,8 @@ func (m *MsgCreateSLDRecordResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgCreateSLDRecordResponse proto.InternalMessageInfo
 
 type MsgUpdateSLDRecord struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Index   string `protobuf:"bytes,2,opt,name=index,proto3" json:"index,omitempty"`
+	Creator   string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	SldRecord *SLDRecord `protobuf:"bytes,2,opt,name=sld_record,json=sldRecord,proto3" json:"sld_record,omitempty"`
 }
 
 func (m *MsgUpdateSLDRecord) Reset()         { *m = MsgUpdateSLDRecord{} }
@@ -424,11 +424,11 @@ func (m *MsgUpdateSLDRecord) GetCreator() string {
 	return ""
 }
 
-func (m *MsgUpdateSLDRecord) GetIndex() string {
+func (m *MsgUpdateSLDRecord) GetSldRecord() *SLDRecord {
 	if m != nil {
-		return m.Index
+		return m.SldRecord
 	}
-	return ""
+	return nil
 }
 
 type MsgUpdateSLDRecordResponse struct {
@@ -469,7 +469,7 @@ var xxx_messageInfo_MsgUpdateSLDRecordResponse proto.InternalMessageInfo
 
 type MsgDeleteSLDRecord struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Index   string `protobuf:"bytes,2,opt,name=index,proto3" json:"index,omitempty"`
+	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 }
 
 func (m *MsgDeleteSLDRecord) Reset()         { *m = MsgDeleteSLDRecord{} }
@@ -512,9 +512,9 @@ func (m *MsgDeleteSLDRecord) GetCreator() string {
 	return ""
 }
 
-func (m *MsgDeleteSLDRecord) GetIndex() string {
+func (m *MsgDeleteSLDRecord) GetName() string {
 	if m != nil {
-		return m.Index
+		return m.Name
 	}
 	return ""
 }
@@ -573,28 +573,31 @@ func init() {
 func init() { proto.RegisterFile("core/domain/tx.proto", fileDescriptor_d1e2442c81dc82e6) }
 
 var fileDescriptor_d1e2442c81dc82e6 = []byte{
-	// 331 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0xc1, 0x4a, 0xec, 0x30,
-	0x14, 0x86, 0xdb, 0x7b, 0x19, 0xc5, 0x6c, 0x84, 0x30, 0x8b, 0x52, 0x24, 0xc8, 0x80, 0xe2, 0x2a,
-	0x05, 0x7d, 0x00, 0x41, 0xbb, 0x74, 0x36, 0x3d, 0xba, 0x71, 0x37, 0xd3, 0x86, 0x4e, 0xc1, 0x69,
-	0x6a, 0x52, 0xa1, 0x3e, 0x81, 0x5b, 0x1f, 0xcb, 0xe5, 0x2c, 0x5d, 0x4a, 0xfb, 0x22, 0xd2, 0xc6,
-	0x51, 0x49, 0xc8, 0x10, 0xb0, 0xab, 0x92, 0xe4, 0xe7, 0x7c, 0xf4, 0xe3, 0xe7, 0xa0, 0x69, 0xca,
-	0x05, 0x8b, 0x32, 0xbe, 0x5e, 0x14, 0x65, 0x54, 0x37, 0xb4, 0x12, 0xbc, 0xe6, 0x18, 0x4b, 0x5e,
-	0x8a, 0xd5, 0x23, 0xed, 0x1f, 0xa9, 0x7a, 0x0c, 0x83, 0xdf, 0x49, 0xf5, 0x51, 0xe9, 0x59, 0x8c,
-	0xf0, 0x5c, 0xe6, 0xd7, 0x82, 0x2d, 0x6a, 0x76, 0x7b, 0x13, 0x27, 0x2c, 0xe5, 0x22, 0xc3, 0x01,
-	0xda, 0x4f, 0xfb, 0x2b, 0x2e, 0x02, 0xff, 0xd8, 0x3f, 0x3b, 0x48, 0xb6, 0x47, 0x3c, 0x45, 0x93,
-	0xa2, 0xcc, 0x58, 0x13, 0xfc, 0x1b, 0xee, 0xd5, 0x61, 0x76, 0x84, 0x42, 0x73, 0x4a, 0xc2, 0x64,
-	0xc5, 0x4b, 0xc9, 0xbe, 0x18, 0x77, 0x55, 0x36, 0x02, 0x43, 0x9b, 0xa2, 0x31, 0x62, 0xf6, 0xc0,
-	0xfe, 0xce, 0xd0, 0xa6, 0x68, 0x0c, 0xf5, 0x97, 0x30, 0x8a, 0x2b, 0xd8, 0xe9, 0x0a, 0x46, 0x71,
-	0x05, 0x3b, 0x5d, 0xc1, 0x28, 0xae, 0x0c, 0xc6, 0xf9, 0xcb, 0x04, 0xfd, 0x9f, 0xcb, 0x1c, 0x17,
-	0xe8, 0x50, 0x2f, 0xd7, 0x29, 0x35, 0x1b, 0x4a, 0xcd, 0xfa, 0x84, 0xd4, 0x2d, 0xb7, 0x45, 0xf6,
-	0x28, 0xbd, 0x63, 0x36, 0x94, 0x96, 0xb3, 0xa2, 0x2c, 0x6d, 0xeb, 0x51, 0x7a, 0xd5, 0x6c, 0x28,
-	0x2d, 0x67, 0x45, 0x59, 0x4a, 0xf7, 0x23, 0x10, 0x1c, 0x05, 0x82, 0xa3, 0x40, 0xb0, 0x0b, 0x04,
-	0x47, 0x81, 0xe0, 0x28, 0x10, 0xec, 0x02, 0xc1, 0x51, 0x20, 0x38, 0x0a, 0x34, 0x50, 0x57, 0x97,
-	0x6f, 0x2d, 0xf1, 0x37, 0x2d, 0xf1, 0x3f, 0x5a, 0xe2, 0xbf, 0x76, 0xc4, 0xdb, 0x74, 0xc4, 0x7b,
-	0xef, 0x88, 0x77, 0x7f, 0x92, 0x17, 0xf5, 0xea, 0x69, 0x49, 0x53, 0xbe, 0x8e, 0xd4, 0xcc, 0x68,
-	0xd8, 0x93, 0xcd, 0xf7, 0x4e, 0x7d, 0xae, 0x98, 0x5c, 0xee, 0x0d, 0x9b, 0xf2, 0xe2, 0x33, 0x00,
-	0x00, 0xff, 0xff, 0xd5, 0x03, 0xb2, 0x3a, 0x6f, 0x05, 0x00, 0x00,
+	// 374 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x94, 0xbf, 0x4b, 0x03, 0x31,
+	0x14, 0xc7, 0x7b, 0xfe, 0xa4, 0x71, 0x10, 0x82, 0xc3, 0x51, 0xf4, 0x28, 0x05, 0xa5, 0x53, 0x0e,
+	0xea, 0x2a, 0x08, 0xb5, 0xa3, 0x5d, 0xee, 0xe9, 0xe2, 0x22, 0xed, 0x5d, 0x68, 0x0b, 0xd7, 0xcb,
+	0x99, 0x44, 0xa8, 0x7f, 0x81, 0xab, 0x7f, 0x96, 0x63, 0x47, 0x47, 0x69, 0xff, 0x11, 0xb9, 0xa4,
+	0x3f, 0x24, 0x77, 0x91, 0x0c, 0xd2, 0xa9, 0xe9, 0xe5, 0x91, 0xcf, 0xf7, 0x7d, 0x78, 0x3c, 0x74,
+	0x16, 0x33, 0x4e, 0xc3, 0x84, 0x4d, 0x07, 0x93, 0x2c, 0x94, 0x33, 0x92, 0x73, 0x26, 0x19, 0xc6,
+	0x82, 0x65, 0x7c, 0xfc, 0x42, 0x8a, 0x4b, 0xa2, 0x2f, 0x1b, 0xfe, 0xef, 0x4a, 0xfd, 0xa3, 0xab,
+	0x5b, 0x29, 0xc2, 0x7d, 0x31, 0xba, 0xe3, 0x74, 0x20, 0xe9, 0xc3, 0x7d, 0x2f, 0xa2, 0x31, 0xe3,
+	0x09, 0xf6, 0xd1, 0x71, 0x5c, 0x7c, 0x62, 0xdc, 0xf7, 0x9a, 0x5e, 0xbb, 0x1e, 0xad, 0xff, 0xe2,
+	0x1b, 0x84, 0x64, 0x9a, 0x3c, 0x73, 0x55, 0xe7, 0xef, 0x35, 0xbd, 0xf6, 0x49, 0xe7, 0x82, 0x94,
+	0x91, 0x64, 0xf3, 0x58, 0x54, 0x97, 0x69, 0xa2, 0x8f, 0xad, 0x73, 0xd4, 0x28, 0xd3, 0x22, 0x2a,
+	0x72, 0x96, 0x09, 0xba, 0xca, 0xf2, 0x98, 0x27, 0x3b, 0xcc, 0x62, 0xd0, 0x36, 0x59, 0xba, 0x2a,
+	0x4b, 0x8f, 0xa6, 0xd4, 0x2d, 0x0b, 0x46, 0x07, 0xd9, 0x60, 0x4a, 0x55, 0x8a, 0x7a, 0xa4, 0xce,
+	0x2b, 0x82, 0xf1, 0x86, 0xd1, 0xad, 0x76, 0x01, 0x6e, 0xdd, 0x0a, 0xa7, 0x6e, 0x61, 0xdb, 0xad,
+	0xa8, 0x34, 0x0f, 0x7f, 0x9a, 0xdf, 0x55, 0x16, 0x83, 0x56, 0x69, 0x1e, 0xfe, 0xc1, 0x7c, 0x89,
+	0xd0, 0x79, 0x3f, 0x44, 0xfb, 0x7d, 0x31, 0xc2, 0x13, 0x74, 0x6a, 0x0e, 0xfe, 0x55, 0x55, 0x13,
+	0xe5, 0x91, 0x6d, 0x10, 0xb7, 0xba, 0x35, 0xb2, 0x40, 0x99, 0x73, 0x6d, 0x43, 0x19, 0x75, 0x56,
+	0x94, 0x65, 0x72, 0x0b, 0x94, 0x39, 0xb6, 0x36, 0x94, 0x51, 0x67, 0x45, 0x59, 0x46, 0x78, 0x2b,
+	0x10, 0x1c, 0x05, 0x82, 0xa3, 0x40, 0xb0, 0x0b, 0x04, 0x47, 0x81, 0xe0, 0x28, 0x10, 0xec, 0x02,
+	0xc1, 0x51, 0x20, 0x38, 0x0a, 0x2c, 0xa1, 0xba, 0xb7, 0x9f, 0x8b, 0xc0, 0x9b, 0x2f, 0x02, 0xef,
+	0x7b, 0x11, 0x78, 0x1f, 0xcb, 0xa0, 0x36, 0x5f, 0x06, 0xb5, 0xaf, 0x65, 0x50, 0x7b, 0xba, 0x1c,
+	0x4d, 0xe4, 0xf8, 0x75, 0x48, 0x62, 0x36, 0x0d, 0xf5, 0x9b, 0xa1, 0xda, 0xe1, 0xb3, 0xcd, 0xbe,
+	0x7f, 0xcb, 0xa9, 0x18, 0x1e, 0xa9, 0x2d, 0x7e, 0xfd, 0x13, 0x00, 0x00, 0xff, 0xff, 0xc5, 0xc9,
+	0xc9, 0x3b, 0x0b, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -877,10 +880,15 @@ func (m *MsgCreateTLDRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Index) > 0 {
-		i -= len(m.Index)
-		copy(dAtA[i:], m.Index)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Index)))
+	if m.TldRecord != nil {
+		{
+			size, err := m.TldRecord.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0x12
 	}
@@ -937,10 +945,15 @@ func (m *MsgUpdateTLDRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Index) > 0 {
-		i -= len(m.Index)
-		copy(dAtA[i:], m.Index)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Index)))
+	if m.TldRecord != nil {
+		{
+			size, err := m.TldRecord.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0x12
 	}
@@ -997,10 +1010,10 @@ func (m *MsgDeleteTLDRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Index) > 0 {
-		i -= len(m.Index)
-		copy(dAtA[i:], m.Index)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Index)))
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Name)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1057,10 +1070,15 @@ func (m *MsgCreateSLDRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Index) > 0 {
-		i -= len(m.Index)
-		copy(dAtA[i:], m.Index)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Index)))
+	if m.SldRecord != nil {
+		{
+			size, err := m.SldRecord.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1117,10 +1135,15 @@ func (m *MsgUpdateSLDRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Index) > 0 {
-		i -= len(m.Index)
-		copy(dAtA[i:], m.Index)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Index)))
+	if m.SldRecord != nil {
+		{
+			size, err := m.SldRecord.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1177,10 +1200,10 @@ func (m *MsgDeleteSLDRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Index) > 0 {
-		i -= len(m.Index)
-		copy(dAtA[i:], m.Index)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Index)))
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Name)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1238,8 +1261,8 @@ func (m *MsgCreateTLDRecord) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Index)
-	if l > 0 {
+	if m.TldRecord != nil {
+		l = m.TldRecord.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1264,8 +1287,8 @@ func (m *MsgUpdateTLDRecord) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Index)
-	if l > 0 {
+	if m.TldRecord != nil {
+		l = m.TldRecord.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1290,7 +1313,7 @@ func (m *MsgDeleteTLDRecord) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Index)
+	l = len(m.Name)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1316,8 +1339,8 @@ func (m *MsgCreateSLDRecord) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Index)
-	if l > 0 {
+	if m.SldRecord != nil {
+		l = m.SldRecord.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1342,8 +1365,8 @@ func (m *MsgUpdateSLDRecord) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Index)
-	if l > 0 {
+	if m.SldRecord != nil {
+		l = m.SldRecord.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1368,7 +1391,7 @@ func (m *MsgDeleteSLDRecord) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Index)
+	l = len(m.Name)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1453,9 +1476,9 @@ func (m *MsgCreateTLDRecord) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TldRecord", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1465,23 +1488,27 @@ func (m *MsgCreateTLDRecord) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Index = string(dAtA[iNdEx:postIndex])
+			if m.TldRecord == nil {
+				m.TldRecord = &TLDRecord{}
+			}
+			if err := m.TldRecord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1617,9 +1644,9 @@ func (m *MsgUpdateTLDRecord) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TldRecord", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1629,23 +1656,27 @@ func (m *MsgUpdateTLDRecord) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Index = string(dAtA[iNdEx:postIndex])
+			if m.TldRecord == nil {
+				m.TldRecord = &TLDRecord{}
+			}
+			if err := m.TldRecord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1781,7 +1812,7 @@ func (m *MsgDeleteTLDRecord) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1809,7 +1840,7 @@ func (m *MsgDeleteTLDRecord) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Index = string(dAtA[iNdEx:postIndex])
+			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1945,9 +1976,9 @@ func (m *MsgCreateSLDRecord) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SldRecord", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1957,23 +1988,27 @@ func (m *MsgCreateSLDRecord) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Index = string(dAtA[iNdEx:postIndex])
+			if m.SldRecord == nil {
+				m.SldRecord = &SLDRecord{}
+			}
+			if err := m.SldRecord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2109,9 +2144,9 @@ func (m *MsgUpdateSLDRecord) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SldRecord", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2121,23 +2156,27 @@ func (m *MsgUpdateSLDRecord) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Index = string(dAtA[iNdEx:postIndex])
+			if m.SldRecord == nil {
+				m.SldRecord = &SLDRecord{}
+			}
+			if err := m.SldRecord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2273,7 +2312,7 @@ func (m *MsgDeleteSLDRecord) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2301,7 +2340,7 @@ func (m *MsgDeleteSLDRecord) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Index = string(dAtA[iNdEx:postIndex])
+			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

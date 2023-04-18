@@ -15,12 +15,11 @@ var _ sdk.Msg = &MsgCreateSLDRecord{}
 
 func NewMsgCreateSLDRecord(
 	creator string,
-	index string,
-
+	sldRecord *SLDRecord,
 ) *MsgCreateSLDRecord {
 	return &MsgCreateSLDRecord{
 		Creator: creator,
-		Index:   index,
+		SldRecord: sldRecord,
 	}
 }
 
@@ -57,12 +56,12 @@ var _ sdk.Msg = &MsgUpdateSLDRecord{}
 
 func NewMsgUpdateSLDRecord(
 	creator string,
-	index string,
+	sldRecord *SLDRecord,
 
 ) *MsgUpdateSLDRecord {
 	return &MsgUpdateSLDRecord{
 		Creator: creator,
-		Index:   index,
+		SldRecord:  sldRecord,
 	}
 }
 
@@ -104,7 +103,7 @@ func NewMsgDeleteSLDRecord(
 ) *MsgDeleteSLDRecord {
 	return &MsgDeleteSLDRecord{
 		Creator: creator,
-		Index:   index,
+		Name:   index,
 	}
 }
 func (msg *MsgDeleteSLDRecord) Route() string {

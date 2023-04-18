@@ -25,13 +25,16 @@ func SimulateMsgCreateTLDRecord(
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 
-		i := r.Int()
+		rec := types.TLDRecord{
+		Creator: simAccount.Address.String(),
+		Index: strconv.Itoa(r.Intn(100)),
+		}
 		msg := &types.MsgCreateTLDRecord{
 			Creator: simAccount.Address.String(),
-			Index:   strconv.Itoa(i),
+			TldRecord: &rec,
 		}
 
-		_, found := k.GetTLDRecord(ctx, msg.Index)
+		_, found := k.GetTLDRecord(ctx, msg.TldRecord.Index)
 		if found {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "TLDRecord already exist"), nil, nil
 		}
@@ -80,7 +83,7 @@ func SimulateMsgUpdateTLDRecord(
 		}
 		msg.Creator = simAccount.Address.String()
 
-		msg.Index = tLDRecord.Index
+		msg.TldRecord.Index = tLDRecord.Index
 
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -126,7 +129,7 @@ func SimulateMsgDeleteTLDRecord(
 		}
 		msg.Creator = simAccount.Address.String()
 
-		msg.Index = tLDRecord.Index
+		msg.TldRecord.Index = tLDRecord.Index
 
 		txCtx := simulation.OperationInput{
 			R:               r,

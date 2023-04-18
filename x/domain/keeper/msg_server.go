@@ -30,7 +30,7 @@ func (k msgServer) CreateSLDRecord(goCtx context.Context, msg *types.MsgCreateSL
 	// Check if the value already exists
 	_, isFound := k.GetSLDRecord(
 		ctx,
-		msg.Index,
+		msg.SldRecord.Index,
 	)
 	if isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
@@ -38,7 +38,7 @@ func (k msgServer) CreateSLDRecord(goCtx context.Context, msg *types.MsgCreateSL
 
 	var sLDRecord = types.SLDRecord{
 		Creator: msg.Creator,
-		Index:   msg.Index,
+		Index:   msg.SldRecord.Index,
 	}
 
 	k.SetSLDRecord(
@@ -54,7 +54,7 @@ func (k msgServer) UpdateSLDRecord(goCtx context.Context, msg *types.MsgUpdateSL
 	// Check if the value exists
 	valFound, isFound := k.GetSLDRecord(
 		ctx,
-		msg.Index,
+		msg.SldRecord.Index,
 	)
 	if !isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
@@ -67,7 +67,7 @@ func (k msgServer) UpdateSLDRecord(goCtx context.Context, msg *types.MsgUpdateSL
 
 	var sLDRecord = types.SLDRecord{
 		Creator: msg.Creator,
-		Index:   msg.Index,
+		Index:   msg.SldRecord.Index,
 	}
 
 	k.SetSLDRecord(ctx, sLDRecord)
@@ -81,7 +81,7 @@ func (k msgServer) DeleteSLDRecord(goCtx context.Context, msg *types.MsgDeleteSL
 	// Check if the value exists
 	valFound, isFound := k.GetSLDRecord(
 		ctx,
-		msg.Index,
+		msg.Name,
 	)
 	if !isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
@@ -94,7 +94,7 @@ func (k msgServer) DeleteSLDRecord(goCtx context.Context, msg *types.MsgDeleteSL
 
 	k.RemoveSLDRecord(
 		ctx,
-		msg.Index,
+		msg.Name,
 	)
 
 	return &types.MsgDeleteSLDRecordResponse{}, nil
@@ -110,7 +110,7 @@ func (k msgServer) CreateTLDRecord(goCtx context.Context, msg *types.MsgCreateTL
 	// Check if the value already exists
 	_, isFound := k.GetTLDRecord(
 		ctx,
-		msg.Index,
+		msg.TldRecord.Index,
 	)
 	if isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
@@ -118,7 +118,7 @@ func (k msgServer) CreateTLDRecord(goCtx context.Context, msg *types.MsgCreateTL
 
 	var tLDRecord = types.TLDRecord{
 		Creator: msg.Creator,
-		Index:   msg.Index,
+		Index:   msg.TldRecord.Index,
 	}
 
 	k.SetTLDRecord(
@@ -134,7 +134,7 @@ func (k msgServer) UpdateTLDRecord(goCtx context.Context, msg *types.MsgUpdateTL
 	// Check if the value exists
 	valFound, isFound := k.GetTLDRecord(
 		ctx,
-		msg.Index,
+		msg.TldRecord.Index,
 	)
 	if !isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
@@ -147,7 +147,7 @@ func (k msgServer) UpdateTLDRecord(goCtx context.Context, msg *types.MsgUpdateTL
 
 	var tLDRecord = types.TLDRecord{
 		Creator: msg.Creator,
-		Index:   msg.Index,
+		Index:   msg.TldRecord.Index,
 	}
 
 	k.SetTLDRecord(ctx, tLDRecord)
@@ -161,7 +161,7 @@ func (k msgServer) DeleteTLDRecord(goCtx context.Context, msg *types.MsgDeleteTL
 	// Check if the value exists
 	valFound, isFound := k.GetTLDRecord(
 		ctx,
-		msg.Index,
+		msg.Name,
 	)
 	if !isFound {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
@@ -174,7 +174,7 @@ func (k msgServer) DeleteTLDRecord(goCtx context.Context, msg *types.MsgDeleteTL
 
 	k.RemoveTLDRecord(
 		ctx,
-		msg.Index,
+		msg.Name,
 	)
 
 	return &types.MsgDeleteTLDRecordResponse{}, nil

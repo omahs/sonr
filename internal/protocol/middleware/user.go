@@ -26,6 +26,8 @@ type User struct {
 	// DID document of the primary identity
 	Username string `json:"username"`
 
+	Accounts []*v1.AccountInfo `json:"accounts"`
+
 	// Controller
 	controller.Controller
 }

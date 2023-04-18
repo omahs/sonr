@@ -25,13 +25,16 @@ func SimulateMsgCreateSLDRecord(
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 
-		i := r.Int()
+		sld := types.SLDRecord{
+			Creator: simAccount.Address.String(),
+			Index:   strconv.Itoa(r.Intn(100)),
+		}
 		msg := &types.MsgCreateSLDRecord{
 			Creator: simAccount.Address.String(),
-			Index:   strconv.Itoa(i),
+			SldRecord: &sld,
 		}
 
-		_, found := k.GetSLDRecord(ctx, msg.Index)
+		_, found := k.GetSLDRecord(ctx, msg.SldRecord.Index)
 		if found {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "SLDRecord already exist"), nil, nil
 		}
@@ -80,7 +83,7 @@ func SimulateMsgUpdateSLDRecord(
 		}
 		msg.Creator = simAccount.Address.String()
 
-		msg.Index = sLDRecord.Index
+		msg.SldRecord.Index = sLDRecord.Index
 
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -126,7 +129,7 @@ func SimulateMsgDeleteSLDRecord(
 		}
 		msg.Creator = simAccount.Address.String()
 
-		msg.Index = sLDRecord.Index
+		msg.SldRecord.Index = sLDRecord.Index
 
 		txCtx := simulation.OperationInput{
 			R:               r,

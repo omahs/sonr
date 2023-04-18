@@ -17,42 +17,42 @@ service Msg {
 }
 message MsgCreateTLDRecord {
   string creator = 1;
-  string index   = 2;
+  TLDRecord tld_record   = 2;
 }
 
 message MsgCreateTLDRecordResponse {}
 
 message MsgUpdateTLDRecord {
   string creator = 1;
-  string index   = 2;
+  TLDRecord tld_record   = 2;
 }
 
 message MsgUpdateTLDRecordResponse {}
 
 message MsgDeleteTLDRecord {
   string creator = 1;
-  string index   = 2;
+  string name   = 2;
 }
 
 message MsgDeleteTLDRecordResponse {}
 
 message MsgCreateSLDRecord {
   string creator = 1;
-  string index   = 2;
+  SLDRecord sld_record   = 2;
 }
 
 message MsgCreateSLDRecordResponse {}
 
 message MsgUpdateSLDRecord {
   string creator = 1;
-  string index   = 2;
+  SLDRecord sld_record   = 2;
 }
 
 message MsgUpdateSLDRecordResponse {}
 
 message MsgDeleteSLDRecord {
   string creator = 1;
-  string index   = 2;
+  string name   = 2;
 }
 
 message MsgDeleteSLDRecordResponse {}

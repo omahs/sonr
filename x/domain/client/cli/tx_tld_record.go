@@ -14,9 +14,6 @@ func CmdCreateTLDRecord() *cobra.Command {
 		Short: "Create a new TLDRecord",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			// Get indexes
-			indexIndex := args[0]
-
 			// Get value arguments
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -26,7 +23,7 @@ func CmdCreateTLDRecord() *cobra.Command {
 
 			msg := types.NewMsgCreateTLDRecord(
 				clientCtx.GetFromAddress().String(),
-				indexIndex,
+				nil,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -46,8 +43,6 @@ func CmdUpdateTLDRecord() *cobra.Command {
 		Short: "Update a TLDRecord",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			// Get indexes
-			indexIndex := args[0]
 
 			// Get value arguments
 
@@ -58,7 +53,7 @@ func CmdUpdateTLDRecord() *cobra.Command {
 
 			msg := types.NewMsgUpdateTLDRecord(
 				clientCtx.GetFromAddress().String(),
-				indexIndex,
+				nil,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

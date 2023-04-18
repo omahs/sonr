@@ -14,9 +14,6 @@ func CmdCreateSLDRecord() *cobra.Command {
 		Short: "Create a new SLDRecord",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			// Get indexes
-			indexIndex := args[0]
-
 			// Get value arguments
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -26,7 +23,7 @@ func CmdCreateSLDRecord() *cobra.Command {
 
 			msg := types.NewMsgCreateSLDRecord(
 				clientCtx.GetFromAddress().String(),
-				indexIndex,
+				nil,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -46,9 +43,6 @@ func CmdUpdateSLDRecord() *cobra.Command {
 		Short: "Update a SLDRecord",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			// Get indexes
-			indexIndex := args[0]
-
 			// Get value arguments
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -58,7 +52,7 @@ func CmdUpdateSLDRecord() *cobra.Command {
 
 			msg := types.NewMsgUpdateSLDRecord(
 				clientCtx.GetFromAddress().String(),
-				indexIndex,
+				nil,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

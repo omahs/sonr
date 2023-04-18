@@ -15,12 +15,11 @@ var _ sdk.Msg = &MsgCreateTLDRecord{}
 
 func NewMsgCreateTLDRecord(
 	creator string,
-	index string,
-
+	tldRecord *TLDRecord,
 ) *MsgCreateTLDRecord {
 	return &MsgCreateTLDRecord{
 		Creator: creator,
-		Index:   index,
+		TldRecord: tldRecord,
 	}
 }
 
@@ -57,12 +56,11 @@ var _ sdk.Msg = &MsgUpdateTLDRecord{}
 
 func NewMsgUpdateTLDRecord(
 	creator string,
-	index string,
-
+	tldRecord *TLDRecord,
 ) *MsgUpdateTLDRecord {
 	return &MsgUpdateTLDRecord{
 		Creator: creator,
-		Index:   index,
+		TldRecord: tldRecord,
 	}
 }
 
@@ -104,7 +102,7 @@ func NewMsgDeleteTLDRecord(
 ) *MsgDeleteTLDRecord {
 	return &MsgDeleteTLDRecord{
 		Creator: creator,
-		Index:   index,
+		Name: index,
 	}
 }
 func (msg *MsgDeleteTLDRecord) Route() string {
