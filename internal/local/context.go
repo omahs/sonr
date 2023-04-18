@@ -136,5 +136,5 @@ func (c LocalContext) FiberListenAddress() string {
 }
 
 func (c LocalContext) SigningKey() []byte {
-	return []byte("unsecure-signing-key-secret")
+	return []byte("secret")
 }

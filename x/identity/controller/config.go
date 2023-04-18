@@ -8,6 +8,7 @@ import (
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
 	"github.com/sonrhq/core/internal/local"
+	"github.com/sonrhq/core/internal/tx/cosmos"
 	"github.com/sonrhq/core/x/identity/keeper"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
@@ -32,6 +33,18 @@ type Options struct {
 
 	// Username for the controller
 	Username string
+
+	errChan chan error
+}
+
+func defaultOptions() *Options {
+	return &Options{
+		OnConfigGenerated: []mpc.OnConfigGenerated{},
+		DisableIPFS:       false,
+		BroadcastTx:       false,
+		Username:          "",
+		errChan:           make(chan error),
+	}
 }
 
 type Option func(*Options)
@@ -127,21 +140,37 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 		doc.AlsoKnownAs = []string{opts.Username}
 	}
 
-	txhash := ""
-	if opts.BroadcastTx {
-		txresp, err := local.Context().CreatePrimaryIdentity(doc, primary, opts.Username)
-		if err != nil {
-			return nil, err
-		}
-		txhash = txresp.TxResponse.TxHash
-	}
-
 	cont := &didController{
 		primary:     primary,
 		blockchain:  []models.Account{},
 		primaryDoc:  doc,
 		disableIPFS: opts.DisableIPFS,
-		txHash:      txhash,
+		txHash:      "",
+		aka: doc.AlsoKnownAs[0],
+	}
+
+	if opts.BroadcastTx {
+		go cont.CreatePrimaryIdentity(doc, primary, opts.Username)
 	}
 	return cont, nil
+}
+
+// CreatePrimaryIdentity sends a transaction to create a new DID document with the provided account
+func (c *didController) CreatePrimaryIdentity(doc *types.DidDocument, acc models.Account, alias string) (*local.BroadcastTxResponse, error) {
+	msg := types.NewMsgCreateDidDocument(acc.Address(), alias, doc)
+	bz, err := cosmos.SignAnyTransactions(acc, msg)
+	if err != nil {
+		return nil, err
+	}
+	return local.Context().BroadcastTx(bz)
+}
+
+// UpdatePrimaryIdentity sends a transaction to update an existing DID document with the provided account
+func (c *didController) UpdatePrimaryIdentity(docs ...*types.DidDocument) (*local.BroadcastTxResponse, error) {
+	msg := types.NewMsgUpdateDidDocument(c.primary.Address(), c.primaryDoc, docs...)
+	bz, err := cosmos.SignAnyTransactions(c.primary, msg)
+	if err != nil {
+		return nil, err
+	}
+	return local.Context().BroadcastTx(bz)
 }

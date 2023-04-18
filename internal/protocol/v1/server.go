@@ -4,32 +4,13 @@ import (
 	"context"
 	"encoding/base64"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/internal/node"
 	"github.com/sonrhq/core/types/crypto"
 	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/controller"
+	 "github.com/sonrhq/core/internal/protocol/v2/middleware"
 )
-
-func RegisterHighway(ctx client.Context) {
-	app := initHttpTransport(ctx)
-	node.StartLocalIPFS()
-	go serveFiber(app.App)
-}
-
-func serveFiber(app *fiber.App) {
-	if local.Context().HasTlsCert() {
-		app.ListenTLS(
-			local.Context().FiberListenAddress(),
-			local.Context().TlsCertPath,
-			local.Context().TlsKeyPath,
-		)
-	} else {
-		app.Listen(local.Context().FiberListenAddress())
-	}
-}
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                          Auth API Rest Implementation                          ||
@@ -72,7 +53,7 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	usr := controller.NewUser(cont, req.Username)
+	usr := middleware.NewUser(cont, req.Username)
 	// Create the Claims
 	jwt, err := usr.JWT()
 	if err != nil {
@@ -120,7 +101,7 @@ func (htt *HttpTransport) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	usr := controller.NewUser(cont, req.GetUsername())
+	usr := middleware.NewUser(cont, req.GetUsername())
 	// Create the Claims
 	jwt, err := usr.JWT()
 	if err != nil {
@@ -244,7 +225,7 @@ func (htt *HttpTransport) QueryServiceAssertion(c *fiber.Ctx) error {
 // ! ||                        Accounts API Rest Implementation                        ||
 // ! ||--------------------------------------------------------------------------------||
 func (htt *HttpTransport) IsAuthorized(c *fiber.Ctx) error {
-	usr, err := fetchUser(c)
+	usr, err := middleware.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -257,7 +238,7 @@ func (htt *HttpTransport) IsAuthorized(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
-	usr, err := fetchUser(c)
+	usr, err := middleware.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -289,7 +270,7 @@ func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
-	usr, err := fetchUser(c)
+	usr, err := middleware.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -315,7 +296,7 @@ func (htt *HttpTransport) ListAccounts(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
-	usr, err := fetchUser(c)
+	usr, err := middleware.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -343,7 +324,7 @@ func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
-	usr, err := fetchUser(c)
+	usr, err := middleware.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -378,7 +359,7 @@ func (htt *HttpTransport) SignMessage(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
-	usr, err := fetchUser(c)
+	usr, err := middleware.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -416,7 +397,7 @@ func (htt *HttpTransport) VerifyMessage(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) SendMail(c *fiber.Ctx) error {
-	usr, err := fetchUser(c)
+	usr, err := middleware.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -445,7 +426,7 @@ func (htt *HttpTransport) SendMail(c *fiber.Ctx) error {
 }
 
 func (htt *HttpTransport) ReadMail(c *fiber.Ctx) error {
-	usr, err := fetchUser(c)
+	usr, err := middleware.FetchUser(c)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}

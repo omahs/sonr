@@ -60,14 +60,12 @@ type didController struct {
 
 	currCredential *crypto.WebauthnCredential
 	disableIPFS    bool
+	aka            string
 	txHash         string
 }
 
 func NewController(options ...Option) (Controller, error) {
-	opts := &Options{
-		DisableIPFS: false,
-		BroadcastTx: false,
-	}
+	opts := defaultOptions()
 	for _, option := range options {
 		option(opts)
 	}
@@ -160,6 +158,7 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (m
 	// Add the new models.Account to the controller
 	dc.blockchain = append(dc.blockchain, newAcc)
 	dc.primaryDoc.AddBlockchainIdentity(newAcc.DidDocument())
+	go dc.UpdatePrimaryIdentity(newAcc.DidDocument())
 	return newAcc, nil
 }
 
@@ -238,4 +237,3 @@ func (dc *didController) ReadMail(address string) ([]*models.InboxMessage, error
 func (dc *didController) PrimaryTxHash() string {
 	return dc.txHash
 }
-

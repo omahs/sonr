@@ -1,11 +1,9 @@
 package protocol
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -13,9 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/timeout"
 	"github.com/gofiber/helmet/v2"
 	jwtware "github.com/gofiber/jwt/v3"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/x/identity/controller"
 )
 
 type HttpTransport struct {
@@ -38,11 +34,6 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	// Middleware
 	rest.Use(cors.New())
 	rest.Use(helmet.New())
-
-	// Status Methods
-	rest.Get("/health", func(c *fiber.Ctx) error {
-		return c.SendString("OK. Highway version v0.6.0. Running on HTTP/TLS")
-	})
 
 	// Query Methods
 	rest.Get("/highway/query/alias/:alias", timeout.New(rest.QueryAlias, time.Second*5))
@@ -74,25 +65,4 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 	rest.Get("/highway/inbox/read", timeout.New(rest.ReadMail, time.Second*5))
 	rest.Post("/highway/inbox/send", timeout.New(rest.SendMail, time.Second*5))
 	return rest
-}
-
-func fetchUser(c *fiber.Ctx) (*controller.User, error) {
-	user := c.Locals("user").(*jwt.Token)
-	usr, err := controller.LoadUser(user)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to load user using jwt token")
-	}
-	return usr, nil
-}
-
-// ! ||--------------------------------------------------------------------------------||
-// ! ||                                Config Variables                                ||
-// ! ||--------------------------------------------------------------------------------||
-
-func challengeUuidStoreKey(origin, uuid string) string {
-	return fmt.Sprintf("challenge/%s:%s", origin, uuid)
-}
-
-func authorizedUserStoreKey(origin, uuid string) string {
-	return fmt.Sprintf("authorized/%s:%s", origin, uuid)
 }

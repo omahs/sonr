@@ -49,7 +49,7 @@ func (k msgServer) CreateDidDocument(goCtx context.Context, msg *types.MsgCreate
 	// Set the blockchain identities
 	k.SetBlockchainIdentities(ctx, msg.Blockchains...)
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent("NewTx", sdk.NewAttribute("tx-name", "create-did-document"), sdk.NewAttribute("did", msg.Primary.Id), sdk.NewAttribute("creator", msg.Creator)),
+		sdk.NewEvent("NewTx", sdk.NewAttribute("tx-name", "create-did-document"), sdk.NewAttribute("did", msg.Primary.Id), sdk.NewAttribute("creator", msg.Creator), sdk.NewAttribute("alias", msg.Alias)),
 	)
 	return &types.MsgCreateDidDocumentResponse{}, nil
 }

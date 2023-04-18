@@ -63,7 +63,7 @@ func (k Keeper) Did(c context.Context, req *types.QueryGetDidRequest) (*types.Qu
 	} else {
 		val, found := k.GetPrimaryIdentityByAddress(
 			ctx,
-			req.Did,
+			req.GetDid(),
 		)
 		if !found {
 			return nil, status.Error(codes.NotFound, "not found")
@@ -77,10 +77,7 @@ func (k Keeper) DidByKeyID(c context.Context, req *types.QueryDidByKeyIDRequest)
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-
-	//Gets did from `did:snr::did#svc`
 	did := strings.Split(req.KeyId, "#")[0]
-
 	val, found := k.GetPrimaryIdentity(
 		ctx,
 		did,
@@ -95,7 +92,12 @@ func (k Keeper) DidByAlsoKnownAs(c context.Context, req *types.QueryDidByAlsoKno
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
-	return nil, status.Error(codes.NotFound, "not found")
+	ctx := sdk.UnwrapSDKContext(c)
+	val, found := k.GetPrimaryIdentityByAlias(ctx, req.GetAkaId())
+	if !found {
+		return nil, status.Error(codes.NotFound, "not found")
+	}
+	return &types.QueryDidByAlsoKnownAsResponse{DidDocument: val}, nil
 }
 
 // ! ||--------------------------------------------------------------------------------||

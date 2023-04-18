@@ -1,14 +1,17 @@
-package controller
+package middleware
 
 import (
 	"context"
+
 	"fmt"
 
+	v1 "github.com/sonrhq/core/types/highway/v1"
+
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/sonrhq/core/internal/local"
+	"github.com/sonrhq/core/x/identity/controller"
 	"github.com/sonrhq/core/x/identity/types"
-
-	v1 "github.com/sonrhq/core/types/highway/v1"
 )
 
 var (
@@ -23,35 +26,17 @@ type User struct {
 	// DID document of the primary identity
 	Username string `json:"username"`
 
-
-
-	controller Controller
+	// Controller
+	controller controller.Controller
 }
 
-func NewUser(c Controller, username string) *User {
+func NewUser(c controller.Controller, username string) *User {
 	return &User{
 		Did:             c.Did(),
 		Username:        username,
 		controller:      c,
 	}
 }
-
-func LoadUser(token *jwt.Token) (*User, error) {
-	claims := token.Claims.(jwt.MapClaims)
-	did, ok := claims["did"].(string)
-	if !ok {
-		return nil, fmt.Errorf("invalid did")
-	}
-	username, ok := claims["username"].(string)
-	if !ok {
-		return nil, fmt.Errorf("invalid username")
-	}
-	return &User{
-		Did:             did,
-		Username:        username,
-	}, nil
-}
-
 
 func (u *User) ListAccounts() ([]*v1.Account, error) {
 	accs := make([]*v1.Account, 0)
@@ -77,4 +62,21 @@ func (u *User) PrimaryIdentity() (*types.DidDocument, error) {
 func (u *User) JWT() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, u.JWTClaims())
 	return token.SignedString(local.Context().SigningKey())
+}
+
+func FetchUser(c *fiber.Ctx) (*User, error) {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	did, ok := claims["did"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid did")
+	}
+	username, ok := claims["username"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid username")
+	}
+	return &User{
+		Did:             did,
+		Username:        username,
+	}, nil
 }
