@@ -5,7 +5,7 @@ import (
 
 	"fmt"
 
-	v1 "github.com/sonrhq/core/types/highway/v1"
+	v1 "github.com/sonrhq/core/types/common"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -27,20 +27,20 @@ type User struct {
 	Username string `json:"username"`
 
 	// Controller
-	controller controller.Controller
+	controller.Controller
 }
 
 func NewUser(c controller.Controller, username string) *User {
 	return &User{
 		Did:        c.Did(),
 		Username:   username,
-		controller: c,
+		Controller: c,
 	}
 }
 
-func (u *User) ListAccounts() ([]*v1.Account, error) {
-	accs := make([]*v1.Account, 0)
-	lclAccs, err := u.controller.ListAccounts()
+func (u *User) ListAccounts() ([]*v1.AccountInfo, error) {
+	accs := make([]*v1.AccountInfo, 0)
+	lclAccs, err := u.Controller.ListAccounts()
 	if err != nil {
 		return nil, err
 	}
@@ -59,6 +59,7 @@ func (u *User) JWTClaims() jwt.MapClaims {
 func (u *User) PrimaryIdentity() (*types.DidDocument, error) {
 	return local.Context().GetDID(context.Background(), u.Did)
 }
+
 func (u *User) JWT() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, u.JWTClaims())
 	return token.SignedString(local.Context().SigningKey())
@@ -75,8 +76,17 @@ func FetchUser(c *fiber.Ctx) (*User, error) {
 	if !ok {
 		return nil, fmt.Errorf("invalid username")
 	}
+	primary, err := local.Context().GetDID(context.Background(), did)
+	if err != nil {
+		return nil, err
+	}
+	cont, err := controller.LoadController(primary)
+	if err != nil {
+		return nil, err
+	}
 	return &User{
 		Did:      did,
 		Username: username,
+		Controller: cont,
 	}, nil
 }

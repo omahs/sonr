@@ -6,37 +6,43 @@ import (
 )
 
 func GetDID(c *fiber.Ctx) error {
-	did := c.Params("did")
-
-	// Get the origin from the request.
-	doc, err := local.Context().GetDID(c.Context(), did)
+	doc, err := local.Context().GetDID(c.Context(), c.Params("did"))
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
 	return c.JSON(fiber.Map{
-		"did":      did,
+		"did":      c.Params("did"),
 		"document": doc,
 	})
 }
 
 func GetDIDByAlias(c *fiber.Ctx) error {
-	alias := c.Params("alias")
-	available, doc, err := local.Context().CheckAlias(c.Context(), alias)
+	doc, _ := local.Context().GetDIDByAlias(c.Context(), c.Params("alias"))
+	if doc == nil {
+		return c.JSON(fiber.Map{
+			"available": true,
+			"alias":     c.Params("alias"),
+		})
+	}
+	return c.JSON(fiber.Map{
+		"available": false,
+		"did":       doc.Id,
+		"document":  doc,
+		"alias":     c.Params("alias"),
+	})
+}
+
+func GetDIDByOwner(c *fiber.Ctx) error {
+	doc, err := local.Context().GetDIDByOwner(c.Context(), c.Params("owner"))
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
-	if doc == nil {
-		return c.JSON(fiber.Map{
-			"available": available,
-		})
-	}
-
 	return c.JSON(fiber.Map{
-		"available": available,
 		"did":       doc.Id,
 		"document":  doc,
+		"owner":     c.Params("owner"),
+		"alias": doc.FindUsername(),
 	})
-
 }
 
 func ListDIDs(c *fiber.Ctx) error {
@@ -46,5 +52,6 @@ func ListDIDs(c *fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{
 		"documents": docs,
+		"count":     len(docs),
 	})
 }

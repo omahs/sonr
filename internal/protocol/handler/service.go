@@ -60,43 +60,48 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.SendStatus(fiber.ErrNotFound.Code)
 	}
-
-	// Check if service is still nil - return internal server error
-	if service == nil {
-		return c.Status(500).SendString("Internal Server Error.")
-	}
-
 	// Checking if the credential response is valid.
 	cred, err := service.VerifyCreationChallenge(q.Attestion())
 	if err != nil {
 		return c.Status(403).SendString(err.Error())
 	}
 
+	contCh := make(chan controller.Controller, 1)
+	errCh := make(chan error, 1)
+
 	// Create a new controller with the credential.
-	cont, err := controller.NewController(controller.WithWebauthnCredential(cred), controller.WithBroadcastTx(), controller.WithUsername(q.Alias()))
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	usr := middleware.NewUser(cont, q.Alias())
-	// Create the Claims
-	jwt, err := usr.JWT()
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
+	go func(cnCh chan controller.Controller, erCh chan error) {
+		cont, err := controller.NewController(controller.WithWebauthnCredential(cred), controller.WithBroadcastTx(), controller.WithUsername(q.Alias()))
+		if err != nil {
+			erCh <- err
+			return
+		}
+		contCh <- cont
+	}(contCh, errCh)
+	
+	select {
+		case cont := <-contCh:
+			usr := middleware.NewUser(cont, q.Alias())
+			jwt, err := usr.JWT()
+			if err != nil {
+				return c.Status(500).SendString(err.Error())
+			}
 
-	accs, err := usr.ListAccounts()
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
+			accs, err := usr.ListAccounts()
+			if err != nil {
+				return c.Status(500).SendString(err.Error())
+			}
+			return c.JSON(fiber.Map{
+				"success":  true,
+				"did":      cont.Did(),
+				"primary":  cont.PrimaryIdentity(),
+				"accounts": accs,
+				"tx_hash":  cont.PrimaryTxHash(),
+				"jwt":      jwt,
+			})
+		case err := <-errCh:
+			return c.Status(500).SendString(err.Error())
 	}
-
-	return c.JSON(fiber.Map{
-		"success":  true,
-		"did":      cont.Did(),
-		"primary":  cont.PrimaryIdentity(),
-		"accounts": accs,
-		"tx_hash":  cont.PrimaryTxHash(),
-		"jwt":      jwt,
-	})
 }
 
 func GetServiceAssertion(c *fiber.Ctx) error {
