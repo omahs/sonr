@@ -22,13 +22,13 @@ func WithDomains(domains ...string) DNSOption {
 
 type DNSOptions struct {
 	RecordTypes []dns.QueryType
-	Domains      []string
+	Domains     []string
 }
 
 func DefaultDNSOptions() *DNSOptions {
 	return &DNSOptions{
 		RecordTypes: []dns.QueryType{dns.TypeTXT, dns.TypeA},
-		Domains:      []string{"sonr", "welcome.nb"},
+		Domains:     []string{"sonr", "welcome.nb"},
 	}
 }
 
@@ -43,19 +43,19 @@ func (o *DNSOptions) Apply(opts ...DNSOption) *dns.Result {
 }
 
 type DNSRecord struct {
-	Name string
-	Type string
-	Content string
+	Name     string
+	Type     string
+	Content  string
 	Ttl      time.Duration
 	Priority uint16
 }
 
 func NewDNSRecordFromResultItem(target string, item *dns.ResultItem) *DNSRecord {
 	return &DNSRecord{
-		Name: target,
-		Type: item.Type,
-		Content: item.Content,
-		Ttl: item.Ttl,
+		Name:     target,
+		Type:     item.Type,
+		Content:  item.Content,
+		Ttl:      item.Ttl,
 		Priority: item.Priority,
 	}
 }

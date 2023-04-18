@@ -6,10 +6,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/local"
+	"github.com/sonrhq/core/internal/protocol/v2/middleware"
 	"github.com/sonrhq/core/types/crypto"
 	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/controller"
-	 "github.com/sonrhq/core/internal/protocol/v2/middleware"
 )
 
 // ! ||--------------------------------------------------------------------------------||
@@ -66,12 +66,12 @@ func (htt *HttpTransport) Keygen(c *fiber.Ctx) error {
 	}
 
 	res := &v1.KeygenResponse{
-		Success:  true,
-		Did:      cont.Did(),
-		Primary:  cont.PrimaryIdentity(),
-		Accounts: accs,
+		Success:         true,
+		Did:             cont.Did(),
+		Primary:         cont.PrimaryIdentity(),
+		Accounts:        accs,
 		TransactionHash: cont.PrimaryTxHash(),
-		Jwt:      jwt,
+		Jwt:             jwt,
 	}
 	return c.JSON(res)
 }
@@ -261,9 +261,9 @@ func (htt *HttpTransport) CreateAccount(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 	}
 	res := &v1.CreateAccountResponse{
-		Success: true,
-		NewAccount: acc.ToProto(),
-		CoinType: req.CoinType,
+		Success:     true,
+		NewAccount:  acc.ToProto(),
+		CoinType:    req.CoinType,
 		DidDocument: cont.PrimaryIdentity(),
 	}
 	return c.JSON(res)
@@ -300,7 +300,7 @@ func (htt *HttpTransport) GetAccount(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-		primeID, err := usr.PrimaryIdentity()
+	primeID, err := usr.PrimaryIdentity()
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}

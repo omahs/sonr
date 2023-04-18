@@ -38,14 +38,6 @@ func (k msgServer) CreateDidDocument(goCtx context.Context, msg *types.MsgCreate
 		*msg.Primary,
 	)
 
-	// Check for Alias
-	if msg.Alias != "" {
-		if err := k.CheckAlias(ctx, msg.Alias); err != nil {
-			return nil, sdkerrors.Wrap(types.ErrAliasCollision, err.Error())
-		}
-		k.SetAliasForPrimaryIdentity(ctx, *msg.Primary, msg.Alias)
-	}
-
 	// Set the blockchain identities
 	k.SetBlockchainIdentities(ctx, msg.Blockchains...)
 	ctx.EventManager().EmitEvent(

@@ -2,10 +2,10 @@ package handler
 
 import (
 	"encoding/base64"
-	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/protocol/v2/middleware"
+	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/controller"
 )
 
@@ -14,7 +14,7 @@ func GetAccount(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-		primeID, err := usr.PrimaryIdentity()
+	primeID, err := usr.PrimaryIdentity()
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
@@ -29,11 +29,11 @@ func GetAccount(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"success": true,
-		"account": acc.ToProto(),
+		"success":   true,
+		"account":   acc.ToProto(),
 		"coin_type": acc.CoinType().Ticker(),
-		"name": acc.Name(),
-		},
+		"name":      acc.Name(),
+	},
 	)
 }
 
@@ -57,15 +57,15 @@ func ListAccounts(c *fiber.Ctx) error {
 	var accsList []interface{}
 	for _, acc := range accs {
 		accsList = append(accsList, fiber.Map{
-			"account": acc.ToProto(),
+			"account":   acc.ToProto(),
 			"coin_type": acc.CoinType().Ticker(),
-			"name": acc.Name(),
+			"name":      acc.Name(),
 		})
 	}
 	return c.JSON(fiber.Map{
-		"success": true,
+		"success":  true,
 		"accounts": accsList,
-		},)
+	})
 }
 
 func CreateAccount(c *fiber.Ctx) error {
@@ -89,11 +89,11 @@ func CreateAccount(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 	}
 	return c.JSON(fiber.Map{
-		"success": true,
-		"account": acc.ToProto(),
+		"success":   true,
+		"account":   acc.ToProto(),
 		"coin_type": acc.CoinType().Ticker(),
-		"name": acc.Name(),
-		},
+		"name":      acc.Name(),
+	},
 	)
 }
 
@@ -124,10 +124,10 @@ func SignWithAccount(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 	}
 	return c.JSON(fiber.Map{
-		"success": true,
+		"success":   true,
 		"signature": base64.RawStdEncoding.EncodeToString(sig),
-		"message": req.Message,
-		"did": req.Did,
+		"message":   req.Message,
+		"did":       req.Did,
 	})
 }
 
@@ -163,11 +163,11 @@ func VerifyWithAccount(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 	}
 	return c.JSON(fiber.Map{
-		"success": true,
-		"verified": ok,
-		"message": req.Message,
+		"success":   true,
+		"verified":  ok,
+		"message":   req.Message,
 		"signature": req.Signature,
-		"did": req.Did,
+		"did":       req.Did,
 	})
 }
 

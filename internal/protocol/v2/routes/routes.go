@@ -11,8 +11,9 @@ import (
 	"github.com/sonrhq/core/internal/protocol/v2/config"
 	"github.com/sonrhq/core/internal/protocol/v2/handler"
 )
+
 func SetupRoutes(c *config.ProtocolConfig) {
-// Middleware
+	// Middleware
 	c.Use(cors.New())
 	c.Use(helmet.New())
 

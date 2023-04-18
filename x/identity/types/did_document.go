@@ -188,3 +188,11 @@ func (d *DidDocument) DIDIdentifier() string {
 func (d *DidDocument) DIDFragment() string {
 	return strings.Split(d.Id, "#")[1]
 }
+
+// Username is the first item in the AKA array
+func (d *DidDocument) FindUsername() string {
+	if len(d.AlsoKnownAs) > 0 {
+		return d.AlsoKnownAs[0]
+	}
+	return "tmp"
+}

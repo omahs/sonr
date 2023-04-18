@@ -60,7 +60,6 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 // ! ||                               Keeper SLD Methods                               ||
 // ! ||--------------------------------------------------------------------------------||
 
-
 // SetSLDRecord set a specific sLDRecord in the store from its index
 func (k Keeper) SetSLDRecord(ctx sdk.Context, sLDRecord types.SLDRecord) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SLDRecordKeyPrefix))

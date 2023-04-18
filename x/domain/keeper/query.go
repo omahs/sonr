@@ -26,7 +26,6 @@ func (k Keeper) Params(goCtx context.Context, req *types.QueryParamsRequest) (*t
 // ! ||                                SLD Record Query                                ||
 // ! ||--------------------------------------------------------------------------------||
 
-
 func (k Keeper) SLDRecordAll(goCtx context.Context, req *types.QueryAllSLDRecordRequest) (*types.QueryAllSLDRecordResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -75,7 +74,6 @@ func (k Keeper) SLDRecord(goCtx context.Context, req *types.QueryGetSLDRecordReq
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                                TLD Record Query                                ||
 // ! ||--------------------------------------------------------------------------------||
-
 
 func (k Keeper) TLDRecordAll(goCtx context.Context, req *types.QueryAllTLDRecordRequest) (*types.QueryAllTLDRecordResponse, error) {
 	if req == nil {

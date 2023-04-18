@@ -146,7 +146,7 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 		primaryDoc:  doc,
 		disableIPFS: opts.DisableIPFS,
 		txHash:      "",
-		aka: doc.AlsoKnownAs[0],
+		aka:         doc.AlsoKnownAs[0],
 	}
 
 	if opts.BroadcastTx {

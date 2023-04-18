@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"context"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/local"
 )
@@ -11,7 +9,7 @@ func GetDID(c *fiber.Ctx) error {
 	did := c.Params("did")
 
 	// Get the origin from the request.
-	doc, err := local.Context().GetDID(context.Background(), did)
+	doc, err := local.Context().GetDID(c.Context(), did)
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
@@ -23,7 +21,7 @@ func GetDID(c *fiber.Ctx) error {
 
 func GetDIDByAlias(c *fiber.Ctx) error {
 	alias := c.Params("alias")
-	available, doc, err := local.Context().CheckAlias(context.Background(), alias)
+	available, doc, err := local.Context().CheckAlias(c.Context(), alias)
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
@@ -33,16 +31,16 @@ func GetDIDByAlias(c *fiber.Ctx) error {
 		})
 	}
 
-		return c.JSON(fiber.Map{
-			"available": available,
-			"did":       doc.Id,
-			"document":  doc,
-		})
+	return c.JSON(fiber.Map{
+		"available": available,
+		"did":       doc.Id,
+		"document":  doc,
+	})
 
 }
 
 func ListDIDs(c *fiber.Ctx) error {
-	docs, err := local.Context().GetAllDIDs(context.Background())
+	docs, err := local.Context().GetAllDIDs(c.Context())
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -50,5 +48,3 @@ func ListDIDs(c *fiber.Ctx) error {
 		"documents": docs,
 	})
 }
-
-

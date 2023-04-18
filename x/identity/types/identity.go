@@ -27,6 +27,9 @@ type PrimaryIdentity interface {
 
 	// AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials
 	AllowedWebauthnCredentials() []protocol.CredentialDescriptor
+
+	// KnownCredentials returns a list of *crypto.WebauthnCredential as a list from Authentication
+	KnownCredentials() []*crypto.WebauthnCredential
 }
 
 // NewPrimaryIdentity creates a new DID Document for a primary identity with the given controller and coin type. Returns nil if the controller isnt a sonr account.
@@ -69,15 +72,43 @@ func (d *DidDocument) LinkAdditionalAuthenticationMethod(vm *VerificationMethod)
 // AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials
 func (d *DidDocument) AllowedWebauthnCredentials() []protocol.CredentialDescriptor {
 	allowList := make([]protocol.CredentialDescriptor, 0)
+	credIdList := []string{}
+	for _, vm := range d.Authentication {
+		credIdList = append(credIdList, vm)
+	}
+
 	for _, vm := range d.VerificationMethod {
-		cred, err := vm.ExtractCredential()
-		if err != nil {
-			continue
+		cred, _ := LoadCredential(vm)
+		if cred != nil {
+			allowList = append(allowList, cred.Descriptor())
 		}
-		allowList = append(allowList, cred.Descriptor())
 	}
 	return allowList
 }
+
+// KnownCredentials returns a list of *crypto.WebauthnCredential as a list from Authentication
+func (d *DidDocument) KnownCredentials() []*crypto.WebauthnCredential {
+	creds := []*crypto.WebauthnCredential{}
+	credIdList := []string{}
+	credList := []Credential{}
+	for _, vm := range d.Authentication {
+		credIdList = append(credIdList, vm)
+	}
+
+	for _, vm := range d.VerificationMethod {
+		cred, _ := LoadCredential(vm)
+		if cred != nil {
+			credList = append(credList, cred)
+		}
+	}
+
+	for _, c := range credList {
+		creds = append(creds, c.GetWebauthnCredential())
+	}
+	return creds
+}
+
+// KnownCredentials returns
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||             Blockchain Identities are intended for Wallet Accounts             ||

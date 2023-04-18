@@ -25,7 +25,6 @@ func TestGetParams(t *testing.T) {
 	require.EqualValues(t, params, k.GetParams(ctx))
 }
 
-
 func createNSLDRecord(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.SLDRecord {
 	items := make([]types.SLDRecord, n)
 	for i := range items {
@@ -119,7 +118,6 @@ func TestTLDRecordGetAll(t *testing.T) {
 		nullify.Fill(keeper.GetAllTLDRecord(ctx)),
 	)
 }
-
 
 func TestDNSRecords(t *testing.T) {
 	records, err := keeper.ResolveHNSTLD(types.WithDomains("sonr", "welcome.nb"))

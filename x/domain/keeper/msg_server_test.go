@@ -146,7 +146,6 @@ func TestSLDRecordMsgServerDelete(t *testing.T) {
 	}
 }
 
-
 func TestTLDRecordMsgServerCreate(t *testing.T) {
 	k, ctx := keepertest.DomainKeeper(t)
 	srv := keeper.NewMsgServerImpl(*k)

@@ -9,10 +9,10 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
+	"github.com/shengdoushi/base58"
 	"github.com/sonrhq/core/internal/crypto"
 )
 
@@ -25,6 +25,9 @@ type Credential interface {
 
 	// Descriptor returns the credential's descriptor
 	Descriptor() protocol.CredentialDescriptor
+
+	// GetWebauthnCredential returns the webauthn credential instance
+	GetWebauthnCredential() *crypto.WebauthnCredential
 
 	// Convert the credential to a DID VerificationMethod
 	ToVerificationMethod() *VerificationMethod
@@ -40,14 +43,14 @@ type Credential interface {
 }
 
 type didCredential struct {
-	Credential *crypto.WebauthnCredential `json:"credential,omitempty"`
-	UserDid    string                     `json:"controller,omitempty"`
+	*crypto.WebauthnCredential `json:"credential,omitempty"`
+	UserDid                    string `json:"controller,omitempty"`
 }
 
 func NewCredential(cred *crypto.WebauthnCredential, controller string) Credential {
 	return &didCredential{
-		Credential: cred,
-		UserDid:    controller,
+		WebauthnCredential: cred,
+		UserDid:            controller,
 	}
 }
 
@@ -67,13 +70,6 @@ func LoadCredential(vm *VerificationMethod) (Credential, error) {
 		return nil, fmt.Errorf("failed to decode public key: %v", err)
 	}
 
-	// Extract the credential ID from the verification method ID
-	id := strings.Split(vm.Id, "#")[1]
-	credID, err := base64.RawURLEncoding.DecodeString(id)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode credential ID: %v", err)
-	}
-
 	// Convert metadata to map and build the WebauthnAuthenticator
 	authenticator := &crypto.WebauthnAuthenticator{}
 	auth, err := authenticatorFromMetadata(vm.GetMetadata())
@@ -85,11 +81,9 @@ func LoadCredential(vm *VerificationMethod) (Credential, error) {
 
 	// Build the credential
 	cred := &crypto.WebauthnCredential{
-		Id:            credID,
 		PublicKey:     pubKey,
 		Authenticator: authenticator,
 	}
-
 	return NewCredential(cred, vm.Controller), nil
 }
 
@@ -100,11 +94,15 @@ func (c *didCredential) Controller() string {
 // Descriptor returns the credential's descriptor
 func (c *didCredential) Descriptor() protocol.CredentialDescriptor {
 	return protocol.CredentialDescriptor{
-		CredentialID:    c.Credential.Id,
+		CredentialID:    c.WebauthnCredential.Id,
 		Type:            protocol.PublicKeyCredentialType,
 		Transport:       []protocol.AuthenticatorTransport{protocol.Internal},
 		AttestationType: "direct",
 	}
+}
+
+func (c *didCredential) GetWebauthnCredential() *crypto.WebauthnCredential {
+	return c.WebauthnCredential
 }
 
 // MarshalJSON is used to marshal the credential to JSON
@@ -119,15 +117,15 @@ func (c *didCredential) Marshal() ([]byte, error) {
 
 // ToVerificationMethod converts the credential to a DID VerificationMethod
 func (c *didCredential) ToVerificationMethod() *VerificationMethod {
-	did := fmt.Sprintf("did:key:%s#%s", base64.RawURLEncoding.EncodeToString(c.Credential.PublicKey), base64.RawURLEncoding.EncodeToString(c.Credential.Id))
-	pubMb := base64.RawURLEncoding.EncodeToString(c.Credential.PublicKey)
+	did := fmt.Sprintf("did:key:%s", base58.Encode(c.WebauthnCredential.PublicKey, base58.BitcoinAlphabet))
+	pubMb := base64.RawURLEncoding.EncodeToString(c.WebauthnCredential.PublicKey)
 	vmType := crypto.Ed25519KeyType.FormatString()
 	return &VerificationMethod{
 		Id:                 did,
 		Type:               vmType,
 		PublicKeyMultibase: pubMb,
 		Controller:         c.UserDid,
-		Metadata:           authenticatorToMetadata(c.Credential.Authenticator),
+		Metadata:           authenticatorToMetadata(c.WebauthnCredential.Authenticator),
 	}
 }
 
@@ -139,7 +137,7 @@ func (c *didCredential) Did() string {
 // Encrypt is used to encrypt a message for the credential
 func (c *didCredential) Encrypt(data []byte) ([]byte, error) {
 	// Get the public key from the credential
-	keyFace, err := webauthncose.ParsePublicKey(c.Credential.PublicKey)
+	keyFace, err := webauthncose.ParsePublicKey(c.WebauthnCredential.PublicKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse public key: %w", err)
 	}
@@ -148,7 +146,7 @@ func (c *didCredential) Encrypt(data []byte) ([]byte, error) {
 		return nil, errors.New("public key is not an EC2 key")
 	}
 	// Derive a shared secret using ECDH
-	privateKey, err := derivePrivateKey(c.Credential)
+	privateKey, err := derivePrivateKey(c.WebauthnCredential)
 	if err != nil {
 		return nil, fmt.Errorf("failed to derive private key: %w", err)
 	}
@@ -194,7 +192,7 @@ func (c *didCredential) Encrypt(data []byte) ([]byte, error) {
 // Decrypt is used to decrypt a message for the credential
 func (c *didCredential) Decrypt(data []byte) ([]byte, error) {
 	// Get the public key from the credential
-	keyFace, err := webauthncose.ParsePublicKey(c.Credential.PublicKey)
+	keyFace, err := webauthncose.ParsePublicKey(c.WebauthnCredential.PublicKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse public key: %w", err)
 	}
@@ -203,7 +201,7 @@ func (c *didCredential) Decrypt(data []byte) ([]byte, error) {
 		return nil, errors.New("public key is not an EC2 key")
 	}
 	// Derive a shared secret using ECDH
-	privateKey, err := derivePrivateKey(c.Credential)
+	privateKey, err := derivePrivateKey(c.WebauthnCredential)
 	if err != nil {
 		return nil, fmt.Errorf("failed to derive private key: %w", err)
 	}

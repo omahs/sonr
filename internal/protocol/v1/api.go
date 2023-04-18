@@ -52,7 +52,6 @@ func initHttpTransport(ctx client.Context) *HttpTransport {
 		SigningKey: local.Context().SigningKey(),
 	}))
 
-
 	// MPC Methods
 	rest.Get("/highway/auth/check", timeout.New(rest.IsAuthorized, time.Second*5))
 	rest.Get("/highway/accounts", timeout.New(rest.ListAccounts, time.Second*5))

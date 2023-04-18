@@ -26,7 +26,6 @@ func TestParamsQuery(t *testing.T) {
 	require.Equal(t, &types.QueryParamsResponse{Params: params}, response)
 }
 
-
 func TestSLDRecordQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.DomainKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)

@@ -80,26 +80,21 @@ func (k Keeper) CheckAlias(ctx sdk.Context, alias string) error {
 // SetDidDocument set a specific didDocument in the store from its index
 func (k Keeper) SetPrimaryIdentity(ctx sdk.Context, didDocument types.DidDocument) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
-	b := k.cdc.MustMarshal(&didDocument)
-	store.Set(types.DidDocumentKey(
-		didDocument.Id,
-	), b)
 	addr, err := didDocument.AccAddress()
 	if err != nil {
 		fmt.Println("Error getting address from didDocument")
 		return
 	}
-	acc := k.accountKeeper.NewAccountWithAddress(ctx, addr)
-	k.accountKeeper.SetAccount(ctx, acc)
-}
 
-// SetAliasForDidDocument set a specific didDocument in the store from its index
-func (k Keeper) SetAliasForPrimaryIdentity(ctx sdk.Context, didDocument types.DidDocument, alias string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AlsoKnownAsPrefix))
+	didDocument.Owner = addr.String()
+
 	b := k.cdc.MustMarshal(&didDocument)
 	store.Set(types.DidDocumentKey(
-		alias,
+		didDocument.Id,
 	), b)
+
+	acc := k.accountKeeper.NewAccountWithAddress(ctx, addr)
+	k.accountKeeper.SetAccount(ctx, acc)
 }
 
 // GetDidDocument returns a didDocument from its index
@@ -125,17 +120,19 @@ func (k Keeper) GetPrimaryIdentityByAlias(
 	ctx sdk.Context,
 	alias string,
 ) (val types.DidDocument, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AlsoKnownAsPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
 
-	b := store.Get(types.DidDocumentKey(
-		alias,
-	))
-	if b == nil {
-		return val, false
+	for ; iterator.Valid(); iterator.Next() {
+		var doc types.DidDocument
+		k.cdc.MustUnmarshal(iterator.Value(), &doc)
+		if doc.AlsoKnownAs[0] == alias {
+			val = doc
+			found = true
+		}
 	}
-
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
+	return val, found
 }
 
 // GetPrimaryIdentityByAddress iterates over all didDocuments and returns the first one that matches the address
@@ -150,7 +147,7 @@ func (k Keeper) GetPrimaryIdentityByAddress(
 	for ; iterator.Valid(); iterator.Next() {
 		var doc types.DidDocument
 		k.cdc.MustUnmarshal(iterator.Value(), &doc)
-		if doc.MatchesAddress(addr) {
+		if doc.Owner == addr {
 			val = doc
 			found = true
 		}

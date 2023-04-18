@@ -60,7 +60,18 @@ func (c LocalContext) GetDIDByAlias(ctx context.Context, alias string) (*identit
 	}
 	return &resp.DidDocument, nil
 }
-
+// GetDIDByAlias returns the DID document with the given alias
+func (c LocalContext) GetDIDByOwner(ctx context.Context, owner string) (*identitytypes.DidDocument, error) {
+	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
+	if err != nil {
+		return nil, errors.New("failed to connect to grpc server: " + err.Error())
+	}
+	resp, err := identitytypes.NewQueryClient(conn).DidByOwner(ctx, &identitytypes.QueryDidByOwnerRequest{Owner: owner})
+	if err != nil {
+		return nil, err
+	}
+	return &resp.DidDocument, nil
+}
 // GetAllDIDs returns all DID documents
 func (c LocalContext) GetAllDIDs(ctx context.Context) ([]*identitytypes.DidDocument, error) {
 	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
@@ -112,8 +123,6 @@ func (c LocalContext) GetAllServices(ctx context.Context) ([]*servicetypes.Servi
 	}
 	return list, nil
 }
-
-
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                               Tendermint Node RPC                              ||

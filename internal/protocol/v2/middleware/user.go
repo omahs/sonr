@@ -32,9 +32,9 @@ type User struct {
 
 func NewUser(c controller.Controller, username string) *User {
 	return &User{
-		Did:             c.Did(),
-		Username:        username,
-		controller:      c,
+		Did:        c.Did(),
+		Username:   username,
+		controller: c,
 	}
 }
 
@@ -50,9 +50,9 @@ func (u *User) ListAccounts() ([]*v1.Account, error) {
 	return accs, nil
 }
 
-func (u *User) JWTClaims() (jwt.MapClaims) {
+func (u *User) JWTClaims() jwt.MapClaims {
 	return jwt.MapClaims{
-		"did": u.Did,
+		"did":      u.Did,
 		"username": u.Username,
 	}
 }
@@ -76,7 +76,7 @@ func FetchUser(c *fiber.Ctx) (*User, error) {
 		return nil, fmt.Errorf("invalid username")
 	}
 	return &User{
-		Did:             did,
-		Username:        username,
+		Did:      did,
+		Username: username,
 	}, nil
 }

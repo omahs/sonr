@@ -3,6 +3,7 @@
 package types
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	fmt "fmt"
@@ -106,7 +107,7 @@ func (vm *ServiceRecord) VerifyCreationChallenge(resp string) (*types.WebauthnCr
 }
 
 // VeriifyAssertionChallenge verifies the challenge and an assertion signature and returns an error if it fails to verify
-func (vm *ServiceRecord) VeriifyAssertionChallenge(resp string, cred *types.WebauthnCredential) error {
+func (vm *ServiceRecord) VerifyAssertionChallenge(resp string, creds ...*types.WebauthnCredential) error {
 	pca, err := parseAssertionData(resp)
 	if err != nil {
 		return err
@@ -114,5 +115,13 @@ func (vm *ServiceRecord) VeriifyAssertionChallenge(resp string, cred *types.Weba
 	if pca == nil {
 		return fmt.Errorf("no assertion data")
 	}
-	return nil
+	cred := makeCredentialFromAssertionData(pca)
+	for _, c := range creds {
+		if bytes.EqualFold(cred.Id, c.Id) {
+			if bytes.Equal(cred.PublicKey, c.PublicKey) {
+				return nil
+			}
+		}
+	}
+	return fmt.Errorf("Error validating Webauthn credential. None of the provided credentials match the response object")
 }

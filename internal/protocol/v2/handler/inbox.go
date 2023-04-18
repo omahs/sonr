@@ -1,9 +1,9 @@
 package handler
 
 import (
-		v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/protocol/v2/middleware"
+	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/controller"
 )
 
@@ -36,9 +36,9 @@ func ReadInboxMessages(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"success": true,
+		"success":  true,
 		"messages": fromBodyMap,
-	},)
+	})
 }
 
 func SendInboxMessage(c *fiber.Ctx) error {

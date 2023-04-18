@@ -100,6 +100,19 @@ func (k Keeper) DidByAlsoKnownAs(c context.Context, req *types.QueryDidByAlsoKno
 	return &types.QueryDidByAlsoKnownAsResponse{DidDocument: val}, nil
 }
 
+func (k Keeper) DidByOwner(c context.Context, req *types.QueryDidByOwnerRequest) (*types.QueryDidByOwnerResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	val, found := k.GetPrimaryIdentityByAlias(ctx, req.GetOwner())
+	if !found {
+		return nil, status.Error(codes.NotFound, "not found")
+	}
+	return &types.QueryDidByOwnerResponse{DidDocument: val}, nil
+}
+
+
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                               Module Params Query                              ||
 // ! ||--------------------------------------------------------------------------------||

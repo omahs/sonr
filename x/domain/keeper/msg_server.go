@@ -20,7 +20,6 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                              SLD Record Management                             ||
 // ! ||--------------------------------------------------------------------------------||
@@ -104,7 +103,6 @@ func (k msgServer) DeleteSLDRecord(goCtx context.Context, msg *types.MsgDeleteSL
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                              TLD Record Management                             ||
 // ! ||--------------------------------------------------------------------------------||
-
 
 func (k msgServer) CreateTLDRecord(goCtx context.Context, msg *types.MsgCreateTLDRecord) (*types.MsgCreateTLDRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)

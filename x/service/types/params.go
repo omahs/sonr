@@ -65,9 +65,11 @@ func (p Params) NewWebauthnCreationOptions(s *ServiceRecord, uuid string, challe
 		},
 		Timeout: int(60000),
 		AuthenticatorSelection: protocol.AuthenticatorSelection{
-			AuthenticatorAttachment: protocol.AuthenticatorAttachment("platform"),
+			AuthenticatorAttachment: protocol.Platform,
+			ResidentKey:             protocol.ResidentKeyRequirementRequired,
+			UserVerification:        protocol.VerificationRequired,
 		},
-		Attestation: protocol.ConveyancePreference("direct"),
+		Attestation: protocol.PreferDirectAttestation,
 	}
 	return protocol.CredentialCreation{Response: opts}, nil
 }
