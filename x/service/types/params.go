@@ -81,6 +81,7 @@ func (p Params) NewWebauthnAssertionOptions(s *ServiceRecord, challenge protocol
 		// Generated Challenge.
 		Challenge:      challenge,
 		RelyingPartyID: s.Origin,
+		UserVerification:        protocol.VerificationRequired,
 
 		// Preconfigured parameters.
 		Timeout:            int(60000),

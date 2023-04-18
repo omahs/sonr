@@ -27,11 +27,14 @@ var _ types.MsgServer = msgServer{}
 func (k msgServer) CreateDidDocument(goCtx context.Context, msg *types.MsgCreateDidDocument) (*types.MsgCreateDidDocumentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// Check if the value already exists
-	err := k.ValidateNewPrimaryDidDocument(ctx, msg.Primary)
-	if err != nil {
-		return nil, err
+	_, ok := k.GetPrimaryIdentity(ctx, msg.Primary.Id)
+	if ok {
+		return nil,  sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
 	}
-
+	_, found := k.GetPrimaryIdentityByAlias(ctx, msg.Primary.AlsoKnownAs[0])
+	if found {
+		return nil,  sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
+	}
 	// Set the value
 	k.SetPrimaryIdentity(
 		ctx,

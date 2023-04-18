@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
@@ -64,8 +65,17 @@ func LoadJSONCredential(bz []byte) (Credential, error) {
 }
 
 func LoadCredential(vm *VerificationMethod) (Credential, error) {
+	id := strings.Split(vm.Id, ":")
+	if len(id) != 2 {
+		return nil, errors.New("invalid credential id")
+	}
+	// Decode the credential id
+	credId, err := base64.RawURLEncoding.DecodeString(id[1])
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode credential id: %v", err)
+	}
 	// Extract the public key from PublicKeyMultibase
-	pubKey, err := base64.RawURLEncoding.DecodeString(vm.PublicKeyMultibase)
+	pubKey, err := base58.Decode(vm.PublicKeyMultibase, base58.BitcoinAlphabet)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode public key: %v", err)
 	}
@@ -81,6 +91,7 @@ func LoadCredential(vm *VerificationMethod) (Credential, error) {
 
 	// Build the credential
 	cred := &crypto.WebauthnCredential{
+		Id:           credId,
 		PublicKey:     pubKey,
 		Authenticator: authenticator,
 	}
@@ -94,10 +105,10 @@ func (c *didCredential) Controller() string {
 // Descriptor returns the credential's descriptor
 func (c *didCredential) Descriptor() protocol.CredentialDescriptor {
 	return protocol.CredentialDescriptor{
-		CredentialID:    c.WebauthnCredential.Id,
+		CredentialID:   protocol.URLEncodedBase64(c.WebauthnCredential.Id),
 		Type:            protocol.PublicKeyCredentialType,
 		Transport:       []protocol.AuthenticatorTransport{protocol.Internal},
-		AttestationType: "direct",
+		AttestationType: string(protocol.PreferDirectAttestation),
 	}
 }
 
@@ -117,8 +128,8 @@ func (c *didCredential) Marshal() ([]byte, error) {
 
 // ToVerificationMethod converts the credential to a DID VerificationMethod
 func (c *didCredential) ToVerificationMethod() *VerificationMethod {
-	did := fmt.Sprintf("did:key:%s", base58.Encode(c.WebauthnCredential.PublicKey, base58.BitcoinAlphabet))
-	pubMb := base64.RawURLEncoding.EncodeToString(c.WebauthnCredential.PublicKey)
+	did := fmt.Sprintf("did:key:%s", base64.RawURLEncoding.EncodeToString(c.WebauthnCredential.Id))
+	pubMb := base58.Encode(c.WebauthnCredential.PublicKey, base58.BitcoinAlphabet)
 	vmType := crypto.Ed25519KeyType.FormatString()
 	return &VerificationMethod{
 		Id:                 did,

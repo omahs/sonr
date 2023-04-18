@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -80,21 +81,15 @@ func (k Keeper) CheckAlias(ctx sdk.Context, alias string) error {
 // SetDidDocument set a specific didDocument in the store from its index
 func (k Keeper) SetPrimaryIdentity(ctx sdk.Context, didDocument types.DidDocument) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
-	addr, err := didDocument.AccAddress()
-	if err != nil {
-		fmt.Println("Error getting address from didDocument")
-		return
-	}
 
-	didDocument.Owner = addr.String()
+	ptrs := strings.Split(didDocument.Id, ":")
+	addr := ptrs[len(ptrs)-1]
+	didDocument.Owner = addr
 
 	b := k.cdc.MustMarshal(&didDocument)
 	store.Set(types.DidDocumentKey(
 		didDocument.Id,
 	), b)
-
-	acc := k.accountKeeper.NewAccountWithAddress(ctx, addr)
-	k.accountKeeper.SetAccount(ctx, acc)
 }
 
 // GetDidDocument returns a didDocument from its index
@@ -103,14 +98,12 @@ func (k Keeper) GetPrimaryIdentity(
 	did string,
 ) (val types.DidDocument, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
-
 	b := store.Get(types.DidDocumentKey(
 		did,
 	))
 	if b == nil {
 		return val, false
 	}
-
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
 }
@@ -206,14 +199,12 @@ func (k Keeper) GetBlockchainIdentity(
 
 ) (val types.DidDocument, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlockchainIdentityPrefix))
-
 	b := store.Get(types.DidDocumentKey(
 		did,
 	))
 	if b == nil {
 		return val, false
 	}
-
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
 }
@@ -323,13 +314,4 @@ func (k Keeper) GetRelationshipsFromList(ctx sdk.Context, addrs ...string) ([]ty
 	}
 
 	return vrs, nil
-}
-
-func (k Keeper) ValidateNewPrimaryDidDocument(ctx sdk.Context, doc *types.DidDocument) error {
-	_, ok := k.GetPrimaryIdentity(ctx, doc.Id)
-	if ok {
-		return status.Error(codes.AlreadyExists, "did already exists")
-	}
-
-	return nil
 }
