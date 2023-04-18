@@ -5,8 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/node"
-	"github.com/sonrhq/core/internal/protocol/v2/config"
-	"github.com/sonrhq/core/internal/protocol/v2/routes"
+	"github.com/sonrhq/core/internal/protocol/config"
+	"github.com/sonrhq/core/internal/protocol/routes"
 )
 
 func RegisterHighway(ctx client.Context) {

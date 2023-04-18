@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/sonrhq/core/internal/protocol/v2/middleware"
+	"github.com/sonrhq/core/internal/protocol/middleware"
 	v1 "github.com/sonrhq/core/types/highway/v1"
 	"github.com/sonrhq/core/x/identity/controller"
 )

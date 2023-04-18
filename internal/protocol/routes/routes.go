@@ -8,8 +8,8 @@ import (
 	"github.com/gofiber/helmet/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/internal/protocol/v2/config"
-	"github.com/sonrhq/core/internal/protocol/v2/handler"
+	"github.com/sonrhq/core/internal/protocol/config"
+	"github.com/sonrhq/core/internal/protocol/handler"
 )
 
 func SetupRoutes(c *config.ProtocolConfig) {
