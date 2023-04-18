@@ -105,10 +105,10 @@ func (c *didCredential) Controller() string {
 // Descriptor returns the credential's descriptor
 func (c *didCredential) Descriptor() protocol.CredentialDescriptor {
 	return protocol.CredentialDescriptor{
-		CredentialID:   protocol.URLEncodedBase64(c.WebauthnCredential.Id),
+		CredentialID:    c.WebauthnCredential.Id,
 		Type:            protocol.PublicKeyCredentialType,
 		Transport:       []protocol.AuthenticatorTransport{protocol.Internal},
-		AttestationType: string(protocol.PreferDirectAttestation),
+		AttestationType: "direct",
 	}
 }
 

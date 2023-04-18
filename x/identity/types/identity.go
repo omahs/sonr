@@ -86,6 +86,21 @@ func (d *DidDocument) AllowedWebauthnCredentials() []protocol.CredentialDescript
 	return allowList
 }
 
+// AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials
+func (d *DidDocument) ListCredentialVerificationMethods() []*VerificationMethod {
+	allowList := make([]*VerificationMethod, 0)
+	credIdList := []string{}
+	for _, vm := range d.Authentication {
+		credIdList = append(credIdList, vm)
+	}
+
+	for _, id := range credIdList {
+		vm, _ := d.GetAuthenticationMethod(id)
+		allowList = append(allowList, vm)
+	}
+	return allowList
+}
+
 // KnownCredentials returns a list of *crypto.WebauthnCredential as a list from Authentication
 func (d *DidDocument) KnownCredentials() []*crypto.WebauthnCredential {
 	creds := []*crypto.WebauthnCredential{}

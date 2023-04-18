@@ -1,10 +1,12 @@
 package types
 
 import (
+	"encoding/base64"
 	fmt "fmt"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/shengdoushi/base58"
 	"github.com/sonrhq/core/internal/crypto"
 )
@@ -247,4 +249,15 @@ func (vm *VerificationMethod) ToVerificationRelationship(controller string) Veri
 		VerificationMethod: vm,
 		Reference:          vm.Id,
 	}
+}
+
+func (d *VerificationMethod) WebauthnCredentialID() protocol.URLEncodedBase64 {
+	ptrs := strings.Split(d.Id, ":")
+	id := ptrs[len(ptrs)-1]
+	// Decode the credential id
+	credId, err := base64.RawURLEncoding.DecodeString(id)
+	if err != nil {
+		return nil
+	}
+	return protocol.URLEncodedBase64(credId)
 }

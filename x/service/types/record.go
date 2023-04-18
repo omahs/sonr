@@ -79,7 +79,7 @@ func (vm *ServiceRecord) GetCredentialAssertionOptions(didDoc *identitytypes.Did
 	hashString := base64.URLEncoding.EncodeToString([]byte(vm.Id))
 	params := DefaultParams()
 	chal := protocol.URLEncodedBase64(hashString)
-	cco, err := params.NewWebauthnAssertionOptions(vm, chal, didDoc.AllowedWebauthnCredentials())
+	cco, err := params.NewWebauthnAssertionOptions(vm, chal, didDoc.ListCredentialVerificationMethods())
 	ccoJSON, err := json.Marshal(cco)
 	if err != nil {
 		return "", err

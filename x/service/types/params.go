@@ -4,6 +4,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
+	idtypes "github.com/sonrhq/core/x/identity/types"
 	"gopkg.in/yaml.v2"
 )
 
@@ -75,17 +76,25 @@ func (p Params) NewWebauthnCreationOptions(s *ServiceRecord, uuid string, challe
 }
 
 // NewWebauthnAssertionOptions returns the webauthn assertion options.
-func (p Params) NewWebauthnAssertionOptions(s *ServiceRecord, challenge protocol.URLEncodedBase64, allowedCredentials []protocol.CredentialDescriptor) (protocol.CredentialAssertion, error) {
+func (p Params) NewWebauthnAssertionOptions(s *ServiceRecord, challenge protocol.URLEncodedBase64, auth []*idtypes.VerificationMethod) (protocol.CredentialAssertion, error) {
+	allowedCreds := []protocol.CredentialDescriptor{}
+	for _, vm := range auth {
+		allowedCreds = append(allowedCreds, protocol.CredentialDescriptor{
+			CredentialID: vm.WebauthnCredentialID(),
+			Type:         "public-key",
+		})
+	}
+
 	// Build the credential assertion options.
 	opts := protocol.PublicKeyCredentialRequestOptions{
 		// Generated Challenge.
-		Challenge:      challenge,
-		RelyingPartyID: s.Origin,
-		UserVerification:        protocol.VerificationRequired,
+		Challenge:        challenge,
+		RelyingPartyID:   s.Origin,
+		UserVerification: protocol.VerificationRequired,
 
 		// Preconfigured parameters.
-		Timeout:            int(60000),
-		AllowedCredentials: allowedCredentials,
+		Timeout: int(60000),
+		AllowedCredentials: allowedCreds,
 	}
 	return protocol.CredentialAssertion{Response: opts}, nil
 }
