@@ -140,7 +140,7 @@ func VerifyServiceAssertion(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err := service.VerifyAssertionChallenge(assertion, doc.KnownCredentials()...); err != nil {
+	if err := service.VerifyAssertionChallenge(assertion, doc.ListCredentialVerificationMethods()...); err != nil {
 		return c.Status(403).SendString(err.Error())
 	}
 

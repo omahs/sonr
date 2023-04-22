@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-webauthn/webauthn/protocol"
 	identitytypes "github.com/sonrhq/core/x/identity/types"
+	idtypes "github.com/sonrhq/core/x/identity/types"
 )
 
 const (
@@ -120,7 +121,7 @@ func (vm *ServiceRecord) VerifyCreationChallenge(resp string) (*WebauthnCredenti
 }
 
 // VeriifyAssertionChallenge verifies the challenge and an assertion signature and returns an error if it fails to verify
-func (vm *ServiceRecord) VerifyAssertionChallenge(resp string, creds ...*WebauthnCredential) error {
+func (vm *ServiceRecord) VerifyAssertionChallenge(resp string, creds ...*idtypes.VerificationMethod) error {
 	pca, err := parseAssertionData(resp)
 	if err != nil {
 		return err
@@ -130,8 +131,12 @@ func (vm *ServiceRecord) VerifyAssertionChallenge(resp string, creds ...*Webauth
 	}
 	cred := makeCredentialFromAssertionData(pca)
 	for _, c := range creds {
-		if bytes.EqualFold(cred.Id, c.Id) {
-			if bytes.Equal(cred.PublicKey, c.PublicKey) {
+		if strings.EqualFold(c.Id, string(cred.Id)) {
+			bz, err := c.PublicKey()
+			if err != nil {
+				return err
+			}
+			if bytes.Equal(bz, cred.PublicKey) {
 				return nil
 			}
 		}
