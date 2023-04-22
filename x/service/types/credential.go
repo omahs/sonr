@@ -63,6 +63,7 @@ func LoadJSONCredential(bz []byte) (Credential, error) {
 	}
 	return LoadCredential(vm)
 }
+
 func LoadCredential(vm *idtypes.VerificationMethod) (Credential, error) {
     id := strings.Split(vm.Id, ":")
     // Decode the credential id
