@@ -1,6 +1,8 @@
 package types
 
 import (
+	"strings"
+
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/sonrhq/core/internal/crypto"
 )
@@ -101,4 +103,8 @@ func NewBlockchainIdentity(controller string, coinType crypto.CoinType, pubKey *
 	doc.Controller = append(doc.Controller, controller)
 	doc.VerificationMethod = append(doc.VerificationMethod, vm)
 	return doc
+}
+
+func ConvertAccAddressToDid(accAddress string) string {
+	return strings.ToLower("did:sonr:" + accAddress)
 }

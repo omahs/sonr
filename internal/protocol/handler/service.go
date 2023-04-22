@@ -98,6 +98,7 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 				"accounts": accs,
 				"tx_hash":  cont.PrimaryTxHash(),
 				"jwt":      jwt,
+				"address": cont.Address(),
 			})
 		case err := <-errCh:
 			return c.Status(500).SendString(err.Error())
