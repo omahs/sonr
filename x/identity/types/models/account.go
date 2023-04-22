@@ -6,6 +6,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/google/uuid"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/sonrhq/core/internal/crypto"
@@ -63,10 +64,10 @@ type Account interface {
 	Verify(bz []byte, sig []byte) (bool, error)
 
 	// Lock locks the account
-	Lock(c types.Credential) error
+	Lock(c servicetypes.Credential) error
 
 	// Unlock unlocks the account
-	Unlock(c types.Credential) error
+	Unlock(c servicetypes.Credential) error
 }
 
 type account struct {
@@ -267,7 +268,7 @@ func (wa *account) GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error) {
 }
 
 // Lock encrypts all user-facing keyshares
-func (wa *account) Lock(c types.Credential) error {
+func (wa *account) Lock(c servicetypes.Credential) error {
 	for _, ks := range wa.kss {
 		if err := ks.Encrypt(c); err != nil {
 			return err
@@ -277,7 +278,7 @@ func (wa *account) Lock(c types.Credential) error {
 }
 
 // Unlock decrypts all user-facing keyshares
-func (wa *account) Unlock(c types.Credential) error {
+func (wa *account) Unlock(c servicetypes.Credential) error {
 	for _, ks := range wa.kss {
 		if err := ks.Decrypt(c); err != nil {
 			return err

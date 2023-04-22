@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/go-webauthn/webauthn/protocol"
-	types "github.com/sonrhq/core/types/crypto"
 	identitytypes "github.com/sonrhq/core/x/identity/types"
 )
 
@@ -79,11 +78,18 @@ func (vm *ServiceRecord) GetCredentialAssertionOptions(didDoc *identitytypes.Did
 	hashString := base64.URLEncoding.EncodeToString([]byte(vm.Id))
 	params := DefaultParams()
 	chal := protocol.URLEncodedBase64(hashString)
-	creds, err := didDoc.AllowedWebauthnCredentials()
-	if err != nil {
-		return "", fmt.Errorf("Error getting allowed credentials: %s", err)
+	blockIds := didDoc.ListCredentialVerificationMethods()
+	credDescs := make([]protocol.CredentialDescriptor, len(blockIds))
+
+	for i, vm := range blockIds {
+		cred, err := LoadCredential(vm)
+		if err != nil {
+			return "", err
+		}
+		credDescs[i] = cred.Descriptor()
 	}
-	cco, err := params.NewWebauthnAssertionOptions(vm, chal, creds, isMobile)
+
+	cco, err := params.NewWebauthnAssertionOptions(vm, chal, credDescs, isMobile)
 	if err != nil {
 		return "", err
 	}
@@ -105,7 +111,7 @@ func (s *ServiceRecord) RelyingPartyEntity() protocol.RelyingPartyEntity {
 }
 
 // VerifyCreationChallenge verifies the challenge and a creation signature and returns an error if it fails to verify
-func (vm *ServiceRecord) VerifyCreationChallenge(resp string) (*types.WebauthnCredential, error) {
+func (vm *ServiceRecord) VerifyCreationChallenge(resp string) (*WebauthnCredential, error) {
 	pcc, err := parseCreationData(resp)
 	if err != nil {
 		return nil, err
@@ -114,7 +120,7 @@ func (vm *ServiceRecord) VerifyCreationChallenge(resp string) (*types.WebauthnCr
 }
 
 // VeriifyAssertionChallenge verifies the challenge and an assertion signature and returns an error if it fails to verify
-func (vm *ServiceRecord) VerifyAssertionChallenge(resp string, creds ...*types.WebauthnCredential) error {
+func (vm *ServiceRecord) VerifyAssertionChallenge(resp string, creds ...*WebauthnCredential) error {
 	pca, err := parseAssertionData(resp)
 	if err != nil {
 		return err

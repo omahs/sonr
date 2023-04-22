@@ -27,9 +27,6 @@ type PrimaryIdentity interface {
 
 	// AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials
 	AllowedWebauthnCredentials() []protocol.CredentialDescriptor
-
-	// KnownCredentials returns a list of *crypto.WebauthnCredential as a list from Authentication
-	KnownCredentials() []*crypto.WebauthnCredential
 }
 
 // NewPrimaryIdentity creates a new DID Document for a primary identity with the given controller and coin type. Returns nil if the controller isnt a sonr account.
@@ -70,24 +67,6 @@ func (d *DidDocument) LinkAdditionalAuthenticationMethod(vm *VerificationMethod)
 }
 
 // AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials
-func (d *DidDocument) AllowedWebauthnCredentials() ([]protocol.CredentialDescriptor, error) {
-	allowList := make([]protocol.CredentialDescriptor, 0)
-	credIdList := []string{}
-	for _, vm := range d.Authentication {
-		credIdList = append(credIdList, vm)
-	}
-
-	for _, vm := range d.VerificationMethod {
-		cred, err := LoadCredential(vm)
-		if err != nil {
-			return nil, err
-		}
-		allowList = append(allowList, cred.Descriptor())
-	}
-	return allowList, nil
-}
-
-// AllowedWebauthnCredentials returns a list of CredentialDescriptors for Webauthn Credentials
 func (d *DidDocument) ListCredentialVerificationMethods() []*VerificationMethod {
 	allowList := make([]*VerificationMethod, 0)
 	credIdList := []string{}
@@ -102,27 +81,6 @@ func (d *DidDocument) ListCredentialVerificationMethods() []*VerificationMethod 
 	return allowList
 }
 
-// KnownCredentials returns a list of *crypto.WebauthnCredential as a list from Authentication
-func (d *DidDocument) KnownCredentials() []*crypto.WebauthnCredential {
-	creds := []*crypto.WebauthnCredential{}
-	credIdList := []string{}
-	credList := []Credential{}
-	for _, vm := range d.Authentication {
-		credIdList = append(credIdList, vm)
-	}
-
-	for _, vm := range d.VerificationMethod {
-		cred, _ := LoadCredential(vm)
-		if cred != nil {
-			credList = append(credList, cred)
-		}
-	}
-
-	for _, c := range credList {
-		creds = append(creds, c.GetWebauthnCredential())
-	}
-	return creds
-}
 
 // KnownCredentials returns
 

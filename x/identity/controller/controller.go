@@ -11,6 +11,7 @@ import (
 	"github.com/sonrhq/core/x/identity/keeper"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 )
 
 var PrimaryAccountaddress string = "primary"
@@ -58,7 +59,7 @@ type didController struct {
 	primaryDoc *types.DidDocument
 	blockchain []models.Account
 
-	currCredential *crypto.WebauthnCredential
+	currCredential *servicetypes.WebauthnCredential
 	disableIPFS    bool
 	aka            string
 	txHash         string

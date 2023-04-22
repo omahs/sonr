@@ -10,6 +10,7 @@ import (
 	"github.com/sonrhq/core/x/identity/keeper"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 )
 
 // ! ||--------------------------------------------------------------------------------||
@@ -21,7 +22,7 @@ type Options struct {
 	OnConfigGenerated []mpc.OnConfigGenerated
 
 	// Credential to authorize the controller
-	WebauthnCredential *crypto.WebauthnCredential
+	WebauthnCredential *servicetypes.WebauthnCredential
 
 	// Disable IPFS
 	DisableIPFS bool
@@ -59,7 +60,7 @@ func WithConfigHandlers(handlers ...mpc.OnConfigGenerated) Option {
 	}
 }
 
-func WithWebauthnCredential(cred *crypto.WebauthnCredential) Option {
+func WithWebauthnCredential(cred *servicetypes.WebauthnCredential) Option {
 	return func(o *Options) {
 		o.WebauthnCredential = cred
 	}
@@ -81,7 +82,7 @@ func WithBroadcastTx() Option {
 // ! ||                          Helper Methods for Controller                         ||
 // ! ||--------------------------------------------------------------------------------||
 
-func generateInitialAccount(ctx context.Context, credential *crypto.WebauthnCredential, doneCh chan models.Account, errChan chan error, opts *Options) {
+func generateInitialAccount(ctx context.Context, credential *servicetypes.WebauthnCredential, doneCh chan models.Account, errChan chan error, opts *Options) {
 	shardName := crypto.PartyID(base64.RawStdEncoding.EncodeToString(credential.Id))
 	// Call Handler for keygen
 	confs, err := mpc.Keygen(shardName, 1, []crypto.PartyID{"vault"}, opts.OnConfigGenerated...)
@@ -121,7 +122,7 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 
 	doc := types.NewPrimaryIdentity(primary.Did(), primary.PubKey(), nil)
 	if opts.WebauthnCredential != nil {
-		cred, err := types.ValidateWebauthnCredential(opts.WebauthnCredential, primary.Did())
+		cred, err := servicetypes.ValidateWebauthnCredential(opts.WebauthnCredential, primary.Did())
 		if err != nil {
 			return nil, err
 		}
@@ -144,7 +145,7 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 		primaryDoc:  doc,
 		disableIPFS: opts.DisableIPFS,
 		txHash:      "",
-		aka:         doc.AlsoKnownAs[0],
+		aka:         doc.FindUsername(),
 	}
 
 	if opts.BroadcastTx {

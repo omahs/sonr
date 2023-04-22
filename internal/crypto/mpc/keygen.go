@@ -71,7 +71,9 @@ func Keygen(current crypto.PartyID, threshold int, peers []crypto.PartyID, handl
 				return
 			}
 			mtx.Lock()
-			go manageHandlers(handlers, conf)
+			if handlers != nil {
+				go manageHandlers(handlers, conf)
+			}
 			confs = append(confs, conf)
 			mtx.Unlock()
 		}(id)

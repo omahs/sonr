@@ -14,7 +14,7 @@ import (
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 	"github.com/shengdoushi/base58"
-	"github.com/sonrhq/core/internal/crypto"
+	idtypes "github.com/sonrhq/core/x/identity/types"
 )
 
 type Credential interface {
@@ -28,10 +28,10 @@ type Credential interface {
 	Descriptor() protocol.CredentialDescriptor
 
 	// GetWebauthnCredential returns the webauthn credential instance
-	GetWebauthnCredential() *crypto.WebauthnCredential
+	GetWebauthnCredential() *WebauthnCredential
 
 	// Convert the credential to a DID VerificationMethod
-	ToVerificationMethod() *VerificationMethod
+	ToVerificationMethod() *idtypes.VerificationMethod
 
 	// Encrypt is used to encrypt a message for the credential
 	Encrypt(msg []byte) ([]byte, error)
@@ -44,11 +44,11 @@ type Credential interface {
 }
 
 type didCredential struct {
-	*crypto.WebauthnCredential `json:"credential,omitempty"`
+	*WebauthnCredential `json:"credential,omitempty"`
 	UserDid                    string `json:"controller,omitempty"`
 }
 
-func NewCredential(cred *crypto.WebauthnCredential, controller string) Credential {
+func NewCredential(cred *WebauthnCredential, controller string) Credential {
 	return &didCredential{
 		WebauthnCredential: cred,
 		UserDid:            controller,
@@ -56,51 +56,40 @@ func NewCredential(cred *crypto.WebauthnCredential, controller string) Credentia
 }
 
 func LoadJSONCredential(bz []byte) (Credential, error) {
-	vm := &VerificationMethod{}
+	vm := &idtypes.VerificationMethod{}
 	err := json.Unmarshal(bz, vm)
 	if err != nil {
 		return nil, err
 	}
 	return LoadCredential(vm)
 }
+func LoadCredential(vm *idtypes.VerificationMethod) (Credential, error) {
+    id := strings.Split(vm.Id, ":")
+    // Decode the credential id
+    credId, err := base64.RawURLEncoding.DecodeString(id[len(id)-1])
+    if err != nil {
+        return nil, fmt.Errorf("failed to decode credential id: %v", err)
+    }
+    // Extract the public key from PublicKeyMultibase
+    pubKey, err := base58.Decode(vm.PublicKeyMultibase, base58.BitcoinAlphabet)
+    if err != nil {
+        return nil, fmt.Errorf("failed to decode public key: %v", err)
+    }
 
-func LoadCredential(vm *VerificationMethod) (Credential, error) {
-	id := strings.Split(vm.Id, ":")
-	// Decode the credential id
-	credId, err := base64.RawURLEncoding.DecodeString(id[len(id)-1])
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode credential id: %v", err)
-	}
-	// Extract the public key from PublicKeyMultibase
-	pubKey, err := base58.Decode(vm.PublicKeyMultibase, base58.BitcoinAlphabet)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode public key: %v", err)
-	}
+    // Convert metadata to map and build the WebauthnAuthenticator
+    authenticator, metaMap, err := webauthnFromMetadata(vm.GetMetadata())
+    if err != nil {
+        fmt.Println(err)
+    }
 
-	// Convert metadata to map and build the WebauthnAuthenticator
-	authenticator := &crypto.WebauthnAuthenticator{}
-	auth, _, err := webauthnFromMetadata(vm.GetMetadata())
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		authenticator = auth
-	}
-
-	attestionType := ""
-	for _, entry := range vm.GetMetadata() {
-		if entry.Key == "attestion_type" {
-			attestionType = entry.Value
-		}
-	}
-
-	// Build the credential
-	cred := &crypto.WebauthnCredential{
-		Id:              credId,
-		PublicKey:       pubKey,
-		Authenticator:   authenticator,
-		AttestationType: attestionType,
-	}
-	return NewCredential(cred, vm.Controller), nil
+    // Build the credential
+    cred := &WebauthnCredential{
+        Id:              credId,
+        PublicKey:       pubKey,
+        Authenticator:   authenticator,
+        AttestationType: metaMap["attestation_type"],
+    }
+    return NewCredential(cred, vm.Controller), nil
 }
 
 func (c *didCredential) Controller() string {
@@ -116,7 +105,7 @@ func (c *didCredential) Descriptor() protocol.CredentialDescriptor {
 	}
 }
 
-func (c *didCredential) GetWebauthnCredential() *crypto.WebauthnCredential {
+func (c *didCredential) GetWebauthnCredential() *WebauthnCredential {
 	return c.WebauthnCredential
 }
 
@@ -131,10 +120,10 @@ func (c *didCredential) Marshal() ([]byte, error) {
 }
 
 // ToVerificationMethod converts the credential to a DID VerificationMethod
-func (c *didCredential) ToVerificationMethod() *VerificationMethod {
+func (c *didCredential) ToVerificationMethod() *idtypes.VerificationMethod {
 	did := fmt.Sprintf("did:key:%s", base64.RawURLEncoding.EncodeToString(c.WebauthnCredential.Id))
 	pubMb := base58.Encode(c.WebauthnCredential.PublicKey, base58.BitcoinAlphabet)
-	return &VerificationMethod{
+	return &idtypes.VerificationMethod{
 		Id:                 did,
 		Type:               "webauthn/alg-es256",
 		PublicKeyMultibase: pubMb,
@@ -248,50 +237,54 @@ func (c *didCredential) Decrypt(data []byte) ([]byte, error) {
 	return plaintext, nil
 }
 
-func webauthnToMetadata(authenticator *crypto.WebauthnAuthenticator, desc protocol.CredentialDescriptor) []*KeyValuePair {
-	authenticatorMap := make(map[string]string)
-	authenticatorMap["attestion_type"] = desc.AttestationType
-
+func webauthnToMetadata(authenticator *WebauthnAuthenticator, desc protocol.CredentialDescriptor) []*idtypes.KeyValuePair {
+	kvList := make([]*idtypes.KeyValuePair, 0)
+	kvList = append(kvList, NewIDKeyValue("attestation_type", desc.AttestationType))
 	if authenticator == nil {
-		return MapToKeyValueList(authenticatorMap)
+		return kvList
 	}
 	aaguid := base64.StdEncoding.EncodeToString(authenticator.Aaguid)
-	authenticatorMap["aaguid"] = aaguid
+	kvList = append(kvList, NewIDKeyValue("aaguid", aaguid))
 	signCount := strconv.FormatUint(uint64(authenticator.SignCount), 10)
-	authenticatorMap["sign_count"] = signCount
+	kvList = append(kvList, NewIDKeyValue("sign_count", signCount))
 	cloneWarning := strconv.FormatBool(authenticator.CloneWarning)
-	authenticatorMap["clone_warning"] = cloneWarning
-	return MapToKeyValueList(authenticatorMap)
+	kvList = append(kvList, NewIDKeyValue("clone_warning", cloneWarning))
+	return kvList
 }
 
-func webauthnFromMetadata(metadata []*KeyValuePair) (*crypto.WebauthnAuthenticator, protocol.CredentialDescriptor, error) {
-	authenticatorMap := KeyValueListToMap(metadata)
-	desc := protocol.CredentialDescriptor{
-		AttestationType: authenticatorMap["attestion_type"],
-	}
+func webauthnFromMetadata(metadata []*idtypes.KeyValuePair) (*WebauthnAuthenticator, map[string]string, error) {
+    authenticator := &WebauthnAuthenticator{}
+    metaMap := make(map[string]string)
 
-	aaguid, err := base64.StdEncoding.DecodeString(authenticatorMap["aaguid"])
-	if err != nil {
-		return nil, desc, err
-	}
-	signCount, err := strconv.ParseUint(authenticatorMap["sign_count"], 10, 32)
-	if err != nil {
-		return nil, desc, err
-	}
-	cloneWarning, err := strconv.ParseBool(authenticatorMap["clone_warning"])
-	if err != nil {
-		return nil, desc, err
-	}
-	authenticator := &crypto.WebauthnAuthenticator{
-		Aaguid:       aaguid,
-		SignCount:    uint32(signCount),
-		CloneWarning: cloneWarning,
-	}
+    for _, entry := range metadata {
+        switch entry.Key {
+        case "attestation_type":
+            metaMap["attestation_type"] = entry.Value
+        case "aaguid":
+            aaguid, err := base64.StdEncoding.DecodeString(entry.Value)
+            if err != nil {
+                return nil, nil, fmt.Errorf("failed to decode aaguid: %v", err)
+            }
+            authenticator.Aaguid = aaguid
+        case "sign_count":
+            signCount, err := strconv.ParseUint(entry.Value, 10, 64)
+            if err != nil {
+                return nil, nil, fmt.Errorf("failed to parse sign_count: %v", err)
+            }
+            authenticator.SignCount = uint32(signCount)
+        case "clone_warning":
+            cloneWarning, err := strconv.ParseBool(entry.Value)
+            if err != nil {
+                return nil, nil, fmt.Errorf("failed to parse clone_warning: %v", err)
+            }
+            authenticator.CloneWarning = cloneWarning
+        }
+    }
 
-	return authenticator, desc, nil
+    return authenticator, metaMap, nil
 }
 
-func ValidateWebauthnCredential(credential *crypto.WebauthnCredential, controller string) (Credential, error) {
+func ValidateWebauthnCredential(credential *WebauthnCredential, controller string) (Credential, error) {
 	// Check for nil credential
 	if credential == nil {
 		return nil, errors.New("credential is nil")
@@ -300,11 +293,6 @@ func ValidateWebauthnCredential(credential *crypto.WebauthnCredential, controlle
 	// Check for nil credential id
 	if credential.Id == nil {
 		return nil, errors.New("credential id is nil")
-	}
-
-	// Check for nil credential public key
-	if credential.PublicKey == nil {
-		return nil, errors.New("credential public key is nil")
 	}
 	return NewCredential(credential, controller), nil
 }

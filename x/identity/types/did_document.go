@@ -38,10 +38,16 @@ func NewDocument(pk *crypto.PubKey, opts ...VerificationMethodOption) *DidDocume
 	return doc
 }
 
-// AccAddress returns the account address of the DID
+// AccAddress returns the SONR address of the DID
 func (d *DidDocument) AccAddress() (sdk.AccAddress, error) {
-	return ConvertDidToAccAddress(d.Id)
+	for _, vm := range d.VerificationMethod {
+		if strings.Contains(vm.Id, "did:sonr") {
+			return sdk.AccAddressFromBech32(vm.BlockchainAccountId)
+		}
+	}
+	return nil, errors.New("No SONR address found")
 }
+
 
 // CheckAccAddress checks if the provided sdk.AccAddress or string matches the DID ID
 func (d *DidDocument) CheckAccAddress(t interface{}) bool {
@@ -63,6 +69,7 @@ func (d *DidDocument) CheckAccAddress(t interface{}) bool {
 		return false
 	}
 }
+
 
 // GetAuthenticationMethod returns a VerificationMethod if the did exists in the authentication array
 func (d *DidDocument) GetAuthenticationMethod(did string) (*VerificationMethod, error) {
@@ -93,11 +100,6 @@ func (d *DidDocument) GetVerificationMethodByFragment(fragment string) *Verifica
 		}
 	}
 	return nil
-}
-
-// SetMetadata sets the metadata of the document
-func (vm *DidDocument) SetMetadata(data map[string]string) {
-	vm.Metadata = MapToKeyValueList(data)
 }
 
 // ImportVerificationMethods imports the given VerificationMethods into the document

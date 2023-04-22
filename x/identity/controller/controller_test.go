@@ -9,6 +9,7 @@ import (
 	"github.com/sonrhq/core/x/identity/types/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/tendermint/tendermint/libs/rand"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 )
 
 func TestKeyshare(t *testing.T) {
@@ -168,18 +169,17 @@ func TestBroadcast(t *testing.T) {
 }
 
 func defaultOfflineOptions() []controller.Option {
-	cred := &crypto.WebauthnCredential{
+	cred := &servicetypes.WebauthnCredential{
 		Id:        []byte("test"),
 		PublicKey: []byte("-----BEGIN PUBLIC KEY----- MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQ9Z0Z8Z0Z8Z0Z8Z0Z8Z0Z8Z0Z8Z0Z-----END PUBLIC KEY-----"),
 	}
 	return []controller.Option{
 		controller.WithWebauthnCredential(cred),
-		controller.WithIPFSDisabled(),
 	}
 }
 
 func defaultOptions() []controller.Option {
-	cred := &crypto.WebauthnCredential{
+	cred := &servicetypes.WebauthnCredential{
 		Id:        []byte("test"),
 		PublicKey: []byte("-----BEGIN PUBLIC KEY----- MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQ9Z0Z8Z0Z8Z0Z8Z0Z8Z0Z8Z0Z8Z0Z-----END PUBLIC KEY-----"),
 	}

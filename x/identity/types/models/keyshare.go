@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/sonrhq/core/internal/crypto"
-	"github.com/sonrhq/core/x/identity/types"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
@@ -41,10 +41,10 @@ type KeyShare interface {
 	IsEncrypted() bool
 
 	// Encrypt encrypts the keyshare file.
-	Encrypt(credential types.Credential) error
+	Encrypt(credential servicetypes.Credential) error
 
 	// Decrypt decrypts the keyshare file.
-	Decrypt(credential types.Credential) error
+	Decrypt(credential servicetypes.Credential) error
 }
 
 // keyShare is a type that interacts with a cmp.Config file located on disk.
@@ -166,7 +166,7 @@ func (ks *keyShare) PubKey() *crypto.PubKey {
 }
 
 // Encrypt checks if the file at current path is encrypted and if not, encrypts it.
-func (ks *keyShare) Encrypt(credential types.Credential) error {
+func (ks *keyShare) Encrypt(credential servicetypes.Credential) error {
 	if ks.IsEncrypted() {
 		return nil
 	}
@@ -180,7 +180,7 @@ func (ks *keyShare) Encrypt(credential types.Credential) error {
 }
 
 // Decrypt checks if the file at current path is encrypted and if not, encrypts it.
-func (ks *keyShare) Decrypt(credential types.Credential) error {
+func (ks *keyShare) Decrypt(credential servicetypes.Credential) error {
 	if !ks.IsEncrypted() {
 		return nil
 	}

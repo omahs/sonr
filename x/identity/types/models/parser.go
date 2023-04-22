@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/sonrhq/core/internal/crypto"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 )
 
 type KeyShareParseResult struct {
@@ -16,7 +17,7 @@ type KeyShareParseResult struct {
 }
 
 // Parse a DID into a WebauthnCredential struct
-func ParseCredentialDID(did string) (*crypto.WebauthnCredential, error) {
+func ParseCredentialDID(did string) (*servicetypes.WebauthnCredential, error) {
 	didParts := strings.SplitN(did, ":", 3)
 	if len(didParts) != 3 {
 		return nil, fmt.Errorf("invalid did: %s", did)
@@ -42,7 +43,7 @@ func ParseCredentialDID(did string) (*crypto.WebauthnCredential, error) {
 		return nil, err
 	}
 
-	return &crypto.WebauthnCredential{
+	return &servicetypes.WebauthnCredential{
 		PublicKey: pubKey,
 		Id:        idBytes,
 	}, nil

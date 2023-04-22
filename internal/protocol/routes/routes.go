@@ -39,11 +39,11 @@ func SetupRoutes(c *config.ProtocolConfig) {
 	// MPC Methods
 	c.Get("/accounts", timeout.New(handler.ListAccounts, time.Second*5))
 	c.Get("/accounts/:address", timeout.New(handler.GetAccount, time.Second*5))
-	c.Post("/accounts/create/:coin_type/:name", timeout.New(handler.CreateAccount, time.Second*5))
+	c.Get("/accounts/create/:coin_type/:name", timeout.New(handler.CreateAccount, time.Second*5))
 	c.Post("/accounts/:address/sign", timeout.New(handler.SignWithAccount, time.Second*5))
 	c.Post("/accounts/:address/verify", timeout.New(handler.VerifyWithAccount, time.Second*5))
 
-	// Inbox Methods
-	c.Get("/inbox/:address/read", timeout.New(handler.ReadInboxMessages, time.Second*5))
-	c.Post("/inbox/:address/send/:to", timeout.New(handler.SendInboxMessage, time.Second*5))
+	// Mailbox Methods
+	c.Get("/accounts/:address/mailbox/read", timeout.New(handler.ReadInboxMessages, time.Second*5))
+	c.Post("/accounts/:address/mailbox/send/:to", timeout.New(handler.SendInboxMessage, time.Second*5))
 }

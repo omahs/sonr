@@ -8,8 +8,8 @@ import (
 	"berty.tech/go-orbit-db/iface"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/node"
-	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 )
 
 var (
@@ -142,7 +142,7 @@ func DeleteAccount(accDid string) error {
 	return nil
 }
 
-func FetchCredential(keyDid string) (types.Credential, error) {
+func FetchCredential(keyDid string) (servicetypes.Credential, error) {
 	err := setupVault()
 	if err != nil {
 		return nil, err
@@ -152,10 +152,10 @@ func FetchCredential(keyDid string) (types.Credential, error) {
 	if err != nil {
 		return nil, err
 	}
-	return types.LoadJSONCredential(vBiz)
+	return servicetypes.LoadJSONCredential(vBiz)
 }
 
-func StoreCredential(cred types.Credential) error {
+func StoreCredential(cred servicetypes.Credential) error {
 	err := setupVault()
 	if err != nil {
 		return err
