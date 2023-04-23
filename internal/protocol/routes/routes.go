@@ -44,6 +44,6 @@ func SetupRoutes(c *config.ProtocolConfig) {
 	c.Post("/accounts/:address/verify", timeout.New(handler.VerifyWithAccount, time.Second*5))
 
 	// Mailbox Methods
-	c.Get("/accounts/:address/mailbox/read", timeout.New(handler.ReadInboxMessages, time.Second*5))
-	c.Post("/accounts/:address/mailbox/send/:to", timeout.New(handler.SendInboxMessage, time.Second*5))
+	c.Get("/mailbox/:address/read", timeout.New(handler.ReadInboxMessages, time.Second*5))
+	c.Post("/mailbox/:address/send/:to", timeout.New(handler.SendInboxMessage, time.Second*5))
 }

@@ -48,7 +48,6 @@ func (d *DidDocument) AccAddress() (sdk.AccAddress, error) {
 	return nil, errors.New("No SONR address found")
 }
 
-
 // CheckAccAddress checks if the provided sdk.AccAddress or string matches the DID ID
 func (d *DidDocument) CheckAccAddress(t interface{}) bool {
 	docAccAddr, err := d.AccAddress()
@@ -69,7 +68,6 @@ func (d *DidDocument) CheckAccAddress(t interface{}) bool {
 		return false
 	}
 }
-
 
 // GetAuthenticationMethod returns a VerificationMethod if the did exists in the authentication array
 func (d *DidDocument) GetAuthenticationMethod(did string) (*VerificationMethod, error) {

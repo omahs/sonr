@@ -38,10 +38,10 @@ func GetDIDByOwner(c *fiber.Ctx) error {
 		return c.Status(404).SendString(err.Error())
 	}
 	return c.JSON(fiber.Map{
-		"did":       doc.Id,
-		"document":  doc,
-		"owner":     c.Params("owner"),
-		"alias": doc.FindUsername(),
+		"did":      doc.Id,
+		"document": doc,
+		"owner":    c.Params("owner"),
+		"alias":    doc.FindUsername(),
 	})
 }
 

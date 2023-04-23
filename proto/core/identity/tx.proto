@@ -15,17 +15,17 @@ service Msg {
   rpc DeleteDidDocument (MsgDeleteDidDocument) returns (MsgDeleteDidDocumentResponse);
 }
 message MsgCreateDidDocument {
-  string      creator  = 1;
-  DidDocument primary = 2;
+           string      creator     = 1;
+           DidDocument primary     = 2;
   repeated DidDocument blockchains = 3;
-  string alias = 4;
+           string      alias       = 4;
 }
 
 message MsgCreateDidDocumentResponse {}
 
 message MsgUpdateDidDocument {
-  string      creator  = 1;
-  DidDocument primary = 2;
+           string      creator     = 1;
+           DidDocument primary     = 2;
   repeated DidDocument blockchains = 3;
 }
 

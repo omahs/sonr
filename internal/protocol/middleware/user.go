@@ -87,8 +87,8 @@ func FetchUser(c *fiber.Ctx) (*User, error) {
 		return nil, err
 	}
 	return &User{
-		Did:      did,
-		Username: username,
+		Did:        did,
+		Username:   username,
 		Controller: cont,
 	}, nil
 }

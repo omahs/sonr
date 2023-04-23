@@ -60,6 +60,7 @@ func (c LocalContext) GetDIDByAlias(ctx context.Context, alias string) (*identit
 	}
 	return &resp.DidDocument, nil
 }
+
 // GetDIDByAlias returns the DID document with the given alias
 func (c LocalContext) GetDIDByOwner(ctx context.Context, owner string) (*identitytypes.DidDocument, error) {
 	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
@@ -72,6 +73,7 @@ func (c LocalContext) GetDIDByOwner(ctx context.Context, owner string) (*identit
 	}
 	return &resp.DidDocument, nil
 }
+
 // GetAllDIDs returns all DID documents
 func (c LocalContext) GetAllDIDs(ctx context.Context) ([]*identitytypes.DidDocument, error) {
 	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())

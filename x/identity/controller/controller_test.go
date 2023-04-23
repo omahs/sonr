@@ -7,16 +7,16 @@ import (
 	"github.com/sonrhq/core/internal/crypto/mpc"
 	"github.com/sonrhq/core/x/identity/controller"
 	"github.com/sonrhq/core/x/identity/types/models"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/tendermint/tendermint/libs/rand"
-	servicetypes "github.com/sonrhq/core/x/service/types"
 )
 
 func TestKeyshare(t *testing.T) {
 	randUuid := rand.Str(4)
 
 	// Call Handler for keygen
-	confs, err := mpc.Keygen(crypto.PartyID(randUuid), 1, []crypto.PartyID{"vault"})
+	confs, err := mpc.Keygen(crypto.PartyID(randUuid), mpc.WithThreshold(1))
 	if err != nil {
 		t.Fatal(err)
 	}

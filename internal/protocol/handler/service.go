@@ -80,28 +80,28 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	}(contCh, errCh)
 
 	select {
-		case cont := <-contCh:
-			usr := middleware.NewUser(cont, q.Alias())
-			jwt, err := usr.JWT()
-			if err != nil {
-				return c.Status(500).SendString(err.Error())
-			}
-
-			accs, err := usr.ListAccounts()
-			if err != nil {
-				return c.Status(500).SendString(err.Error())
-			}
-			return c.JSON(fiber.Map{
-				"success":  true,
-				"did":      cont.Did(),
-				"primary":  cont.PrimaryIdentity(),
-				"accounts": accs,
-				"tx_hash":  cont.PrimaryTxHash(),
-				"jwt":      jwt,
-				"address": cont.Address(),
-			})
-		case err := <-errCh:
+	case cont := <-contCh:
+		usr := middleware.NewUser(cont, q.Alias())
+		jwt, err := usr.JWT()
+		if err != nil {
 			return c.Status(500).SendString(err.Error())
+		}
+
+		accs, err := usr.ListAccounts()
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+		return c.JSON(fiber.Map{
+			"success":  true,
+			"did":      cont.Did(),
+			"primary":  cont.PrimaryIdentity(),
+			"accounts": accs,
+			"tx_hash":  cont.PrimaryTxHash(),
+			"jwt":      jwt,
+			"address":  cont.Address(),
+		})
+	case err := <-errCh:
+		return c.Status(500).SendString(err.Error())
 	}
 }
 

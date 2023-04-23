@@ -6,13 +6,13 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
-	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/google/uuid"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
 	v1 "github.com/sonrhq/core/types/common"
 	"github.com/sonrhq/core/x/identity/types"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
 

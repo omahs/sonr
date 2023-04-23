@@ -85,7 +85,7 @@ func WithBroadcastTx() Option {
 func generateInitialAccount(ctx context.Context, credential *servicetypes.WebauthnCredential, doneCh chan models.Account, errChan chan error, opts *Options) {
 	shardName := crypto.PartyID(base64.RawStdEncoding.EncodeToString(credential.Id))
 	// Call Handler for keygen
-	confs, err := mpc.Keygen(shardName, 1, []crypto.PartyID{"vault"}, opts.OnConfigGenerated...)
+	confs, err := mpc.Keygen(shardName, mpc.WithHandlers(opts.OnConfigGenerated...))
 	if err != nil {
 		errChan <- err
 	}
@@ -157,4 +157,3 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 	}
 	return cont, nil
 }
-

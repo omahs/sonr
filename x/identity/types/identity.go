@@ -83,7 +83,6 @@ func (d *DidDocument) ListCredentialVerificationMethods() []*VerificationMethod 
 	return allowList
 }
 
-
 // KnownCredentials returns
 
 // ! ||--------------------------------------------------------------------------------||

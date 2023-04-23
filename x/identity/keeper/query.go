@@ -112,7 +112,6 @@ func (k Keeper) DidByOwner(c context.Context, req *types.QueryDidByOwnerRequest)
 	return &types.QueryDidByOwnerResponse{DidDocument: val}, nil
 }
 
-
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                               Module Params Query                              ||
 // ! ||--------------------------------------------------------------------------------||

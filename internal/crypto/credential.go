@@ -39,4 +39,3 @@ func NewMPCPool(size int) *MPCPool {
 func NewEmptyECDSASecp256k1Signature() MPCECDSASignature {
 	return ecdsa.EmptySignature(MPCSecp256k1Curve{})
 }
-

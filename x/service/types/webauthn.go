@@ -126,6 +126,7 @@ func CredentialFromDIDString(did string) (*WebauthnCredential, error) {
 	}
 	return &WebauthnCredential{PublicKey: pubKeyBytes, Id: credIdBz}, nil
 }
+
 // FromMetadata converts a map[string]string into a common WebauthnCredential
 func (c *WebauthnCredential) FromMetadata(m map[string]string) error {
 	if m["webauthn"] != ConvertBoolToString(true) {

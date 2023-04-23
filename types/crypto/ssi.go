@@ -41,8 +41,6 @@ func (kt ServiceType) FormatString() string {
 	return result
 }
 
-
-
 // -- We represent those as raw public key bytes prefixed with public key
 // -- multiformat code.
 // | secp256k1  "0xe7"
@@ -125,4 +123,3 @@ func (kt KeyType) IsBlockchainKey() bool {
 func (kt KeyType) IsWebAuthnKey() bool {
 	return kt == KeyType_KeyType_WEB_AUTHN_AUTHENTICATION_2018
 }
-

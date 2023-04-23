@@ -29,11 +29,11 @@ func (k msgServer) CreateDidDocument(goCtx context.Context, msg *types.MsgCreate
 	// Check if the value already exists
 	_, ok := k.GetPrimaryIdentity(ctx, msg.Primary.Id)
 	if ok {
-		return nil,  sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
 	}
 	_, found := k.GetPrimaryIdentityByAlias(ctx, msg.Primary.AlsoKnownAs[0])
 	if found {
-		return nil,  sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
 	}
 	// Set the value
 	k.SetPrimaryIdentity(

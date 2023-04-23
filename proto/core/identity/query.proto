@@ -132,4 +132,3 @@ message QueryDidByOwnerRequest {
 message QueryDidByOwnerResponse {
   DidDocument didDocument = 1 [(gogoproto.nullable) = false];
 }
-

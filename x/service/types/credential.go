@@ -45,7 +45,7 @@ type Credential interface {
 
 type didCredential struct {
 	*WebauthnCredential `json:"credential,omitempty"`
-	UserDid                    string `json:"controller,omitempty"`
+	UserDid             string `json:"controller,omitempty"`
 }
 
 func NewCredential(cred *WebauthnCredential, controller string) Credential {
@@ -65,32 +65,32 @@ func LoadJSONCredential(bz []byte) (Credential, error) {
 }
 
 func LoadCredential(vm *idtypes.VerificationMethod) (Credential, error) {
-    id := strings.Split(vm.Id, ":")
-    // Decode the credential id
-    credId, err := base64.RawURLEncoding.DecodeString(id[len(id)-1])
-    if err != nil {
-        return nil, fmt.Errorf("failed to decode credential id: %v", err)
-    }
-    // Extract the public key from PublicKeyMultibase
-    pubKey, err := base58.Decode(vm.PublicKeyMultibase, base58.BitcoinAlphabet)
-    if err != nil {
-        return nil, fmt.Errorf("failed to decode public key: %v", err)
-    }
+	id := strings.Split(vm.Id, ":")
+	// Decode the credential id
+	credId, err := base64.RawURLEncoding.DecodeString(id[len(id)-1])
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode credential id: %v", err)
+	}
+	// Extract the public key from PublicKeyMultibase
+	pubKey, err := base58.Decode(vm.PublicKeyMultibase, base58.BitcoinAlphabet)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode public key: %v", err)
+	}
 
-    // Convert metadata to map and build the WebauthnAuthenticator
-    authenticator, metaMap, err := webauthnFromMetadata(vm.GetMetadata())
-    if err != nil {
-        fmt.Println(err)
-    }
+	// Convert metadata to map and build the WebauthnAuthenticator
+	authenticator, metaMap, err := webauthnFromMetadata(vm.GetMetadata())
+	if err != nil {
+		fmt.Println(err)
+	}
 
-    // Build the credential
-    cred := &WebauthnCredential{
-        Id:              credId,
-        PublicKey:       pubKey,
-        Authenticator:   authenticator,
-        AttestationType: metaMap["attestation_type"],
-    }
-    return NewCredential(cred, vm.Controller), nil
+	// Build the credential
+	cred := &WebauthnCredential{
+		Id:              credId,
+		PublicKey:       pubKey,
+		Authenticator:   authenticator,
+		AttestationType: metaMap["attestation_type"],
+	}
+	return NewCredential(cred, vm.Controller), nil
 }
 
 func (c *didCredential) Controller() string {
@@ -254,35 +254,35 @@ func webauthnToMetadata(authenticator *WebauthnAuthenticator, desc protocol.Cred
 }
 
 func webauthnFromMetadata(metadata []*idtypes.KeyValuePair) (*WebauthnAuthenticator, map[string]string, error) {
-    authenticator := &WebauthnAuthenticator{}
-    metaMap := make(map[string]string)
+	authenticator := &WebauthnAuthenticator{}
+	metaMap := make(map[string]string)
 
-    for _, entry := range metadata {
-        switch entry.Key {
-        case "attestation_type":
-            metaMap["attestation_type"] = entry.Value
-        case "aaguid":
-            aaguid, err := base64.StdEncoding.DecodeString(entry.Value)
-            if err != nil {
-                return nil, nil, fmt.Errorf("failed to decode aaguid: %v", err)
-            }
-            authenticator.Aaguid = aaguid
-        case "sign_count":
-            signCount, err := strconv.ParseUint(entry.Value, 10, 64)
-            if err != nil {
-                return nil, nil, fmt.Errorf("failed to parse sign_count: %v", err)
-            }
-            authenticator.SignCount = uint32(signCount)
-        case "clone_warning":
-            cloneWarning, err := strconv.ParseBool(entry.Value)
-            if err != nil {
-                return nil, nil, fmt.Errorf("failed to parse clone_warning: %v", err)
-            }
-            authenticator.CloneWarning = cloneWarning
-        }
-    }
+	for _, entry := range metadata {
+		switch entry.Key {
+		case "attestation_type":
+			metaMap["attestation_type"] = entry.Value
+		case "aaguid":
+			aaguid, err := base64.StdEncoding.DecodeString(entry.Value)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to decode aaguid: %v", err)
+			}
+			authenticator.Aaguid = aaguid
+		case "sign_count":
+			signCount, err := strconv.ParseUint(entry.Value, 10, 64)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to parse sign_count: %v", err)
+			}
+			authenticator.SignCount = uint32(signCount)
+		case "clone_warning":
+			cloneWarning, err := strconv.ParseBool(entry.Value)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to parse clone_warning: %v", err)
+			}
+			authenticator.CloneWarning = cloneWarning
+		}
+	}
 
-    return authenticator, metaMap, nil
+	return authenticator, metaMap, nil
 }
 
 func ValidateWebauthnCredential(credential *WebauthnCredential, controller string) (Credential, error) {
