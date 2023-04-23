@@ -1,0 +1,9 @@
+syntax = "proto3";
+package sonrhq.core.identity;
+
+option go_package = "github.com/sonrhq/core/x/identity/types";
+
+message ClaimableWallet {
+  uint64 id = 1;
+  string creator = 2;
+}
