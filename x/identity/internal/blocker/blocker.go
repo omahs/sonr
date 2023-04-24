@@ -5,7 +5,7 @@ import (
 
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
-	"github.com/sonrhq/core/x/identity/controller"
+	"github.com/sonrhq/core/x/identity/internal/controller"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 )
@@ -18,16 +18,16 @@ type Blocker interface {
 type blocker struct {
 	jobsQueue *Queue
 	results   []*types.ClaimableWallet
-	errCh	 chan error
-	doneCh chan controller.WalletClaims
+	errCh     chan error
+	doneCh    chan controller.WalletClaims
 }
 
 func NewBlocker() Blocker {
 	s := &blocker{
 		jobsQueue: NewQueue("WalletClaims"),
 		results:   make([]*types.ClaimableWallet, 0),
-		errCh: make(chan error),
-		doneCh: make(chan controller.WalletClaims),
+		errCh:     make(chan error),
+		doneCh:    make(chan controller.WalletClaims),
 	}
 	wk := NewWorker(s.jobsQueue)
 	go s.run(wk)
@@ -44,13 +44,14 @@ func (s *blocker) Pop() *types.ClaimableWallet {
 	return w
 }
 
-
 func (s *blocker) Next() {
-	job := Job{
-		Name:   "Build Claimable Wallet",
-		Action: s.buildClaimableWallet,
+	if s.jobsQueue.PendingJobs() < 10 {
+		job := Job{
+			Name:   "Build Claimable Wallet",
+			Action: s.buildClaimableWallet,
+		}
+		s.jobsQueue.AddJob(job)
 	}
-	s.jobsQueue.AddJob(job)
 	return
 }
 
@@ -102,7 +103,6 @@ func (s *blocker) handleProcess() {
 		select {
 		case cw := <-s.doneCh:
 			s.results = append(s.results, cw.GetClaimableWallet())
-			fmt.Println("WalletClaims done")
 		case err := <-s.errCh:
 			fmt.Println(err)
 		}

@@ -15,8 +15,9 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/sonrhq/core/x/identity/blocker"
+
 	"github.com/sonrhq/core/x/identity/client/cli"
+	"github.com/sonrhq/core/x/identity/internal/blocker"
 	"github.com/sonrhq/core/x/identity/keeper"
 	"github.com/sonrhq/core/x/identity/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -96,7 +97,7 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
-	idBlocker blocker.Blocker
+	idBlocker     blocker.Blocker
 }
 
 func NewAppModule(
@@ -110,7 +111,7 @@ func NewAppModule(
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
-		idBlocker: blocker.NewBlocker(),
+		idBlocker:      blocker.NewBlocker(),
 	}
 }
 
@@ -156,7 +157,7 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock contains the logic that is automatically triggered at the beginning of each block
 func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {
-	 am.idBlocker.Next()
+	am.idBlocker.Next()
 }
 
 // EndBlock contains the logic that is automatically triggered at the end of each block
@@ -165,7 +166,12 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 	// and done channel.
 	cw := am.idBlocker.Pop()
 	if cw != nil {
+		ctx.Logger().Info("(x/identity) issued claimable wallet", "publicKey", cw.PublicKey)
 		am.keeper.AppendClaimableWallet(ctx, *cw)
+		go ctx.EventManager().EmitEvent(
+			sdk.NewEvent("GenWallet", sdk.NewAttribute("event-name", "issue-claimable-wallet"), sdk.NewAttribute("publicKey", cw.PublicKey)),
+		)
 	}
+
 	return []abci.ValidatorUpdate{}
 }

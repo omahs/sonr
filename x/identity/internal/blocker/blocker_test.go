@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sonrhq/core/x/identity/blocker"
+	"github.com/sonrhq/core/x/identity/internal/blocker"
 )
 
 func TestBlocker(t *testing.T) {

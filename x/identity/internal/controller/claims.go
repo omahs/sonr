@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/sonrhq/core/internal/crypto"
-	"github.com/sonrhq/core/x/identity/keeper"
+	"github.com/sonrhq/core/x/identity/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 )
@@ -54,7 +54,7 @@ func (wc *walletClaims) GetClaimableWallet() *types.ClaimableWallet {
 }
 
 func (wc *walletClaims) ListKeyshares() ([]models.KeyShare, error) {
-	return keeper.GetKeysharesFromClaims(wc.claims)
+	return vault.GetKeysharesFromClaims(wc.claims)
 }
 
 func (wc *walletClaims) IssueChallenge() (protocol.URLEncodedBase64, error) {

@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/protocol/middleware"
-	"github.com/sonrhq/core/x/identity/controller"
+	"github.com/sonrhq/core/x/identity"
 )
 
 func GetService(c *fiber.Ctx) error {
@@ -66,12 +66,12 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 		return c.Status(403).SendString(err.Error())
 	}
 
-	contCh := make(chan controller.Controller, 1)
+	contCh := make(chan identity.Controller, 1)
 	errCh := make(chan error, 1)
 
 	// Create a new controller with the credential.
-	go func(cnCh chan controller.Controller, erCh chan error) {
-		cont, err := controller.NewController(controller.WithWebauthnCredential(cred), controller.WithBroadcastTx(), controller.WithUsername(q.Alias()))
+	go func(cnCh chan identity.Controller, erCh chan error) {
+		cont, err := identity.NewController(identity.WithWebauthnCredential(cred), identity.WithBroadcastTx(), identity.WithUsername(q.Alias()))
 		if err != nil {
 			erCh <- err
 			return
@@ -145,7 +145,7 @@ func VerifyServiceAssertion(c *fiber.Ctx) error {
 		return c.Status(403).SendString(err.Error())
 	}
 
-	cont, err := controller.LoadController(doc)
+	cont, err := identity.LoadController(doc)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}

@@ -7,7 +7,7 @@ import (
 
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
-	"github.com/sonrhq/core/x/identity/keeper"
+	"github.com/sonrhq/core/x/identity/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 	servicetypes "github.com/sonrhq/core/x/service/types"
@@ -114,7 +114,7 @@ func generateInitialAccount(ctx context.Context, credential *servicetypes.Webaut
 
 func setupController(ctx context.Context, primary models.Account, opts *Options) (Controller, error) {
 	if !opts.DisableIPFS {
-		err := keeper.InsertAccount(primary)
+		err := vault.InsertAccount(primary)
 		if err != nil {
 			return nil, err
 		}
@@ -128,7 +128,7 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 		}
 		doc = types.NewPrimaryIdentity(primary.Did(), primary.PubKey(), cred.ToVerificationMethod())
 		if !opts.DisableIPFS {
-			err = keeper.StoreCredential(cred)
+			err = vault.StoreCredential(cred)
 			if err != nil {
 				return nil, err
 			}

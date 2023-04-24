@@ -1,4 +1,4 @@
-package keeper
+package vault
 
 import (
 	"context"

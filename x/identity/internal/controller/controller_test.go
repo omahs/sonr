@@ -5,7 +5,7 @@ import (
 
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
-	"github.com/sonrhq/core/x/identity/controller"
+	"github.com/sonrhq/core/x/identity/internal/controller"
 	"github.com/sonrhq/core/x/identity/types/models"
 	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/stretchr/testify/assert"

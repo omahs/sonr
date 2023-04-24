@@ -2,7 +2,6 @@ package blocker
 
 import (
 	"context"
-	"fmt"
 	"sync"
 )
 
@@ -32,6 +31,11 @@ func NewQueue(name string) *Queue {
 	}
 }
 
+// PendingJobs returns number of pending jobs.
+func (q *Queue) PendingJobs() int {
+	return len(q.jobs)
+}
+
 // AddJobs adds jobs to the queue and cancels channel.
 func (q *Queue) AddJobs(jobs []Job) {
 	var wg sync.WaitGroup
@@ -59,8 +63,6 @@ func (q *Queue) AddJob(job Job) {
 
 // Run performs job execution.
 func (j Job) Run() error {
-	fmt.Printf("Job running: %s", j.Name)
-
 	err := j.Action()
 	if err != nil {
 		return err
