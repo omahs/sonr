@@ -93,7 +93,7 @@ func GetAccount(accDid string) (models.Account, error) {
 		return nil, err
 	}
 
-	vBiz, err := v.KsTable.Get(context.Background(), accountPrefix(accDid))
+	vBiz, err := v.KsTable.Get(v.ctx, accountPrefix(accDid))
 	if err != nil {
 		return nil, err
 	}
@@ -117,11 +117,15 @@ func GetKeyshare(keyDid string) (models.KeyShare, error) {
 	if err != nil {
 		return nil, err
 	}
-	vBiz, err := v.KsTable.Get(context.Background(), keysharePrefix(keyDid))
+	ksr, err := models.ParseKeyShareDID(keyDid)
 	if err != nil {
 		return nil, err
 	}
-	ks, err := models.NewKeyshare(keyDid, vBiz, 0, "")
+	vBiz, err := v.KsTable.Get(v.ctx, keysharePrefix(keyDid))
+	if err != nil {
+		return nil, err
+	}
+	ks, err := models.NewKeyshare(keyDid, vBiz, ksr.CoinType, ksr.AccountName)
 	if err != nil {
 		return nil, err
 	}
@@ -148,21 +152,21 @@ func DeleteAccount(accDid string) error {
 		return err
 	}
 	// Delete the keyshares
-	vBiz, err := v.KsTable.Get(context.Background(), accountPrefix(accDid))
+	vBiz, err := v.KsTable.Get(v.ctx, accountPrefix(accDid))
 	if err != nil {
 		return err
 	}
 
 	ksAccListVal := strings.Split(string(vBiz), ",")
 	for _, ksDid := range ksAccListVal {
-		_, err = v.KsTable.Delete(context.Background(), keysharePrefix(ksDid))
+		_, err = v.KsTable.Delete(v.ctx, keysharePrefix(ksDid))
 		if err != nil {
 			return err
 		}
 	}
 
 	// Delete the account
-	_, err = v.KsTable.Delete(context.Background(), accountPrefix(accDid))
+	_, err = v.KsTable.Delete(v.ctx, accountPrefix(accDid))
 	if err != nil {
 		return err
 	}
@@ -175,7 +179,7 @@ func FetchCredential(keyDid string) (servicetypes.Credential, error) {
 		return nil, err
 	}
 	// Delete the keyshares
-	vBiz, err := v.KsTable.Get(context.Background(), webauthnPrefix(keyDid))
+	vBiz, err := v.KsTable.Get(v.ctx, webauthnPrefix(keyDid))
 	if err != nil {
 		return nil, err
 	}

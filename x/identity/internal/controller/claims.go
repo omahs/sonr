@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/go-webauthn/webauthn/protocol"
-	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/x/identity/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
@@ -61,11 +60,5 @@ func (wc *walletClaims) IssueChallenge() (protocol.URLEncodedBase64, error) {
 	if wc.claims.PublicKey == "" {
 		return nil, fmt.Errorf("public key is empty")
 	}
-
-	// Convert PublicKey to []byte
-	pub, err := crypto.Base58Decode(wc.claims.PublicKey)
-	if err != nil {
-		return nil, err
-	}
-	return pub, nil
+	return protocol.URLEncodedBase64(wc.claims.PublicKey), nil
 }

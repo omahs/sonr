@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/protocol/middleware"
@@ -39,7 +41,7 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 
 	ucw, err := local.Context().OldestUnclaimedWallet(c.Context())
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(404).SendString(err.Error())
 	}
 
 	wc := identity.LoadClaimableWallet(ucw)
@@ -75,32 +77,25 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	// Checking if the credential response is valid.
 	cred, err := service.VerifyCreationChallenge(q.Attestion())
 	if err != nil {
-		return c.Status(403).SendString(err.Error())
+		return c.Status(403).SendString(fmt.Sprintf("Failed to verify attestion: %s", err.Error()))
 	}
 	ucw, err := local.Context().OldestUnclaimedWallet(c.Context())
 	if err != nil {
-		return err
+		return c.Status(404).SendString(fmt.Sprintf("Failed to find unclaimed wallet: %s", err.Error()))
 	}
-	wc := identity.LoadClaimableWallet(ucw)
-	cont, err := identity.NewControllerFromClaims(wc, cred)
+	cont, err := identity.NewControllerFromClaims(identity.LoadClaimableWallet(ucw), cred)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(500).SendString(fmt.Sprintf("Failed to create controller: %s", err.Error()))
 	}
 	usr := middleware.NewUser(cont, q.Alias())
 	jwt, err := usr.JWT()
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-
-	accs, err := usr.ListAccounts()
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(500).SendString(fmt.Sprintf("Failed to create JWT: %s", err.Error()))
 	}
 	return c.JSON(fiber.Map{
 		"success":  true,
 		"did":      cont.Did(),
 		"primary":  cont.PrimaryIdentity(),
-		"accounts": accs,
 		"tx_hash":  cont.PrimaryTxHash(),
 		"jwt":      jwt,
 		"address":  cont.Address(),
