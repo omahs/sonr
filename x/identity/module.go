@@ -15,6 +15,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/sonrhq/core/x/identity/blocker"
 	"github.com/sonrhq/core/x/identity/client/cli"
 	"github.com/sonrhq/core/x/identity/keeper"
 	"github.com/sonrhq/core/x/identity/types"
@@ -95,7 +96,7 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
-	sequencer Sequence
+	idBlocker blocker.Blocker
 }
 
 func NewAppModule(
@@ -109,7 +110,7 @@ func NewAppModule(
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
-		sequencer: NewSequencer(),
+		idBlocker: blocker.NewBlocker(),
 	}
 }
 
@@ -154,18 +155,17 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock contains the logic that is automatically triggered at the beginning of each block
-func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	cw := am.sequencer.Next()
-	if cw != nil {
-		am.keeper.SetClaimableWallet(ctx, *cw)
-	}
+func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {
+	 am.idBlocker.Next()
 }
 
 // EndBlock contains the logic that is automatically triggered at the end of each block
-func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	err := am.sequencer.Add()
-	if err != nil {
-		panic(err)
+func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
+	// The function creates a new instance of a blocker with a jobs queue, results array, error channel,
+	// and done channel.
+	cw := am.idBlocker.Pop()
+	if cw != nil {
+		am.keeper.AppendClaimableWallet(ctx, *cw)
 	}
 	return []abci.ValidatorUpdate{}
 }
