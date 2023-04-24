@@ -57,11 +57,8 @@ func (s *ServiceRecord) GetUserEntity(id string) protocol.UserEntity {
 }
 
 // GetCredentialCreationOptions issues a challenge for the VerificationMethod to sign and return
-func (vm *ServiceRecord) GetCredentialCreationOptions(username string, isMobile bool) (string, error) {
-	hashString := base64.URLEncoding.EncodeToString([]byte(vm.Id))
+func (vm *ServiceRecord) GetCredentialCreationOptions(username string, chal protocol.URLEncodedBase64, isMobile bool) (string, error) {
 	params := DefaultParams()
-	chal := protocol.URLEncodedBase64(hashString)
-
 	cco, err := params.NewWebauthnCreationOptions(vm, username, chal, isMobile)
 	if err != nil {
 		return "", err

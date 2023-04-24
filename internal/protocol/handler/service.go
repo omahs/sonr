@@ -30,9 +30,6 @@ func ListServices(c *fiber.Ctx) error {
 	})
 }
 
-
-
-
 func GetServiceAttestion(c *fiber.Ctx) error {
 	q := middleware.ParseQuery(c)
 	service, err := q.GetService()
@@ -40,7 +37,18 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 		return c.Status(404).SendString(err.Error())
 	}
 
-	challenge, err := service.GetCredentialCreationOptions(q.Alias(), q.IsMobile())
+	ucw, err := local.Context().OldestUnclaimedWallet(c.Context())
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	wc := identity.LoadClaimableWallet(ucw)
+	chal, err := wc.IssueChallenge()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	challenge, err := service.GetCredentialCreationOptions(q.Alias(), chal, q.IsMobile())
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -48,6 +56,7 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 		"alias":             q.Alias(),
 		"attestion_options": challenge,
 		"origin":            q.Origin(),
+		"challenge":         string(chal),
 	})
 
 }
@@ -68,44 +77,34 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(403).SendString(err.Error())
 	}
-
-	contCh := make(chan identity.Controller, 1)
-	errCh := make(chan error, 1)
-
-	// Create a new controller with the credential.
-	go func(cnCh chan identity.Controller, erCh chan error) {
-		cont, err := identity.NewController(identity.WithWebauthnCredential(cred), identity.WithBroadcastTx(), identity.WithUsername(q.Alias()))
-		if err != nil {
-			erCh <- err
-			return
-		}
-		contCh <- cont
-	}(contCh, errCh)
-
-	select {
-	case cont := <-contCh:
-		usr := middleware.NewUser(cont, q.Alias())
-		jwt, err := usr.JWT()
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
-
-		accs, err := usr.ListAccounts()
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
-		return c.JSON(fiber.Map{
-			"success":  true,
-			"did":      cont.Did(),
-			"primary":  cont.PrimaryIdentity(),
-			"accounts": accs,
-			"tx_hash":  cont.PrimaryTxHash(),
-			"jwt":      jwt,
-			"address":  cont.Address(),
-		})
-	case err := <-errCh:
+	ucw, err := local.Context().OldestUnclaimedWallet(c.Context())
+	if err != nil {
+		return err
+	}
+	wc := identity.LoadClaimableWallet(ucw)
+	cont, err := identity.NewControllerFromClaims(wc, cred)
+	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
+	usr := middleware.NewUser(cont, q.Alias())
+	jwt, err := usr.JWT()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	accs, err := usr.ListAccounts()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	return c.JSON(fiber.Map{
+		"success":  true,
+		"did":      cont.Did(),
+		"primary":  cont.PrimaryIdentity(),
+		"accounts": accs,
+		"tx_hash":  cont.PrimaryTxHash(),
+		"jwt":      jwt,
+		"address":  cont.Address(),
+	})
 }
 
 func GetServiceAssertion(c *fiber.Ctx) error {

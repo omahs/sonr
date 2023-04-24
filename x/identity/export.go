@@ -21,6 +21,11 @@ func NewController(options ...ControllerOption) (Controller, error) {
 	return controller.NewController(options...)
 }
 
+// NewControllerFromClaims creates a new identity controller from claims
+func NewControllerFromClaims(wc WalletClaims, cred *servicetypes.WebauthnCredential) (Controller, error) {
+	return controller.NewControllerFromClaims(wc, cred)
+}
+
 // LoadController loads an identity controller
 func LoadController(doc *types.DidDocument) (Controller, error) {
 	return controller.LoadController(doc)

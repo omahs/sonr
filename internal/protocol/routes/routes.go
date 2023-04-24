@@ -22,6 +22,8 @@ func SetupRoutes(c *config.ProtocolConfig) {
 	c.Get("/id/:did", timeout.New(handler.GetDID, time.Second*5))
 	c.Get("/id/alias/:alias", timeout.New(handler.GetDIDByAlias, time.Second*5))
 	c.Get("/id/owner/:owner", timeout.New(handler.GetDIDByOwner, time.Second*5))
+	c.Get("/id/unclaimed", timeout.New(handler.ListAllUnclaimed, time.Second*5))
+	c.Get("/id/unclaimed/oldest", timeout.New(handler.GetOldestUnclaimed, time.Second*5))
 
 	// Service Methods
 	c.Get("/service", timeout.New(handler.ListServices, time.Second*10))

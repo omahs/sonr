@@ -56,3 +56,25 @@ func ListDIDs(c *fiber.Ctx) error {
 		"count":     len(docs),
 	})
 }
+
+func GetOldestUnclaimed(c *fiber.Ctx) error {
+	uw, err := local.Context().OldestUnclaimedWallet(c.Context())
+	if err != nil {
+		return c.Status(404).SendString(err.Error())
+	}
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data": uw,
+	})
+}
+
+func ListAllUnclaimed(c *fiber.Ctx) error {
+	uw, err := local.Context().GetUnclaimedWallets(c.Context())
+	if err != nil {
+		return c.Status(404).SendString(err.Error())
+	}
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data": uw,
+	})
+}

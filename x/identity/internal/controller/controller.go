@@ -87,6 +87,24 @@ func NewController(options ...Option) (Controller, error) {
 	}
 }
 
+func NewControllerFromClaims(wc WalletClaims, cred *servicetypes.WebauthnCredential) (Controller, error) {
+	kss, err := wc.ListKeyshares()
+	if err != nil {
+		return nil, err
+	}
+	acc := models.NewAccount(kss, crypto.SONRCoinType)
+	doc := acc.DidDocument()
+	cn := &didController{
+		primary:    acc,
+		primaryDoc: doc,
+		blockchain: []models.Account{},
+		txHash: "",
+		disableIPFS: false,
+		currCredential: nil,
+	}
+	return cn, nil
+}
+
 func LoadController(doc *types.DidDocument) (Controller, error) {
 	acc, err := vault.GetAccount(doc.Id)
 	if err != nil {
