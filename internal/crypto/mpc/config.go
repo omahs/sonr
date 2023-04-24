@@ -59,6 +59,13 @@ func WithHandlers(handlers ...OnConfigGenerated) KeygenOption {
 	}
 }
 
+// WithErrorChan sets the channel that is used to send errors.
+func WithErrorChan(errorsChan chan error) KeygenOption {
+	return func(c *KeygenOpts) {
+		c.errorsChan = errorsChan
+	}
+}
+
 // KeygenOpts is the configuration of an account.
 type KeygenOpts struct {
 	// Network is the network that is used to communicate with other parties.
@@ -80,6 +87,8 @@ type KeygenOpts struct {
 	group []party.ID
 
 	current crypto.PartyID
+
+	errorsChan chan error
 }
 
 func defaultKeygenOpts(current crypto.PartyID) *KeygenOpts {
@@ -106,4 +115,26 @@ func (o *KeygenOpts) getOfflineNetwork() crypto.Network {
 		closedListenChan: closed,
 	}
 	return c
+}
+
+func (o *KeygenOpts) handleRoutineErr(err error)  {
+	if err == nil {
+		return
+	}
+	if o.errorsChan != nil {
+		o.errorsChan <- err
+	}
+}
+
+func (o *KeygenOpts) handleConfigGeneration(config *cmp.Config) error {
+	if o.Handlers == nil {
+		return nil
+	}
+
+	for _, handler := range o.Handlers {
+		if err := handler(config); err != nil {
+			return err
+		}
+	}
+	return nil
 }

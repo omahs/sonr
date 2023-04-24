@@ -22,7 +22,7 @@ func CmdCreateClaimableWallet() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreateClaimableWallet(clientCtx.GetFromAddress().String())
+			msg := types.NewMsgCreateClaimableWallet(clientCtx.GetFromAddress().String(), nil)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

@@ -29,6 +29,7 @@ func GetDIDByAlias(c *fiber.Ctx) error {
 		"did":       doc.Id,
 		"document":  doc,
 		"alias":     c.Params("alias"),
+		"address":  doc.FindPrimaryAddress(),
 	})
 }
 

@@ -8,6 +8,7 @@ import (
 
 	mb "github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-varint"
+	"github.com/shengdoushi/base58"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 
@@ -107,6 +108,16 @@ func NewPubKeyFromCmpConfig(config *cmp.Config) (*PubKey, error) {
 		return nil, err
 	}
 	return types.NewPubKey(bz, Secp256k1KeyType), nil
+}
+
+// Base58Encode takes a byte array and returns a base68 encoded string.
+func Base58Encode(bz []byte) string {
+	return base58.Encode(bz, base58.BitcoinAlphabet)
+}
+
+// Base58Decode takes a base68 encoded string and returns a byte array.
+func Base58Decode(str string) ([]byte, error) {
+	return base58.Decode(str, base58.BitcoinAlphabet)
 }
 
 // NewSecp256k1PubKey takes a byte array of raw public key bytes and returns a PubKey.

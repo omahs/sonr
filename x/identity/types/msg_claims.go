@@ -13,9 +13,10 @@ const (
 
 var _ sdk.Msg = &MsgCreateClaimableWallet{}
 
-func NewMsgCreateClaimableWallet(creator string) *MsgCreateClaimableWallet {
+func NewMsgCreateClaimableWallet(creator string, claimableWallet *ClaimableWallet) *MsgCreateClaimableWallet {
 	return &MsgCreateClaimableWallet{
 		Creator: creator,
+		ClaimableWallet: claimableWallet,
 	}
 }
 

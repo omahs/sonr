@@ -10,6 +10,7 @@ import (
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
+	"github.com/sonrhq/core/internal/local"
 	v1 "github.com/sonrhq/core/types/common"
 	"github.com/sonrhq/core/x/identity/types"
 	servicetypes "github.com/sonrhq/core/x/service/types"
@@ -53,6 +54,9 @@ type Account interface {
 
 	// Signs a message
 	Sign(bz []byte) ([]byte, error)
+
+	// SendSonrTx sends a transaction to the Sonr blockchain if this account is the primary account
+	SendSonrTx(msg sdk.Msg) (*local.BroadcastTxResponse, error)
 
 	// ToProto returns the proto representation of the account
 	ToProto() *v1.AccountInfo
@@ -176,6 +180,18 @@ func (wa *account) Sign(bz []byte) ([]byte, error) {
 		configs = append(configs, ks.Config())
 	}
 	return mpc.SignCMP(configs, bz)
+}
+
+// SendSonrTx sends a transaction to the Sonr blockchain if this account is the primary account
+func (wa *account) SendSonrTx(msg sdk.Msg) (*local.BroadcastTxResponse, error) {
+	if !wa.ct.IsSonr() {
+		return nil, fmt.Errorf("account is not a Sonr account")
+	}
+	bz, err := SignAnyTransactions(wa, msg)
+	if err != nil {
+		return nil, err
+	}
+	return local.Context().BroadcastTx(bz)
 }
 
 // ToProto returns the proto representation of the account

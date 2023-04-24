@@ -32,5 +32,6 @@ message Params {
   string webauthn_attestion_preference     =  8;
   string webauthn_authenticator_attachment =  9;
   int32  webauthn_timeout                  = 10;
+  int32 max_validator_accounts_per_1000    = 11;
 }
 

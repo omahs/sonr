@@ -12,42 +12,28 @@ import (
 
 // Keygen Generates a new ECDSA private key shared among all the given participants.
 func Keygen(current crypto.PartyID, option ...KeygenOption) ([]*cmp.Config, error) {
-	opts := defaultKeygenOpts(current)
-	opts.Apply(option...)
-	net := opts.getOfflineNetwork()
-
 	var mtx sync.Mutex
 	var wg sync.WaitGroup
+	opts := defaultKeygenOpts(current)
+	opts.Apply(option...)
+
+	net := opts.getOfflineNetwork()
 	confs := make([]*cmp.Config, 0)
 	for _, id := range net.Ls() {
 		wg.Add(1)
-		go func(id party.ID) {
+		go func(id party.ID, network crypto.Network) {
 			pl := pool.NewPool(0)
 			defer pl.TearDown()
-			conf, err := algorithm.CmpKeygen(id, net.Ls(), net, opts.Threshold, &wg, pl)
-			if err != nil {
-				return
-			}
 			mtx.Lock()
-			if opts.Handlers != nil {
-				manageHandlers(opts.Handlers, conf)
-			}
+
+			conf, err := algorithm.CmpKeygen(id, net.Ls(), network, opts.Threshold, &wg, pl)
+			opts.handleRoutineErr(err)
+			opts.handleConfigGeneration(conf)
 			confs = append(confs, conf)
+
 			mtx.Unlock()
-		}(id)
+		}(id, net)
 	}
 	wg.Wait()
 	return confs, nil
-}
-
-func manageHandlers(handlers []OnConfigGenerated, conf *cmp.Config) error {
-	for _, h := range handlers {
-		if h == nil {
-			continue
-		}
-		if err := h(conf); err != nil {
-			return err
-		}
-	}
-	return nil
 }
