@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	// "github.com/sonrhq/core/app"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
@@ -92,6 +93,40 @@ func (c LocalContext) GetAllDIDs(ctx context.Context) ([]*identitytypes.DidDocum
 	}
 	return list, nil
 }
+
+// GetUnclaimedWallets returns all unclaimed wallets
+func (c LocalContext) GetUnclaimedWallets(ctx context.Context) ([]identitytypes.ClaimableWallet, error) {
+	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
+	if err != nil {
+		return nil, errors.New("failed to connect to grpc server: " + err.Error())
+	}
+	resp, err := identitytypes.NewQueryClient(conn).ClaimableWalletAll(ctx, &identitytypes.QueryAllClaimableWalletRequest{})
+	if err != nil {
+		return nil, err
+	}
+	return resp.ClaimableWallet, nil
+}
+
+// OldestUnclaimedWallet returns the oldest unclaimed wallet
+func (c LocalContext) OldestUnclaimedWallet(ctx context.Context) (*identitytypes.ClaimableWallet, error) {
+	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
+	if err != nil {
+		return nil, errors.New("failed to connect to grpc server: " + err.Error())
+	}
+	resp, err := identitytypes.NewQueryClient(conn).ClaimableWalletAll(ctx, &identitytypes.QueryAllClaimableWalletRequest{
+		Pagination: &query.PageRequest{
+			Reverse: true,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.ClaimableWallet) == 0 {
+		return nil, errors.New("no unclaimed wallets")
+	}
+	return &resp.ClaimableWallet[0], nil
+}
+
 
 // GetService returns the service with the given id
 func (c LocalContext) GetService(ctx context.Context, origin string) (*servicetypes.ServiceRecord, error) {

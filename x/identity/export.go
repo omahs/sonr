@@ -61,3 +61,8 @@ func WithBroadcastTx() ControllerOption {
 		o.BroadcastTx = true
 	}
 }
+
+// LoadClaimableWallet loads a claimable wallet
+func LoadClaimableWallet(cw *types.ClaimableWallet) WalletClaims {
+	return controller.LoadClaimableWallet(cw)
+}
