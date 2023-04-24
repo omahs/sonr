@@ -8,6 +8,7 @@ import (
 	// "github.com/sonrhq/core/internal/vault"
 	// "github.com/sonrhq/core/internal/vault"
 	"github.com/sonrhq/core/internal/crypto"
+	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/x/identity/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
@@ -67,6 +68,7 @@ type didController struct {
 	disableIPFS    bool
 	aka            string
 	txHash         string
+	broadcastChan  chan *local.BroadcastTxResponse
 }
 
 func NewController(options ...Option) (Controller, error) {

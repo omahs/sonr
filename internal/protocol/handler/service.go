@@ -96,7 +96,6 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(fmt.Sprintf("Failed to assign credential: %s", err.Error()))
 	}
-
 	usr := middleware.NewUser(cont, q.Alias())
 	jwt, err := usr.JWT()
 	if err != nil {

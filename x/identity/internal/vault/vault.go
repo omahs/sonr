@@ -8,7 +8,6 @@ import (
 	"berty.tech/go-orbit-db/iface"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/node"
-	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 	servicetypes "github.com/sonrhq/core/x/service/types"
 )
@@ -131,20 +130,6 @@ func GetKeyshare(keyDid string) (models.KeyShare, error) {
 	}
 	return ks, nil
 }
-
-// This function returns all the claims from a ClaimableWallet struct
-func GetKeysharesFromClaims(cw *types.ClaimableWallet) ([]models.KeyShare, error) {
-	var ksList []models.KeyShare
-	for _, id := range cw.Keyshares {
-		ks, err := GetKeyshare(id)
-		if err != nil {
-			return nil, err
-		}
-		ksList = append(ksList, ks)
-	}
-	return ksList, nil
-}
-
 
 func DeleteAccount(accDid string) error {
 	err := setupVault()

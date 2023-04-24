@@ -7,6 +7,7 @@ import (
 
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
+	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/x/identity/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
@@ -34,6 +35,7 @@ type Options struct {
 	Username string
 
 	errChan chan error
+	broadcastChan chan *local.BroadcastTxResponse
 }
 
 func defaultOptions() *Options {
@@ -43,6 +45,7 @@ func defaultOptions() *Options {
 		BroadcastTx:       false,
 		Username:          "",
 		errChan:           make(chan error),
+		broadcastChan: make(chan *local.BroadcastTxResponse),
 	}
 }
 
@@ -72,9 +75,10 @@ func WithIPFSDisabled() Option {
 	}
 }
 
-func WithBroadcastTx() Option {
+func WithBroadcastTx(brdcastChan chan *local.BroadcastTxResponse) Option {
 	return func(o *Options) {
 		o.BroadcastTx = true
+		o.broadcastChan = brdcastChan
 	}
 }
 
@@ -146,14 +150,6 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 		disableIPFS: opts.DisableIPFS,
 		txHash:      "",
 		aka:         doc.FindUsername(),
-	}
-
-	if opts.BroadcastTx {
-		resp, err := cont.CreatePrimaryIdentity(doc, primary, opts.Username)
-		if err != nil {
-			return nil, err
-		}
-		cont.txHash = resp.TxResponse.TxHash
 	}
 	return cont, nil
 }

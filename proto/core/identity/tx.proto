@@ -23,6 +23,7 @@ message MsgCreateDidDocument {
            DidDocument primary     = 2;
   repeated DidDocument blockchains = 3;
            string      alias       = 4;
+           uint32      wallet_id = 5;
 }
 
 message MsgCreateDidDocumentResponse {}

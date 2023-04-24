@@ -13,7 +13,6 @@ import (
 
 type WalletClaims interface {
 	GetClaimableWallet() *types.ClaimableWallet
-	ListKeyshares() ([]models.KeyShare, error)
 	IssueChallenge() (protocol.URLEncodedBase64, error)
 	Assign(cred *srvtypes.WebauthnCredential, alias string) (Controller, error)
 }
@@ -23,6 +22,7 @@ type walletClaims struct {
 	Creator string                 `json:"creator" yaml:"creator"`
 }
 
+// The function creates a new wallet claim with a given creator and key shares.
 func NewWalletClaims(creator string, kss []models.KeyShare) (WalletClaims, error) {
 	pub := kss[0].PubKey()
 	keyIds := make([]string, 0)
@@ -44,6 +44,7 @@ func NewWalletClaims(creator string, kss []models.KeyShare) (WalletClaims, error
 	}, nil
 }
 
+// The function returns a WalletClaims interface that contains the claimable wallet and its creator.
 func LoadClaimableWallet(cw *types.ClaimableWallet) WalletClaims {
 	return &walletClaims{
 		Claims:  cw,
@@ -51,14 +52,16 @@ func LoadClaimableWallet(cw *types.ClaimableWallet) WalletClaims {
 	}
 }
 
+// The `GetClaimableWallet()` function is a method of the `walletClaims` struct that returns a pointer
+// to the `ClaimableWallet` object stored in the struct. This allows other parts of the code to access
+// the `ClaimableWallet` object and its properties.
 func (wc *walletClaims) GetClaimableWallet() *types.ClaimableWallet {
 	return wc.Claims
 }
 
-func (wc *walletClaims) ListKeyshares() ([]models.KeyShare, error) {
-	return vault.GetKeysharesFromClaims(wc.Claims)
-}
-
+// This function is used to issue a challenge for the claimable wallet. It returns the public key of
+// the claimable wallet as a URL-encoded base64 string, which can be used as a challenge for WebAuthn
+// authentication. If the public key is empty, it returns an error.
 func (wc *walletClaims) IssueChallenge() (protocol.URLEncodedBase64, error) {
 	if wc.Claims.PublicKey == "" {
 		return nil, fmt.Errorf("public key is empty")
@@ -66,6 +69,10 @@ func (wc *walletClaims) IssueChallenge() (protocol.URLEncodedBase64, error) {
 	return protocol.URLEncodedBase64(wc.Claims.PublicKey), nil
 }
 
+// This function assigns a WebAuthn credential to a claimable wallet by creating a new DID document and
+// adding the credential as an additional authentication method. It then creates a new `didController`
+// instance with the new DID document and returns it as a `Controller` interface. The `alias` parameter
+// is used to set the `AlsoKnownAs` field in the DID document.
 func (wc *walletClaims) Assign(cred *srvtypes.WebauthnCredential, alias string) (Controller, error) {
 	kss := make([]models.KeyShare, 0)
 	for _, ks := range wc.Claims.Keyshares {
@@ -95,10 +102,6 @@ func (wc *walletClaims) Assign(cred *srvtypes.WebauthnCredential, alias string) 
 		disableIPFS: false,
 		currCredential: cred,
 	}
-	resp, err := cn.CreatePrimaryIdentity(doc, acc, alias)
-	if err != nil {
-		return nil, err
-	}
-	cn.txHash = resp.TxResponse.TxHash
+	cn.CreatePrimaryIdentity(doc, acc, alias, uint32(wc.Claims.Id))
 	return cn, nil
 }

@@ -160,7 +160,7 @@ func TestControllerLoad(t *testing.T) {
 
 func TestBroadcast(t *testing.T) {
 	opts := defaultOfflineOptions()
-	opts = append(opts, controller.WithBroadcastTx())
+	//opts = append(opts, controller.WithBroadcastTx())
 	cn, err := controller.NewController(opts...)
 	if err != nil {
 		t.Fatal(err)

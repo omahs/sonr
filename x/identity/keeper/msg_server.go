@@ -42,6 +42,14 @@ func (k msgServer) CreateDidDocument(goCtx context.Context, msg *types.MsgCreate
 		*msg.Primary,
 	)
 
+	ucw, found := k.GetClaimableWallet(ctx, uint64(msg.WalletId))
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "unclaimed wallet index not set")
+	}
+
+	ucw.Claimed = true
+	k.RemoveClaimableWallet(ctx, uint64(msg.WalletId))
+
 	// Set the blockchain identities
 	k.SetBlockchainIdentities(ctx, msg.Blockchains...)
 	ctx.EventManager().EmitEvent(
