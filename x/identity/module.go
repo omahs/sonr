@@ -171,6 +171,7 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 		go ctx.EventManager().EmitEvent(
 			sdk.NewEvent("GenWallet", sdk.NewAttribute("event-name", "issue-claimable-wallet"), sdk.NewAttribute("publicKey", cw.PublicKey)),
 		)
+		am.bankKeeper.MintCoins(ctx, "identity", sdk.NewCoins(sdk.NewCoin("snr", sdk.NewInt(2))))
 	}
 
 	return []abci.ValidatorUpdate{}

@@ -387,12 +387,7 @@ func makeCredentialFromCreationData(c *protocol.ParsedCredentialCreationData) *W
 			Attachment: c.AuthenticatorAttachment,
 		},
 	}
-
-	return &WebauthnCredential{
-		Id:              newCredential.ID,
-		PublicKey:       newCredential.PublicKey,
-		AttestationType: newCredential.AttestationType,
-	}
+	return ConvertStdCredential(newCredential)
 }
 
 // makeCredentialFromAssertionData creates a new WebauthnCredential from a ParsedCredentialAssertionData and contains all needed information about a WebAuthn credential for storage.
