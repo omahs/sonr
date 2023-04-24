@@ -13,9 +13,6 @@ import (
 
 // KeyShare is a type that interacts with a cmp.Config file located on disk.
 type KeyShare interface {
-	// AccountName returns the account name based on the keyshare file name
-	AccountName() string
-
 	// Bytes returns the bytes of the keyshare file - the marshalled cmp.Config
 	Bytes() []byte
 
@@ -56,7 +53,7 @@ type keyShare struct {
 
 // Keyshare name format is a DID did:{coin_type}:{account_address}#ks-{account_name}-{keyshare_name}
 // did:{coin_type}:{account_address}#ks-{account_name}-{keyshare_name}
-func NewKeyshare(id string, bytes []byte, coinType crypto.CoinType, accName string) (KeyShare, error) {
+func NewKeyshare(id string, bytes []byte, coinType crypto.CoinType) (KeyShare, error) {
 	conf := cmp.EmptyConfig(curve.Secp256k1{})
 	err := conf.UnmarshalBinary(bytes)
 	if err != nil {
@@ -68,7 +65,7 @@ func NewKeyshare(id string, bytes []byte, coinType crypto.CoinType, accName stri
 		lastUsed: uint32(time.Now().Unix()),
 	}
 	addr := coinType.FormatAddress(ks.PubKey())
-	ks.name = fmt.Sprintf("did:%s:%s#ks-%s-%s", coinType.DidMethod(), addr, accName, string(conf.ID))
+	ks.name = fmt.Sprintf("did:%s:%s#ks-%s", coinType.DidMethod(), addr, string(conf.ID))
 	return ks, nil
 }
 
@@ -88,15 +85,6 @@ func GetPubKeyFromCmpConfigBytes(bytes []byte) (*crypto.PubKey, error) {
 		return nil, err
 	}
 	return crypto.NewSecp256k1PubKey(bz), nil
-}
-
-// AccountName returns the account name based on the keyshare file name
-func (ks *keyShare) AccountName() string {
-	res, err := ParseKeyShareDID(ks.name)
-	if err != nil {
-		return ""
-	}
-	return res.AccountName
 }
 
 // Bytes returns the bytes of the keyshare file - the marshalled cmp.Config
@@ -135,7 +123,7 @@ func (ks *keyShare) DeriveBip44(ct crypto.CoinType, idx int, name string) (KeySh
 	if err != nil {
 		return nil, err
 	}
-	return NewKeyshare(ks.name, bz, ct, name)
+	return NewKeyshare(ks.name, bz, ct)
 }
 
 // Did returns the cid of the keyshare

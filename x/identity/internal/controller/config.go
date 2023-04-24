@@ -103,7 +103,7 @@ func generateInitialAccount(ctx context.Context, credential *servicetypes.Webaut
 			errChan <- err
 		}
 		ksDid := fmt.Sprintf("%s#%s", rootDid, conf.ID)
-		ks, err := models.NewKeyshare(ksDid, ksb, crypto.SONRCoinType, "Primary")
+		ks, err := models.NewKeyshare(ksDid, ksb, crypto.SONRCoinType)
 		if err != nil {
 			errChan <- err
 		}

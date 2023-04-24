@@ -46,9 +46,6 @@ type Account interface {
 	// MapKeyShare maps a function to all the keyshares of the account
 	MapKeyShare(f func(ks KeyShare) KeyShare)
 
-	// Name returns the name of the account
-	Name() string
-
 	// PubKey returns secp256k1 public key
 	PubKey() *crypto.PubKey
 
@@ -161,16 +158,6 @@ func (acc *account) MapKeyShare(f func(ks KeyShare) KeyShare) {
 // PubKey returns secp256k1 public key
 func (wa *account) PubKey() *crypto.PubKey {
 	return wa.kss[0].PubKey()
-}
-
-// Name returns the name of the account
-func (wa *account) Name() string {
-	kspr, err := ParseAccountDID(wa.Did())
-	if err != nil {
-
-		return ""
-	}
-	return kspr.AccountName
 }
 
 // Signs a message using the account

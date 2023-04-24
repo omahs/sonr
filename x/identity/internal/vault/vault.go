@@ -125,7 +125,7 @@ func GetKeyshare(keyDid string) (models.KeyShare, error) {
 	if err != nil {
 		return nil, err
 	}
-	ks, err := models.NewKeyshare(keyDid, vBiz, ksr.CoinType, ksr.AccountName)
+	ks, err := models.NewKeyshare(keyDid, vBiz, ksr.CoinType)
 	if err != nil {
 		return nil, err
 	}

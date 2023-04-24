@@ -12,7 +12,6 @@ import (
 type KeyShareParseResult struct {
 	CoinType       crypto.CoinType
 	AccountAddress string
-	AccountName    string
 	KeyShareName   string
 }
 
@@ -70,19 +69,11 @@ func ParseKeyShareDID(name string) (*KeyShareParseResult, error) {
 	accountAddress := parts[0]
 
 	// Parse the keyshare name
-	parts = strings.Split(parts[1], "-")
-	if len(parts) != 2 {
-		return nil, fmt.Errorf("invalid keyshare DID: %s", name)
-	}
-
-	// Parse the keyshare name
-	accountName := parts[0]
 	keyShareName := parts[1]
 
 	return &KeyShareParseResult{
 		CoinType:       ct,
 		AccountAddress: accountAddress,
-		AccountName:    accountName,
 		KeyShareName:   keyShareName,
 	}, nil
 }

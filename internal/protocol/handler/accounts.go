@@ -21,7 +21,6 @@ func GetAccount(c *fiber.Ctx) error {
 		"success":   true,
 		"account":   acc.ToProto(),
 		"coin_type": acc.CoinType().Ticker(),
-		"name":      acc.Name(),
 		"address":   c.Params("address"),
 	})
 }
@@ -54,7 +53,6 @@ func CreateAccount(c *fiber.Ctx) error {
 		"success":   true,
 		"account":   acc.ToProto(),
 		"coin_type": acc.CoinType().Ticker(),
-		"name":      acc.Name(),
 		"address":   acc.Address(),
 	})
 }

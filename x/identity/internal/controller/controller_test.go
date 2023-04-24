@@ -27,7 +27,7 @@ func TestKeyshare(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		ks, err := models.NewKeyshare(string(conf.ID), ksb, crypto.SONRCoinType, "test")
+		ks, err := models.NewKeyshare(string(conf.ID), ksb, crypto.SONRCoinType)
 		if err != nil {
 			t.Fatal(err)
 		}

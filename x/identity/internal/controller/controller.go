@@ -88,10 +88,17 @@ func NewController(options ...Option) (Controller, error) {
 }
 
 func NewControllerFromClaims(wc WalletClaims, cred *servicetypes.WebauthnCredential) (Controller, error) {
-	kss, err := wc.ListKeyshares()
-	if err != nil {
-		return nil, err
+	ucw := wc.GetClaimableWallet()
+	kss := make([]models.KeyShare, 0)
+
+	for _, ks := range ucw.Keyshares {
+		ks, err := vault.GetKeyshare(ks)
+		if err != nil {
+			return nil, err
+		}
+		kss = append(kss, ks)
 	}
+
 	acc := models.NewAccount(kss, crypto.SONRCoinType)
 	doc := acc.DidDocument()
 	cn := &didController{
@@ -100,7 +107,7 @@ func NewControllerFromClaims(wc WalletClaims, cred *servicetypes.WebauthnCredent
 		blockchain: []models.Account{},
 		txHash: "",
 		disableIPFS: false,
-		currCredential: nil,
+		currCredential: cred,
 	}
 	return cn, nil
 }

@@ -74,18 +74,27 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.SendStatus(fiber.ErrNotFound.Code)
 	}
-	// Checking if the credential response is valid.
-	cred, err := service.VerifyCreationChallenge(q.Attestion())
-	if err != nil {
-		return c.Status(403).SendString(fmt.Sprintf("Failed to verify attestion: %s", err.Error()))
-	}
+
 	ucw, err := local.Context().OldestUnclaimedWallet(c.Context())
 	if err != nil {
 		return c.Status(404).SendString(fmt.Sprintf("Failed to find unclaimed wallet: %s", err.Error()))
 	}
+
+	claims := identity.LoadClaimableWallet(ucw)
+	chal, err := claims.IssueChallenge()
+	if err != nil {
+		return c.Status(500).SendString(fmt.Sprintf("Failed to issue challenge: %s", err.Error()))
+	}
+
+	// Checking if the credential response is valid.
+	cred, err := service.VerifyCreationChallenge(q.Attestion(), chal)
+	if err != nil {
+		return c.Status(403).SendString(fmt.Sprintf("Failed to verify attestion: %s", err.Error()))
+	}
+
 	cont, err := identity.NewControllerFromClaims(identity.LoadClaimableWallet(ucw), cred)
 	if err != nil {
-		return c.Status(500).SendString(fmt.Sprintf("Failed to create controller: %s", err.Error()))
+		return c.Status(412).SendString(fmt.Sprintf("Failed to create controller: %s", err.Error()))
 	}
 	usr := middleware.NewUser(cont, q.Alias())
 	jwt, err := usr.JWT()
@@ -93,12 +102,12 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 		return c.Status(500).SendString(fmt.Sprintf("Failed to create JWT: %s", err.Error()))
 	}
 	return c.JSON(fiber.Map{
-		"success":  true,
-		"did":      cont.Did(),
-		"primary":  cont.PrimaryIdentity(),
-		"tx_hash":  cont.PrimaryTxHash(),
-		"jwt":      jwt,
-		"address":  cont.Address(),
+		"success": true,
+		"did":     cont.Did(),
+		"primary": cont.PrimaryIdentity(),
+		"tx_hash": cont.PrimaryTxHash(),
+		"jwt":     jwt,
+		"address": cont.Address(),
 	})
 }
 

@@ -6,6 +6,7 @@ import (
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
 	"github.com/sonrhq/core/x/identity/internal/controller"
+	"github.com/sonrhq/core/x/identity/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 )
@@ -81,10 +82,16 @@ func (s *blocker) buildClaimableWallet() error {
 			s.errCh <- err
 			return err
 		}
-		ks, err := models.NewKeyshare(string(conf.ID), ksb, crypto.SONRCoinType, "primary")
+		ks, err := models.NewKeyshare(string(conf.ID), ksb, crypto.SONRCoinType)
 		if err != nil {
 			s.errCh <- err
 			return err
+		}
+
+		err = vault.InsertKeyshare(ks)
+		if err != nil {
+			s.errCh <- err
+			return  err
 		}
 		kss = append(kss, ks)
 	}
