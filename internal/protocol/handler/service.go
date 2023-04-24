@@ -92,10 +92,11 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 		return c.Status(403).SendString(fmt.Sprintf("Failed to verify attestion: %s", err.Error()))
 	}
 
-	cont, err := identity.NewControllerFromClaims(identity.LoadClaimableWallet(ucw), cred)
+	cont, err := claims.Assign(cred, q.Alias())
 	if err != nil {
-		return c.Status(412).SendString(fmt.Sprintf("Failed to create controller: %s", err.Error()))
+		return c.Status(500).SendString(fmt.Sprintf("Failed to assign credential: %s", err.Error()))
 	}
+
 	usr := middleware.NewUser(cont, q.Alias())
 	jwt, err := usr.JWT()
 	if err != nil {

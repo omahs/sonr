@@ -15,6 +15,7 @@ type WalletClaims interface {
 	GetClaimableWallet() *types.ClaimableWallet
 	ListKeyshares() ([]models.KeyShare, error)
 	IssueChallenge() (protocol.URLEncodedBase64, error)
+	Assign(cred *srvtypes.WebauthnCredential, alias string) (Controller, error)
 }
 
 type walletClaims struct {
