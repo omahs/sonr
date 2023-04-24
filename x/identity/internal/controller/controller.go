@@ -17,10 +17,14 @@ import (
 var PrimaryAccountaddress string = "primary"
 
 type Controller interface {
-	// Address returns the controller's address
+	// The `Address()` function is a method of the `didController` struct that returns the address of the
+	// primary account associated with the controller. It takes a pointer to the `didController` struct as
+	// its receiver and returns a string representing the address of the primary account.
 	Address() string
 
-	// Get the controller's DID
+	// The `Did()` function is a method of the `didController` struct that returns the DID (Decentralized
+	// Identifier) associated with the controller's primary account. It takes a pointer to the
+	// `didController` struct as its receiver and returns a string representing the DID.
 	Did() string
 
 	// PrimaryIdentity returns the controller's DID document
@@ -87,31 +91,8 @@ func NewController(options ...Option) (Controller, error) {
 	}
 }
 
-func NewControllerFromClaims(wc WalletClaims, cred *servicetypes.WebauthnCredential) (Controller, error) {
-	ucw := wc.GetClaimableWallet()
-	kss := make([]models.KeyShare, 0)
-
-	for _, ks := range ucw.Keyshares {
-		ks, err := vault.GetKeyshare(ks)
-		if err != nil {
-			return nil, err
-		}
-		kss = append(kss, ks)
-	}
-
-	acc := models.NewAccount(kss, crypto.SONRCoinType)
-	doc := acc.DidDocument()
-	cn := &didController{
-		primary:    acc,
-		primaryDoc: doc,
-		blockchain: []models.Account{},
-		txHash: "",
-		disableIPFS: false,
-		currCredential: cred,
-	}
-	return cn, nil
-}
-
+// The function loads a controller with a primary account and a list of blockchain accounts from a
+// given DID document.
 func LoadController(doc *types.DidDocument) (Controller, error) {
 	acc, err := vault.GetAccount(doc.Id)
 	if err != nil {
@@ -134,18 +115,32 @@ func LoadController(doc *types.DidDocument) (Controller, error) {
 	return cn, nil
 }
 
+// The `Address()` function is a method of the `didController` struct that returns the address of the
+// primary account associated with the controller. It takes a pointer to the `didController` struct as
+// its receiver and returns a string representing the address of the primary account.
 func (dc *didController) Address() string {
 	return dc.primary.Address()
 }
 
+// The `Did()` function is a method of the `didController` struct that returns the DID (Decentralized
+// Identifier) associated with the controller's primary account. It takes a pointer to the
+// `didController` struct as its receiver and returns a string representing the DID.
 func (dc *didController) Did() string {
 	return dc.primaryDoc.Id
 }
 
+// The `PrimaryIdentity()` function is a method of the `didController` struct that returns the DID
+// document associated with the controller's primary account. It takes a pointer to the `didController`
+// struct as its receiver and returns a pointer to a `types.DidDocument` representing the primary
+// account's DID document.
 func (dc *didController) PrimaryIdentity() *types.DidDocument {
 	return dc.primaryDoc
 }
 
+// The `BlockchainIdentities()` function is a method of the `didController` struct that returns an
+// array of `*types.DidDocument` representing the DID documents of all the blockchain identities
+// associated with the controller. It takes a pointer to the `didController` struct as its receiver and
+// returns an array of pointers to `types.DidDocument`.
 func (dc *didController) BlockchainIdentities() []*types.DidDocument {
 	var docs []*types.DidDocument
 	for _, acc := range dc.blockchain {
@@ -154,6 +149,10 @@ func (dc *didController) BlockchainIdentities() []*types.DidDocument {
 	return docs
 }
 
+// Returns a list of all the accounts associated with the controller. It
+// returns an array of `models.Account` and an error. The method first checks if the primary account
+// exists and then appends it to the list of blockchain accounts associated with the controller.
+// Finally, it returns the list of accounts.
 func (dc *didController) ListAccounts() ([]models.Account, error) {
 	if dc.primary == nil {
 		return nil, fmt.Errorf("no Primary Account found")
