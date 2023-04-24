@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	// "github.com/sonrhq/core/app"
-	"github.com/cosmos/cosmos-sdk/types/query"
+
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
@@ -113,11 +113,7 @@ func (c LocalContext) OldestUnclaimedWallet(ctx context.Context) (*identitytypes
 	if err != nil {
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
 	}
-	resp, err := identitytypes.NewQueryClient(conn).ClaimableWalletAll(ctx, &identitytypes.QueryAllClaimableWalletRequest{
-		Pagination: &query.PageRequest{
-			Reverse: true,
-		},
-	})
+	resp, err := identitytypes.NewQueryClient(conn).ClaimableWalletAll(ctx, &identitytypes.QueryAllClaimableWalletRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +122,6 @@ func (c LocalContext) OldestUnclaimedWallet(ctx context.Context) (*identitytypes
 	}
 	return &resp.ClaimableWallet[0], nil
 }
-
 
 // GetService returns the service with the given id
 func (c LocalContext) GetService(ctx context.Context, origin string) (*servicetypes.ServiceRecord, error) {
