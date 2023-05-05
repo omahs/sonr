@@ -10,10 +10,12 @@ import (
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/protocol/config"
 	"github.com/sonrhq/core/internal/protocol/handler"
+	"github.com/sonrhq/core/internal/protocol/middleware"
 )
 
 func SetupRoutes(c *config.ProtocolConfig) {
 	// Middleware
+	middleware.Init(c)
 	c.Use(cors.New())
 	c.Use(helmet.New())
 

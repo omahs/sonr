@@ -52,14 +52,17 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-
-	challenge, err := service.GetCredentialCreationOptions(q.Alias(), chal, wc.Address(), q.IsMobile())
+	err = middleware.StoreSession(c, chal.String())
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	opts, err := service.GetCredentialCreationOptions(q.Alias(), chal, wc.Address(), q.IsMobile())
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
 	return c.JSON(fiber.Map{
 		"alias":             q.Alias(),
-		"attestion_options": challenge,
+		"attestion_options": opts,
 		"origin":            q.Origin(),
 		"challenge":         string(chal),
 	})
@@ -70,6 +73,11 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	q := middleware.ParseQuery(c)
 	if !q.HasAttestion() {
 		return c.Status(400).SendString("Missing attestion.")
+	}
+
+	sess, err := middleware.FetchSession(c)
+	if err != nil {
+		return c.Status(404).SendString(err.Error())
 	}
 
 	// Get the origin from the request.
@@ -90,7 +98,7 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	}
 
 	// Checking if the credential response is valid.
-	cred, err := service.VerifyCreationChallenge(q.Attestion(), chal)
+	cred, err := service.VerifyCreationChallenge(q.Attestion(), sess)
 	if err != nil {
 		return c.Status(403).SendString(fmt.Sprintf("Failed to verify attestion: %s", err.Error()))
 	}
