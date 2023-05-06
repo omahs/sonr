@@ -6,13 +6,11 @@ import (
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/node"
 	"github.com/sonrhq/core/internal/protocol/config"
-	"github.com/sonrhq/core/internal/protocol/middleware"
 	"github.com/sonrhq/core/internal/protocol/routes"
 )
 
 func RegisterHighway(ctx client.Context) {
 	conf := config.NewConfig(ctx)
-	middleware.Init(conf)
 	routes.SetupRoutes(conf)
 	node.StartLocalIPFS()
 	go serveFiber(conf.App)
