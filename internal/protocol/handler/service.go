@@ -167,6 +167,9 @@ func GetServiceAssertion(c *fiber.Ctx) error {
 
 func VerifyServiceAssertion(c *fiber.Ctx) error {
 	q := middleware.ParseQuery(c)
+	if !q.HasAssertion() {
+		return c.Status(400).SendString("Missing assertion.")
+	}
 	_, err := q.GetService()
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
