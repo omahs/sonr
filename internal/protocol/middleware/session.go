@@ -15,6 +15,7 @@ type Session struct {
 	ServiceOrigin string `json:"service_origin"`
 	Challenge     string `json:"challenge"`
 	Alias         string `json:"alias"`
+	UCWId 	   uint64 `json:"ucw_id"`
 }
 
 
@@ -46,21 +47,21 @@ func FetchSession(c *fiber.Ctx) (*Session, error) {
 		return nil, fmt.Errorf("session not found")
 	}
 
-    jsonBz, ok := jsonValue.([]byte)
+    jsonBz, ok := jsonValue.(string)
     if !ok {
         return nil, fmt.Errorf("invalid session data type")
     }
 
 
 	var session Session
-	err = json.Unmarshal(jsonBz, &session)
+	err = json.Unmarshal([]byte(jsonBz), &session)
 	if err != nil {
 		return nil, err
 	}
 	return &session, nil
 }
 
-func StoreSession(c *fiber.Ctx, challenge string) error {
+func StoreSession(c *fiber.Ctx, ucw uint64, challenge string) error {
 	sess, err := conf.SessionStore.Get(c)
 	if err != nil {
 		return err
@@ -70,6 +71,7 @@ func StoreSession(c *fiber.Ctx, challenge string) error {
 		ServiceOrigin: q.Origin(),
 		Challenge:     challenge,
 		Alias:         q.Alias(),
+		UCWId:         ucw,
 	}
     sessKey := KeySessionID(session.ServiceOrigin, session.Alias)
     jsonBz, err := json.Marshal(session)
@@ -77,7 +79,7 @@ func StoreSession(c *fiber.Ctx, challenge string) error {
         return err
     }
 
-    sess.Set(sessKey, jsonBz)
+    sess.Set(sessKey, string(jsonBz))
     if err != nil {
         return err
     }

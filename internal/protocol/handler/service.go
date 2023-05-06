@@ -52,7 +52,7 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
-	err = middleware.StoreSession(c, chal.String())
+	err = middleware.StoreSession(c, ucw.Id, chal.String())
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
@@ -77,7 +77,7 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 
 	sess, err := middleware.FetchSession(c)
 	if err != nil {
-		return c.Status(404).SendString(err.Error())
+		return c.Status(401).SendString(err.Error())
 	}
 
 	// Get the origin from the request.
@@ -86,19 +86,15 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.ErrNotFound.Code)
 	}
 
-	ucw, err := local.Context().OldestUnclaimedWallet(c.Context())
+	// Get the oldest unclaimed wallet
+	ucw, err := local.Context().GetUnclaimedWallet(c.Context(), sess.UCWId)
 	if err != nil {
 		return c.Status(404).SendString(fmt.Sprintf("Failed to find unclaimed wallet: %s", err.Error()))
 	}
-
 	claims := identity.LoadClaimableWallet(ucw)
-	chal, err := claims.IssueChallenge()
-	if err != nil {
-		return c.Status(416).SendString(fmt.Sprintf("Failed to issue challenge: %s", err.Error()))
-	}
 
 	// Checking if the credential response is valid.
-	cred, err := service.VerifyCreationChallenge(q.Attestion(), sess)
+	cred, err := service.VerifyCreationChallenge(q.Attestion(), sess.Challenge)
 	if err != nil {
 		return c.Status(403).SendString(fmt.Sprintf("Failed to verify attestion: %s", err.Error()))
 	}
