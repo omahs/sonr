@@ -84,6 +84,10 @@ func StoreSession(c *fiber.Ctx, ucw uint64, challenge string) error {
         return err
     }
 
+	err = sess.Save()
+	if err != nil {
+		return err
+	}
     return nil
 }
 
