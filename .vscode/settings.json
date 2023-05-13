@@ -81,7 +81,6 @@
     "**/node_modules": true,
     "types/common": true,
     "frontend/apps/web/tailwind.config.js": true,
-    "frontend": true,
     "types/common/info.pb.go": true,
     "types/crypto/vc.pb.go": true,
     "types/crypto/coin.pb.go": true,
@@ -102,12 +101,12 @@
     "go.sum": true,
     "core.code-workspace": true,
     "package-lock.json": true,
-    "turbo.json": true,
+    "turbo.json": false,
     ".eslintrc.js": true,
     "buf.work.yaml": true,
     "Dockerfile": true,
     "Makefile": true,
-    "package.json": true
+    "package.json": false
   },
   "svg.preview.background": "custom",
   "typescript.preferences.importModuleSpecifier": "non-relative",
