@@ -55,7 +55,7 @@ func (p Params) NewWebauthnCreationOptions(s *ServiceRecord, alias string, chall
 			Timeout:      int(60000),
 			User:         entityUser,
 			Parameters:   defaultRegistrationCredentialParameters(),
-			RelyingParty: s.RelyingPartyEntity(),
+			
 			AuthenticatorSelection: protocol.AuthenticatorSelection{
 				ResidentKey:             protocol.ResidentKeyRequirementRequired,
 				AuthenticatorAttachment: protocol.Platform,
