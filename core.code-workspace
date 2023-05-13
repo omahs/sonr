@@ -1,0 +1,90 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "frontend/apps/web"
+    },
+    {
+      "path": "frontend/apps/docs"
+    },
+    {
+      "path": "frontend/packages/ts-client"
+    }
+  ],
+  "settings": {
+    "gitlens.views.formats.commits.label": "${❰ tips ❱➤  }${message}",
+    "gitlens.views.formats.commits.description": "${author, }${agoOrDate}${tips}",
+    "gitlens.views.commitDetails.files.layout": "tree",
+    "gitlens.views.commitDetails.files.compact": false,
+    "better-comments.tags": [
+      {
+        "tag": "!",
+        "color": "#65cbe9",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "#37474F",
+        "bold": true,
+        "italic": false
+      },
+      {
+        "tag": "?",
+        "color": "#3498DB",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+      },
+      {
+        "tag": "//",
+        "color": "#474747",
+        "strikethrough": true,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+      },
+      {
+        "tag": "*",
+        "color": "#98C379",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+      }
+    ],
+    "svg.preview.background": "custom",
+    "hide-files.files": [
+      "frontend",
+      "types/common/info.pb.go",
+      "types/crypto/vc.pb.go",
+      "types/crypto/coin.pb.go",
+      "types/crypto/credential.pb.go",
+      "types/crypto/pubkey.pb.go",
+      "x/identity/types/query.pb.go",
+      "x/identity/types/query.pb.gw.go",
+      "x/identity/types/tx.pb.go",
+      "x/identity/types/did.pb.go",
+      "frontend/.npmrc",
+      "frontend/.gitignore",
+      ".gitignore",
+      "LICENSE",
+      "docs/api-reference",
+      "testutil",
+      "scripts",
+      "proto/buf.lock",
+      "go.sum",
+      "core.code-workspace",
+      "package-lock.json",
+      "turbo.json",
+      ".eslintrc.js",
+      "buf.work.yaml",
+      "Dockerfile",
+      "Makefile",
+      "package.json"
+    ]
+  }
+}
