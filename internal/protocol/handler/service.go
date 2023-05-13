@@ -119,7 +119,7 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(414).SendString(fmt.Sprintf("Failed to create account: %s", err.Error()))
 	}
-	acc2, err := cont.CreateAccount("Account #1", crypto.ETHCoinType)
+	acc2, err := cont.CreateAccount("Account #0", crypto.BTCCoinType)
 	if err != nil {
 		return c.Status(414).SendString(fmt.Sprintf("Failed to create account: %s", err.Error()))
 	}
