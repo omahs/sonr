@@ -1,16 +1,20 @@
 {
   "folders": [
     {
-      "path": "."
+      "path": ".",
+      "name": "⛓️  ➡  sonrhq/core"
     },
     {
-      "path": "frontend/apps/web"
+      "path": "frontend/apps/web",
+      "name": "🌐  ➡  @sonrhq/web - [sonr.id]"
     },
     {
-      "path": "frontend/apps/docs"
+      "path": "frontend/apps/docs",
+      "name": "🌐  ➡  @sonrhq/docs - [docs.sonr.io]"
     },
     {
-      "path": "frontend/packages/ts-client"
+      "path": "frontend/packages/ts-client",
+      "name": "📦  ➡  @sonrhq/ts-client - [npm]"
     }
   ],
   "settings": {
@@ -84,7 +88,63 @@
       "buf.work.yaml",
       "Dockerfile",
       "Makefile",
-      "package.json"
+      "package.json",
+      "frontend/apps/web/node_modules"
+    ],
+    "workbench.colorCustomizations": {
+      "[Monokai Pro]": {},
+      "terminal.background": "#1C2023",
+      "terminal.foreground": "#C7CCD1",
+      "terminalCursor.background": "#C7CCD1",
+      "terminalCursor.foreground": "#C7CCD1",
+      "terminal.ansiBlack": "#1C2023",
+      "terminal.ansiBlue": "#AE95C7",
+      "terminal.ansiBrightBlack": "#747C84",
+      "terminal.ansiBrightBlue": "#AE95C7",
+      "terminal.ansiBrightCyan": "#95AEC7",
+      "terminal.ansiBrightGreen": "#95C7AE",
+      "terminal.ansiBrightMagenta": "#C795AE",
+      "terminal.ansiBrightRed": "#C7AE95",
+      "terminal.ansiBrightWhite": "#F3F4F5",
+      "terminal.ansiBrightYellow": "#AEC795",
+      "terminal.ansiCyan": "#95AEC7",
+      "terminal.ansiGreen": "#95C7AE",
+      "terminal.ansiMagenta": "#C795AE",
+      "terminal.ansiRed": "#C7AE95",
+      "terminal.ansiWhite": "#C7CCD1",
+      "terminal.ansiYellow": "#AEC795",
+      "editor.lineHighlightBackground": "#1073cf2d",
+      "editor.lineHighlightBorder": "#9fced11f",
+      "activityBar.activeBackground": "#00c2f1",
+      "activityBar.background": "#00c2f1",
+      "activityBar.foreground": "#15202b",
+      "activityBar.inactiveForeground": "#15202b99",
+      "activityBarBadge.background": "#df00b4",
+      "activityBarBadge.foreground": "#e7e7e7",
+      "commandCenter.border": "#e7e7e799",
+      "sash.hoverBorder": "#00c2f1",
+      "statusBar.background": "#0099be",
+      "statusBar.foreground": "#e7e7e7",
+      "statusBarItem.hoverBackground": "#00c2f1",
+      "statusBarItem.remoteBackground": "#0099be",
+      "statusBarItem.remoteForeground": "#e7e7e7",
+      "titleBar.activeBackground": "#0099be",
+      "titleBar.activeForeground": "#e7e7e7",
+      "titleBar.inactiveBackground": "#0099be99",
+      "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.color": "#0099be",
+    "explorer.excludeGitIgnore": true
+  },
+  "extensions": {
+    "recommendations": [
+      "tomsaunders.vscode-workspace-explorer",
+      "equinusocio.moxer-icons",
+      "catppuccin.catppuccin-vsc",
+      "ms-vscode.atom-keybindings",
+      "sanchitverma.block-comments",
+      "bungcip.better-toml",
+      "aaron-bond.better-comments"
     ]
   }
 }
