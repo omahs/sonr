@@ -1,8 +1,6 @@
 package registry
 
 import (
-	"math/rand"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,14 +8,12 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/sonrhq/core/testutil/sample"
-	identitysimulation "github.com/sonrhq/core/x/registry/simulation"
 	"github.com/sonrhq/core/x/registry/types"
 )
 
 // avoid unused import issue
 var (
 	_ = sample.AccAddress
-	_ = identitysimulation.FindAccount
 	_ = sims.StakePerAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
@@ -119,72 +115,12 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 	return nil
 }
 
-// RandomizedParams creates randomized  param changes for the simulator
-func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-	return []simtypes.ParamChange{}
-}
-
 // RegisterStoreDecoder registers a decoder
 func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-
-	var weightMsgCreateDidDocument int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateDidDocument, &weightMsgCreateDidDocument, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateDidDocument = defaultWeightMsgCreateDidDocument
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateDidDocument,
-		identitysimulation.SimulateMsgCreateDidDocument(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgUpdateDidDocument int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateDidDocument, &weightMsgUpdateDidDocument, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateDidDocument = defaultWeightMsgUpdateDidDocument
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateDidDocument,
-		identitysimulation.SimulateMsgUpdateDidDocument(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgCreateClaimableWallet int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateClaimableWallet, &weightMsgCreateClaimableWallet, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateClaimableWallet = defaultWeightMsgCreateClaimableWallet
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateClaimableWallet,
-		identitysimulation.SimulateMsgCreateClaimableWallet(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgUpdateClaimableWallet int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateClaimableWallet, &weightMsgUpdateClaimableWallet, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateClaimableWallet = defaultWeightMsgUpdateClaimableWallet
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateClaimableWallet,
-		identitysimulation.SimulateMsgUpdateClaimableWallet(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgDeleteClaimableWallet int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteClaimableWallet, &weightMsgDeleteClaimableWallet, nil,
-		func(_ *rand.Rand) {
-			weightMsgDeleteClaimableWallet = defaultWeightMsgDeleteClaimableWallet
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteClaimableWallet,
-		identitysimulation.SimulateMsgDeleteClaimableWallet(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

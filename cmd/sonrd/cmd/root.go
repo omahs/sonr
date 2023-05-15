@@ -93,8 +93,6 @@ func NewRootCmd() (*cobra.Command, appparams.EncodingConfig) {
 	// Get highway enabled flag
 	rootCmd.PersistentFlags().BoolVar(&highwayEnabled, flagHighwayEnabled, false, "Enable highway protocol for this node")
 	initRootCmd(rootCmd, encodingConfig)
-	rootCmd.AddCommand(server.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
-
 	overwriteFlagDefaults(rootCmd, map[string]string{
 		flags.FlagChainID:        strings.ReplaceAll(app.Name, "-", ""),
 		flags.FlagKeyringBackend: "test",
@@ -119,7 +117,6 @@ func initRootCmd(
 
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		genutilcli.MigrateGenesisCmd(),
 		genutilcli.GenTxCmd(
 			app.ModuleBasics,
@@ -129,7 +126,6 @@ func initRootCmd(
 		),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
-		NewTestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		config.Cmd(),
@@ -155,7 +151,6 @@ func initRootCmd(
 		queryCommand(),
 		txCommand(),
 		keys.Commands(app.DefaultNodeHome),
-		startWithTunnelingCommand(a, app.DefaultNodeHome),
 	)
 }
 
@@ -209,29 +204,6 @@ func txCommand() *cobra.Command {
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
-}
-
-// startWithTunnelingCommand returns a new start command with http tunneling
-// enabled.
-func startWithTunnelingCommand(appCreator appCreator, defaultNodeHome string) *cobra.Command {
-	startCmd := server.StartCmd(appCreator.newApp, defaultNodeHome)
-	startCmd.Use = "start-with-http-tunneling"
-	startCmd.Short = "Run the full node with http tunneling"
-	// Backup existing PreRunE, since we'll override it.
-	startPreRunE := startCmd.PreRunE
-	startCmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		var (
-			ctx       = cmd.Context()
-			clientCtx = client.GetClientContextFromCmd(cmd)
-			serverCtx = server.GetServerContextFromCmd(cmd)
-		)
-		network.StartProxyForTunneledPeers(ctx, clientCtx, serverCtx)
-		if startPreRunE == nil {
-			return nil
-		}
-		return startPreRunE(cmd, args)
-	}
-	return startCmd
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
@@ -306,9 +278,7 @@ func (a appCreator) newApp(
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		a.encodingConfig,
-		appOpts,
-		highwayEnabled,
-		baseapp.SetPruning(pruningOpts),
+		appOpts,		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetMinRetainBlocks(cast.ToUint64(appOpts.Get(server.FlagMinRetainBlocks))),
 		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
@@ -331,6 +301,7 @@ func (a appCreator) appExport(
 	forZeroHeight bool,
 	jailAllowedAddrs []string,
 	appOpts servertypes.AppOptions,
+	modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
@@ -347,7 +318,6 @@ func (a appCreator) appExport(
 		uint(1),
 		a.encodingConfig,
 		appOpts,
-		highwayEnabled,
 	)
 
 	if height != -1 {
@@ -356,7 +326,7 @@ func (a appCreator) appExport(
 		}
 	}
 
-	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, []string{})
 }
 
 // initAppConfig helps to override default appConfig template and configs.

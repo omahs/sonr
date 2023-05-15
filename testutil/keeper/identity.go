@@ -6,6 +6,9 @@ import (
 	"github.com/sonrhq/core/x/identity/keeper"
 	"github.com/sonrhq/core/x/identity/types"
 
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -17,9 +20,6 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
 )
 
 // identityChannelKeeper is a stub of cosmosibckeeper.ChannelKeeper.
@@ -57,12 +57,13 @@ func (identityPortKeeper) BindPort(ctx sdk.Context, portID string) *capabilityty
 }
 
 func IdentityKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
-	logger := log.NewNopLogger()
 
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
-	db := tmdb.NewMemDB()
+
+	db := dbm.NewMemDB()
+	cms := store.NewCommitMultiStore(db)
 	stateStore := store.NewCommitMultiStore(db)
 	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
@@ -90,7 +91,7 @@ func IdentityKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		nil,
 	)
 
-	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, logger)
+	ctx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())

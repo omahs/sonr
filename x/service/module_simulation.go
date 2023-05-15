@@ -1,8 +1,6 @@
 package service
 
 import (
-	"math/rand"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -67,11 +65,6 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 	return nil
 }
 
-// RandomizedParams creates randomized  param changes for the simulator
-func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-
-	return []simtypes.ParamChange{}
-}
 
 // RegisterStoreDecoder registers a decoder
 func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
@@ -79,39 +72,6 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-
-	var weightMsgCreateServiceRecord int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateServiceRecord, &weightMsgCreateServiceRecord, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateServiceRecord = defaultWeightMsgCreateServiceRecord
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateServiceRecord,
-		servicesimulation.SimulateMsgCreateServiceRecord(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgUpdateServiceRecord int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateServiceRecord, &weightMsgUpdateServiceRecord, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateServiceRecord = defaultWeightMsgUpdateServiceRecord
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateServiceRecord,
-		servicesimulation.SimulateMsgUpdateServiceRecord(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgDeleteServiceRecord int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteServiceRecord, &weightMsgDeleteServiceRecord, nil,
-		func(_ *rand.Rand) {
-			weightMsgDeleteServiceRecord = defaultWeightMsgDeleteServiceRecord
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteServiceRecord,
-		servicesimulation.SimulateMsgDeleteServiceRecord(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

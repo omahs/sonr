@@ -16,6 +16,8 @@ import (
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
 	"lukechampine.com/blake3"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 )
 
 type (
@@ -44,7 +46,7 @@ func (pk *PubKey) Address() Address {
 	if err != nil {
 		return nil
 	}
-	return sckp.Address()
+	return tmcrypto.AddressHash(sckp.Key)
 }
 
 // Base64 returns the base64 encoding of the key.
