@@ -7,15 +7,21 @@ import (
 	"os"
 	"path/filepath"
 
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/cometbft/cometbft/libs/log"
+	tmos "github.com/cometbft/cometbft/libs/os"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
+
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -41,7 +47,6 @@ import (
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -79,30 +84,25 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/controller/keeper"
-	icacontrollertypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/controller/types"
-	icahost "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v6/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v6/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v6/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v6/modules/core/02-client"
-	ibcclientclient "github.com/cosmos/ibc-go/v6/modules/core/02-client/client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
-	ibcporttypes "github.com/cosmos/ibc-go/v6/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
+	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v7/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v7/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v7/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
 	"github.com/spf13/cast"
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	dbm "github.com/tendermint/tm-db"
 
 	gateway "github.com/sonrhq/core/internal/gateway"
 	registrymodule "github.com/sonrhq/core/x/registry"
@@ -112,10 +112,6 @@ import (
 	servicemodule "github.com/sonrhq/core/x/service"
 	servicemodulekeeper "github.com/sonrhq/core/x/service/keeper"
 	servicemoduletypes "github.com/sonrhq/core/x/service/types"
-
-	domainmodule "github.com/sonrhq/core/x/domain"
-	domainmodulekeeper "github.com/sonrhq/core/x/domain/keeper"
-	domainmoduletypes "github.com/sonrhq/core/x/domain/types"
 
 	identitymodule "github.com/sonrhq/core/x/identity"
 	identitymodulekeeper "github.com/sonrhq/core/x/identity/keeper"
@@ -181,7 +177,6 @@ var (
 		vesting.AppModuleBasic{},
 		registrymodule.AppModuleBasic{},
 		servicemodule.AppModuleBasic{},
-		domainmodule.AppModuleBasic{},
 		identitymodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
@@ -204,7 +199,7 @@ var (
 
 var (
 	_ servertypes.Application = (*App)(nil)
-	_ simapp.App              = (*App)(nil)
+	_ runtime.AppI               = (*App)(nil)
 )
 
 func init() {
@@ -262,7 +257,6 @@ type App struct {
 
 	ServiceKeeper servicemodulekeeper.Keeper
 
-	DomainKeeper         domainmodulekeeper.Keeper
 	ScopedIdentityKeeper capabilitykeeper.ScopedKeeper
 	IdentityKeeper       identitymodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
@@ -313,7 +307,6 @@ func New(
 		icacontrollertypes.StoreKey,
 		registrymoduletypes.StoreKey,
 		servicemoduletypes.StoreKey,
-		domainmoduletypes.StoreKey,
 		identitymoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
@@ -357,28 +350,14 @@ func New(
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
 
 	// add keepers
-	app.AccountKeeper = authkeeper.NewAccountKeeper(
-		appCodec,
-		keys[authtypes.StoreKey],
-		app.GetSubspace(authtypes.ModuleName),
-		authtypes.ProtoBaseAccount,
-		maccPerms,
-		sdk.Bech32PrefixAccAddr,
-	)
-
-	app.AuthzKeeper = authzkeeper.NewKeeper(
-		keys[authz.ModuleName],
-		appCodec,
-		app.MsgServiceRouter(),
-		app.AccountKeeper,
-	)
+	app.AccountKeeper = authkeeper.NewAccountKeeper(appCodec, keys[authtypes.StoreKey], authtypes.ProtoBaseAccount, maccPerms, sdk.Bech32MainPrefix, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec,
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
-		app.GetSubspace(banktypes.ModuleName),
-		app.BlockedModuleAccountAddrs(),
+		BlockedAddresses(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	stakingKeeper := stakingkeeper.NewKeeper(
@@ -386,7 +365,7 @@ func New(
 		keys[stakingtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.GetSubspace(stakingtypes.ModuleName),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.MintKeeper = mintkeeper.NewKeeper(
@@ -556,14 +535,6 @@ func New(
 	)
 	serviceModule := servicemodule.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper, app.RegistryKeeper)
 
-	app.DomainKeeper = *domainmodulekeeper.NewKeeper(
-		appCodec,
-		keys[domainmoduletypes.StoreKey],
-		keys[domainmoduletypes.MemStoreKey],
-		app.GetSubspace(domainmoduletypes.ModuleName),
-	)
-	domainModule := domainmodule.NewAppModule(appCodec, app.DomainKeeper, app.AccountKeeper, app.BankKeeper)
-
 	scopedIdentityKeeper := app.CapabilityKeeper.ScopeToModule(identitymoduletypes.ModuleName)
 	app.ScopedIdentityKeeper = scopedIdentityKeeper
 	app.IdentityKeeper = *identitymodulekeeper.NewKeeper(
@@ -628,7 +599,6 @@ func New(
 		icaModule,
 		registryModule,
 		serviceModule,
-		domainModule,
 		identityModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
@@ -661,7 +631,6 @@ func New(
 		vestingtypes.ModuleName,
 		registrymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
-		domainmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
@@ -689,7 +658,6 @@ func New(
 		vestingtypes.ModuleName,
 		registrymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
-		domainmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
@@ -721,8 +689,6 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		registrymoduletypes.ModuleName,
-		servicemoduletypes.ModuleName,
-		domainmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
@@ -755,7 +721,6 @@ func New(
 		transferModule,
 		identityModule,
 		serviceModule,
-		domainModule,
 		identityModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
@@ -959,7 +924,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(registrymoduletypes.ModuleName)
 	paramsKeeper.Subspace(servicemoduletypes.ModuleName)
-	paramsKeeper.Subspace(domainmoduletypes.ModuleName)
+
 	paramsKeeper.Subspace(identitymoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
@@ -983,7 +948,7 @@ func NewCustomAnteHandler(anteHandler sdk.AnteHandler, stakingKeeper stakingkeep
 		if shouldAllowGasless(tx) {
 			vacc := authkeeper.GetAccount(newCtx, newCtx.BlockHeader().ProposerAddress)
 			// Deduct fees from the feePayer account
-			err := ante.DeductFees(bankkeeper, ctx, vacc, sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(1))))
+			err := ante.DeductFees(bankkeeper, ctx, vacc, sdk.NewCoins(sdk.NewCoin("usnr", sdk.NewInt(1))))
 			if err != nil {
 				return newCtx, err
 			}
@@ -992,6 +957,20 @@ func NewCustomAnteHandler(anteHandler sdk.AnteHandler, stakingKeeper stakingkeep
 		return newCtx, nil
 	}
 }
+
+// BlockedAddresses returns all the app's blocked account addresses.
+func BlockedAddresses() map[string]bool {
+	modAccAddrs := make(map[string]bool)
+	for acc := range GetMaccPerms() {
+		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
+	}
+
+	// allow the following addresses to receive funds
+	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+
+	return modAccAddrs
+}
+
 
 func shouldAllowGasless(tx sdk.Tx) bool {
 	// Iterate through the messages in the transaction

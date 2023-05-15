@@ -22,12 +22,9 @@ func EthereumAddress(pk *PubKey) string {
 
 func BitcoinAddress(pk *PubKey) string {
 	// Step 1: Compute the SHA256 hash of the public key
-	pubKey, err := pk.Btcec()
-	if err != nil {
-		return ""
-	}
+	pubKey := pk.Bytes()
 	sha256Hash := sha256.New()
-	sha256Hash.Write(pubKey.SerializeCompressed())
+	sha256Hash.Write(pubKey)
 	sha256Digest := sha256Hash.Sum(nil)
 
 	// Step 2: Compute the RIPEMD160 hash of the SHA256 hash

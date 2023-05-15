@@ -7,17 +7,14 @@ import (
 	"errors"
 	"hash"
 
-	"github.com/btcsuite/btcd/btcec"
-	secp256k1 "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"cosmossdk.io/api/cosmos/crypto/secp256k1"
 
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	tmcrypto "github.com/cometbft/cometbft/crypto"
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 	mb "github.com/multiformats/go-multibase"
 	"github.com/multiformats/go-varint"
 	"github.com/taurusgroup/multi-party-sig/pkg/ecdsa"
 	"github.com/taurusgroup/multi-party-sig/pkg/math/curve"
-	tmcrypto "github.com/tendermint/tendermint/crypto"
 	"lukechampine.com/blake3"
 )
 
@@ -62,14 +59,6 @@ func (pk *PubKey) Blake3() string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-// Btcec returns the btcec public key.
-func (pk *PubKey) Btcec() (*btcec.PublicKey, error) {
-	pubKey, err := btcec.ParsePubKey(pk.Bytes(), btcec.S256())
-	if err != nil {
-		return nil, errors.New("failed to parse public key")
-	}
-	return pubKey, nil
-}
 
 // Multibase returns the Base58 encoding the key.
 func (pk *PubKey) Multibase() string {

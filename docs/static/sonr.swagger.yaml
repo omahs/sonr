@@ -6,6 +6,7 @@ tags:
   - name: Query
   - name: Msg
   - name: Query
+  - name: Query
   - name: Msg
   - name: Query
   - name: Msg
@@ -520,6 +521,21 @@ paths:
           type: string
       tags:
         - Query
+  /sonrhq/core/identity/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Query_Params
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/coreidentityQueryParamsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - Query
   /sonrhq/core/service/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -547,6 +563,16 @@ definitions:
     properties:
       params:
         $ref: '#/definitions/coredomainParams'
+        description: params holds all the parameters of this module.
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  coreidentityParams:
+    type: object
+    description: Params defines the parameters for the module.
+  coreidentityQueryParamsResponse:
+    type: object
+    properties:
+      params:
+        $ref: '#/definitions/coreidentityParams'
         description: params holds all the parameters of this module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   coreregistryParams:

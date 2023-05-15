@@ -13,8 +13,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/sonrhq/core/x/registry/types"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 type (

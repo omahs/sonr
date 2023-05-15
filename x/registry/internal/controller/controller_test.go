@@ -3,13 +3,13 @@ package controller_test
 import (
 	"testing"
 
+	"github.com/cometbft/cometbft/libs/rand"
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
 	"github.com/sonrhq/core/x/registry/internal/controller"
 	"github.com/sonrhq/core/x/registry/types/models"
 	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/stretchr/testify/assert"
-	"github.com/tendermint/tendermint/libs/rand"
 )
 
 func TestKeyshare(t *testing.T) {
