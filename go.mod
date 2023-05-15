@@ -3,7 +3,7 @@ module github.com/sonrhq/core
 go 1.19
 
 require (
-	berty.tech/go-orbit-db v1.22.0
+	berty.tech/go-orbit-db v1.19.1
 	cosmossdk.io/math v1.0.1
 	github.com/btcsuite/btcd v0.23.0 // indirect
 	github.com/cosmos/cosmos-sdk v0.47.2
@@ -17,10 +17,9 @@ require (
 	github.com/ignite/cli v0.26.1
 	github.com/ipfs/go-block-format v0.1.2 // indirect
 	github.com/ipfs/go-cid v0.4.1
-	github.com/ipfs/go-ipfs-files v0.3.0
 	github.com/ipfs/go-merkledag v0.10.0 // indirect
 	github.com/ipfs/interface-go-ipfs-core v0.11.1
-	github.com/ipfs/kubo v0.20.0
+	github.com/ipfs/kubo v0.19.0
 	github.com/ipld/go-ipld-prime v0.20.0
 	github.com/lestrrat-go/jwx/v2 v2.0.8
 	github.com/libp2p/go-libp2p v0.27.3
@@ -50,6 +49,7 @@ require (
 	github.com/gofiber/helmet/v2 v2.2.26
 	github.com/gofiber/jwt/v3 v3.3.9
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/ipfs/go-ipfs-files v0.3.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
