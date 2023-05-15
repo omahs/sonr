@@ -6,7 +6,7 @@ require (
 	berty.tech/go-orbit-db v1.22.0
 	cosmossdk.io/math v1.0.1
 	github.com/btcsuite/btcd v0.23.0 // indirect
-	github.com/cosmos/cosmos-sdk v0.46.7
+	github.com/cosmos/cosmos-sdk v0.47.2
 	github.com/ethereum/go-ethereum v1.11.6
 	github.com/fxamacker/cbor/v2 v2.4.0
 	github.com/go-webauthn/webauthn v0.8.2
