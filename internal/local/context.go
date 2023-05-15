@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sonrhq/core/x/identity/types"
+	"github.com/sonrhq/core/x/registry/types"
 )
 
 // LocalContext is a struct that holds the current context of the application.

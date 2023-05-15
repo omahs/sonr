@@ -10,8 +10,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/x/identity"
-	"github.com/sonrhq/core/x/identity/types"
+	identity "github.com/sonrhq/core/x/registry"
+	"github.com/sonrhq/core/x/registry/types"
 )
 
 var (

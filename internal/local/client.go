@@ -9,7 +9,7 @@ import (
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
-	identitytypes "github.com/sonrhq/core/x/identity/types"
+	identitytypes "github.com/sonrhq/core/x/registry/types"
 	servicetypes "github.com/sonrhq/core/x/service/types"
 	"google.golang.org/grpc"
 )

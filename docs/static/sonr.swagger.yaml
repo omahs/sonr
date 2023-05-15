@@ -22,7 +22,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/identityQueryAliasAvailableResponse'
+            $ref: '#/definitions/registryQueryAliasAvailableResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -43,7 +43,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/identityQueryAllDidResponse'
+            $ref: '#/definitions/registryQueryAllDidResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -102,7 +102,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/identityQueryGetDidResponse'
+            $ref: '#/definitions/registryQueryGetDidResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -123,7 +123,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/identityQueryDidByAlsoKnownAsResponse'
+            $ref: '#/definitions/registryQueryDidByAlsoKnownAsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -144,7 +144,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/identityQueryDidByKeyIDResponse'
+            $ref: '#/definitions/registryQueryDidByKeyIDResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -165,7 +165,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/coreidentityQueryParamsResponse'
+            $ref: '#/definitions/coreregistryQueryParamsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -428,7 +428,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/identityQueryAllClaimableWalletResponse'
+            $ref: '#/definitions/registryQueryAllClaimableWalletResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -487,7 +487,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/identityQueryGetClaimableWalletResponse'
+            $ref: '#/definitions/registryQueryGetClaimableWalletResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -508,7 +508,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/identityQueryDidByOwnerResponse'
+            $ref: '#/definitions/registryQueryDidByOwnerResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -549,7 +549,7 @@ definitions:
         $ref: '#/definitions/coredomainParams'
         description: params holds all the parameters of this module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  coreidentityParams:
+  coreregistryParams:
     type: object
     properties:
       didBaseContext:
@@ -577,11 +577,11 @@ definitions:
         type: integer
         format: int32
     description: Params defines the parameters for the module.
-  coreidentityQueryParamsResponse:
+  coreregistryQueryParamsResponse:
     type: object
     properties:
       params:
-        $ref: '#/definitions/coreidentityParams'
+        $ref: '#/definitions/coreregistryParams'
         description: params holds all the parameters of this module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   coreserviceParams:
@@ -650,7 +650,13 @@ definitions:
         type: string
       creator:
         type: string
-  identityClaimableWallet:
+  protobufAny:
+    type: object
+    properties:
+      '@type':
+        type: string
+    additionalProperties: {}
+  registryClaimableWallet:
     type: object
     properties:
       id:
@@ -669,7 +675,7 @@ definitions:
         format: int32
       claimed:
         type: boolean
-  identityDidDocument:
+  registryDidDocument:
     type: object
     properties:
       context:
@@ -689,7 +695,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/identityVerificationMethod'
+          $ref: '#/definitions/registryVerificationMethod'
         title: optional, the set of verification methods associated with the DID subject
       authentication:
         type: array
@@ -728,7 +734,7 @@ definitions:
         type: string
         title: The idx address of the owner of the DID document
     description: DidDocument represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
-  identityMsgCreateClaimableWalletResponse:
+  registryMsgCreateClaimableWalletResponse:
     type: object
     properties:
       id:
@@ -737,75 +743,75 @@ definitions:
       reward:
         type: integer
         format: int32
-  identityMsgCreateDidDocumentResponse:
+  registryMsgCreateDidDocumentResponse:
     type: object
-  identityMsgDeleteClaimableWalletResponse:
+  registryMsgDeleteClaimableWalletResponse:
     type: object
-  identityMsgDeleteDidDocumentResponse:
+  registryMsgDeleteDidDocumentResponse:
     type: object
-  identityMsgUpdateClaimableWalletResponse:
+  registryMsgUpdateClaimableWalletResponse:
     type: object
-  identityMsgUpdateDidDocumentResponse:
+  registryMsgUpdateDidDocumentResponse:
     type: object
     properties:
       creator:
         type: string
-  identityQueryAliasAvailableResponse:
+  registryQueryAliasAvailableResponse:
     type: object
     properties:
       available:
         type: boolean
       existingDocument:
-        $ref: '#/definitions/identityDidDocument'
-  identityQueryAllClaimableWalletResponse:
+        $ref: '#/definitions/registryDidDocument'
+  registryQueryAllClaimableWalletResponse:
     type: object
     properties:
       ClaimableWallet:
         type: array
         items:
           type: object
-          $ref: '#/definitions/identityClaimableWallet'
+          $ref: '#/definitions/registryClaimableWallet'
       pagination:
         $ref: '#/definitions/v1beta1PageResponse'
-  identityQueryAllDidResponse:
+  registryQueryAllDidResponse:
     type: object
     properties:
       didDocument:
         type: array
         items:
           type: object
-          $ref: '#/definitions/identityDidDocument'
+          $ref: '#/definitions/registryDidDocument'
       pagination:
         $ref: '#/definitions/v1beta1PageResponse'
-  identityQueryDidByAlsoKnownAsResponse:
+  registryQueryDidByAlsoKnownAsResponse:
     type: object
     properties:
       didDocument:
-        $ref: '#/definitions/identityDidDocument'
+        $ref: '#/definitions/registryDidDocument'
         title: A DIDDocument is a JSON-LD object that contains a set of public keys
-  identityQueryDidByKeyIDResponse:
+  registryQueryDidByKeyIDResponse:
     type: object
     properties:
       didDocument:
-        $ref: '#/definitions/identityDidDocument'
+        $ref: '#/definitions/registryDidDocument'
         title: A DIDDocument is a JSON-LD object that contains a set of public keys
-  identityQueryDidByOwnerResponse:
+  registryQueryDidByOwnerResponse:
     type: object
     properties:
       didDocument:
-        $ref: '#/definitions/identityDidDocument'
-  identityQueryGetClaimableWalletResponse:
+        $ref: '#/definitions/registryDidDocument'
+  registryQueryGetClaimableWalletResponse:
     type: object
     properties:
       ClaimableWallet:
-        $ref: '#/definitions/identityClaimableWallet'
-  identityQueryGetDidResponse:
+        $ref: '#/definitions/registryClaimableWallet'
+  registryQueryGetDidResponse:
     type: object
     properties:
       didDocument:
-        $ref: '#/definitions/identityDidDocument'
+        $ref: '#/definitions/registryDidDocument'
         title: A DIDDocument is a JSON-LD object that contains a set of public keys
-  identityVerificationMethod:
+  registryVerificationMethod:
     type: object
     properties:
       id:
@@ -830,12 +836,6 @@ definitions:
         type: string
         title: additional metadata related to the verification method
     description: VerificationMethod represents a verification method that can be used to authenticate the DID subject or perform other cryptographic operations.
-  protobufAny:
-    type: object
-    properties:
-      '@type':
-        type: string
-    additionalProperties: {}
   rpcStatus:
     type: object
     properties:

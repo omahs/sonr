@@ -3,7 +3,7 @@ package cosmos
 import (
 	"github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/sonrhq/core/x/identity/types/models"
+	"github.com/sonrhq/core/x/registry/types/models"
 )
 
 // ! ||-------------------------------------------------------------------------------||

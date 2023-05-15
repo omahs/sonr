@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-webauthn/webauthn/protocol"
-	idtypes "github.com/sonrhq/core/x/identity/types"
+	idtypes "github.com/sonrhq/core/x/registry/types"
 )
 
 const (

@@ -3,7 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	identitytypes "github.com/sonrhq/core/x/identity/types"
+	identitytypes "github.com/sonrhq/core/x/registry/types"
 )
 
 type GroupKeeper interface {

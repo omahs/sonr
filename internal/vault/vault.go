@@ -9,7 +9,7 @@ import (
 	"berty.tech/go-orbit-db/iface"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/node"
-	"github.com/sonrhq/core/x/identity/types/models"
+	"github.com/sonrhq/core/x/registry/types/models"
 	servicetypes "github.com/sonrhq/core/x/service/types"
 )
 

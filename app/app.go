@@ -104,10 +104,10 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/sonrhq/core/internal/gateway"
-	identitymodule "github.com/sonrhq/core/x/identity"
-	identitymodulekeeper "github.com/sonrhq/core/x/identity/keeper"
-	identitymoduletypes "github.com/sonrhq/core/x/identity/types"
+	gateway "github.com/sonrhq/core/internal/gateway"
+	registrymodule "github.com/sonrhq/core/x/registry"
+	registrymodulekeeper "github.com/sonrhq/core/x/registry/keeper"
+	registrymoduletypes "github.com/sonrhq/core/x/registry/types"
 
 	servicemodule "github.com/sonrhq/core/x/service"
 	servicemodulekeeper "github.com/sonrhq/core/x/service/keeper"
@@ -175,7 +175,7 @@ var (
 		transfer.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		identitymodule.AppModuleBasic{},
+		registrymodule.AppModuleBasic{},
 		servicemodule.AppModuleBasic{},
 		domainmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
@@ -191,7 +191,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		identitymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		registrymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -252,7 +252,7 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 
-	IdentityKeeper identitymodulekeeper.Keeper
+	RegistryKeeper registrymodulekeeper.Keeper
 
 	ServiceKeeper servicemodulekeeper.Keeper
 
@@ -303,7 +303,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		icacontrollertypes.StoreKey,
-		identitymoduletypes.StoreKey,
+		registrymoduletypes.StoreKey,
 		servicemoduletypes.StoreKey,
 		domainmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
@@ -524,17 +524,17 @@ func New(
 		govConfig,
 	)
 
-	app.IdentityKeeper = *identitymodulekeeper.NewKeeper(
+	app.RegistryKeeper = *registrymodulekeeper.NewKeeper(
 		appCodec,
-		keys[identitymoduletypes.StoreKey],
-		keys[identitymoduletypes.MemStoreKey],
-		app.GetSubspace(identitymoduletypes.ModuleName),
+		keys[registrymoduletypes.StoreKey],
+		keys[registrymoduletypes.MemStoreKey],
+		app.GetSubspace(registrymoduletypes.ModuleName),
 
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.GroupKeeper,
 	)
-	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper)
+	identityModule := registrymodule.NewAppModule(appCodec, app.RegistryKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.ServiceKeeper = *servicemodulekeeper.NewKeeper(
 		appCodec,
@@ -543,9 +543,9 @@ func New(
 		app.GetSubspace(servicemoduletypes.ModuleName),
 
 		app.GroupKeeper,
-		app.IdentityKeeper,
+		app.RegistryKeeper,
 	)
-	serviceModule := servicemodule.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper, app.IdentityKeeper)
+	serviceModule := servicemodule.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper, app.RegistryKeeper)
 
 	app.DomainKeeper = *domainmodulekeeper.NewKeeper(
 		appCodec,
@@ -632,7 +632,7 @@ func New(
 		group.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		identitymoduletypes.ModuleName,
+		registrymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		domainmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
@@ -659,7 +659,7 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		identitymoduletypes.ModuleName,
+		registrymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		domainmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
@@ -691,7 +691,7 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		identitymoduletypes.ModuleName,
+		registrymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		domainmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
@@ -926,7 +926,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
-	paramsKeeper.Subspace(identitymoduletypes.ModuleName)
+	paramsKeeper.Subspace(registrymoduletypes.ModuleName)
 	paramsKeeper.Subspace(servicemoduletypes.ModuleName)
 	paramsKeeper.Subspace(domainmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
@@ -965,7 +965,7 @@ func shouldAllowGasless(tx sdk.Tx) bool {
 	// Iterate through the messages in the transaction
 	for _, msg := range tx.GetMsgs() {
 		// Check if the message is of type MsgCreateDidDocument
-		if _, ok := msg.(*identitymoduletypes.MsgCreateDidDocument); ok {
+		if _, ok := msg.(*registrymoduletypes.MsgCreateDidDocument); ok {
 			return true
 		}
 	}

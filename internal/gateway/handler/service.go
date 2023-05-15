@@ -11,7 +11,7 @@ import (
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/gateway/middleware"
 	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/x/identity"
+	identity "github.com/sonrhq/core/x/registry"
 	"github.com/sonrhq/core/x/service/types"
 )
 
