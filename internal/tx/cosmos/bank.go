@@ -12,4 +12,3 @@ func BuildMsgSend(from, to string, amount int) *banktypes.MsgSend {
 }
 
 // BuildMsgMultiSend builds a message to send coins from one account to another.
-

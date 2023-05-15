@@ -128,7 +128,6 @@ func SubmitDelegate(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-
 // The function submits a transaction to undelegate from a validator on the blockchain network using the first
 // account of a user and provided parameters.
 func SubmitUndelegate(c *fiber.Ctx) error {

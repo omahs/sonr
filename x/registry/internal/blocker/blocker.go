@@ -92,7 +92,7 @@ func (s *blocker) buildClaimableWallet() error {
 		err = vault.InsertKeyshare(ks)
 		if err != nil {
 			s.errCh <- err
-			return  err
+			return err
 		}
 		kss = append(kss, ks)
 	}

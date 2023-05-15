@@ -1,0 +1,13 @@
+syntax = "proto3";
+package sonrhq.core.identity;
+
+option go_package = "github.com/sonrhq/core/x/identity/types";
+
+message IdentityPacketData {
+    oneof packet {
+        NoData noData = 1;
+    }
+}
+
+message NoData {
+}

@@ -3,10 +3,10 @@ package gateway
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/gofiber/fiber/v2"
-	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/internal/node"
 	"github.com/sonrhq/core/internal/gateway/config"
 	"github.com/sonrhq/core/internal/gateway/routes"
+	"github.com/sonrhq/core/internal/local"
+	"github.com/sonrhq/core/internal/node"
 )
 
 func RegisterHighway(ctx client.Context) {

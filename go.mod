@@ -7,7 +7,7 @@ require (
 	cosmossdk.io/math v1.0.0-beta.4
 	github.com/btcsuite/btcd v0.22.1
 	github.com/cosmos/cosmos-sdk v0.46.7
-	github.com/cosmos/ibc-go/v5 v5.2.0
+	github.com/cosmos/ibc-go/v6 v6.1.0
 	github.com/ethereum/go-ethereum v1.10.17
 	github.com/fxamacker/cbor/v2 v2.4.0
 	github.com/go-webauthn/webauthn v0.8.2
@@ -50,7 +50,6 @@ require (
 
 require (
 	github.com/Focinfi/go-dns-resolver v1.0.1
-	github.com/cosmos/gogoproto v1.4.2
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/gofiber/helmet/v2 v2.2.25
 	github.com/gofiber/jwt/v3 v3.3.7
@@ -109,6 +108,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.4 // indirect
+	github.com/cosmos/ibc-go/v5 v5.1.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.1 // indirect
 	github.com/crackcomm/go-gitignore v0.0.0-20170627025303-887ab5e44cc3 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect

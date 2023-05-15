@@ -104,11 +104,11 @@ func (wc *walletClaims) Assign(cred *srvtypes.WebauthnCredential, alias string) 
 	cred.Controller = acc.Did()
 	doc := acc.DidDocument(models.WithCredential(srvtypes.NewCredential(cred)), models.WithUsername(alias))
 	cn := &didController{
-		primary:    acc,
-		primaryDoc: doc,
-		blockchain: []models.Account{},
-		txHash: "",
-		disableIPFS: false,
+		primary:        acc,
+		primaryDoc:     doc,
+		blockchain:     []models.Account{},
+		txHash:         "",
+		disableIPFS:    false,
 		currCredential: cred,
 	}
 	cn.CreatePrimaryIdentity(doc, acc, alias, uint32(wc.Claims.Id))

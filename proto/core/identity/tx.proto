@@ -1,0 +1,7 @@
+syntax = "proto3";
+package sonrhq.core.identity;
+
+option go_package = "github.com/sonrhq/core/x/identity/types";
+
+// Msg defines the Msg service.
+service Msg {}

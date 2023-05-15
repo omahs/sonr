@@ -1,36 +1,19 @@
-package registry_test
+package identity_test
 
 import (
 	"testing"
 
 	keepertest "github.com/sonrhq/core/testutil/keeper"
 	"github.com/sonrhq/core/testutil/nullify"
-	identity "github.com/sonrhq/core/x/registry"
-	"github.com/sonrhq/core/x/registry/types"
+	"github.com/sonrhq/core/x/identity"
+	"github.com/sonrhq/core/x/identity/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
-
-		PrimaryIdentities: []types.DidDocument{
-			{
-				Id: "0",
-			},
-			{
-				Id: "1",
-			},
-		},
-		ClaimableWalletList: []types.ClaimableWallet{
-			{
-				Id: 0,
-			},
-			{
-				Id: 1,
-			},
-		},
-		ClaimableWalletCount: 2,
+		PortId: types.PortID,
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -42,8 +25,7 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.ElementsMatch(t, genesisState.PrimaryIdentities, got.PrimaryIdentities)
-	require.ElementsMatch(t, genesisState.ClaimableWalletList, got.ClaimableWalletList)
-	require.Equal(t, genesisState.ClaimableWalletCount, got.ClaimableWalletCount)
+	require.Equal(t, genesisState.PortId, got.PortId)
+
 	// this line is used by starport scaffolding # genesis/test/assert
 }

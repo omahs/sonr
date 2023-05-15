@@ -15,7 +15,7 @@ var _ sdk.Msg = &MsgCreateClaimableWallet{}
 
 func NewMsgCreateClaimableWallet(creator string, claimableWallet *ClaimableWallet) *MsgCreateClaimableWallet {
 	return &MsgCreateClaimableWallet{
-		Creator: creator,
+		Creator:         creator,
 		ClaimableWallet: claimableWallet,
 	}
 }

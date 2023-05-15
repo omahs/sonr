@@ -170,7 +170,6 @@ func containsAny(s1 []string, s2 []string) bool {
 // ! ||                                  Wallet Claims                                 ||
 // ! ||--------------------------------------------------------------------------------||
 
-
 func (k Keeper) ClaimableWalletAll(goCtx context.Context, req *types.QueryAllClaimableWalletRequest) (*types.QueryAllClaimableWalletResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")

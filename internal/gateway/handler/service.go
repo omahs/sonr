@@ -18,7 +18,6 @@ import (
 // ChallengeLength - Length of bytes to generate for a challenge.¡¡
 const ChallengeLength = 32
 
-
 func GetService(c *fiber.Ctx) error {
 	q := middleware.ParseQuery(c)
 	service, err := q.GetService()
@@ -47,18 +46,18 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 	service, err := q.GetService()
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":  err.Error(),
 			"origin": q.Origin(),
-			"alias": q.Alias(),
+			"alias":  q.Alias(),
 		})
 	}
 
 	ucw, err := local.Context().OldestUnclaimedWallet(c.Context())
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":  err.Error(),
 			"origin": q.Origin(),
-			"alias": q.Alias(),
+			"alias":  q.Alias(),
 		})
 	}
 
@@ -66,17 +65,17 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 	chal, err := wc.IssueChallenge()
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":  err.Error(),
 			"origin": q.Origin(),
-			"alias": q.Alias(),
+			"alias":  q.Alias(),
 		})
 	}
 	opts, err := service.GetCredentialCreationOptions(q.Alias(), chal, wc.Address(), q.IsMobile())
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":  err.Error(),
 			"origin": q.Origin(),
-			"alias": q.Alias(),
+			"alias":  q.Alias(),
 		})
 	}
 	return c.JSON(fiber.Map{
@@ -131,12 +130,12 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 		return c.Status(412).SendString(fmt.Sprintf("Failed to create JWT: %s", err.Error()))
 	}
 	return c.JSON(fiber.Map{
-		"success": true,
-		"did":     cont.Did(),
-		"primary": cont.PrimaryIdentity(),
-		"tx_hash": cont.PrimaryTxHash(),
-		"jwt":     jwt,
-		"address": cont.Address(),
+		"success":  true,
+		"did":      cont.Did(),
+		"primary":  cont.PrimaryIdentity(),
+		"tx_hash":  cont.PrimaryTxHash(),
+		"jwt":      jwt,
+		"address":  cont.Address(),
 		"accounts": accs,
 	})
 }
@@ -207,10 +206,10 @@ func VerifyServiceAssertion(c *fiber.Ctx) error {
 		return c.Status(401).SendString(err.Error())
 	}
 	return c.JSON(fiber.Map{
-		"success": true,
-		"did":     cont.Did(),
-		"jwt":     jwt,
-		"address": cont.Address(),
+		"success":      true,
+		"did":          cont.Did(),
+		"jwt":          jwt,
+		"address":      cont.Address(),
 		"did_document": doc,
 	})
 }

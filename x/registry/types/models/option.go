@@ -4,6 +4,7 @@ import (
 	"github.com/sonrhq/core/x/registry/types"
 	srvtypes "github.com/sonrhq/core/x/service/types"
 )
+
 type DIDOption func(did *types.DidDocument)
 
 func WithUsername(username string) DIDOption {
@@ -14,7 +15,6 @@ func WithUsername(username string) DIDOption {
 		did.AlsoKnownAs = append(did.AlsoKnownAs, username)
 	}
 }
-
 
 func WithCredential(cred srvtypes.Credential) DIDOption {
 	return func(did *types.DidDocument) {

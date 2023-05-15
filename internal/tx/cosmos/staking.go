@@ -21,7 +21,7 @@ type StakingTransactionConfig struct {
 	StakeAmount     types.Coin
 	DelegateAmount  types.Coin
 	CreationHeight  int64
-	ValidatorAddr  string
+	ValidatorAddr   string
 }
 
 // defaultConfig is a struct that holds the default configuration for a staking transaction.
@@ -192,7 +192,7 @@ func BuildMsgCancelUndelegate(acc models.Account, valAddr string, options ...TxS
 		DelegatorAddress: acc.Address(),
 		ValidatorAddress: valAddr,
 		Amount:           conf.DelegateAmount,
-		CreationHeight:  conf.CreationHeight,
+		CreationHeight:   conf.CreationHeight,
 	}
 	return msg
 }

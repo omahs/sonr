@@ -79,23 +79,23 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/keeper"
-	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
-	icahost "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v5/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v5/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v5/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v5/modules/core/02-client"
-	ibcclientclient "github.com/cosmos/ibc-go/v5/modules/core/02-client/client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
-	ibcporttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
+	ica "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v6/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v6/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v6/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v6/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v6/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v6/modules/core/02-client/client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v6/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -116,6 +116,10 @@ import (
 	domainmodule "github.com/sonrhq/core/x/domain"
 	domainmodulekeeper "github.com/sonrhq/core/x/domain/keeper"
 	domainmoduletypes "github.com/sonrhq/core/x/domain/types"
+
+	identitymodule "github.com/sonrhq/core/x/identity"
+	identitymodulekeeper "github.com/sonrhq/core/x/identity/keeper"
+	identitymoduletypes "github.com/sonrhq/core/x/identity/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
@@ -178,6 +182,7 @@ var (
 		registrymodule.AppModuleBasic{},
 		servicemodule.AppModuleBasic{},
 		domainmodule.AppModuleBasic{},
+		identitymodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -192,6 +197,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		registrymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		identitymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -256,7 +262,9 @@ type App struct {
 
 	ServiceKeeper servicemodulekeeper.Keeper
 
-	DomainKeeper domainmodulekeeper.Keeper
+	DomainKeeper         domainmodulekeeper.Keeper
+	ScopedIdentityKeeper capabilitykeeper.ScopedKeeper
+	IdentityKeeper       identitymodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -306,6 +314,7 @@ func New(
 		registrymoduletypes.StoreKey,
 		servicemoduletypes.StoreKey,
 		domainmoduletypes.StoreKey,
+		identitymoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -534,7 +543,7 @@ func New(
 		app.BankKeeper,
 		app.GroupKeeper,
 	)
-	identityModule := registrymodule.NewAppModule(appCodec, app.RegistryKeeper, app.AccountKeeper, app.BankKeeper)
+	registryModule := registrymodule.NewAppModule(appCodec, app.RegistryKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.ServiceKeeper = *servicemodulekeeper.NewKeeper(
 		appCodec,
@@ -555,6 +564,22 @@ func New(
 	)
 	domainModule := domainmodule.NewAppModule(appCodec, app.DomainKeeper, app.AccountKeeper, app.BankKeeper)
 
+	scopedIdentityKeeper := app.CapabilityKeeper.ScopeToModule(identitymoduletypes.ModuleName)
+	app.ScopedIdentityKeeper = scopedIdentityKeeper
+	app.IdentityKeeper = *identitymodulekeeper.NewKeeper(
+		appCodec,
+		keys[identitymoduletypes.StoreKey],
+		keys[identitymoduletypes.MemStoreKey],
+		app.GetSubspace(identitymoduletypes.ModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		scopedIdentityKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+	)
+	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper)
+
+	identityIBCModule := identitymodule.NewIBCModule(app.IdentityKeeper)
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Sealing prevents other modules from creating scoped sub-keepers
@@ -564,6 +589,7 @@ func New(
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	ibcRouter.AddRoute(identitymoduletypes.ModuleName, identityIBCModule)
 	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -600,9 +626,10 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		icaModule,
-		identityModule,
+		registryModule,
 		serviceModule,
 		domainModule,
+		identityModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -635,6 +662,7 @@ func New(
 		registrymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		domainmoduletypes.ModuleName,
+		identitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -662,6 +690,7 @@ func New(
 		registrymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		domainmoduletypes.ModuleName,
+		identitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -694,6 +723,7 @@ func New(
 		registrymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		domainmoduletypes.ModuleName,
+		identitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -726,6 +756,7 @@ func New(
 		identityModule,
 		serviceModule,
 		domainModule,
+		identityModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -929,6 +960,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(registrymoduletypes.ModuleName)
 	paramsKeeper.Subspace(servicemoduletypes.ModuleName)
 	paramsKeeper.Subspace(domainmoduletypes.ModuleName)
+	paramsKeeper.Subspace(identitymoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sonrhq.core.identity;
+
+import "gogoproto/gogo.proto";
+import "core/identity/params.proto";
+
+option go_package = "github.com/sonrhq/core/x/identity/types";
+
+// GenesisState defines the identity module's genesis state.
+message GenesisState {
+  Params params  = 1 [(gogoproto.nullable) = false];
+  string port_id = 2;
+}
+
