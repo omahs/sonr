@@ -110,17 +110,12 @@ func (m *GenesisState) GetClaimableWalletCount() uint64 {
 
 // Params defines the parameters for the module.
 type Params struct {
-	DidBaseContext                  string `protobuf:"bytes,1,opt,name=did_base_context,json=didBaseContext,proto3" json:"did_base_context,omitempty"`
-	DidMethodContext                string `protobuf:"bytes,2,opt,name=did_method_context,json=didMethodContext,proto3" json:"did_method_context,omitempty"`
-	DidMethodName                   string `protobuf:"bytes,3,opt,name=did_method_name,json=didMethodName,proto3" json:"did_method_name,omitempty"`
-	DidMethodVersion                string `protobuf:"bytes,4,opt,name=did_method_version,json=didMethodVersion,proto3" json:"did_method_version,omitempty"`
-	DidNetwork                      string `protobuf:"bytes,5,opt,name=did_network,json=didNetwork,proto3" json:"did_network,omitempty"`
-	IpfsGateway                     string `protobuf:"bytes,6,opt,name=ipfs_gateway,json=ipfsGateway,proto3" json:"ipfs_gateway,omitempty"`
-	IpfsApi                         string `protobuf:"bytes,7,opt,name=ipfs_api,json=ipfsApi,proto3" json:"ipfs_api,omitempty"`
-	WebauthnAttestionPreference     string `protobuf:"bytes,8,opt,name=webauthn_attestion_preference,json=webauthnAttestionPreference,proto3" json:"webauthn_attestion_preference,omitempty"`
-	WebauthnAuthenticatorAttachment string `protobuf:"bytes,9,opt,name=webauthn_authenticator_attachment,json=webauthnAuthenticatorAttachment,proto3" json:"webauthn_authenticator_attachment,omitempty"`
-	WebauthnTimeout                 int32  `protobuf:"varint,10,opt,name=webauthn_timeout,json=webauthnTimeout,proto3" json:"webauthn_timeout,omitempty"`
-	MaxValidatorAccountsPer_1000    int32  `protobuf:"varint,11,opt,name=max_validator_accounts_per_1000,json=maxValidatorAccountsPer1000,proto3" json:"max_validator_accounts_per_1000,omitempty"`
+	AccountDidMethodName    string   `protobuf:"bytes,1,opt,name=account_did_method_name,json=accountDidMethodName,proto3" json:"account_did_method_name,omitempty"`
+	AccountDidMethodContext string   `protobuf:"bytes,2,opt,name=account_did_method_context,json=accountDidMethodContext,proto3" json:"account_did_method_context,omitempty"`
+	AcccountDiscoveryReward int64    `protobuf:"varint,3,opt,name=acccount_discovery_reward,json=acccountDiscoveryReward,proto3" json:"acccount_discovery_reward,omitempty"`
+	DidBaseContext          string   `protobuf:"bytes,4,opt,name=did_base_context,json=didBaseContext,proto3" json:"did_base_context,omitempty"`
+	MaximumIdentityAliases  int32    `protobuf:"varint,5,opt,name=maximum_identity_aliases,json=maximumIdentityAliases,proto3" json:"maximum_identity_aliases,omitempty"`
+	SupportedDidMethods     []string `protobuf:"bytes,6,rep,name=supported_did_methods,json=supportedDidMethods,proto3" json:"supported_did_methods,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -156,6 +151,27 @@ func (m *Params) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Params proto.InternalMessageInfo
 
+func (m *Params) GetAccountDidMethodName() string {
+	if m != nil {
+		return m.AccountDidMethodName
+	}
+	return ""
+}
+
+func (m *Params) GetAccountDidMethodContext() string {
+	if m != nil {
+		return m.AccountDidMethodContext
+	}
+	return ""
+}
+
+func (m *Params) GetAcccountDiscoveryReward() int64 {
+	if m != nil {
+		return m.AcccountDiscoveryReward
+	}
+	return 0
+}
+
 func (m *Params) GetDidBaseContext() string {
 	if m != nil {
 		return m.DidBaseContext
@@ -163,74 +179,18 @@ func (m *Params) GetDidBaseContext() string {
 	return ""
 }
 
-func (m *Params) GetDidMethodContext() string {
+func (m *Params) GetMaximumIdentityAliases() int32 {
 	if m != nil {
-		return m.DidMethodContext
-	}
-	return ""
-}
-
-func (m *Params) GetDidMethodName() string {
-	if m != nil {
-		return m.DidMethodName
-	}
-	return ""
-}
-
-func (m *Params) GetDidMethodVersion() string {
-	if m != nil {
-		return m.DidMethodVersion
-	}
-	return ""
-}
-
-func (m *Params) GetDidNetwork() string {
-	if m != nil {
-		return m.DidNetwork
-	}
-	return ""
-}
-
-func (m *Params) GetIpfsGateway() string {
-	if m != nil {
-		return m.IpfsGateway
-	}
-	return ""
-}
-
-func (m *Params) GetIpfsApi() string {
-	if m != nil {
-		return m.IpfsApi
-	}
-	return ""
-}
-
-func (m *Params) GetWebauthnAttestionPreference() string {
-	if m != nil {
-		return m.WebauthnAttestionPreference
-	}
-	return ""
-}
-
-func (m *Params) GetWebauthnAuthenticatorAttachment() string {
-	if m != nil {
-		return m.WebauthnAuthenticatorAttachment
-	}
-	return ""
-}
-
-func (m *Params) GetWebauthnTimeout() int32 {
-	if m != nil {
-		return m.WebauthnTimeout
+		return m.MaximumIdentityAliases
 	}
 	return 0
 }
 
-func (m *Params) GetMaxValidatorAccountsPer_1000() int32 {
+func (m *Params) GetSupportedDidMethods() []string {
 	if m != nil {
-		return m.MaxValidatorAccountsPer_1000
+		return m.SupportedDidMethods
 	}
-	return 0
+	return nil
 }
 
 func init() {
@@ -241,47 +201,40 @@ func init() {
 func init() { proto.RegisterFile("core/identity/genesis.proto", fileDescriptor_22ee3e6e2aad889c) }
 
 var fileDescriptor_22ee3e6e2aad889c = []byte{
-	// 629 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x94, 0xc1, 0x4f, 0x13, 0x4f,
-	0x14, 0xc7, 0xbb, 0xb4, 0x14, 0x98, 0xc2, 0x0f, 0x7e, 0x63, 0x13, 0x57, 0xd0, 0xb6, 0x90, 0xa8,
-	0x35, 0x31, 0x5b, 0xc4, 0x9b, 0xb7, 0x16, 0x12, 0xa2, 0x51, 0x42, 0xaa, 0x62, 0x82, 0x31, 0x9b,
-	0xe9, 0xec, 0xa3, 0x3b, 0x61, 0x77, 0x66, 0x9d, 0x99, 0x42, 0xfb, 0x5f, 0x78, 0xf2, 0x6f, 0xe2,
-	0xc8, 0xd1, 0x93, 0x31, 0x70, 0xf6, 0x7f, 0x30, 0x33, 0xbb, 0x2d, 0x6d, 0xdd, 0x8b, 0xb7, 0xf6,
-	0xfb, 0x3e, 0xef, 0xf3, 0x36, 0xf3, 0x26, 0x83, 0xb6, 0xa8, 0x90, 0xd0, 0x62, 0x01, 0x70, 0xcd,
-	0xf4, 0xa8, 0xd5, 0x07, 0x0e, 0x8a, 0x29, 0x2f, 0x91, 0x42, 0x0b, 0x5c, 0x55, 0x82, 0xcb, 0xf0,
-	0xab, 0x67, 0x18, 0x6f, 0xcc, 0x6c, 0x56, 0xfb, 0xa2, 0x2f, 0x2c, 0xd0, 0x32, 0xbf, 0x52, 0x76,
-	0xf3, 0xfe, 0xac, 0x28, 0x60, 0x41, 0x56, 0xd8, 0x9c, 0x2d, 0xd0, 0x88, 0xb0, 0x38, 0x1b, 0xb0,
-	0xf3, 0xbb, 0x88, 0x56, 0x0f, 0xd3, 0x91, 0xef, 0x35, 0xd1, 0x80, 0x5f, 0xa1, 0x72, 0x42, 0x24,
-	0x89, 0x95, 0xeb, 0x34, 0x9c, 0x66, 0x65, 0xef, 0xa1, 0x97, 0xf7, 0x09, 0xde, 0xb1, 0x65, 0x3a,
-	0xa5, 0xab, 0x9f, 0xf5, 0x42, 0x37, 0xeb, 0xc0, 0x1f, 0xd1, 0xff, 0x89, 0x64, 0x31, 0x91, 0xa3,
-	0xd7, 0x29, 0xc7, 0x40, 0xb9, 0x0b, 0x8d, 0x62, 0xb3, 0xb2, 0xb7, 0x9d, 0xaf, 0x39, 0x60, 0xc1,
-	0x81, 0xa0, 0x83, 0x18, 0xb8, 0xce, 0x5c, 0x7f, 0x1b, 0xf0, 0x67, 0x54, 0xed, 0x45, 0x82, 0x9e,
-	0xd3, 0x90, 0x30, 0x3e, 0x65, 0x2e, 0xfe, 0x9b, 0x39, 0x57, 0x82, 0x4f, 0xd1, 0x9a, 0x84, 0x88,
-	0x68, 0x26, 0xb8, 0x0a, 0x59, 0xa2, 0xdc, 0x92, 0xb5, 0x7a, 0xf9, 0xd6, 0x13, 0x90, 0xec, 0x8c,
-	0x51, 0x8b, 0x77, 0xa7, 0xda, 0xb2, 0x11, 0xb3, 0x2a, 0xfc, 0x05, 0xdd, 0xb3, 0x87, 0x4d, 0x7a,
-	0x11, 0x7c, 0x22, 0x51, 0x04, 0xfa, 0x2d, 0x53, 0xda, 0x5d, 0xb4, 0x13, 0x1e, 0xe7, 0x4f, 0xd8,
-	0x9f, 0x6d, 0xc8, 0xc4, 0x79, 0x1e, 0xbc, 0x87, 0xaa, 0x73, 0xf1, 0xbe, 0x18, 0x70, 0xed, 0x96,
-	0x1b, 0x4e, 0xb3, 0xd4, 0xcd, 0xad, 0xed, 0x7c, 0x2f, 0xa1, 0x72, 0xba, 0x3b, 0xdc, 0x44, 0x1b,
-	0x01, 0x0b, 0xfc, 0x1e, 0x51, 0xe0, 0x53, 0xc1, 0x35, 0x0c, 0xb5, 0xdd, 0xf9, 0x4a, 0xf7, 0xbf,
-	0x80, 0x05, 0x1d, 0xa2, 0x60, 0x3f, 0x4d, 0xf1, 0x73, 0x84, 0x0d, 0x19, 0x83, 0x0e, 0x45, 0x30,
-	0x61, 0x17, 0x2c, 0x6b, 0x1c, 0xef, 0x6c, 0x61, 0x4c, 0x3f, 0x41, 0xeb, 0x53, 0x34, 0x27, 0x31,
-	0xb8, 0x45, 0x8b, 0xae, 0x4d, 0xd0, 0x23, 0x12, 0xc3, 0x9c, 0xf5, 0x02, 0xa4, 0x62, 0x82, 0xbb,
-	0xa5, 0x39, 0xeb, 0x49, 0x9a, 0xe3, 0x3a, 0xaa, 0x18, 0x9a, 0x83, 0xbe, 0x14, 0xf2, 0xdc, 0x5d,
-	0xb4, 0x18, 0x0a, 0x58, 0x70, 0x94, 0x26, 0x78, 0x1b, 0xad, 0xb2, 0xe4, 0x4c, 0xf9, 0x7d, 0xa2,
-	0xe1, 0x92, 0x8c, 0xec, 0x29, 0xac, 0x74, 0x2b, 0x26, 0x3b, 0x4c, 0x23, 0xfc, 0x00, 0x2d, 0x5b,
-	0x84, 0x24, 0xcc, 0x5d, 0xb2, 0xe5, 0x25, 0xf3, 0xbf, 0x9d, 0x30, 0xdc, 0x41, 0x8f, 0x2e, 0xa1,
-	0x47, 0x06, 0x3a, 0xe4, 0x3e, 0xd1, 0x1a, 0x94, 0xd9, 0xa2, 0x9f, 0x48, 0x38, 0x03, 0x09, 0x9c,
-	0x82, 0xbb, 0x6c, 0xf9, 0xad, 0x31, 0xd4, 0x1e, 0x33, 0xc7, 0x13, 0x04, 0xbf, 0x41, 0xdb, 0x77,
-	0x8e, 0x81, 0x0e, 0xcd, 0x46, 0x29, 0xd1, 0x42, 0x1a, 0x23, 0xa1, 0xa1, 0xb9, 0x8b, 0xee, 0x8a,
-	0xf5, 0xd4, 0x27, 0x9e, 0x69, 0xae, 0x3d, 0xc1, 0xf0, 0x33, 0xb4, 0x31, 0x71, 0x69, 0x16, 0x83,
-	0x18, 0x68, 0x17, 0x35, 0x9c, 0xe6, 0x62, 0x77, 0x7d, 0x9c, 0x7f, 0x48, 0x63, 0x7c, 0x80, 0xea,
-	0x31, 0x19, 0xfa, 0x17, 0x24, 0x62, 0x41, 0x3a, 0x8d, 0x52, 0xb3, 0x6b, 0xe5, 0x27, 0x20, 0xfd,
-	0x17, 0xbb, 0xbb, 0xbb, 0x6e, 0xc5, 0x76, 0x6e, 0xc5, 0x64, 0x78, 0x32, 0xa6, 0xda, 0x19, 0x74,
-	0x0c, 0xd2, 0x20, 0x9d, 0xf6, 0xd5, 0x4d, 0xcd, 0xb9, 0xbe, 0xa9, 0x39, 0xbf, 0x6e, 0x6a, 0xce,
-	0xb7, 0xdb, 0x5a, 0xe1, 0xfa, 0xb6, 0x56, 0xf8, 0x71, 0x5b, 0x2b, 0x9c, 0x3e, 0xed, 0x33, 0x1d,
-	0x0e, 0x7a, 0x1e, 0x15, 0x71, 0x2b, 0xbd, 0xb2, 0x2d, 0xfb, 0xa0, 0x0c, 0xef, 0x9e, 0x14, 0x3d,
-	0x4a, 0x40, 0xf5, 0xca, 0xf6, 0x49, 0x79, 0xf9, 0x27, 0x00, 0x00, 0xff, 0xff, 0x43, 0x7f, 0xb1,
-	0x65, 0xd2, 0x04, 0x00, 0x00,
+	// 525 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0x41, 0x8b, 0xd3, 0x40,
+	0x1c, 0xc5, 0x9b, 0x4d, 0x5b, 0xd8, 0x59, 0x15, 0x9d, 0xad, 0x36, 0x56, 0x89, 0x71, 0x41, 0xcc,
+	0x29, 0x85, 0x8a, 0x20, 0xeb, 0x69, 0xdb, 0x82, 0x08, 0x2a, 0x12, 0x51, 0x61, 0x45, 0xc2, 0x74,
+	0xe6, 0x6f, 0x3b, 0x98, 0x64, 0xe2, 0xcc, 0x54, 0xdb, 0x6f, 0xe1, 0xc7, 0xda, 0x63, 0x8f, 0x9e,
+	0x44, 0xda, 0xb3, 0xdf, 0x41, 0x3a, 0x99, 0xd6, 0x76, 0xcd, 0xc5, 0x5b, 0x99, 0xf7, 0xde, 0xef,
+	0x75, 0xe6, 0x9f, 0x3f, 0xba, 0x43, 0x85, 0x84, 0x2e, 0x67, 0x90, 0x6b, 0xae, 0xe7, 0xdd, 0x31,
+	0xe4, 0xa0, 0xb8, 0x8a, 0x0a, 0x29, 0xb4, 0xc0, 0x2d, 0x25, 0x72, 0x39, 0xf9, 0x12, 0xad, 0x3d,
+	0xd1, 0xc6, 0xd3, 0x69, 0x8d, 0xc5, 0x58, 0x18, 0x43, 0x77, 0xfd, 0xab, 0xf4, 0x76, 0xda, 0xfb,
+	0x20, 0xc6, 0x99, 0x15, 0x3a, 0xfb, 0x02, 0x4d, 0x09, 0xcf, 0x6c, 0xc1, 0xc9, 0x6f, 0x17, 0x5d,
+	0x79, 0x56, 0x56, 0xbe, 0xd1, 0x44, 0x03, 0x3e, 0x45, 0xcd, 0x82, 0x48, 0x92, 0x29, 0xcf, 0x09,
+	0x9c, 0xf0, 0xa8, 0x77, 0x37, 0xaa, 0xfa, 0x0b, 0xd1, 0x6b, 0xe3, 0xe9, 0xd7, 0x2f, 0x7e, 0xde,
+	0xab, 0xc5, 0x36, 0x81, 0xdf, 0xa2, 0x1b, 0x85, 0xe4, 0x19, 0x91, 0xf3, 0xe7, 0xa5, 0x8f, 0x83,
+	0xf2, 0x0e, 0x02, 0x37, 0x3c, 0xea, 0xdd, 0xaf, 0xc6, 0x0c, 0x39, 0x1b, 0x0a, 0x3a, 0xcd, 0x20,
+	0xd7, 0x96, 0xf5, 0x2f, 0x01, 0x7f, 0x40, 0xad, 0x51, 0x2a, 0xe8, 0x67, 0x3a, 0x21, 0x3c, 0xdf,
+	0x21, 0xbb, 0xff, 0x47, 0xae, 0x84, 0xe0, 0x73, 0x74, 0x55, 0x42, 0x4a, 0x34, 0x17, 0xb9, 0x9a,
+	0xf0, 0x42, 0x79, 0x75, 0x43, 0x8d, 0xaa, 0xa9, 0xef, 0x40, 0xf2, 0x4f, 0x9c, 0x1a, 0x7b, 0xbc,
+	0x13, 0xb3, 0x15, 0xfb, 0x28, 0xfc, 0x11, 0x1d, 0x9b, 0xc7, 0x26, 0xa3, 0x14, 0xde, 0x93, 0x34,
+	0x05, 0xfd, 0x82, 0x2b, 0xed, 0x35, 0x4c, 0xc3, 0x83, 0xea, 0x86, 0xc1, 0x7e, 0xc0, 0x82, 0xab,
+	0x38, 0xb8, 0x87, 0x5a, 0x97, 0x8e, 0x07, 0x62, 0x9a, 0x6b, 0xaf, 0x19, 0x38, 0x61, 0x3d, 0xae,
+	0xd4, 0x4e, 0x16, 0x07, 0xa8, 0x59, 0xce, 0x0e, 0x3f, 0x46, 0x6d, 0x42, 0xe9, 0xfa, 0x34, 0x61,
+	0x9c, 0x25, 0x19, 0xe8, 0x89, 0x60, 0x49, 0x4e, 0x32, 0x30, 0xa3, 0x3f, 0x8c, 0x5b, 0x56, 0x1e,
+	0x72, 0xf6, 0xd2, 0x88, 0xaf, 0x48, 0x06, 0xf8, 0x29, 0xea, 0x54, 0xc4, 0xa8, 0xc8, 0x35, 0xcc,
+	0xb4, 0x77, 0x60, 0x92, 0xed, 0xcb, 0xc9, 0x41, 0x29, 0xe3, 0x53, 0x74, 0x9b, 0xd0, 0x6d, 0x5a,
+	0x51, 0xf1, 0x15, 0xe4, 0x3c, 0x91, 0xf0, 0x8d, 0x48, 0xe6, 0xb9, 0x81, 0x13, 0xba, 0x26, 0x6b,
+	0xc3, 0x56, 0x8f, 0x8d, 0x8c, 0x43, 0x74, 0x7d, 0x5d, 0x38, 0x22, 0x0a, 0xb6, 0x75, 0x75, 0x53,
+	0x77, 0x8d, 0x71, 0xd6, 0x27, 0x0a, 0x36, 0x2d, 0x4f, 0x90, 0x97, 0x91, 0x19, 0xcf, 0xa6, 0x59,
+	0xb2, 0x79, 0xd7, 0x84, 0xa4, 0x9c, 0x28, 0x50, 0x5e, 0x23, 0x70, 0xc2, 0x46, 0x7c, 0xcb, 0xea,
+	0xf6, 0x43, 0x98, 0x9f, 0x95, 0x2a, 0xee, 0xa1, 0x9b, 0x6a, 0x5a, 0x14, 0x42, 0x6a, 0x60, 0x3b,
+	0xd7, 0x53, 0x5e, 0x33, 0x70, 0xc3, 0xc3, 0xf8, 0x78, 0x2b, 0x6e, 0x6f, 0xa6, 0xfa, 0x67, 0x17,
+	0x4b, 0xdf, 0x59, 0x2c, 0x7d, 0xe7, 0xd7, 0xd2, 0x77, 0xbe, 0xaf, 0xfc, 0xda, 0x62, 0xe5, 0xd7,
+	0x7e, 0xac, 0xfc, 0xda, 0xf9, 0xc3, 0x31, 0xd7, 0x93, 0xe9, 0x28, 0xa2, 0x22, 0xeb, 0x96, 0xc3,
+	0xee, 0x9a, 0x55, 0x9c, 0xfd, 0x5d, 0x46, 0x3d, 0x2f, 0x40, 0x8d, 0x9a, 0x66, 0x19, 0x1f, 0xfd,
+	0x09, 0x00, 0x00, 0xff, 0xff, 0x20, 0x27, 0xab, 0x02, 0x0c, 0x04, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -398,76 +351,43 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.MaxValidatorAccountsPer_1000 != 0 {
-		i = encodeVarintGenesis(dAtA, i, uint64(m.MaxValidatorAccountsPer_1000))
-		i--
-		dAtA[i] = 0x58
+	if len(m.SupportedDidMethods) > 0 {
+		for iNdEx := len(m.SupportedDidMethods) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.SupportedDidMethods[iNdEx])
+			copy(dAtA[i:], m.SupportedDidMethods[iNdEx])
+			i = encodeVarintGenesis(dAtA, i, uint64(len(m.SupportedDidMethods[iNdEx])))
+			i--
+			dAtA[i] = 0x32
+		}
 	}
-	if m.WebauthnTimeout != 0 {
-		i = encodeVarintGenesis(dAtA, i, uint64(m.WebauthnTimeout))
+	if m.MaximumIdentityAliases != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.MaximumIdentityAliases))
 		i--
-		dAtA[i] = 0x50
-	}
-	if len(m.WebauthnAuthenticatorAttachment) > 0 {
-		i -= len(m.WebauthnAuthenticatorAttachment)
-		copy(dAtA[i:], m.WebauthnAuthenticatorAttachment)
-		i = encodeVarintGenesis(dAtA, i, uint64(len(m.WebauthnAuthenticatorAttachment)))
-		i--
-		dAtA[i] = 0x4a
-	}
-	if len(m.WebauthnAttestionPreference) > 0 {
-		i -= len(m.WebauthnAttestionPreference)
-		copy(dAtA[i:], m.WebauthnAttestionPreference)
-		i = encodeVarintGenesis(dAtA, i, uint64(len(m.WebauthnAttestionPreference)))
-		i--
-		dAtA[i] = 0x42
-	}
-	if len(m.IpfsApi) > 0 {
-		i -= len(m.IpfsApi)
-		copy(dAtA[i:], m.IpfsApi)
-		i = encodeVarintGenesis(dAtA, i, uint64(len(m.IpfsApi)))
-		i--
-		dAtA[i] = 0x3a
-	}
-	if len(m.IpfsGateway) > 0 {
-		i -= len(m.IpfsGateway)
-		copy(dAtA[i:], m.IpfsGateway)
-		i = encodeVarintGenesis(dAtA, i, uint64(len(m.IpfsGateway)))
-		i--
-		dAtA[i] = 0x32
-	}
-	if len(m.DidNetwork) > 0 {
-		i -= len(m.DidNetwork)
-		copy(dAtA[i:], m.DidNetwork)
-		i = encodeVarintGenesis(dAtA, i, uint64(len(m.DidNetwork)))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.DidMethodVersion) > 0 {
-		i -= len(m.DidMethodVersion)
-		copy(dAtA[i:], m.DidMethodVersion)
-		i = encodeVarintGenesis(dAtA, i, uint64(len(m.DidMethodVersion)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.DidMethodName) > 0 {
-		i -= len(m.DidMethodName)
-		copy(dAtA[i:], m.DidMethodName)
-		i = encodeVarintGenesis(dAtA, i, uint64(len(m.DidMethodName)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.DidMethodContext) > 0 {
-		i -= len(m.DidMethodContext)
-		copy(dAtA[i:], m.DidMethodContext)
-		i = encodeVarintGenesis(dAtA, i, uint64(len(m.DidMethodContext)))
-		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x28
 	}
 	if len(m.DidBaseContext) > 0 {
 		i -= len(m.DidBaseContext)
 		copy(dAtA[i:], m.DidBaseContext)
 		i = encodeVarintGenesis(dAtA, i, uint64(len(m.DidBaseContext)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.AcccountDiscoveryReward != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.AcccountDiscoveryReward))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.AccountDidMethodContext) > 0 {
+		i -= len(m.AccountDidMethodContext)
+		copy(dAtA[i:], m.AccountDidMethodContext)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.AccountDidMethodContext)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.AccountDidMethodName) > 0 {
+		i -= len(m.AccountDidMethodName)
+		copy(dAtA[i:], m.AccountDidMethodName)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.AccountDidMethodName)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -529,47 +449,29 @@ func (m *Params) Size() (n int) {
 	}
 	var l int
 	_ = l
+	l = len(m.AccountDidMethodName)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	l = len(m.AccountDidMethodContext)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	if m.AcccountDiscoveryReward != 0 {
+		n += 1 + sovGenesis(uint64(m.AcccountDiscoveryReward))
+	}
 	l = len(m.DidBaseContext)
 	if l > 0 {
 		n += 1 + l + sovGenesis(uint64(l))
 	}
-	l = len(m.DidMethodContext)
-	if l > 0 {
-		n += 1 + l + sovGenesis(uint64(l))
+	if m.MaximumIdentityAliases != 0 {
+		n += 1 + sovGenesis(uint64(m.MaximumIdentityAliases))
 	}
-	l = len(m.DidMethodName)
-	if l > 0 {
-		n += 1 + l + sovGenesis(uint64(l))
-	}
-	l = len(m.DidMethodVersion)
-	if l > 0 {
-		n += 1 + l + sovGenesis(uint64(l))
-	}
-	l = len(m.DidNetwork)
-	if l > 0 {
-		n += 1 + l + sovGenesis(uint64(l))
-	}
-	l = len(m.IpfsGateway)
-	if l > 0 {
-		n += 1 + l + sovGenesis(uint64(l))
-	}
-	l = len(m.IpfsApi)
-	if l > 0 {
-		n += 1 + l + sovGenesis(uint64(l))
-	}
-	l = len(m.WebauthnAttestionPreference)
-	if l > 0 {
-		n += 1 + l + sovGenesis(uint64(l))
-	}
-	l = len(m.WebauthnAuthenticatorAttachment)
-	if l > 0 {
-		n += 1 + l + sovGenesis(uint64(l))
-	}
-	if m.WebauthnTimeout != 0 {
-		n += 1 + sovGenesis(uint64(m.WebauthnTimeout))
-	}
-	if m.MaxValidatorAccountsPer_1000 != 0 {
-		n += 1 + sovGenesis(uint64(m.MaxValidatorAccountsPer_1000))
+	if len(m.SupportedDidMethods) > 0 {
+		for _, s := range m.SupportedDidMethods {
+			l = len(s)
+			n += 1 + l + sovGenesis(uint64(l))
+		}
 	}
 	return n
 }
@@ -849,6 +751,89 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AccountDidMethodName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AccountDidMethodName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AccountDidMethodContext", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AccountDidMethodContext = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AcccountDiscoveryReward", wireType)
+			}
+			m.AcccountDiscoveryReward = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AcccountDiscoveryReward |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DidBaseContext", wireType)
 			}
 			var stringLen uint64
@@ -879,107 +864,11 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			}
 			m.DidBaseContext = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DidMethodContext", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DidMethodContext = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DidMethodName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DidMethodName = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DidMethodVersion", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DidMethodVersion = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DidNetwork", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaximumIdentityAliases", wireType)
 			}
-			var stringLen uint64
+			m.MaximumIdentityAliases = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowGenesis
@@ -989,27 +878,14 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.MaximumIdentityAliases |= int32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DidNetwork = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IpfsGateway", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SupportedDidMethods", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1037,142 +913,8 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.IpfsGateway = string(dAtA[iNdEx:postIndex])
+			m.SupportedDidMethods = append(m.SupportedDidMethods, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IpfsApi", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.IpfsApi = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 8:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field WebauthnAttestionPreference", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.WebauthnAttestionPreference = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 9:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field WebauthnAuthenticatorAttachment", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.WebauthnAuthenticatorAttachment = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 10:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field WebauthnTimeout", wireType)
-			}
-			m.WebauthnTimeout = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.WebauthnTimeout |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 11:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxValidatorAccountsPer_1000", wireType)
-			}
-			m.MaxValidatorAccountsPer_1000 = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MaxValidatorAccountsPer_1000 |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenesis(dAtA[iNdEx:])

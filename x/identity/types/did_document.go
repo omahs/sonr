@@ -15,7 +15,7 @@ import (
 func NewBlankDocument(idStr string) *DidDocument {
 	return &DidDocument{
 		Id:                   idStr,
-		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().DidMethodContext},
+		Context:              []string{DefaultParams().DidBaseContext, DefaultParams().AccountDidMethodContext},
 		Controller:           []string{},
 		VerificationMethod:   make([]*VerificationMethod, 0),
 		Authentication:       make([]string, 0),
