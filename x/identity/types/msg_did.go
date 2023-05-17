@@ -8,7 +8,6 @@ import (
 const (
 	TypeMsgCreateDidDocument = "create_did_document"
 	TypeMsgUpdateDidDocument = "update_did_document"
-	TypeMsgDeleteDidDocument = "delete_did_document"
 )
 
 var _ sdk.Msg = &MsgCreateDidDocument{}
