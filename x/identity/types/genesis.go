@@ -10,7 +10,7 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		PrimaryIdentities: []DidDocument{},
+		DidDocuments: []DidDocument{},
 		Relationships:    []VerificationRelationship{},
 		ClaimableWalletList: []ClaimableWallet{},
 		// this line is used by starport scaffolding # genesis/types/default
@@ -33,7 +33,7 @@ func (gs GenesisState) Validate() error {
 
 	// Check for duplicated index in primary identities
 	didDocumentIndexMap := make(map[string]struct{})
-	for _, elem := range gs.PrimaryIdentities {
+	for _, elem := range gs.DidDocuments {
 		index := string(DidDocumentKey(elem.Id))
 		if _, ok := didDocumentIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for did")

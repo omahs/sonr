@@ -53,7 +53,7 @@ func (k Keeper) Did(c context.Context, req *types.QueryGetDidRequest) (*types.Qu
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 	if strings.Contains(req.Did, "did:sonr") {
-		val, found := k.GetPrimaryIdentity(
+		val, found := k.GetDidDocument(
 			ctx,
 			req.Did,
 		)
@@ -62,7 +62,7 @@ func (k Keeper) Did(c context.Context, req *types.QueryGetDidRequest) (*types.Qu
 		}
 		return &types.QueryGetDidResponse{DidDocument: val}, nil
 	} else {
-		val, found := k.GetPrimaryIdentityByAddress(
+		val, found := k.GetDidDocumentByOwner(
 			ctx,
 			req.GetDid(),
 		)
@@ -79,7 +79,7 @@ func (k Keeper) DidByKeyID(c context.Context, req *types.QueryDidByKeyIDRequest)
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 	did := strings.Split(req.KeyId, "#")[0]
-	val, found := k.GetPrimaryIdentity(
+	val, found := k.GetDidDocument(
 		ctx,
 		did,
 	)
@@ -94,7 +94,7 @@ func (k Keeper) DidByAlsoKnownAs(c context.Context, req *types.QueryDidByAlsoKno
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-	val, found := k.GetPrimaryIdentityByAlias(ctx, req.GetAkaId())
+	val, found := k.GetDidDocumentByAlsoKnownAs(ctx, req.GetAkaId())
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
@@ -106,7 +106,7 @@ func (k Keeper) DidByOwner(c context.Context, req *types.QueryDidByOwnerRequest)
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-	val, found := k.GetPrimaryIdentityByAlias(ctx, req.GetOwner())
+	val, found := k.GetDidDocumentByAlsoKnownAs(ctx, req.GetOwner())
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
@@ -132,12 +132,12 @@ func (k Keeper) AliasAvailable(goCtx context.Context, req *types.QueryAliasAvail
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	err := k.CheckAlias(ctx, req.Alias)
+	err := k.CheckAlsoKnownAs(ctx, req.Alias)
 	if err != nil {
 		return &types.QueryAliasAvailableResponse{Available: true}, nil
 	}
 
-	doc, found := k.GetPrimaryIdentityByAlias(ctx, req.Alias)
+	doc, found := k.GetDidDocumentByAlsoKnownAs(ctx, req.Alias)
 	if !found {
 		return &types.QueryAliasAvailableResponse{Available: true}, nil
 	}

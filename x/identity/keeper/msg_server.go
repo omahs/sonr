@@ -27,16 +27,16 @@ var _ types.MsgServer = msgServer{}
 func (k msgServer) CreateDidDocument(goCtx context.Context, msg *types.MsgCreateDidDocument) (*types.MsgCreateDidDocumentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// Check if the value already exists
-	_, ok := k.GetPrimaryIdentity(ctx, msg.Primary.Id)
+	_, ok := k.GetDidDocument(ctx, msg.Primary.Id)
 	if ok {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
 	}
-	_, found := k.GetPrimaryIdentityByAlias(ctx, msg.Primary.AlsoKnownAs[0])
+	_, found := k.GetDidDocumentByAlsoKnownAs(ctx, msg.Primary.AlsoKnownAs[0])
 	if found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
 	}
 	// Set the value
-	k.SetPrimaryIdentity(
+	k.SetDidDocument(
 		ctx,
 		*msg.Primary,
 	)
@@ -55,7 +55,7 @@ func (k msgServer) UpdateDidDocument(goCtx context.Context, msg *types.MsgUpdate
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Check if the value exists
-	valFound, isFound := k.GetPrimaryIdentity(
+	valFound, isFound := k.GetDidDocument(
 		ctx,
 		msg.Primary.Id,
 	)
@@ -68,37 +68,9 @@ func (k msgServer) UpdateDidDocument(goCtx context.Context, msg *types.MsgUpdate
 		return nil, types.ErrUnauthorized
 	}
 
-	k.SetPrimaryIdentity(ctx, *msg.Primary)
+	k.SetDidDocument(ctx, *msg.Primary)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent("NewTx", sdk.NewAttribute("tx-name", "update-did-document"), sdk.NewAttribute("did", msg.Primary.Id), sdk.NewAttribute("creator", msg.Creator)),
 	)
 	return &types.MsgUpdateDidDocumentResponse{}, nil
 }
-
-func (k msgServer) DeleteDidDocument(goCtx context.Context, msg *types.MsgDeleteDidDocument) (*types.MsgDeleteDidDocumentResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// Check if the value exists
-	valFound, isFound := k.GetPrimaryIdentity(
-		ctx,
-		msg.Did,
-	)
-	if !isFound {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
-	}
-
-	// Check if the msg creator is the same as the current owner
-	if !valFound.CheckAccAddress(msg.Creator) {
-		return nil, types.ErrUnauthorized
-	}
-
-	k.RemovePrimaryIdentity(
-		ctx,
-		msg.Did,
-	)
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent("NewTx", sdk.NewAttribute("tx-name", "delete-did-document"), sdk.NewAttribute("did", msg.Did), sdk.NewAttribute("creator", msg.Creator)),
-	)
-	return &types.MsgDeleteDidDocumentResponse{}, nil
-}
-

@@ -9,8 +9,8 @@ import (
 // InitGenesis initializes the module's state from a provided genesis state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
 	// Set all the didDocument
-	for _, elem := range genState.PrimaryIdentities {
-		k.SetPrimaryIdentity(ctx, elem)
+	for _, elem := range genState.DidDocuments {
+		k.SetDidDocument(ctx, elem)
 	}
 	for _, elem := range genState.Relationships {
 		k.SetAuthentication(ctx, elem)
@@ -31,7 +31,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
 
-	genesis.PrimaryIdentities = k.GetAllPrimaryIdentities(ctx)
+	genesis.DidDocuments = k.GetAllPrimaryIdentities(ctx)
 	genesis.Relationships = k.GetAllAuthentication(ctx)
 	genesis.ClaimableWalletList = k.GetAllClaimableWallet(ctx)
 	genesis.ClaimableWalletCount = k.GetClaimableWalletCount(ctx)

@@ -31,7 +31,7 @@ func TestDidDocumentMsgServerCreate(t *testing.T) {
 			Primary: types.NewBlankDocument(creator),
 		}
 		_, _ = srv.CreateDidDocument(wctx, expected)
-		rst, found := k.GetPrimaryIdentity(ctx,
+		rst, found := k.GetDidDocument(ctx,
 			expected.Primary.Id,
 		)
 		accAddr, err := rst.AccAddress()
@@ -85,65 +85,13 @@ func TestDidDocumentMsgServerUpdate(t *testing.T) {
 				require.Error(t, err, tc.err)
 			} else {
 				//require.NoError(t, err)
-				rst, found := k.GetPrimaryIdentity(ctx,
+				rst, found := k.GetDidDocument(ctx,
 					expected.Primary.Id,
 				)
 				require.True(t, found)
 				accAddr, err := rst.AccAddress()
 				require.Error(t, err)
 				require.NotEqual(t, expected.Creator, accAddr)
-			}
-		})
-	}
-}
-
-func TestDidDocumentMsgServerDelete(t *testing.T) {
-	creator := "A"
-
-	for _, tc := range []struct {
-		desc    string
-		request *types.MsgDeleteDidDocument
-		err     error
-	}{
-		{
-			desc: "Completed",
-			request: &types.MsgDeleteDidDocument{Creator: creator,
-				Did: strconv.Itoa(0),
-			},
-		},
-		{
-			desc: "Unauthorized",
-			request: &types.MsgDeleteDidDocument{Creator: "B",
-				Did: strconv.Itoa(0),
-			},
-			err: sdkerrors.ErrUnauthorized,
-		},
-		{
-			desc: "KeyNotFound",
-			request: &types.MsgDeleteDidDocument{Creator: creator,
-				Did: strconv.Itoa(100000),
-			},
-			err: sdkerrors.ErrKeyNotFound,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			k, ctx := keepertest.IdentityKeeper(t)
-			srv := keeper.NewMsgServerImpl(*k)
-			wctx := sdk.WrapSDKContext(ctx)
-
-			_, err := srv.CreateDidDocument(wctx, &types.MsgCreateDidDocument{Creator: creator,
-				Primary: types.NewBlankDocument(creator),
-			})
-			require.NoError(t, err)
-			_, err = srv.DeleteDidDocument(wctx, tc.request)
-			if tc.err != nil {
-				require.Error(t, err, tc.err)
-			} else {
-				require.Error(t, err)
-				_, found := k.GetPrimaryIdentity(ctx,
-					tc.request.Did,
-				)
-				require.False(t, found)
 			}
 		})
 	}

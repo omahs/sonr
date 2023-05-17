@@ -70,9 +70,9 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 // ! ||                          DIDDocument Keeper Functions                          ||
 // ! ||--------------------------------------------------------------------------------||
 
-// CheckAlias checks if an alias is already used
-func (k Keeper) CheckAlias(ctx sdk.Context, alias string) error {
-	_, found := k.GetPrimaryIdentityByAlias(ctx, alias)
+// CheckAlsoKnownAs checks if an alias is already used
+func (k Keeper) CheckAlsoKnownAs(ctx sdk.Context, alias string) error {
+	_, found := k.GetDidDocumentByAlsoKnownAs(ctx, alias)
 	if found {
 		return status.Error(codes.AlreadyExists, "Alias already exists")
 	}
@@ -80,7 +80,7 @@ func (k Keeper) CheckAlias(ctx sdk.Context, alias string) error {
 }
 
 // SetDidDocument set a specific didDocument in the store from its index
-func (k Keeper) SetPrimaryIdentity(ctx sdk.Context, didDocument types.DidDocument) {
+func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.DidDocument) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 
 	ptrs := strings.Split(didDocument.Id, ":")
@@ -94,7 +94,7 @@ func (k Keeper) SetPrimaryIdentity(ctx sdk.Context, didDocument types.DidDocumen
 }
 
 // GetDidDocument returns a didDocument from its index
-func (k Keeper) GetPrimaryIdentity(
+func (k Keeper) GetDidDocument(
 	ctx sdk.Context,
 	did string,
 ) (val types.DidDocument, found bool) {
@@ -109,8 +109,8 @@ func (k Keeper) GetPrimaryIdentity(
 	return val, true
 }
 
-// GetPrimaryIdentityByAlias returns a didDocument from its index
-func (k Keeper) GetPrimaryIdentityByAlias(
+// GetDidDocumentByAlsoKnownAs returns a didDocument from its index
+func (k Keeper) GetDidDocumentByAlsoKnownAs(
 	ctx sdk.Context,
 	alias string,
 ) (val types.DidDocument, found bool) {
@@ -129,8 +129,8 @@ func (k Keeper) GetPrimaryIdentityByAlias(
 	return val, found
 }
 
-// GetPrimaryIdentityByAddress iterates over all didDocuments and returns the first one that matches the address
-func (k Keeper) GetPrimaryIdentityByAddress(
+// GetDidDocumentByOwner iterates over all didDocuments and returns the first one that matches the address
+func (k Keeper) GetDidDocumentByOwner(
 	ctx sdk.Context,
 	addr string,
 ) (val types.DidDocument, found bool) {
@@ -147,18 +147,6 @@ func (k Keeper) GetPrimaryIdentityByAddress(
 		}
 	}
 	return val, found
-}
-
-// RemoveDidDocument removes a didDocument from the store
-func (k Keeper) RemovePrimaryIdentity(
-	ctx sdk.Context,
-	did string,
-
-) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
-	store.Delete(types.DidDocumentKey(
-		did,
-	))
 }
 
 // GetAllDidDocument returns all didDocument

@@ -65,32 +65,3 @@ func CmdUpdateDidDocument() *cobra.Command {
 
 	return cmd
 }
-
-func CmdDeleteDidDocument() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "delete-did-document [did]",
-		Short: "Delete a did_document",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			indexDid := args[0]
-
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgDeleteDidDocument(
-				clientCtx.GetFromAddress().String(),
-				indexDid,
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
