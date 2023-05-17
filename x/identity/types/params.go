@@ -14,10 +14,10 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates a new Params instance
 func NewParams() Params {
 	return Params{
-		DidBaseContext:                  "https://www.w3.org/ns/did/v1",
-		AcccountDiscoveryReward:         1,
-		AccountDidMethodName:            "sonr",
-		AccountDidMethodContext:         "https://docs.sonr.io/identity/1.0",
+		DidBaseContext:          "https://www.w3.org/ns/did/v1",
+		AcccountDiscoveryReward: 1,
+		AccountDidMethodName:    "sonr",
+		AccountDidMethodContext: "https://docs.sonr.io/identity/1.0",
 		SupportedDidMethods: []string{
 			"sonr",
 			"btcr",

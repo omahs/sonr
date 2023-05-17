@@ -1,15 +1,15 @@
 package controller
 
 import (
-	"fmt"
-	"strings"
 	"crypto/rand"
+	"fmt"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 	srvtypes "github.com/sonrhq/core/x/service/types"
+	"strings"
 )
 
 // ChallengeLength - Length of bytes to generate for a challenge.¡¡
@@ -103,11 +103,11 @@ func (wc *walletClaims) Assign(cred *srvtypes.WebauthnCredential, alias string) 
 	cred.Controller = acc.Did()
 	doc := acc.DidDocument(models.WithCredential(srvtypes.NewCredential(cred)), models.WithUsername(alias))
 	cn := &didController{
-		primary:    acc,
-		primaryDoc: doc,
-		blockchain: []models.Account{},
-		txHash: "",
-		disableIPFS: false,
+		primary:        acc,
+		primaryDoc:     doc,
+		blockchain:     []models.Account{},
+		txHash:         "",
+		disableIPFS:    false,
 		currCredential: cred,
 	}
 	cn.CreatePrimaryIdentity(doc, acc, alias, uint32(wc.Claims.Id))

@@ -12,12 +12,12 @@ import (
 	"github.com/sonrhq/core/internal/gateway/middleware"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/x/identity"
+	"github.com/sonrhq/core/x/service/provider"
 	"github.com/sonrhq/core/x/service/types"
 )
 
 // ChallengeLength - Length of bytes to generate for a challenge.¡¡
 const ChallengeLength = 32
-
 
 func GetService(c *fiber.Ctx) error {
 	q := middleware.ParseQuery(c)
@@ -47,43 +47,35 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 	service, err := q.GetService()
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":  err.Error(),
 			"origin": q.Origin(),
-			"alias": q.Alias(),
+			"alias":  q.Alias(),
 		})
 	}
 
 	ucw, err := local.Context().OldestUnclaimedWallet(c.Context())
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":  err.Error(),
 			"origin": q.Origin(),
-			"alias": q.Alias(),
+			"alias":  q.Alias(),
 		})
 	}
 
 	wc := identity.LoadClaimableWallet(ucw)
-	chal, err := wc.IssueChallenge()
+	sp := provider.NewServiceProvider(service)
+	opts, err := sp.GetCredentialCreationOptions(q.Alias(), wc.Address(), q.IsMobile())
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":  err.Error(),
 			"origin": q.Origin(),
-			"alias": q.Alias(),
-		})
-	}
-	opts, err := service.GetCredentialCreationOptions(q.Alias(), chal, wc.Address(), q.IsMobile())
-	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
-			"origin": q.Origin(),
-			"alias": q.Alias(),
+			"alias":  q.Alias(),
 		})
 	}
 	return c.JSON(fiber.Map{
 		"alias":             q.Alias(),
 		"attestion_options": opts,
 		"origin":            q.Origin(),
-		"challenge":         string(chal),
 		"ucw_id":            int(ucw.Id),
 	})
 
@@ -100,13 +92,14 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.SendStatus(fiber.ErrNotFound.Code)
 	}
+	sp := provider.NewServiceProvider(service)
 	claims, err := q.GetWalletClaims()
 	if err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
 
 	// Checking if the credential response is valid.
-	cred, err := service.VerifyCreationChallenge(q.Attestion(), q.Challenge())
+	cred, err := sp.VerifyCreationChallenge(q.Attestion(), q.Alias())
 	if err != nil {
 		return c.Status(403).SendString(fmt.Sprintf("Failed to verify attestion: %s", err.Error()))
 	}
@@ -131,12 +124,12 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 		return c.Status(412).SendString(fmt.Sprintf("Failed to create JWT: %s", err.Error()))
 	}
 	return c.JSON(fiber.Map{
-		"success": true,
-		"did":     cont.Did(),
-		"primary": cont.PrimaryIdentity(),
-		"tx_hash": cont.PrimaryTxHash(),
-		"jwt":     jwt,
-		"address": cont.Address(),
+		"success":  true,
+		"did":      cont.Did(),
+		"primary":  cont.PrimaryIdentity(),
+		"tx_hash":  cont.PrimaryTxHash(),
+		"jwt":      jwt,
+		"address":  cont.Address(),
 		"accounts": accs,
 	})
 }
@@ -147,15 +140,11 @@ func GetServiceAssertion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
+	sp := provider.NewServiceProvider(service)
 
 	doc, err := q.GetDID()
 	if err != nil {
 		return c.Status(405).SendString(err.Error())
-	}
-
-	chal, err := CreateChallenge()
-	if err != nil {
-		return c.Status(406).SendString(err.Error())
 	}
 
 	vms := doc.ListCredentialVerificationMethods()
@@ -167,7 +156,7 @@ func GetServiceAssertion(c *fiber.Ctx) error {
 		}
 		creds = append(creds, cred.CredentialDescriptor())
 	}
-	challenge, err := service.GetCredentialAssertionOptions(creds, chal, q.IsMobile())
+	challenge, err := sp.GetCredentialAssertionOptions(q.Alias(),creds, q.IsMobile())
 	if err != nil {
 		return c.Status(407).SendString(err.Error())
 	}
@@ -207,10 +196,10 @@ func VerifyServiceAssertion(c *fiber.Ctx) error {
 		return c.Status(401).SendString(err.Error())
 	}
 	return c.JSON(fiber.Map{
-		"success": true,
-		"did":     cont.Did(),
-		"jwt":     jwt,
-		"address": cont.Address(),
+		"success":      true,
+		"did":          cont.Did(),
+		"jwt":          jwt,
+		"address":      cont.Address(),
 		"did_document": doc,
 	})
 }

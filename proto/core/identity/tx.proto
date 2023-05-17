@@ -11,15 +11,16 @@ option go_package = "github.com/sonrhq/core/x/identity/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc CreateDidDocument     (MsgCreateDidDocument    ) returns (MsgCreateDidDocumentResponse    );
-  rpc UpdateDidDocument     (MsgUpdateDidDocument    ) returns (MsgUpdateDidDocumentResponse    );
+  rpc CreateDidDocument (MsgCreateDidDocument) returns (MsgCreateDidDocumentResponse);
+  rpc UpdateDidDocument (MsgUpdateDidDocument) returns (MsgUpdateDidDocumentResponse);
+  rpc RegisterIdentity  (MsgRegisterIdentity ) returns (MsgRegisterIdentityResponse );
 }
 message MsgCreateDidDocument {
            string      creator     = 1;
            DidDocument primary     = 2;
   repeated DidDocument blockchains = 3;
            string      alias       = 4;
-           uint32      wallet_id = 5;
+           uint32      wallet_id   = 5;
 }
 
 message MsgCreateDidDocumentResponse {}
@@ -33,3 +34,10 @@ message MsgUpdateDidDocument {
 message MsgUpdateDidDocumentResponse {
   string creator = 1;
 }
+
+message MsgRegisterIdentity {
+  string creator = 1;
+}
+
+message MsgRegisterIdentityResponse {}
+

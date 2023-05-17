@@ -6,8 +6,8 @@ import (
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
 	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/x/identity/internal/controller"
 	"github.com/sonrhq/core/internal/vault"
+	"github.com/sonrhq/core/x/identity/internal/controller"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 )
@@ -92,7 +92,7 @@ func (s *blocker) buildClaimableWallet() error {
 		err = vault.InsertKeyshare(ks)
 		if err != nil {
 			s.errCh <- err
-			return  err
+			return err
 		}
 		kss = append(kss, ks)
 	}

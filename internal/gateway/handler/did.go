@@ -29,7 +29,7 @@ func GetDIDByAlias(c *fiber.Ctx) error {
 		"did":       doc.Id,
 		"document":  doc,
 		"alias":     c.Params("alias"),
-		"address":  doc.FindPrimaryAddress(),
+		"address":   doc.FindPrimaryAddress(),
 	})
 }
 
@@ -64,7 +64,7 @@ func GetOldestUnclaimed(c *fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{
 		"success": true,
-		"data": uw,
+		"data":    uw,
 	})
 }
 
@@ -75,6 +75,6 @@ func ListAllUnclaimed(c *fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{
 		"success": true,
-		"data": uw,
+		"data":    uw,
 	})
 }

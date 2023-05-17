@@ -49,7 +49,6 @@ require (
 )
 
 require (
-	github.com/cosmos/gogoproto v1.4.2
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/gofiber/helmet/v2 v2.2.25
 	github.com/gofiber/jwt/v3 v3.3.7
@@ -310,6 +309,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.0 // indirect
 	github.com/otiai10/copy v1.6.0 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect

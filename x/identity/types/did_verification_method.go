@@ -169,6 +169,15 @@ func (d *VerificationMethod) DIDFragment() string {
 	return strings.Split(d.Id, "#")[1]
 }
 
+// Equal returns true if the verification method is equal to the given verification method
+func (d *VerificationMethod) Equal(other *VerificationMethod) bool {
+	return d.Id == other.Id &&
+		d.Type == other.Type &&
+		d.BlockchainAccountId == other.BlockchainAccountId &&
+		d.PublicKeyMultibase == other.PublicKeyMultibase &&
+		d.Metadata == other.Metadata
+}
+
 // IsBlockchainAccount returns true if the VerificationMethod is a blockchain account
 func (vm *VerificationMethod) IsBlockchainAccount() bool {
 	return vm.BlockchainAccountId != ""

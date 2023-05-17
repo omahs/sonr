@@ -54,7 +54,6 @@ func ListAccounts(c *fiber.Ctx) error {
 	})
 }
 
-
 func CreateAccount(c *fiber.Ctx) error {
 	usr, err := middleware.FetchUser(c)
 	if err != nil {

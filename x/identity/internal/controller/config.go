@@ -34,7 +34,7 @@ type Options struct {
 	// Username for the controller
 	Username string
 
-	errChan chan error
+	errChan       chan error
 	broadcastChan chan *local.BroadcastTxResponse
 }
 
@@ -45,7 +45,7 @@ func defaultOptions() *Options {
 		BroadcastTx:       false,
 		Username:          "",
 		errChan:           make(chan error),
-		broadcastChan: make(chan *local.BroadcastTxResponse),
+		broadcastChan:     make(chan *local.BroadcastTxResponse),
 	}
 }
 

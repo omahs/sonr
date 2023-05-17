@@ -35,6 +35,10 @@ const (
 	opWeightMsgDeleteDidDocument = "op_weight_msg_did_document"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteDidDocument int = 100
+	opWeightMsgRegisterIdentity           = "op_weight_msg_register_identity"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgRegisterIdentity int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -110,6 +114,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgUpdateDidDocument,
 		identitysimulation.SimulateMsgUpdateDidDocument(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
+	var weightMsgRegisterIdentity int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRegisterIdentity, &weightMsgRegisterIdentity, nil,
+		func(_ *rand.Rand) {
+			weightMsgRegisterIdentity = defaultWeightMsgRegisterIdentity
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRegisterIdentity,
+		identitysimulation.SimulateMsgRegisterIdentity(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
