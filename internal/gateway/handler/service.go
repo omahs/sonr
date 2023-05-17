@@ -12,7 +12,6 @@ import (
 	"github.com/sonrhq/core/internal/gateway/middleware"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/x/identity"
-	"github.com/sonrhq/core/x/service/provider"
 	"github.com/sonrhq/core/x/service/types"
 )
 
@@ -63,8 +62,15 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 	}
 
 	wc := identity.LoadClaimableWallet(ucw)
-	sp := provider.NewServiceProvider(service)
-	opts, err := sp.GetCredentialCreationOptions(q.Alias(), wc.Address(), q.IsMobile())
+	chal, err := wc.IssueChallenge()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":  err.Error(),
+			"origin": q.Origin(),
+			"alias":  q.Alias(),
+		})
+	}
+	opts, err := service.GetCredentialCreationOptions(q.Alias(), chal, wc.Address(), q.IsMobile())
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error":  err.Error(),
@@ -76,6 +82,7 @@ func GetServiceAttestion(c *fiber.Ctx) error {
 		"alias":             q.Alias(),
 		"attestion_options": opts,
 		"origin":            q.Origin(),
+		"challenge":         string(chal),
 		"ucw_id":            int(ucw.Id),
 	})
 
@@ -92,14 +99,13 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.SendStatus(fiber.ErrNotFound.Code)
 	}
-	sp := provider.NewServiceProvider(service)
 	claims, err := q.GetWalletClaims()
 	if err != nil {
 		return c.Status(400).SendString(err.Error())
 	}
 
 	// Checking if the credential response is valid.
-	cred, err := sp.VerifyCreationChallenge(q.Attestion(), q.Alias())
+	cred, err := service.VerifyCreationChallenge(q.Attestion(), q.Challenge())
 	if err != nil {
 		return c.Status(403).SendString(fmt.Sprintf("Failed to verify attestion: %s", err.Error()))
 	}
@@ -140,11 +146,15 @@ func GetServiceAssertion(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(404).SendString(err.Error())
 	}
-	sp := provider.NewServiceProvider(service)
 
 	doc, err := q.GetDID()
 	if err != nil {
 		return c.Status(405).SendString(err.Error())
+	}
+
+	chal, err := CreateChallenge()
+	if err != nil {
+		return c.Status(406).SendString(err.Error())
 	}
 
 	vms := doc.ListCredentialVerificationMethods()
@@ -156,7 +166,7 @@ func GetServiceAssertion(c *fiber.Ctx) error {
 		}
 		creds = append(creds, cred.CredentialDescriptor())
 	}
-	challenge, err := sp.GetCredentialAssertionOptions(q.Alias(),creds, q.IsMobile())
+	challenge, err := service.GetCredentialAssertionOptions(creds, chal, q.IsMobile())
 	if err != nil {
 		return c.Status(407).SendString(err.Error())
 	}

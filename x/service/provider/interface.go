@@ -45,14 +45,14 @@ func (sp *serviceProvider) NewSession(alias, address string, isMobile bool) (*Se
 	if err != nil {
 		return nil, fmt.Errorf("failed to create challenge: %w", err)
 	}
-	s := &Session{
+	s := Session{
 		Alias:     alias,
 		Address:   address,
 		IsMobile:  isMobile,
 		Challenge: chal,
 	}
-	sp.cache.Set(alias, s, defaultExpiration)
-	return s, nil
+	sp.cache.Set(alias, &s, defaultExpiration)
+	return &s, nil
 }
 
 func (sp *serviceProvider) GetSession(alias string) (*Session, error) {
