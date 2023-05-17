@@ -167,7 +167,7 @@ func (k Keeper) GetAllPrimaryIdentities(ctx sdk.Context) (list []types.DidDocume
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                 Relationships - Authentication Keeper Functions                ||
-// ! ||--------------------------------------------------------------------------------||
+// ! ||--------------------------------------------------------------------------------  ||
 // HasAuthentication checks if the element exists in the store
 func (k Keeper) HasAuthentication(ctx sdk.Context, reference string) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuthenticationKeyPrefix))
