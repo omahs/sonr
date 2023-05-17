@@ -23,5 +23,5 @@ type BankKeeper interface {
 
 // IdentityKeeper defines the expected interface needed to retrieve account balances.
 type IdentityKeeper interface {
-	GetPrimaryIdentity(ctx sdk.Context, did string) (identitytypes.DidDocument, bool)
+	GetDidDocument(ctx sdk.Context, did string) (identitytypes.DidDocument, bool)
 }
