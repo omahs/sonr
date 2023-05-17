@@ -177,106 +177,25 @@ func (k Keeper) GetAllPrimaryIdentities(ctx sdk.Context) (list []types.DidDocume
 	return
 }
 
-// SetDidDocument set a specific didDocument in the store from its index
-func (k Keeper) SetBlockchainIdentity(ctx sdk.Context, didDocument types.DidDocument) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlockchainIdentityPrefix))
-	b := k.cdc.MustMarshal(&didDocument)
-	store.Set(types.DidDocumentKey(
-		didDocument.Id,
-	), b)
-}
-
-// SetDidDocument set a specific didDocument in the store from its index
-func (k Keeper) SetBlockchainIdentities(ctx sdk.Context, docs ...*types.DidDocument) {
-	for _, doc := range docs {
-		k.SetBlockchainIdentity(ctx, *doc)
-	}
-}
-
-// GetDidDocument returns a didDocument from its index
-func (k Keeper) GetBlockchainIdentity(
-	ctx sdk.Context,
-	did string,
-
-) (val types.DidDocument, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlockchainIdentityPrefix))
-	b := store.Get(types.DidDocumentKey(
-		did,
-	))
-	if b == nil {
-		return val, false
-	}
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
-}
-
-// GetBlockchainIdentityByAddress iterates over all didDocuments and returns the first one that matches the address
-func (k Keeper) GetBlockchainIdentityByAddress(
-	ctx sdk.Context,
-	addr string,
-) (val types.DidDocument, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlockchainIdentityPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var doc types.DidDocument
-		k.cdc.MustUnmarshal(iterator.Value(), &doc)
-		if doc.MatchesAddress(addr) {
-			val = doc
-			found = true
-		}
-	}
-	return val, found
-}
-
-// RemoveDidDocument removes a didDocument from the store
-func (k Keeper) RemoveBlockchainIdentity(
-	ctx sdk.Context,
-	did string,
-
-) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlockchainIdentityPrefix))
-	store.Delete(types.DidDocumentKey(
-		did,
-	))
-}
-
-// GetAllDidDocument returns all didDocument
-func (k Keeper) GetAllBlockchainIdentities(ctx sdk.Context) (list []types.DidDocument) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlockchainIdentityPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.DidDocument
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
-	}
-	return
-}
-
 // ! ||--------------------------------------------------------------------------------||
-// ! ||                         Relationships Keeper Functions                         ||
+// ! ||                 Relationships - Authentication Keeper Functions                ||
 // ! ||--------------------------------------------------------------------------------||
-
-// HasRelationship checks if the element exists in the store
-func (k Keeper) HasRelationship(ctx sdk.Context, reference string) bool {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RelationshipKeyPrefix))
+// HasAuthentication checks if the element exists in the store
+func (k Keeper) HasAuthentication(ctx sdk.Context, reference string) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuthenticationKeyPrefix))
 	return store.Has(types.RelationshipKey(reference))
 }
 
-// SetRelationship set a specific Service in the store from its index
-func (k Keeper) SetRelationship(ctx sdk.Context, VerificationRelationship types.VerificationRelationship) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RelationshipKeyPrefix))
+// SetAuthentication set a specific Service in the store from its index
+func (k Keeper) SetAuthentication(ctx sdk.Context, VerificationRelationship types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuthenticationKeyPrefix))
 	b := k.cdc.MustMarshal(&VerificationRelationship)
 	store.Set(types.RelationshipKey(VerificationRelationship.Reference), b)
 }
 
-// GetRelationship returns a Service from its index
-func (k Keeper) GetRelationship(ctx sdk.Context, reference string) (val types.VerificationRelationship, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RelationshipKeyPrefix))
+// GetAuthentication returns a Service from its index
+func (k Keeper) GetAuthentication(ctx sdk.Context, reference string) (val types.VerificationRelationship, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuthenticationKeyPrefix))
 
 	b := store.Get(types.RelationshipKey(reference))
 	if b == nil {
@@ -287,9 +206,9 @@ func (k Keeper) GetRelationship(ctx sdk.Context, reference string) (val types.Ve
 	return val, true
 }
 
-// GetAllRelationships returns all Relationship
-func (k Keeper) GetAllRelationships(ctx sdk.Context) (list []types.VerificationRelationship) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.RelationshipKeyPrefix))
+// GetAllAuthentication returns all Relationship
+func (k Keeper) GetAllAuthentication(ctx sdk.Context) (list []types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuthenticationKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
@@ -303,19 +222,185 @@ func (k Keeper) GetAllRelationships(ctx sdk.Context) (list []types.VerificationR
 	return
 }
 
-func (k Keeper) GetRelationshipsFromList(ctx sdk.Context, addrs ...string) ([]types.VerificationRelationship, error) {
-	vrs := make([]types.VerificationRelationship, 0, len(addrs))
+// ! ||--------------------------------------------------------------------------------||
+// ! ||                   Relationships - Assertion Keeper Functions                   ||
+// ! ||--------------------------------------------------------------------------------||
+// HasAssertion checks if the element exists in the store
+func (k Keeper) HasAssertion(ctx sdk.Context, reference string) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AssertionKeyPrefix))
+	return store.Has(types.RelationshipKey(reference))
+}
 
-	for _, addr := range addrs {
-		if vr, found := k.GetRelationship(sdk.UnwrapSDKContext(ctx), addr); found {
-			vrs = append(vrs, vr)
-		} else {
-			return nil, status.Error(codes.NotFound, "not found")
-		}
+// SetAssertion set a specific Service in the store from its index
+func (k Keeper) SetAssertion(ctx sdk.Context, VerificationRelationship types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AssertionKeyPrefix))
+	b := k.cdc.MustMarshal(&VerificationRelationship)
+	store.Set(types.RelationshipKey(VerificationRelationship.Reference), b)
+}
+
+// GetAssertion returns a Service from its index
+func (k Keeper) GetAssertion(ctx sdk.Context, reference string) (val types.VerificationRelationship, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AssertionKeyPrefix))
+
+	b := store.Get(types.RelationshipKey(reference))
+	if b == nil {
+		return val, false
 	}
 
-	return vrs, nil
+	k.cdc.MustUnmarshal(b, &val)
+	return val, true
 }
+
+// GetAllAssertion returns all Relationship
+func (k Keeper) GetAllAssertion(ctx sdk.Context) (list []types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AssertionKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.VerificationRelationship
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+	return
+}
+
+// ! ||--------------------------------------------------------------------------------||
+// ! ||             Relationships - Capability Delegation Keeper Functions             ||
+// ! ||--------------------------------------------------------------------------------||
+
+// HasCapabilityDelegation checks if the capability delegation relationship exists in the store
+func (k Keeper) HasCapabilityDelegation(ctx sdk.Context, reference string) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CapabilityDelegationKeyPrefix))
+	return store.Has(types.RelationshipKey(reference))
+}
+
+// SetCapabilityDelegation sets a specific capability delegation relationship in the store from its reference
+func (k Keeper) SetCapabilityDelegation(ctx sdk.Context, delegation types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CapabilityDelegationKeyPrefix))
+	b := k.cdc.MustMarshal(&delegation)
+	store.Set(types.RelationshipKey(delegation.Reference), b)
+}
+
+// GetCapabilityDelegation returns a capability delegation relationship from its reference
+func (k Keeper) GetCapabilityDelegation(ctx sdk.Context, reference string) (delegation types.VerificationRelationship, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CapabilityDelegationKeyPrefix))
+
+	b := store.Get(types.RelationshipKey(reference))
+	if b == nil {
+		return delegation, false
+	}
+
+	k.cdc.MustUnmarshal(b, &delegation)
+	return delegation, true
+}
+
+// GetAllCapabilityDelegations returns all capability delegation relationships
+func (k Keeper) GetAllCapabilityDelegations(ctx sdk.Context) (list []types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CapabilityDelegationKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var delegation types.VerificationRelationship
+		k.cdc.MustUnmarshal(iterator.Value(), &delegation)
+		list = append(list, delegation)
+	}
+	return
+}
+
+// ! ||--------------------------------------------------------------------------------||
+// ! ||             Relationships - Capability Invocation Keeper Functions             ||
+// ! ||--------------------------------------------------------------------------------||
+
+// HasCapabilityInvocation checks if the capability invocation relationship exists in the store
+func (k Keeper) HasCapabilityInvocation(ctx sdk.Context, reference string) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CapabilityInvocationKeyPrefix))
+	return store.Has(types.RelationshipKey(reference))
+}
+
+// SetCapabilityInvocation sets a specific capability invocation relationship in the store from its reference
+func (k Keeper) SetCapabilityInvocation(ctx sdk.Context, invocation types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CapabilityInvocationKeyPrefix))
+	b := k.cdc.MustMarshal(&invocation)
+	store.Set(types.RelationshipKey(invocation.Reference), b)
+}
+
+// GetCapabilityInvocation returns a capability invocation relationship from its reference
+func (k Keeper) GetCapabilityInvocation(ctx sdk.Context, reference string) (invocation types.VerificationRelationship, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CapabilityInvocationKeyPrefix))
+
+	b := store.Get(types.RelationshipKey(reference))
+	if b == nil {
+		return invocation, false
+	}
+
+	k.cdc.MustUnmarshal(b, &invocation)
+	return invocation, true
+}
+
+// GetAllCapabilityInvocations returns all capability invocation relationships
+func (k Keeper) GetAllCapabilityInvocations(ctx sdk.Context) (list []types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CapabilityInvocationKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var invocation types.VerificationRelationship
+		k.cdc.MustUnmarshal(iterator.Value(), &invocation)
+		list = append(list, invocation)
+	}
+	return
+}
+
+// ! ||--------------------------------------------------------------------------------||
+// ! ||                 Relationships - Key Agreement Keeper Functions                 ||
+// ! ||--------------------------------------------------------------------------------||
+// HasKeyAgreement checks if the key agreement relationship exists in the store
+func (k Keeper) HasKeyAgreement(ctx sdk.Context, reference string) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.KeyAgreementKeyPrefix))
+	return store.Has(types.RelationshipKey(reference))
+}
+
+// SetKeyAgreement sets a specific key agreement relationship in the store from its reference
+func (k Keeper) SetKeyAgreement(ctx sdk.Context, agreement types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.KeyAgreementKeyPrefix))
+	b := k.cdc.MustMarshal(&agreement)
+	store.Set(types.RelationshipKey(agreement.Reference), b)
+}
+
+// GetKeyAgreement returns a key agreement relationship from its reference
+func (k Keeper) GetKeyAgreement(ctx sdk.Context, reference string) (agreement types.VerificationRelationship, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.KeyAgreementKeyPrefix))
+
+	b := store.Get(types.RelationshipKey(reference))
+	if b == nil {
+		return agreement, false
+	}
+
+	k.cdc.MustUnmarshal(b, &agreement)
+	return agreement, true
+}
+
+// GetAllKeyAgreements returns all key agreement relationships
+func (k Keeper) GetAllKeyAgreements(ctx sdk.Context) (list []types.VerificationRelationship) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.KeyAgreementKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var agreement types.VerificationRelationship
+		k.cdc.MustUnmarshal(iterator.Value(), &agreement)
+		list = append(list, agreement)
+	}
+	return
+}
+
+
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                                  Wallet Claims                                 ||

@@ -478,22 +478,9 @@ definitions:
         type: string
         title: The idx address of the owner of the DID document
     description: DidDocument represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
-  identityMsgCreateClaimableWalletResponse:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
-      reward:
-        type: integer
-        format: int32
   identityMsgCreateDidDocumentResponse:
     type: object
-  identityMsgDeleteClaimableWalletResponse:
-    type: object
   identityMsgDeleteDidDocumentResponse:
-    type: object
-  identityMsgUpdateClaimableWalletResponse:
     type: object
   identityMsgUpdateDidDocumentResponse:
     type: object

@@ -7,6 +7,19 @@ package sonrhq.core.identity;
 
 option go_package = "github.com/sonrhq/core/x/identity/types";
 
+// Identity represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
+message Identity {
+  string id = 1; // The identifier for the DID subject
+  string owner = 2; //optional, the entity/entities controlling the DID subject
+  repeated string authentication = 3; // optional, the set of authentication methods associated with the DID subject
+  repeated string assertion_method = 4; // optional, the set of assertion methods associated with the DID subject
+  repeated string capability_invocation = 5; // optional, the set of capability invocation methods associated with the DID subject
+  repeated string capability_delegation = 6; // optional, the set of capability delegation methods associated with the DID subject
+  repeated string key_agreement = 7; // optional, the set of key agreement methods associated with the DID subject
+  repeated string also_known_as = 8; // optional, the set of identifiers for other personas or identities related to the DID subject
+  string metadata = 9; // optional, additional metadata related to the DID document
+}
+
 // DidDocument represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
 message DidDocument {
   repeated string context = 1; // The JSON-LD context(s) used in the document

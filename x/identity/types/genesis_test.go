@@ -29,14 +29,6 @@ func TestGenesisState_Validate(t *testing.T) {
 						Id: "1",
 					},
 				},
-				BlockchainIdentities: []types.DidDocument{
-					{
-						Id: "0",
-					},
-					{
-						Id: "1",
-					},
-				},
 				Relationships: []types.VerificationRelationship{
 					{
 						Reference: "0",

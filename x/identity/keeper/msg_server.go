@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -49,12 +48,6 @@ func (k msgServer) CreateDidDocument(goCtx context.Context, msg *types.MsgCreate
 
 	ucw.Claimed = true
 	k.RemoveClaimableWallet(ctx, uint64(msg.WalletId))
-
-	// Set the blockchain identities
-	k.SetBlockchainIdentities(ctx, msg.Blockchains...)
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent("NewTx", sdk.NewAttribute("tx-name", "create-did-document"), sdk.NewAttribute("did", msg.Primary.Id), sdk.NewAttribute("creator", msg.Creator), sdk.NewAttribute("alias", msg.Alias)),
-	)
 	return &types.MsgCreateDidDocumentResponse{}, nil
 }
 
@@ -109,66 +102,3 @@ func (k msgServer) DeleteDidDocument(goCtx context.Context, msg *types.MsgDelete
 	return &types.MsgDeleteDidDocumentResponse{}, nil
 }
 
-// ! ||--------------------------------------------------------------------------------||
-// ! ||                                  Wallet Claims                                 ||
-// ! ||--------------------------------------------------------------------------------||
-
-func (k msgServer) CreateClaimableWallet(goCtx context.Context, msg *types.MsgCreateClaimableWallet) (*types.MsgCreateClaimableWalletResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	var claimableWallet = types.ClaimableWallet{
-		Creator: msg.Creator,
-	}
-
-	id := k.AppendClaimableWallet(
-		ctx,
-		claimableWallet,
-	)
-
-	return &types.MsgCreateClaimableWalletResponse{
-		Id: id,
-	}, nil
-}
-
-func (k msgServer) UpdateClaimableWallet(goCtx context.Context, msg *types.MsgUpdateClaimableWallet) (*types.MsgUpdateClaimableWalletResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	var claimableWallet = types.ClaimableWallet{
-		Creator: msg.Creator,
-		Id:      msg.Id,
-	}
-
-	// Checks that the element exists
-	val, found := k.GetClaimableWallet(ctx, msg.Id)
-	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
-	}
-
-	// Checks if the msg creator is the same as the current owner
-	if msg.Creator != val.Creator {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
-	}
-
-	k.SetClaimableWallet(ctx, claimableWallet)
-
-	return &types.MsgUpdateClaimableWalletResponse{}, nil
-}
-
-func (k msgServer) DeleteClaimableWallet(goCtx context.Context, msg *types.MsgDeleteClaimableWallet) (*types.MsgDeleteClaimableWalletResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// Checks that the element exists
-	val, found := k.GetClaimableWallet(ctx, msg.Id)
-	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
-	}
-
-	// Checks if the msg creator is the same as the current owner
-	if msg.Creator != val.Creator {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
-	}
-
-	k.RemoveClaimableWallet(ctx, msg.Id)
-
-	return &types.MsgDeleteClaimableWalletResponse{}, nil
-}

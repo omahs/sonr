@@ -10,12 +10,11 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		PrimaryIdentities:    []DidDocument{},
-		BlockchainIdentities: []DidDocument{},
-		ClaimableWalletList:  []ClaimableWallet{},
+		PrimaryIdentities: []DidDocument{},
+		Relationships:    []VerificationRelationship{},
+		ClaimableWalletList: []ClaimableWallet{},
 		// this line is used by starport scaffolding # genesis/types/default
-		Params:        DefaultParams(),
-		Relationships: []VerificationRelationship{},
+		Params: DefaultParams(),
 	}
 }
 
