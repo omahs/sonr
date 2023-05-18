@@ -139,7 +139,7 @@ func (c LocalContext) GetService(ctx context.Context, origin string) (*servicety
 	if err != nil {
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
 	}
-	resp, err := servicetypes.NewQueryClient(conn).ServiceRecord(ctx, &servicetypes.QueryGetServiceRecordRequest{Id: origin})
+	resp, err := servicetypes.NewQueryClient(conn).ServiceRecord(ctx, &servicetypes.QueryServiceRecordRequest{Origin: origin})
 	if err != nil {
 
 		return nil, err
@@ -154,7 +154,7 @@ func (c LocalContext) GetAllServices(ctx context.Context) ([]*servicetypes.Servi
 
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
 	}
-	resp, err := servicetypes.NewQueryClient(conn).ServiceRecordAll(ctx, &servicetypes.QueryAllServiceRecordRequest{})
+	resp, err := servicetypes.NewQueryClient(conn).ListServiceRecords(ctx, &servicetypes.ListServiceRecordsRequest{})
 	if err != nil {
 
 		return nil, err

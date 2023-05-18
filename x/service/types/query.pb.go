@@ -113,22 +113,22 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-type QueryGetServiceRecordRequest struct {
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+type QueryServiceRecordRequest struct {
+	Origin string `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
 }
 
-func (m *QueryGetServiceRecordRequest) Reset()         { *m = QueryGetServiceRecordRequest{} }
-func (m *QueryGetServiceRecordRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetServiceRecordRequest) ProtoMessage()    {}
-func (*QueryGetServiceRecordRequest) Descriptor() ([]byte, []int) {
+func (m *QueryServiceRecordRequest) Reset()         { *m = QueryServiceRecordRequest{} }
+func (m *QueryServiceRecordRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryServiceRecordRequest) ProtoMessage()    {}
+func (*QueryServiceRecordRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5cf4b2348245f9e3, []int{2}
 }
-func (m *QueryGetServiceRecordRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryServiceRecordRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetServiceRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryServiceRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetServiceRecordRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryServiceRecordRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -138,41 +138,41 @@ func (m *QueryGetServiceRecordRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *QueryGetServiceRecordRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetServiceRecordRequest.Merge(m, src)
+func (m *QueryServiceRecordRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryServiceRecordRequest.Merge(m, src)
 }
-func (m *QueryGetServiceRecordRequest) XXX_Size() int {
+func (m *QueryServiceRecordRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetServiceRecordRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetServiceRecordRequest.DiscardUnknown(m)
+func (m *QueryServiceRecordRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryServiceRecordRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetServiceRecordRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryServiceRecordRequest proto.InternalMessageInfo
 
-func (m *QueryGetServiceRecordRequest) GetId() string {
+func (m *QueryServiceRecordRequest) GetOrigin() string {
 	if m != nil {
-		return m.Id
+		return m.Origin
 	}
 	return ""
 }
 
-type QueryGetServiceRecordResponse struct {
+type QueryServiceRecordResponse struct {
 	ServiceRecord ServiceRecord `protobuf:"bytes,1,opt,name=serviceRecord,proto3" json:"serviceRecord"`
 }
 
-func (m *QueryGetServiceRecordResponse) Reset()         { *m = QueryGetServiceRecordResponse{} }
-func (m *QueryGetServiceRecordResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetServiceRecordResponse) ProtoMessage()    {}
-func (*QueryGetServiceRecordResponse) Descriptor() ([]byte, []int) {
+func (m *QueryServiceRecordResponse) Reset()         { *m = QueryServiceRecordResponse{} }
+func (m *QueryServiceRecordResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryServiceRecordResponse) ProtoMessage()    {}
+func (*QueryServiceRecordResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5cf4b2348245f9e3, []int{3}
 }
-func (m *QueryGetServiceRecordResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryServiceRecordResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetServiceRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryServiceRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetServiceRecordResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryServiceRecordResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -182,41 +182,41 @@ func (m *QueryGetServiceRecordResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryGetServiceRecordResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetServiceRecordResponse.Merge(m, src)
+func (m *QueryServiceRecordResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryServiceRecordResponse.Merge(m, src)
 }
-func (m *QueryGetServiceRecordResponse) XXX_Size() int {
+func (m *QueryServiceRecordResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetServiceRecordResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetServiceRecordResponse.DiscardUnknown(m)
+func (m *QueryServiceRecordResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryServiceRecordResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetServiceRecordResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryServiceRecordResponse proto.InternalMessageInfo
 
-func (m *QueryGetServiceRecordResponse) GetServiceRecord() ServiceRecord {
+func (m *QueryServiceRecordResponse) GetServiceRecord() ServiceRecord {
 	if m != nil {
 		return m.ServiceRecord
 	}
 	return ServiceRecord{}
 }
 
-type QueryAllServiceRecordRequest struct {
+type ListServiceRecordsRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllServiceRecordRequest) Reset()         { *m = QueryAllServiceRecordRequest{} }
-func (m *QueryAllServiceRecordRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllServiceRecordRequest) ProtoMessage()    {}
-func (*QueryAllServiceRecordRequest) Descriptor() ([]byte, []int) {
+func (m *ListServiceRecordsRequest) Reset()         { *m = ListServiceRecordsRequest{} }
+func (m *ListServiceRecordsRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceRecordsRequest) ProtoMessage()    {}
+func (*ListServiceRecordsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5cf4b2348245f9e3, []int{4}
 }
-func (m *QueryAllServiceRecordRequest) XXX_Unmarshal(b []byte) error {
+func (m *ListServiceRecordsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllServiceRecordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ListServiceRecordsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllServiceRecordRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ListServiceRecordsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -226,42 +226,42 @@ func (m *QueryAllServiceRecordRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *QueryAllServiceRecordRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllServiceRecordRequest.Merge(m, src)
+func (m *ListServiceRecordsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceRecordsRequest.Merge(m, src)
 }
-func (m *QueryAllServiceRecordRequest) XXX_Size() int {
+func (m *ListServiceRecordsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllServiceRecordRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllServiceRecordRequest.DiscardUnknown(m)
+func (m *ListServiceRecordsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceRecordsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllServiceRecordRequest proto.InternalMessageInfo
+var xxx_messageInfo_ListServiceRecordsRequest proto.InternalMessageInfo
 
-func (m *QueryAllServiceRecordRequest) GetPagination() *query.PageRequest {
+func (m *ListServiceRecordsRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryAllServiceRecordResponse struct {
+type ListServiceRecordsResponse struct {
 	ServiceRecord []ServiceRecord     `protobuf:"bytes,1,rep,name=serviceRecord,proto3" json:"serviceRecord"`
 	Pagination    *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllServiceRecordResponse) Reset()         { *m = QueryAllServiceRecordResponse{} }
-func (m *QueryAllServiceRecordResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllServiceRecordResponse) ProtoMessage()    {}
-func (*QueryAllServiceRecordResponse) Descriptor() ([]byte, []int) {
+func (m *ListServiceRecordsResponse) Reset()         { *m = ListServiceRecordsResponse{} }
+func (m *ListServiceRecordsResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceRecordsResponse) ProtoMessage()    {}
+func (*ListServiceRecordsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5cf4b2348245f9e3, []int{5}
 }
-func (m *QueryAllServiceRecordResponse) XXX_Unmarshal(b []byte) error {
+func (m *ListServiceRecordsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllServiceRecordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ListServiceRecordsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllServiceRecordResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ListServiceRecordsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -271,26 +271,26 @@ func (m *QueryAllServiceRecordResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryAllServiceRecordResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllServiceRecordResponse.Merge(m, src)
+func (m *ListServiceRecordsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceRecordsResponse.Merge(m, src)
 }
-func (m *QueryAllServiceRecordResponse) XXX_Size() int {
+func (m *ListServiceRecordsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllServiceRecordResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllServiceRecordResponse.DiscardUnknown(m)
+func (m *ListServiceRecordsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceRecordsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllServiceRecordResponse proto.InternalMessageInfo
+var xxx_messageInfo_ListServiceRecordsResponse proto.InternalMessageInfo
 
-func (m *QueryAllServiceRecordResponse) GetServiceRecord() []ServiceRecord {
+func (m *ListServiceRecordsResponse) GetServiceRecord() []ServiceRecord {
 	if m != nil {
 		return m.ServiceRecord
 	}
 	return nil
 }
 
-func (m *QueryAllServiceRecordResponse) GetPagination() *query.PageResponse {
+func (m *ListServiceRecordsResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -298,7 +298,7 @@ func (m *QueryAllServiceRecordResponse) GetPagination() *query.PageResponse {
 }
 
 type QueryGetServiceRelationshipRequest struct {
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Origin string `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
 }
 
 func (m *QueryGetServiceRelationshipRequest) Reset()         { *m = QueryGetServiceRelationshipRequest{} }
@@ -334,9 +334,9 @@ func (m *QueryGetServiceRelationshipRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryGetServiceRelationshipRequest proto.InternalMessageInfo
 
-func (m *QueryGetServiceRelationshipRequest) GetId() string {
+func (m *QueryGetServiceRelationshipRequest) GetOrigin() string {
 	if m != nil {
-		return m.Id
+		return m.Origin
 	}
 	return ""
 }
@@ -385,57 +385,306 @@ func (m *QueryGetServiceRelationshipResponse) GetServiceRelationships() ServiceR
 	return ServiceRelationship{}
 }
 
+type QueryGetServiceAttestionRequest struct {
+	Origin string `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
+}
+
+func (m *QueryGetServiceAttestionRequest) Reset()         { *m = QueryGetServiceAttestionRequest{} }
+func (m *QueryGetServiceAttestionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetServiceAttestionRequest) ProtoMessage()    {}
+func (*QueryGetServiceAttestionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5cf4b2348245f9e3, []int{8}
+}
+func (m *QueryGetServiceAttestionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetServiceAttestionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetServiceAttestionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetServiceAttestionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetServiceAttestionRequest.Merge(m, src)
+}
+func (m *QueryGetServiceAttestionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetServiceAttestionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetServiceAttestionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetServiceAttestionRequest proto.InternalMessageInfo
+
+func (m *QueryGetServiceAttestionRequest) GetOrigin() string {
+	if m != nil {
+		return m.Origin
+	}
+	return ""
+}
+
+type QueryGetServiceAttestionResponse struct {
+	Alias            string `protobuf:"bytes,1,opt,name=alias,proto3" json:"alias,omitempty"`
+	AttestionOptions string `protobuf:"bytes,2,opt,name=attestion_options,json=attestionOptions,proto3" json:"attestion_options,omitempty"`
+	Origin           string `protobuf:"bytes,3,opt,name=origin,proto3" json:"origin,omitempty"`
+	Challenge        string `protobuf:"bytes,4,opt,name=challenge,proto3" json:"challenge,omitempty"`
+	UcwId            uint64 `protobuf:"varint,5,opt,name=ucw_id,json=ucwId,proto3" json:"ucw_id,omitempty"`
+}
+
+func (m *QueryGetServiceAttestionResponse) Reset()         { *m = QueryGetServiceAttestionResponse{} }
+func (m *QueryGetServiceAttestionResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetServiceAttestionResponse) ProtoMessage()    {}
+func (*QueryGetServiceAttestionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5cf4b2348245f9e3, []int{9}
+}
+func (m *QueryGetServiceAttestionResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetServiceAttestionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetServiceAttestionResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetServiceAttestionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetServiceAttestionResponse.Merge(m, src)
+}
+func (m *QueryGetServiceAttestionResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetServiceAttestionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetServiceAttestionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetServiceAttestionResponse proto.InternalMessageInfo
+
+func (m *QueryGetServiceAttestionResponse) GetAlias() string {
+	if m != nil {
+		return m.Alias
+	}
+	return ""
+}
+
+func (m *QueryGetServiceAttestionResponse) GetAttestionOptions() string {
+	if m != nil {
+		return m.AttestionOptions
+	}
+	return ""
+}
+
+func (m *QueryGetServiceAttestionResponse) GetOrigin() string {
+	if m != nil {
+		return m.Origin
+	}
+	return ""
+}
+
+func (m *QueryGetServiceAttestionResponse) GetChallenge() string {
+	if m != nil {
+		return m.Challenge
+	}
+	return ""
+}
+
+func (m *QueryGetServiceAttestionResponse) GetUcwId() uint64 {
+	if m != nil {
+		return m.UcwId
+	}
+	return 0
+}
+
+type QueryGetServiceAssertionRequest struct {
+	Origin string `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
+}
+
+func (m *QueryGetServiceAssertionRequest) Reset()         { *m = QueryGetServiceAssertionRequest{} }
+func (m *QueryGetServiceAssertionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetServiceAssertionRequest) ProtoMessage()    {}
+func (*QueryGetServiceAssertionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5cf4b2348245f9e3, []int{10}
+}
+func (m *QueryGetServiceAssertionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetServiceAssertionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetServiceAssertionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetServiceAssertionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetServiceAssertionRequest.Merge(m, src)
+}
+func (m *QueryGetServiceAssertionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetServiceAssertionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetServiceAssertionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetServiceAssertionRequest proto.InternalMessageInfo
+
+func (m *QueryGetServiceAssertionRequest) GetOrigin() string {
+	if m != nil {
+		return m.Origin
+	}
+	return ""
+}
+
+type QueryGetServiceAssertionResponse struct {
+	Did              string `protobuf:"bytes,1,opt,name=did,proto3" json:"did,omitempty"`
+	AssertionOptions string `protobuf:"bytes,2,opt,name=assertion_options,json=assertionOptions,proto3" json:"assertion_options,omitempty"`
+	Origin           string `protobuf:"bytes,3,opt,name=origin,proto3" json:"origin,omitempty"`
+	Challenge        string `protobuf:"bytes,4,opt,name=challenge,proto3" json:"challenge,omitempty"`
+}
+
+func (m *QueryGetServiceAssertionResponse) Reset()         { *m = QueryGetServiceAssertionResponse{} }
+func (m *QueryGetServiceAssertionResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetServiceAssertionResponse) ProtoMessage()    {}
+func (*QueryGetServiceAssertionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5cf4b2348245f9e3, []int{11}
+}
+func (m *QueryGetServiceAssertionResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetServiceAssertionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetServiceAssertionResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetServiceAssertionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetServiceAssertionResponse.Merge(m, src)
+}
+func (m *QueryGetServiceAssertionResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetServiceAssertionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetServiceAssertionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetServiceAssertionResponse proto.InternalMessageInfo
+
+func (m *QueryGetServiceAssertionResponse) GetDid() string {
+	if m != nil {
+		return m.Did
+	}
+	return ""
+}
+
+func (m *QueryGetServiceAssertionResponse) GetAssertionOptions() string {
+	if m != nil {
+		return m.AssertionOptions
+	}
+	return ""
+}
+
+func (m *QueryGetServiceAssertionResponse) GetOrigin() string {
+	if m != nil {
+		return m.Origin
+	}
+	return ""
+}
+
+func (m *QueryGetServiceAssertionResponse) GetChallenge() string {
+	if m != nil {
+		return m.Challenge
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "sonrhq.core.service.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "sonrhq.core.service.QueryParamsResponse")
-	proto.RegisterType((*QueryGetServiceRecordRequest)(nil), "sonrhq.core.service.QueryGetServiceRecordRequest")
-	proto.RegisterType((*QueryGetServiceRecordResponse)(nil), "sonrhq.core.service.QueryGetServiceRecordResponse")
-	proto.RegisterType((*QueryAllServiceRecordRequest)(nil), "sonrhq.core.service.QueryAllServiceRecordRequest")
-	proto.RegisterType((*QueryAllServiceRecordResponse)(nil), "sonrhq.core.service.QueryAllServiceRecordResponse")
+	proto.RegisterType((*QueryServiceRecordRequest)(nil), "sonrhq.core.service.QueryServiceRecordRequest")
+	proto.RegisterType((*QueryServiceRecordResponse)(nil), "sonrhq.core.service.QueryServiceRecordResponse")
+	proto.RegisterType((*ListServiceRecordsRequest)(nil), "sonrhq.core.service.ListServiceRecordsRequest")
+	proto.RegisterType((*ListServiceRecordsResponse)(nil), "sonrhq.core.service.ListServiceRecordsResponse")
 	proto.RegisterType((*QueryGetServiceRelationshipRequest)(nil), "sonrhq.core.service.QueryGetServiceRelationshipRequest")
 	proto.RegisterType((*QueryGetServiceRelationshipResponse)(nil), "sonrhq.core.service.QueryGetServiceRelationshipResponse")
+	proto.RegisterType((*QueryGetServiceAttestionRequest)(nil), "sonrhq.core.service.QueryGetServiceAttestionRequest")
+	proto.RegisterType((*QueryGetServiceAttestionResponse)(nil), "sonrhq.core.service.QueryGetServiceAttestionResponse")
+	proto.RegisterType((*QueryGetServiceAssertionRequest)(nil), "sonrhq.core.service.QueryGetServiceAssertionRequest")
+	proto.RegisterType((*QueryGetServiceAssertionResponse)(nil), "sonrhq.core.service.QueryGetServiceAssertionResponse")
 }
 
 func init() { proto.RegisterFile("core/service/query.proto", fileDescriptor_5cf4b2348245f9e3) }
 
 var fileDescriptor_5cf4b2348245f9e3 = []byte{
-	// 575 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x94, 0x41, 0x6b, 0x13, 0x41,
-	0x14, 0xc7, 0x33, 0xd1, 0x06, 0x1c, 0xa9, 0xc8, 0x24, 0x87, 0x76, 0xd3, 0xae, 0x75, 0x0a, 0x69,
-	0xf0, 0x30, 0x43, 0xa2, 0x50, 0xbd, 0xd9, 0x1e, 0xec, 0x4d, 0xe2, 0x7a, 0xf3, 0x22, 0xbb, 0x9b,
-	0x71, 0x33, 0xb0, 0xd9, 0xd9, 0xec, 0x6c, 0x8a, 0x45, 0x04, 0xf1, 0xe6, 0x45, 0x04, 0xaf, 0xe2,
-	0xe7, 0xf0, 0xea, 0xad, 0xc7, 0x82, 0x17, 0x4f, 0x22, 0x89, 0x1f, 0x44, 0x32, 0x33, 0xb5, 0x19,
-	0xb2, 0x9b, 0x1a, 0x7a, 0x4a, 0xd8, 0xf7, 0xfe, 0xff, 0xf9, 0xbd, 0x79, 0xef, 0x0d, 0xdc, 0x08,
-	0x45, 0xc6, 0xa8, 0x64, 0xd9, 0x31, 0x0f, 0x19, 0x1d, 0x8d, 0x59, 0x76, 0x42, 0xd2, 0x4c, 0xe4,
-	0x02, 0xd5, 0xa5, 0x48, 0xb2, 0xc1, 0x88, 0xcc, 0x12, 0x88, 0x49, 0x70, 0x1a, 0x91, 0x88, 0x84,
-	0x8a, 0xd3, 0xd9, 0x3f, 0x9d, 0xea, 0x6c, 0x45, 0x42, 0x44, 0x31, 0xa3, 0x7e, 0xca, 0xa9, 0x9f,
-	0x24, 0x22, 0xf7, 0x73, 0x2e, 0x12, 0x69, 0xa2, 0xf7, 0x42, 0x21, 0x87, 0x42, 0xd2, 0xc0, 0x97,
-	0xe6, 0x04, 0x7a, 0xdc, 0x09, 0x58, 0xee, 0x77, 0x68, 0xea, 0x47, 0x3c, 0x51, 0xc9, 0x26, 0xd7,
-	0xb1, 0x70, 0x22, 0x96, 0x30, 0xc9, 0xcf, 0x7d, 0x36, 0xad, 0x58, 0xc6, 0x42, 0x91, 0xf5, 0x75,
-	0x08, 0x37, 0x20, 0x7a, 0x36, 0x33, 0xee, 0xf9, 0x99, 0x3f, 0x94, 0x1e, 0x1b, 0x8d, 0x99, 0xcc,
-	0x71, 0x0f, 0xd6, 0xad, 0xaf, 0x32, 0x15, 0x89, 0x64, 0xe8, 0x11, 0xac, 0xa5, 0xea, 0xcb, 0x06,
-	0xd8, 0x01, 0xed, 0x9b, 0xdd, 0x26, 0x29, 0xa8, 0x94, 0x68, 0xd1, 0xe1, 0xf5, 0xd3, 0x5f, 0x77,
-	0x2a, 0x9e, 0x11, 0x60, 0x02, 0xb7, 0x94, 0xe3, 0x11, 0xcb, 0x9f, 0xeb, 0x3c, 0x4f, 0x61, 0x98,
-	0x13, 0xd1, 0x2d, 0x58, 0xe5, 0x7d, 0x65, 0x7b, 0xc3, 0xab, 0xf2, 0x3e, 0x16, 0x70, 0xbb, 0x24,
-	0xdf, 0xb0, 0x3c, 0x85, 0xeb, 0x72, 0x3e, 0x60, 0x90, 0x70, 0x21, 0x92, 0x65, 0x61, 0xc8, 0x6c,
-	0x39, 0x7e, 0x65, 0x00, 0x0f, 0xe2, 0xb8, 0x10, 0xf0, 0x09, 0x84, 0x17, 0x77, 0x6e, 0x0e, 0x6b,
-	0x11, 0xdd, 0x20, 0x32, 0x6b, 0x10, 0xd1, 0x23, 0x60, 0x1a, 0x44, 0x7a, 0x7e, 0xc4, 0x8c, 0xd6,
-	0x9b, 0x53, 0xe2, 0x6f, 0xc0, 0x54, 0xb6, 0x78, 0x50, 0x79, 0x65, 0xd7, 0xae, 0x50, 0x19, 0x3a,
-	0xb2, 0xc8, 0xab, 0x8a, 0x7c, 0xef, 0x52, 0x72, 0x0d, 0x63, 0xa1, 0x3f, 0x80, 0x78, 0xa1, 0x27,
-	0xb1, 0x1e, 0xd8, 0x01, 0x4f, 0xcb, 0x3a, 0xf9, 0x01, 0xc0, 0xdd, 0xa5, 0x32, 0x53, 0x76, 0x00,
-	0x1b, 0x05, 0xe1, 0xf3, 0x51, 0x6b, 0x2f, 0xaf, 0xfe, 0x42, 0x60, 0xee, 0xa0, 0xd0, 0xab, 0xfb,
-	0x71, 0x0d, 0xae, 0x29, 0x16, 0xf4, 0x0e, 0xc0, 0x9a, 0x1e, 0x54, 0xb4, 0x57, 0x68, 0xbd, 0xb8,
-	0x15, 0x4e, 0xfb, 0xf2, 0x44, 0x5d, 0x0b, 0xde, 0x7d, 0xff, 0xe3, 0xcf, 0xe7, 0xea, 0x36, 0x6a,
-	0x52, 0xad, 0xa0, 0xd6, 0x02, 0xea, 0x95, 0x40, 0x5f, 0x01, 0x5c, 0xb7, 0xda, 0x87, 0x3a, 0xe5,
-	0x07, 0x94, 0xec, 0x8d, 0xd3, 0x5d, 0x45, 0x62, 0xe8, 0x5a, 0x8a, 0x6e, 0x07, 0xb9, 0x8a, 0x8e,
-	0x16, 0x3c, 0x0e, 0xf4, 0x0d, 0xef, 0xbf, 0x45, 0x5f, 0x00, 0xbc, 0x6d, 0x39, 0x1c, 0xc4, 0xf1,
-	0x32, 0xc6, 0x92, 0xd5, 0x59, 0xc6, 0x58, 0xb6, 0x04, 0xf8, 0xae, 0x62, 0x6c, 0xa2, 0xcd, 0x52,
-	0x46, 0xf4, 0x1d, 0xc0, 0x7a, 0x41, 0x97, 0xd1, 0xfe, 0xff, 0x5d, 0xc9, 0xc2, 0xe4, 0x3a, 0x0f,
-	0x57, 0x17, 0x1a, 0xda, 0x7d, 0x45, 0xdb, 0x41, 0xb4, 0xb0, 0xdf, 0xe6, 0xf7, 0x65, 0x36, 0x3f,
-	0x8b, 0xea, 0x8a, 0x0f, 0x1f, 0x9f, 0x4e, 0x5c, 0x70, 0x36, 0x71, 0xc1, 0xef, 0x89, 0x0b, 0x3e,
-	0x4d, 0xdd, 0xca, 0xd9, 0xd4, 0xad, 0xfc, 0x9c, 0xba, 0x95, 0x17, 0xad, 0x88, 0xe7, 0x83, 0x71,
-	0x40, 0x42, 0x31, 0xb4, 0x4c, 0x5f, 0xff, 0xb3, 0xcd, 0x4f, 0x52, 0x26, 0x83, 0x9a, 0x7a, 0xc7,
-	0xef, 0xff, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x9c, 0x80, 0xfe, 0x1a, 0x8f, 0x06, 0x00, 0x00,
+	// 773 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x96, 0x4f, 0x4f, 0x13, 0x4f,
+	0x18, 0xc7, 0xbb, 0x40, 0xfb, 0x0b, 0xcf, 0x2f, 0x44, 0x1c, 0x0a, 0x29, 0x2b, 0x29, 0x64, 0x45,
+	0x68, 0x50, 0x77, 0x02, 0x68, 0x94, 0xc4, 0x83, 0x72, 0x90, 0x98, 0x18, 0xc5, 0x7a, 0xf3, 0x42,
+	0xa6, 0xdb, 0xc9, 0x76, 0x92, 0x65, 0x67, 0xd9, 0xd9, 0x82, 0xc4, 0x78, 0xf1, 0x66, 0xe2, 0x81,
+	0xc4, 0x83, 0x2f, 0xc2, 0xc4, 0x83, 0x89, 0x9e, 0x7c, 0x01, 0x1c, 0x49, 0xbc, 0x78, 0x32, 0x06,
+	0x7c, 0x21, 0x66, 0x67, 0x66, 0x69, 0xb7, 0xec, 0xd2, 0x12, 0x6e, 0xed, 0x3c, 0xcf, 0xf7, 0x79,
+	0x3e, 0xdf, 0xf9, 0xf3, 0x64, 0xa1, 0xe2, 0xf0, 0x90, 0x62, 0x41, 0xc3, 0x5d, 0xe6, 0x50, 0xbc,
+	0xd3, 0xa6, 0xe1, 0xbe, 0x1d, 0x84, 0x3c, 0xe2, 0x68, 0x42, 0x70, 0x3f, 0x6c, 0xed, 0xd8, 0x71,
+	0x82, 0xad, 0x13, 0xcc, 0xb2, 0xcb, 0x5d, 0x2e, 0xe3, 0x38, 0xfe, 0xa5, 0x52, 0xcd, 0x19, 0x97,
+	0x73, 0xd7, 0xa3, 0x98, 0x04, 0x0c, 0x13, 0xdf, 0xe7, 0x11, 0x89, 0x18, 0xf7, 0x85, 0x8e, 0x2e,
+	0x39, 0x5c, 0x6c, 0x73, 0x81, 0x1b, 0x44, 0xe8, 0x0e, 0x78, 0x77, 0xb9, 0x41, 0x23, 0xb2, 0x8c,
+	0x03, 0xe2, 0x32, 0x5f, 0x26, 0xeb, 0x5c, 0x33, 0x85, 0xe3, 0x52, 0x9f, 0x0a, 0x96, 0xd4, 0x99,
+	0x4e, 0xc5, 0x42, 0xea, 0xf0, 0xb0, 0xa9, 0x42, 0x56, 0x19, 0xd0, 0x8b, 0xb8, 0xf0, 0x26, 0x09,
+	0xc9, 0xb6, 0xa8, 0xd3, 0x9d, 0x36, 0x15, 0x91, 0xb5, 0x09, 0x13, 0xa9, 0x55, 0x11, 0x70, 0x5f,
+	0x50, 0xb4, 0x06, 0xa5, 0x40, 0xae, 0x54, 0x8c, 0x39, 0xa3, 0xf6, 0xff, 0xca, 0x35, 0x3b, 0xc3,
+	0xa9, 0xad, 0x44, 0xeb, 0x23, 0x87, 0xbf, 0x67, 0x0b, 0x75, 0x2d, 0xb0, 0x56, 0x61, 0x5a, 0x56,
+	0x7c, 0xa9, 0x92, 0xea, 0x92, 0x41, 0xb7, 0x43, 0x53, 0x50, 0xe2, 0x21, 0x73, 0x99, 0x2f, 0xeb,
+	0x8e, 0xd6, 0xf5, 0x3f, 0xcb, 0x03, 0x33, 0x4b, 0xa4, 0x69, 0x9e, 0xc1, 0x98, 0xe8, 0x0e, 0x68,
+	0x28, 0x2b, 0x13, 0x2a, 0x55, 0x42, 0xb3, 0xa5, 0xe5, 0x96, 0x03, 0xd3, 0x4f, 0x99, 0x88, 0x52,
+	0x99, 0xc9, 0x8e, 0xa0, 0xc7, 0x00, 0x9d, 0x2d, 0xd7, 0x9d, 0x16, 0x6c, 0x75, 0x3e, 0x76, 0x7c,
+	0x3e, 0xb6, 0xba, 0x01, 0xfa, 0x7c, 0xec, 0x4d, 0xe2, 0x52, 0xad, 0xad, 0x77, 0x29, 0xad, 0x6f,
+	0x06, 0x98, 0x59, 0x5d, 0xf2, 0x3d, 0x0d, 0x5f, 0xc2, 0x13, 0xda, 0x48, 0x61, 0x0f, 0x49, 0xec,
+	0xc5, 0xbe, 0xd8, 0x0a, 0x26, 0xc5, 0xfd, 0x00, 0x2c, 0x79, 0x14, 0x1b, 0xb4, 0x83, 0xee, 0xa9,
+	0xcb, 0xda, 0x62, 0x41, 0xbf, 0x83, 0x7c, 0x6f, 0xc0, 0xf5, 0x73, 0xe5, 0xda, 0x7e, 0x03, 0xca,
+	0x19, 0xe1, 0xe4, 0xba, 0xd5, 0xce, 0xdf, 0x85, 0x8e, 0x40, 0xef, 0x45, 0x66, 0x2d, 0x6b, 0x0d,
+	0x66, 0x7b, 0x50, 0x1e, 0x45, 0x11, 0x15, 0x71, 0x42, 0x3f, 0x1b, 0x5f, 0x0d, 0x98, 0xcb, 0xd7,
+	0x6a, 0x0f, 0x65, 0x28, 0x12, 0x8f, 0x11, 0xa1, 0xb5, 0xea, 0x0f, 0xba, 0x09, 0x57, 0x49, 0x92,
+	0xba, 0xc5, 0x03, 0x89, 0x23, 0xcf, 0x63, 0xb4, 0x3e, 0x7e, 0x1a, 0x78, 0xae, 0xd6, 0xbb, 0xfa,
+	0x0f, 0x77, 0xf7, 0x47, 0x33, 0x30, 0xea, 0xb4, 0x88, 0xe7, 0x51, 0xdf, 0xa5, 0x95, 0x11, 0x19,
+	0xea, 0x2c, 0xa0, 0x49, 0x28, 0xb5, 0x9d, 0xbd, 0x2d, 0xd6, 0xac, 0x14, 0xe7, 0x8c, 0xda, 0x48,
+	0xbd, 0xd8, 0x76, 0xf6, 0x9e, 0x34, 0xb3, 0xfc, 0x0a, 0x41, 0xc3, 0x41, 0xfc, 0x7e, 0xca, 0xf0,
+	0xdb, 0xd1, 0x6a, 0xbf, 0xe3, 0x30, 0xdc, 0x64, 0x4d, 0xad, 0x8c, 0x7f, 0x4a, 0xaf, 0x49, 0xda,
+	0x19, 0xaf, 0x49, 0xe0, 0x52, 0x5e, 0x57, 0x7e, 0xfc, 0x07, 0x45, 0x49, 0x86, 0xf6, 0xa1, 0xa4,
+	0x06, 0x0e, 0x5a, 0xcc, 0xbc, 0x1e, 0x67, 0xa7, 0x9b, 0x59, 0xeb, 0x9f, 0xa8, 0xbc, 0x59, 0x33,
+	0xef, 0x7e, 0xfe, 0xfd, 0x38, 0x34, 0x85, 0xca, 0x38, 0x56, 0x60, 0x35, 0xcb, 0x92, 0x41, 0x8a,
+	0x3e, 0x18, 0x80, 0xce, 0xbe, 0x65, 0x64, 0x67, 0x96, 0xcf, 0x1d, 0x2d, 0x26, 0x1e, 0x38, 0x5f,
+	0x53, 0x4d, 0x4a, 0xaa, 0x2b, 0x68, 0x4c, 0x51, 0x25, 0x38, 0x07, 0x06, 0x8c, 0xa5, 0x14, 0x39,
+	0x24, 0xb9, 0x73, 0x38, 0x87, 0x24, 0x7f, 0x04, 0x5b, 0x55, 0x49, 0x52, 0x41, 0x53, 0x29, 0x12,
+	0xfc, 0x46, 0x9d, 0xe1, 0x5b, 0xf4, 0xdd, 0x80, 0x89, 0x8c, 0x47, 0x88, 0xee, 0xe5, 0x37, 0x3a,
+	0x77, 0xc0, 0x98, 0xf7, 0x2f, 0x2e, 0xd4, 0xa8, 0xb7, 0x24, 0xea, 0x02, 0x9a, 0xcf, 0x46, 0xc5,
+	0x61, 0xf7, 0x90, 0x40, 0x5f, 0x0c, 0x18, 0xef, 0x7d, 0xe1, 0xe8, 0xce, 0x20, 0xcd, 0x7b, 0x87,
+	0x89, 0x79, 0xf7, 0x82, 0x2a, 0xcd, 0x7b, 0x5b, 0xf2, 0x2e, 0xa2, 0x1b, 0xb9, 0xbc, 0x2e, 0x13,
+	0x11, 0x0d, 0xb1, 0x88, 0x48, 0x18, 0xa1, 0xcf, 0x5d, 0xc0, 0xc9, 0x13, 0x1b, 0x10, 0xb8, 0x67,
+	0x1a, 0x0c, 0x08, 0xdc, 0x3b, 0x07, 0xac, 0x25, 0x09, 0x3c, 0x8f, 0xac, 0x1c, 0x60, 0x8f, 0xbb,
+	0xcc, 0x57, 0xb4, 0xeb, 0x0f, 0x0f, 0x8f, 0xab, 0xc6, 0xd1, 0x71, 0xd5, 0xf8, 0x73, 0x5c, 0x35,
+	0x0e, 0x4e, 0xaa, 0x85, 0xa3, 0x93, 0x6a, 0xe1, 0xd7, 0x49, 0xb5, 0xf0, 0x6a, 0xc1, 0x65, 0x51,
+	0xab, 0xdd, 0xb0, 0x1d, 0xbe, 0x8d, 0x15, 0x06, 0x96, 0x1f, 0x2f, 0xaf, 0x4f, 0x0b, 0x46, 0xfb,
+	0x01, 0x15, 0x8d, 0x92, 0xfc, 0x7c, 0x59, 0xfd, 0x17, 0x00, 0x00, 0xff, 0xff, 0xc8, 0x7c, 0x31,
+	0x14, 0x86, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -452,11 +701,15 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	ListServiceRecords(ctx context.Context, in *ListServiceRecordsRequest, opts ...grpc.CallOption) (*ListServiceRecordsResponse, error)
 	// Queries a list of ServiceRecord items.
-	ServiceRecord(ctx context.Context, in *QueryGetServiceRecordRequest, opts ...grpc.CallOption) (*QueryGetServiceRecordResponse, error)
-	ServiceRecordAll(ctx context.Context, in *QueryAllServiceRecordRequest, opts ...grpc.CallOption) (*QueryAllServiceRecordResponse, error)
+	ServiceRecord(ctx context.Context, in *QueryServiceRecordRequest, opts ...grpc.CallOption) (*QueryServiceRecordResponse, error)
 	// Queries a list of ServiceRelationships items.
 	ServiceRelationship(ctx context.Context, in *QueryGetServiceRelationshipRequest, opts ...grpc.CallOption) (*QueryGetServiceRelationshipResponse, error)
+	// Queries a list of GetServiceAttestion items.
+	ServiceAttestion(ctx context.Context, in *QueryGetServiceAttestionRequest, opts ...grpc.CallOption) (*QueryGetServiceAttestionResponse, error)
+	// Queries a list of GetServiceAssertion items.
+	ServiceAssertion(ctx context.Context, in *QueryGetServiceAssertionRequest, opts ...grpc.CallOption) (*QueryGetServiceAssertionResponse, error)
 }
 
 type queryClient struct {
@@ -476,18 +729,18 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) ServiceRecord(ctx context.Context, in *QueryGetServiceRecordRequest, opts ...grpc.CallOption) (*QueryGetServiceRecordResponse, error) {
-	out := new(QueryGetServiceRecordResponse)
-	err := c.cc.Invoke(ctx, "/sonrhq.core.service.Query/ServiceRecord", in, out, opts...)
+func (c *queryClient) ListServiceRecords(ctx context.Context, in *ListServiceRecordsRequest, opts ...grpc.CallOption) (*ListServiceRecordsResponse, error) {
+	out := new(ListServiceRecordsResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.core.service.Query/ListServiceRecords", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ServiceRecordAll(ctx context.Context, in *QueryAllServiceRecordRequest, opts ...grpc.CallOption) (*QueryAllServiceRecordResponse, error) {
-	out := new(QueryAllServiceRecordResponse)
-	err := c.cc.Invoke(ctx, "/sonrhq.core.service.Query/ServiceRecordAll", in, out, opts...)
+func (c *queryClient) ServiceRecord(ctx context.Context, in *QueryServiceRecordRequest, opts ...grpc.CallOption) (*QueryServiceRecordResponse, error) {
+	out := new(QueryServiceRecordResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.core.service.Query/ServiceRecord", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -503,15 +756,37 @@ func (c *queryClient) ServiceRelationship(ctx context.Context, in *QueryGetServi
 	return out, nil
 }
 
+func (c *queryClient) ServiceAttestion(ctx context.Context, in *QueryGetServiceAttestionRequest, opts ...grpc.CallOption) (*QueryGetServiceAttestionResponse, error) {
+	out := new(QueryGetServiceAttestionResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.core.service.Query/ServiceAttestion", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ServiceAssertion(ctx context.Context, in *QueryGetServiceAssertionRequest, opts ...grpc.CallOption) (*QueryGetServiceAssertionResponse, error) {
+	out := new(QueryGetServiceAssertionResponse)
+	err := c.cc.Invoke(ctx, "/sonrhq.core.service.Query/ServiceAssertion", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	ListServiceRecords(context.Context, *ListServiceRecordsRequest) (*ListServiceRecordsResponse, error)
 	// Queries a list of ServiceRecord items.
-	ServiceRecord(context.Context, *QueryGetServiceRecordRequest) (*QueryGetServiceRecordResponse, error)
-	ServiceRecordAll(context.Context, *QueryAllServiceRecordRequest) (*QueryAllServiceRecordResponse, error)
+	ServiceRecord(context.Context, *QueryServiceRecordRequest) (*QueryServiceRecordResponse, error)
 	// Queries a list of ServiceRelationships items.
 	ServiceRelationship(context.Context, *QueryGetServiceRelationshipRequest) (*QueryGetServiceRelationshipResponse, error)
+	// Queries a list of GetServiceAttestion items.
+	ServiceAttestion(context.Context, *QueryGetServiceAttestionRequest) (*QueryGetServiceAttestionResponse, error)
+	// Queries a list of GetServiceAssertion items.
+	ServiceAssertion(context.Context, *QueryGetServiceAssertionRequest) (*QueryGetServiceAssertionResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -521,14 +796,20 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (*UnimplementedQueryServer) ServiceRecord(ctx context.Context, req *QueryGetServiceRecordRequest) (*QueryGetServiceRecordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ServiceRecord not implemented")
+func (*UnimplementedQueryServer) ListServiceRecords(ctx context.Context, req *ListServiceRecordsRequest) (*ListServiceRecordsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListServiceRecords not implemented")
 }
-func (*UnimplementedQueryServer) ServiceRecordAll(ctx context.Context, req *QueryAllServiceRecordRequest) (*QueryAllServiceRecordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ServiceRecordAll not implemented")
+func (*UnimplementedQueryServer) ServiceRecord(ctx context.Context, req *QueryServiceRecordRequest) (*QueryServiceRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ServiceRecord not implemented")
 }
 func (*UnimplementedQueryServer) ServiceRelationship(ctx context.Context, req *QueryGetServiceRelationshipRequest) (*QueryGetServiceRelationshipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ServiceRelationship not implemented")
+}
+func (*UnimplementedQueryServer) ServiceAttestion(ctx context.Context, req *QueryGetServiceAttestionRequest) (*QueryGetServiceAttestionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ServiceAttestion not implemented")
+}
+func (*UnimplementedQueryServer) ServiceAssertion(ctx context.Context, req *QueryGetServiceAssertionRequest) (*QueryGetServiceAssertionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ServiceAssertion not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -553,8 +834,26 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ListServiceRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListServiceRecordsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ListServiceRecords(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.core.service.Query/ListServiceRecords",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ListServiceRecords(ctx, req.(*ListServiceRecordsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_ServiceRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetServiceRecordRequest)
+	in := new(QueryServiceRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -566,25 +865,7 @@ func _Query_ServiceRecord_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/sonrhq.core.service.Query/ServiceRecord",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ServiceRecord(ctx, req.(*QueryGetServiceRecordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_ServiceRecordAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllServiceRecordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ServiceRecordAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sonrhq.core.service.Query/ServiceRecordAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ServiceRecordAll(ctx, req.(*QueryAllServiceRecordRequest))
+		return srv.(QueryServer).ServiceRecord(ctx, req.(*QueryServiceRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -607,6 +888,42 @@ func _Query_ServiceRelationship_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ServiceAttestion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetServiceAttestionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ServiceAttestion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.core.service.Query/ServiceAttestion",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ServiceAttestion(ctx, req.(*QueryGetServiceAttestionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ServiceAssertion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetServiceAssertionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ServiceAssertion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sonrhq.core.service.Query/ServiceAssertion",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ServiceAssertion(ctx, req.(*QueryGetServiceAssertionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "sonrhq.core.service.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -616,16 +933,24 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Params_Handler,
 		},
 		{
+			MethodName: "ListServiceRecords",
+			Handler:    _Query_ListServiceRecords_Handler,
+		},
+		{
 			MethodName: "ServiceRecord",
 			Handler:    _Query_ServiceRecord_Handler,
 		},
 		{
-			MethodName: "ServiceRecordAll",
-			Handler:    _Query_ServiceRecordAll_Handler,
-		},
-		{
 			MethodName: "ServiceRelationship",
 			Handler:    _Query_ServiceRelationship_Handler,
+		},
+		{
+			MethodName: "ServiceAttestion",
+			Handler:    _Query_ServiceAttestion_Handler,
+		},
+		{
+			MethodName: "ServiceAssertion",
+			Handler:    _Query_ServiceAssertion_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -688,7 +1013,7 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetServiceRecordRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryServiceRecordRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -698,27 +1023,27 @@ func (m *QueryGetServiceRecordRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetServiceRecordRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryServiceRecordRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetServiceRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryServiceRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
+	if len(m.Origin) > 0 {
+		i -= len(m.Origin)
+		copy(dAtA[i:], m.Origin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Origin)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetServiceRecordResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryServiceRecordResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -728,12 +1053,12 @@ func (m *QueryGetServiceRecordResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetServiceRecordResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryServiceRecordResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetServiceRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryServiceRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -751,7 +1076,7 @@ func (m *QueryGetServiceRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllServiceRecordRequest) Marshal() (dAtA []byte, err error) {
+func (m *ListServiceRecordsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -761,12 +1086,12 @@ func (m *QueryAllServiceRecordRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllServiceRecordRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *ListServiceRecordsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllServiceRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ListServiceRecordsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -786,7 +1111,7 @@ func (m *QueryAllServiceRecordRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllServiceRecordResponse) Marshal() (dAtA []byte, err error) {
+func (m *ListServiceRecordsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -796,12 +1121,12 @@ func (m *QueryAllServiceRecordResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllServiceRecordResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *ListServiceRecordsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllServiceRecordResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ListServiceRecordsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -855,10 +1180,10 @@ func (m *QueryGetServiceRelationshipRequest) MarshalToSizedBuffer(dAtA []byte) (
 	_ = i
 	var l int
 	_ = l
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
+	if len(m.Origin) > 0 {
+		i -= len(m.Origin)
+		copy(dAtA[i:], m.Origin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Origin)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -898,6 +1223,173 @@ func (m *QueryGetServiceRelationshipResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetServiceAttestionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetServiceAttestionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetServiceAttestionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Origin) > 0 {
+		i -= len(m.Origin)
+		copy(dAtA[i:], m.Origin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Origin)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetServiceAttestionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetServiceAttestionResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetServiceAttestionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.UcwId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.UcwId))
+		i--
+		dAtA[i] = 0x28
+	}
+	if len(m.Challenge) > 0 {
+		i -= len(m.Challenge)
+		copy(dAtA[i:], m.Challenge)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Challenge)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Origin) > 0 {
+		i -= len(m.Origin)
+		copy(dAtA[i:], m.Origin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Origin)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.AttestionOptions) > 0 {
+		i -= len(m.AttestionOptions)
+		copy(dAtA[i:], m.AttestionOptions)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.AttestionOptions)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Alias) > 0 {
+		i -= len(m.Alias)
+		copy(dAtA[i:], m.Alias)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Alias)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetServiceAssertionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetServiceAssertionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetServiceAssertionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Origin) > 0 {
+		i -= len(m.Origin)
+		copy(dAtA[i:], m.Origin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Origin)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetServiceAssertionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetServiceAssertionResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetServiceAssertionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Challenge) > 0 {
+		i -= len(m.Challenge)
+		copy(dAtA[i:], m.Challenge)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Challenge)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Origin) > 0 {
+		i -= len(m.Origin)
+		copy(dAtA[i:], m.Origin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Origin)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.AssertionOptions) > 0 {
+		i -= len(m.AssertionOptions)
+		copy(dAtA[i:], m.AssertionOptions)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.AssertionOptions)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Did) > 0 {
+		i -= len(m.Did)
+		copy(dAtA[i:], m.Did)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Did)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -929,20 +1421,20 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetServiceRecordRequest) Size() (n int) {
+func (m *QueryServiceRecordRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Id)
+	l = len(m.Origin)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
 }
 
-func (m *QueryGetServiceRecordResponse) Size() (n int) {
+func (m *QueryServiceRecordResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -953,7 +1445,7 @@ func (m *QueryGetServiceRecordResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllServiceRecordRequest) Size() (n int) {
+func (m *ListServiceRecordsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -966,7 +1458,7 @@ func (m *QueryAllServiceRecordRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllServiceRecordResponse) Size() (n int) {
+func (m *ListServiceRecordsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -991,7 +1483,7 @@ func (m *QueryGetServiceRelationshipRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Id)
+	l = len(m.Origin)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -1006,6 +1498,85 @@ func (m *QueryGetServiceRelationshipResponse) Size() (n int) {
 	_ = l
 	l = m.ServiceRelationships.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryGetServiceAttestionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Origin)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetServiceAttestionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Alias)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.AttestionOptions)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Origin)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Challenge)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.UcwId != 0 {
+		n += 1 + sovQuery(uint64(m.UcwId))
+	}
+	return n
+}
+
+func (m *QueryGetServiceAssertionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Origin)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetServiceAssertionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Did)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.AssertionOptions)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Origin)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Challenge)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -1148,7 +1719,7 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetServiceRecordRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryServiceRecordRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1171,15 +1742,15 @@ func (m *QueryGetServiceRecordRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetServiceRecordRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryServiceRecordRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetServiceRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryServiceRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Origin", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1207,7 +1778,7 @@ func (m *QueryGetServiceRecordRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Id = string(dAtA[iNdEx:postIndex])
+			m.Origin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1230,7 +1801,7 @@ func (m *QueryGetServiceRecordRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetServiceRecordResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryServiceRecordResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1253,10 +1824,10 @@ func (m *QueryGetServiceRecordResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetServiceRecordResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryServiceRecordResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetServiceRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryServiceRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1313,7 +1884,7 @@ func (m *QueryGetServiceRecordResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllServiceRecordRequest) Unmarshal(dAtA []byte) error {
+func (m *ListServiceRecordsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1336,10 +1907,10 @@ func (m *QueryAllServiceRecordRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllServiceRecordRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: ListServiceRecordsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllServiceRecordRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ListServiceRecordsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1399,7 +1970,7 @@ func (m *QueryAllServiceRecordRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllServiceRecordResponse) Unmarshal(dAtA []byte) error {
+func (m *ListServiceRecordsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1422,10 +1993,10 @@ func (m *QueryAllServiceRecordResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllServiceRecordResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: ListServiceRecordsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllServiceRecordResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ListServiceRecordsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1550,7 +2121,7 @@ func (m *QueryGetServiceRelationshipRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Origin", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1578,7 +2149,7 @@ func (m *QueryGetServiceRelationshipRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Id = string(dAtA[iNdEx:postIndex])
+			m.Origin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1662,6 +2233,545 @@ func (m *QueryGetServiceRelationshipResponse) Unmarshal(dAtA []byte) error {
 			if err := m.ServiceRelationships.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetServiceAttestionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetServiceAttestionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetServiceAttestionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Origin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Origin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetServiceAttestionResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetServiceAttestionResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetServiceAttestionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Alias = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AttestionOptions", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AttestionOptions = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Origin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Origin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Challenge", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Challenge = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UcwId", wireType)
+			}
+			m.UcwId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.UcwId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetServiceAssertionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetServiceAssertionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetServiceAssertionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Origin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Origin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetServiceAssertionResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetServiceAssertionResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetServiceAssertionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Did", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Did = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssertionOptions", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssertionOptions = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Origin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Origin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Challenge", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Challenge = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

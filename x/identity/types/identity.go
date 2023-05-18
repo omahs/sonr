@@ -134,7 +134,7 @@ func (id *Identity) AddKeyAgreement(vm *VerificationMethod) (*VerificationRelati
 
 // SetPrimaryAlias sets the PrimaryAlias of the DID Document to the given alias and appends the alias to the AlsoKnownAs list
 // Returns false if the alias is already the AlsoKnownAs list.
-func (id *Identity) SetPrimaryAlias(alias string) bool{
+func (id *Identity) SetPrimaryAlias(alias string) bool {
 	for _, aka := range id.AlsoKnownAs {
 		if aka == alias {
 			id.PrimaryAlias = alias

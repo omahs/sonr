@@ -17,7 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/sonrhq/core/x/identity/client/cli"
-	"github.com/sonrhq/core/x/identity/internal/blocker"
+	"github.com/sonrhq/core/x/identity/blocker"
 	"github.com/sonrhq/core/x/identity/keeper"
 	"github.com/sonrhq/core/x/identity/types"
 	abci "github.com/tendermint/tendermint/abci/types"

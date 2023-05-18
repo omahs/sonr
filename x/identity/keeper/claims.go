@@ -1,4 +1,4 @@
-package controller
+package keeper
 
 import (
 	"crypto/rand"
@@ -104,7 +104,7 @@ func (wc *walletClaims) Assign(cred *srvtypes.WebauthnCredential, alias string) 
 	id, snrvr, _ := acc.GetIdentity(wc.Address())
 	cn := &didController{
 		primary:        acc,
-		identity: 	 id,
+		identity:       id,
 		blockchain:     []models.Account{},
 		disableIPFS:    false,
 		currCredential: cred,

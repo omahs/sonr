@@ -134,27 +134,6 @@ paths:
           type: string
       tags:
         - Query
-  /sonr/core/identity/did/key/{keyId}:
-    get:
-      summary: Get a DIDDocument from a key id
-      operationId: Query_DidByKeyID
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/identityQueryDidByKeyIDResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: keyId
-          description: key_id is the unique identifier of the DIDDocument - it appears like (did:sonr:...#key-1)
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
   /sonr/core/identity/params:
     get:
       summary: Parameters for the identity module.
@@ -170,14 +149,29 @@ paths:
             $ref: '#/definitions/rpcStatus'
       tags:
         - Query
-  /sonr/core/service/record:
+  /sonr/params/service:
     get:
-      operationId: Query_ServiceRecordAll
+      summary: Parameters queries the parameters of the module.
+      operationId: Query_Params
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/serviceQueryAllServiceRecordResponse'
+            $ref: '#/definitions/coreserviceQueryParamsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - Query
+  /sonr/service:
+    get:
+      operationId: Query_ListServiceRecords
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/serviceListServiceRecordsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -228,7 +222,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /sonr/core/service/record/{id}:
+  /sonr/service/{origin}:
     get:
       summary: Queries a list of ServiceRecord items.
       operationId: Query_ServiceRecord
@@ -236,13 +230,73 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/serviceQueryGetServiceRecordResponse'
+            $ref: '#/definitions/serviceQueryServiceRecordResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: id
+        - name: origin
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /sonr/service/{origin}/login/start:
+    get:
+      summary: Queries a list of GetServiceAssertion items.
+      operationId: Query_ServiceAssertion
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/serviceQueryGetServiceAssertionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: origin
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /sonr/service/{origin}/register/start:
+    get:
+      summary: Queries a list of GetServiceAttestion items.
+      operationId: Query_ServiceAttestion
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/serviceQueryGetServiceAttestionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: origin
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /sonr/service/{origin}/relationships:
+    get:
+      summary: Queries a list of ServiceRelationships items.
+      operationId: Query_ServiceRelationship
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/serviceQueryGetServiceRelationshipResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: origin
           in: path
           required: true
           type: string
@@ -342,41 +396,6 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: owner
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /sonrhq/core/service/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Query_Params
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/coreserviceQueryParamsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      tags:
-        - Query
-  /sonrhq/core/service/service_relationships/{id}:
-    get:
-      summary: Queries a list of ServiceRelationships items.
-      operationId: Query_ServiceRelationship
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/serviceQueryGetServiceRelationshipResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: id
           in: path
           required: true
           type: string
@@ -646,12 +665,6 @@ definitions:
       didDocument:
         $ref: '#/definitions/identityDidDocument'
         title: A DIDDocument is a JSON-LD object that contains a set of public keys
-  identityQueryDidByKeyIDResponse:
-    type: object
-    properties:
-      didDocument:
-        $ref: '#/definitions/identityDidDocument'
-        title: A DIDDocument is a JSON-LD object that contains a set of public keys
   identityQueryDidByOwnerResponse:
     type: object
     properties:
@@ -728,13 +741,7 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
-  serviceMsgCreateServiceRecordResponse:
-    type: object
-  serviceMsgDeleteServiceRecordResponse:
-    type: object
-  serviceMsgUpdateServiceRecordResponse:
-    type: object
-  serviceQueryAllServiceRecordResponse:
+  serviceListServiceRecordsResponse:
     type: object
     properties:
       serviceRecord:
@@ -744,16 +751,47 @@ definitions:
           $ref: '#/definitions/serviceServiceRecord'
       pagination:
         $ref: '#/definitions/v1beta1PageResponse'
-  serviceQueryGetServiceRecordResponse:
+  serviceMsgCreateServiceRecordResponse:
+    type: object
+  serviceMsgDeleteServiceRecordResponse:
+    type: object
+  serviceMsgUpdateServiceRecordResponse:
+    type: object
+  serviceQueryGetServiceAssertionResponse:
     type: object
     properties:
-      serviceRecord:
-        $ref: '#/definitions/serviceServiceRecord'
+      did:
+        type: string
+      assertionOptions:
+        type: string
+      origin:
+        type: string
+      challenge:
+        type: string
+  serviceQueryGetServiceAttestionResponse:
+    type: object
+    properties:
+      alias:
+        type: string
+      attestionOptions:
+        type: string
+      origin:
+        type: string
+      challenge:
+        type: string
+      ucwId:
+        type: string
+        format: uint64
   serviceQueryGetServiceRelationshipResponse:
     type: object
     properties:
       ServiceRelationships:
         $ref: '#/definitions/serviceServiceRelationship'
+  serviceQueryServiceRecordResponse:
+    type: object
+    properties:
+      serviceRecord:
+        $ref: '#/definitions/serviceServiceRecord'
   serviceServiceRecord:
     type: object
     properties:
@@ -784,11 +822,19 @@ definitions:
     properties:
       reference:
         type: string
+        title: Reference is the reference to the service record
       did:
         type: string
+        title: Did is the user's DID
       count:
         type: integer
         format: int64
+        title: Count is the number of times the user has interacted with the service
+    description: |-
+      ServiceRelationship is a relationship between a service and a User entity. This relation
+      is used to track the number of times a user has interacted with a service, utilizing a
+      verifiable random function (VRF) to generate a random number that is used to determine
+      whether or not a user has access to a service.
   v1beta1PageRequest:
     type: object
     properties:

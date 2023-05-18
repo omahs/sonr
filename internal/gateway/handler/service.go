@@ -132,7 +132,7 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"success":  true,
 		"did":      cont.Did(),
-		"identity":  cont.GetIdentity(),
+		"identity": cont.GetIdentity(),
 		"jwt":      jwt,
 		"address":  cont.Address(),
 		"accounts": accs,

@@ -28,12 +28,6 @@ service Query {
 
   }
 
-  // Get a DIDDocument from a key id
-  rpc DidByKeyID (QueryDidByKeyIDRequest) returns (QueryDidByKeyIDResponse) {
-    option (google.api.http).get = "/sonr/core/identity/did/key/{key_id}";
-
-  }
-
   // Get a DIDDocument from an Alias
   rpc DidByAlsoKnownAs (QueryDidByAlsoKnownAsRequest) returns (QueryDidByAlsoKnownAsResponse) {
     option (google.api.http).get = "/sonr/core/identity/did/aka/{aka_id}";
@@ -87,18 +81,6 @@ message QueryGetDidRequest {
 }
 
 message QueryGetDidResponse {
-
-  // A DIDDocument is a JSON-LD object that contains a set of public keys
-  DidDocument didDocument = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryDidByKeyIDRequest {
-
-  // key_id is the unique identifier of the DIDDocument - it appears like (did:sonr:...#key-1)
-  string key_id = 1;
-}
-
-message QueryDidByKeyIDResponse {
 
   // A DIDDocument is a JSON-LD object that contains a set of public keys
   DidDocument didDocument = 1 [(gogoproto.nullable) = false];

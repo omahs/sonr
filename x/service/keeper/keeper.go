@@ -74,13 +74,12 @@ func (k Keeper) SetServiceRecord(ctx sdk.Context, serviceRecord types.ServiceRec
 // GetServiceRecord returns a serviceRecord from its Id
 func (k Keeper) GetServiceRecord(
 	ctx sdk.Context,
-	Id string,
-
+	origin string,
 ) (val types.ServiceRecord, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ServiceRecordKeyPrefix))
 
 	b := store.Get(types.ServiceRecordKey(
-		Id,
+		origin,
 	))
 	if b == nil {
 		return val, false

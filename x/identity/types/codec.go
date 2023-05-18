@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	AuthenticationRelationshipName = "Authentication"
-	AssertionRelationshipName = "AssertionMethod"
-	KeyAgreementRelationshipName = "KeyAgreement"
+	AuthenticationRelationshipName       = "Authentication"
+	AssertionRelationshipName            = "AssertionMethod"
+	KeyAgreementRelationshipName         = "KeyAgreement"
 	CapabilityInvocationRelationshipName = "CapabilityInvocation"
 	CapabilityDelegationRelationshipName = "CapabilityDelegation"
 )

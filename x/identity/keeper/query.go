@@ -73,22 +73,6 @@ func (k Keeper) Did(c context.Context, req *types.QueryGetDidRequest) (*types.Qu
 	}
 }
 
-func (k Keeper) DidByKeyID(c context.Context, req *types.QueryDidByKeyIDRequest) (*types.QueryDidByKeyIDResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-	ctx := sdk.UnwrapSDKContext(c)
-	did := strings.Split(req.KeyId, "#")[0]
-	val, found := k.GetDidDocument(
-		ctx,
-		did,
-	)
-	if !found {
-		return nil, status.Error(codes.NotFound, "not found")
-	}
-	return &types.QueryDidByKeyIDResponse{DidDocument: val}, nil
-}
-
 func (k Keeper) DidByAlsoKnownAs(c context.Context, req *types.QueryDidByAlsoKnownAsRequest) (*types.QueryDidByAlsoKnownAsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")

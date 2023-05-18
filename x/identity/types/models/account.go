@@ -41,7 +41,7 @@ type Account interface {
 	GetIdentity(owner string) (*types.Identity, *types.VerificationRelationship, bool)
 
 	// GetVerificationMethod returns the verification relationship between this account and a controller
-	GetVerificationMethod(controller string) (*types.VerificationMethod)
+	GetVerificationMethod(controller string) *types.VerificationMethod
 
 	// ListKeyShares returns the list of keyshares of the account as a list of string dids
 	ListKeyShares() []string
@@ -236,9 +236,9 @@ func (wa *account) GetVerificationMethod(c string) *types.VerificationMethod {
 	did := fmt.Sprintf("did:%s:%s", method, addr)
 	pkmb := wa.PubKey().Multibase()
 	return &types.VerificationMethod{
-		Id:			  did,
-		Controller:   c,
-		PublicKeyMultibase: pkmb,
+		Id:                  did,
+		Controller:          c,
+		PublicKeyMultibase:  pkmb,
 		BlockchainAccountId: addr,
 	}
 }

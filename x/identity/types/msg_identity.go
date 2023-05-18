@@ -11,13 +11,13 @@ var _ sdk.Msg = &MsgRegisterIdentity{}
 
 func NewMsgRegisterIdentity(creator string, wallet_id uint32, alias string, identity *Identity, relationships ...*VerificationRelationship) *MsgRegisterIdentity {
 	msg := &MsgRegisterIdentity{
-		Creator: creator,
-		WalletId: wallet_id,
-		Alias: alias,
-		Identity: identity,
-		Authentication: make([]*VerificationRelationship, 0),
-		Assertion: make([]*VerificationRelationship, 0),
-		KeyAgreement: make([]*VerificationRelationship, 0),
+		Creator:              creator,
+		WalletId:             wallet_id,
+		Alias:                alias,
+		Identity:             identity,
+		Authentication:       make([]*VerificationRelationship, 0),
+		Assertion:            make([]*VerificationRelationship, 0),
+		KeyAgreement:         make([]*VerificationRelationship, 0),
 		CapabilityInvocation: make([]*VerificationRelationship, 0),
 		CapabilityDelegation: make([]*VerificationRelationship, 0),
 	}

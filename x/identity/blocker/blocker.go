@@ -7,7 +7,7 @@ import (
 	"github.com/sonrhq/core/internal/crypto/mpc"
 	"github.com/sonrhq/core/internal/local"
 	"github.com/sonrhq/core/internal/vault"
-	"github.com/sonrhq/core/x/identity/internal/controller"
+	"github.com/sonrhq/core/x/identity/keeper"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 )
@@ -21,7 +21,7 @@ type blocker struct {
 	jobsQueue *Queue
 	results   []*types.ClaimableWallet
 	errCh     chan error
-	doneCh    chan controller.WalletClaims
+	doneCh    chan keeper.WalletClaims
 }
 
 func NewBlocker() Blocker {
@@ -29,7 +29,7 @@ func NewBlocker() Blocker {
 		jobsQueue: NewQueue("WalletClaims"),
 		results:   make([]*types.ClaimableWallet, 0),
 		errCh:     make(chan error),
-		doneCh:    make(chan controller.WalletClaims),
+		doneCh:    make(chan keeper.WalletClaims),
 	}
 	wk := NewWorker(s.jobsQueue)
 	go s.run(wk)
@@ -97,7 +97,7 @@ func (s *blocker) buildClaimableWallet() error {
 		kss = append(kss, ks)
 	}
 	vaddr, _ := local.ValidatorAddress()
-	cw, err := controller.NewWalletClaims(vaddr, kss)
+	cw, err := keeper.NewWalletClaims(vaddr, kss)
 	if err != nil {
 		s.errCh <- err
 		return err
