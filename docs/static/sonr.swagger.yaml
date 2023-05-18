@@ -7,6 +7,7 @@ tags:
   - name: Msg
   - name: Query
   - name: Msg
+  - name: Query
 consumes:
   - application/json
 produces:
@@ -132,64 +133,6 @@ paths:
           in: path
           required: true
           type: string
-      tags:
-        - Query
-  /sonr/id/claims:
-    get:
-      operationId: Query_ClaimableWalletAll
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/identityQueryAllClaimableWalletResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: |-
-            offset is a numeric offset that can be used when key is unavailable.
-            It is less efficient than using key. Only one of offset or key should
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: |-
-            limit is the total number of results to be returned in the result page.
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.countTotal
-          description: |-
-            count_total is set to true  to indicate that the result set should include
-            a count of the total number of items available for pagination in UIs.
-            count_total is only respected when offset is used. It is ignored when key
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: |-
-            reverse is set to true if results are to be returned in the descending order.
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /sonr/id/claims/{id}:
@@ -421,6 +364,21 @@ paths:
           type: string
       tags:
         - Query
+  /sonrhq/core/vault/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Query_Params
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/corevaultQueryParamsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - Query
 definitions:
   coreidentityParams:
     type: object
@@ -457,6 +415,16 @@ definitions:
     properties:
       params:
         $ref: '#/definitions/coreserviceParams'
+        description: params holds all the parameters of this module.
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  corevaultParams:
+    type: object
+    description: Params defines the parameters for the module.
+  corevaultQueryParamsResponse:
+    type: object
+    properties:
+      params:
+        $ref: '#/definitions/corevaultParams'
         description: params holds all the parameters of this module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   identityClaimableWallet:
@@ -533,65 +501,6 @@ definitions:
         type: string
         title: optional, additional metadata related to the DID document
     description: DIDDocument represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
-  identityDidDocument:
-    type: object
-    properties:
-      context:
-        type: array
-        items:
-          type: string
-        title: The JSON-LD context(s) used in the document
-      id:
-        type: string
-        title: The identifier for the DID subject
-      controller:
-        type: array
-        items:
-          type: string
-        title: optional, the entity/entities controlling the DID subject
-      verificationMethod:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/identityVerificationMethod'
-        title: optional, the set of verification methods associated with the DID subject
-      authentication:
-        type: array
-        items:
-          type: string
-        title: optional, the set of authentication methods associated with the DID subject
-      assertionMethod:
-        type: array
-        items:
-          type: string
-        title: optional, the set of assertion methods associated with the DID subject
-      capabilityInvocation:
-        type: array
-        items:
-          type: string
-        title: optional, the set of capability invocation methods associated with the DID subject
-      capabilityDelegation:
-        type: array
-        items:
-          type: string
-        title: optional, the set of capability delegation methods associated with the DID subject
-      keyAgreement:
-        type: array
-        items:
-          type: string
-        title: optional, the set of key agreement methods associated with the DID subject
-      alsoKnownAs:
-        type: array
-        items:
-          type: string
-        title: optional, the set of identifiers for other personas or identities related to the DID subject
-      metadata:
-        type: string
-        title: optional, additional metadata related to the DID document
-      owner:
-        type: string
-        title: The idx address of the owner of the DID document
-    description: DidDocument represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
   identityIdentity:
     type: object
     properties:
@@ -658,17 +567,7 @@ definitions:
       available:
         type: boolean
       existingDocument:
-        $ref: '#/definitions/identityDidDocument'
-  identityQueryAllClaimableWalletResponse:
-    type: object
-    properties:
-      ClaimableWallet:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/identityClaimableWallet'
-      pagination:
-        $ref: '#/definitions/v1beta1PageResponse'
+        $ref: '#/definitions/identityIdentity'
   identityQueryAllDidResponse:
     type: object
     properties:
@@ -676,20 +575,20 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/identityDidDocument'
+          $ref: '#/definitions/identityIdentity'
       pagination:
         $ref: '#/definitions/v1beta1PageResponse'
   identityQueryDidByAlsoKnownAsResponse:
     type: object
     properties:
       didDocument:
-        $ref: '#/definitions/identityDidDocument'
+        $ref: '#/definitions/identityIdentity'
         title: A DIDDocument is a JSON-LD object that contains a set of public keys
   identityQueryDidByOwnerResponse:
     type: object
     properties:
       didDocument:
-        $ref: '#/definitions/identityDidDocument'
+        $ref: '#/definitions/identityIdentity'
   identityQueryGetClaimableWalletResponse:
     type: object
     properties:
@@ -699,7 +598,7 @@ definitions:
     type: object
     properties:
       didDocument:
-        $ref: '#/definitions/identityDidDocument'
+        $ref: '#/definitions/identityIdentity'
         title: A DIDDocument is a JSON-LD object that contains a set of public keys
   identityVerificationMethod:
     type: object

@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/go-webauthn/webauthn/protocol"
 	identitytypes "github.com/sonrhq/core/x/identity/types"
-
 )
 
 type GroupKeeper interface {
@@ -52,7 +51,6 @@ type IdentityKeeper interface {
 	GetCapabilityDelegation(ctx sdk.Context, reference string) (delegation identitytypes.VerificationRelationship, found bool)
 	GetClaimableWallet(ctx sdk.Context, id uint64) (val identitytypes.ClaimableWallet, found bool)
 	GetKeyAgreement(ctx sdk.Context, reference string) (agreement identitytypes.VerificationRelationship, found bool)
-
 
 	NextUnclaimedWallet(ctx sdk.Context) (*identitytypes.ClaimableWallet, protocol.URLEncodedBase64, error)
 	RegisterIdentity(goCtx context.Context, msg *identitytypes.MsgRegisterIdentity) (*identitytypes.MsgRegisterIdentityResponse, error)

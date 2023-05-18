@@ -28,7 +28,7 @@ func TestDidDocumentMsgServerCreate(t *testing.T) {
 	creator := "A"
 	for i := 0; i < 5; i++ {
 		expected := &types.MsgCreateDidDocument{Creator: creator,
-			Primary: types.NewBlankDocument(creator),
+			Primary: types.NewSonrIdentity(creator),
 		}
 		_, _ = srv.CreateDidDocument(wctx, expected)
 		rst, found := k.GetDidDocument(ctx,
@@ -52,20 +52,20 @@ func TestDidDocumentMsgServerUpdate(t *testing.T) {
 		{
 			desc: "Completed",
 			request: &types.MsgUpdateDidDocument{Creator: creator,
-				Primary: types.NewBlankDocument(creator),
+				Primary: types.NewSonrIdentity(creator),
 			},
 		},
 		{
 			desc: "Unauthorized",
 			request: &types.MsgUpdateDidDocument{Creator: "B",
-				Primary: types.NewBlankDocument(creator),
+				Primary: types.NewSonrIdentity(creator),
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		{
 			desc: "KeyNotFound",
 			request: &types.MsgUpdateDidDocument{Creator: creator,
-				Primary: types.NewBlankDocument(creator),
+				Primary: types.NewSonrIdentity(creator),
 			},
 			err: sdkerrors.ErrKeyNotFound,
 		},
@@ -75,7 +75,7 @@ func TestDidDocumentMsgServerUpdate(t *testing.T) {
 			srv := keeper.NewMsgServerImpl(*k)
 			wctx := sdk.WrapSDKContext(ctx)
 			expected := &types.MsgCreateDidDocument{Creator: creator,
-				Primary: types.NewBlankDocument(creator),
+				Primary: types.NewSonrIdentity(creator),
 			}
 			_, err := srv.CreateDidDocument(wctx, expected)
 			require.NoError(t, err)

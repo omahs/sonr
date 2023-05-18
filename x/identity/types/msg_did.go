@@ -12,7 +12,7 @@ const (
 
 var _ sdk.Msg = &MsgCreateDidDocument{}
 
-func NewMsgCreateDidDocument(creator string, wallet_id uint32, alias string, didDoc *DidDocument, blockDocs ...*DidDocument) *MsgCreateDidDocument {
+func NewMsgCreateDidDocument(creator string, wallet_id uint32, alias string, didDoc *Identity, blockDocs ...*Identity) *MsgCreateDidDocument {
 	return &MsgCreateDidDocument{
 		Alias:       alias,
 		Creator:     creator,
@@ -55,8 +55,8 @@ var _ sdk.Msg = &MsgUpdateDidDocument{}
 
 func NewMsgUpdateDidDocument(
 	creator string,
-	primary *DidDocument,
-	blockDocs ...*DidDocument,
+	primary *Identity,
+	blockDocs ...*Identity,
 ) *MsgUpdateDidDocument {
 	return &MsgUpdateDidDocument{
 		Creator:     creator,

@@ -15,7 +15,7 @@ func CmdCreateDidDocument() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			// Get indexes
 			jsonDid := args[0]
-			types.NewBlankDocument(jsonDid)
+			types.NewSonrIdentity(jsonDid)
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -25,7 +25,7 @@ func CmdCreateDidDocument() *cobra.Command {
 				clientCtx.FromAddress.String(),
 				0,
 				"",
-				types.NewBlankDocument(clientCtx.GetFromAddress().String()),
+				types.NewSonrIdentity(clientCtx.GetFromAddress().String()),
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

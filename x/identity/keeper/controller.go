@@ -11,10 +11,9 @@ import (
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/crypto/mpc"
 	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
-	"github.com/sonrhq/core/x/identity/types/models"
 	servicetypes "github.com/sonrhq/core/x/service/types"
+	vaulttypes "github.com/sonrhq/core/x/vault/types"
 )
 
 var PrimaryAccountaddress string = "primary"
@@ -34,22 +33,22 @@ type Controller interface {
 	GetIdentity() *types.Identity
 
 	// BlockchainIdentities returns the controller's blockchain identities
-	BlockchainIdentities() []*types.DidDocument
+	BlockchainIdentities() []*types.Identity
 
 	// Createmodels.Account creates a new models.Account for the controller
-	CreateAccount(name string, coinType crypto.CoinType) (models.Account, error)
+	CreateAccount(name string, coinType crypto.CoinType) (vaulttypes.Account, error)
 
 	// GetAccount returns an account by Address or DID
-	GetAccount(id string) (models.Account, error)
+	GetAccount(id string) (vaulttypes.Account, error)
 
 	// Listmodels.Accounts returns the controller's models.Accounts
-	ListAccounts() ([]models.Account, error)
+	ListAccounts() ([]vaulttypes.Account, error)
 
 	// SendMail sends a message between two Controllers
 	SendMail(address string, to string, body string) error
 
 	// ReadMail reads the controller's inbox
-	ReadMail(address string) ([]*models.InboxMessage, error)
+	ReadMail(address string) ([]*vaulttypes.InboxMessage, error)
 
 	// Sign signs a message with the controller's models.Account
 	Sign(address string, msg []byte) ([]byte, error)
@@ -59,10 +58,9 @@ type Controller interface {
 }
 
 type didController struct {
-	primary    models.Account
-	primaryDoc *types.DidDocument
+	primary    vaulttypes.Account
 	identity   *types.Identity
-	blockchain []models.Account
+	blockchain []vaulttypes.Account
 
 	currCredential *servicetypes.WebauthnCredential
 	disableIPFS    bool
@@ -76,7 +74,7 @@ func NewController(options ...ControllerOption) (Controller, error) {
 		option(opts)
 	}
 
-	doneCh := make(chan models.Account)
+	doneCh := make(chan vaulttypes.Account)
 	errCh := make(chan error)
 	go generateInitialAccount(context.Background(), opts.WebauthnCredential, doneCh, errCh, opts)
 
@@ -92,53 +90,29 @@ func NewController(options ...ControllerOption) (Controller, error) {
 	}
 }
 
-// The function loads a controller with a primary account and a list of blockchain accounts from a
-// given identity.
-func LoadController(doc *types.Identity) (Controller, error) {
-	acc, err := vault.GetAccount(doc.Id)
-	if err != nil {
-		return nil, err
-	}
-	blockAccDids := doc.CapabilityDelegation
-	var blockAccs []models.Account
-	for _, did := range blockAccDids {
-		acc, err := vault.GetAccount(did)
-		if err != nil {
-			return nil, err
-		}
-		blockAccs = append(blockAccs, acc)
-	}
-	cn := &didController{
-		primary:    acc,
-		identity:   doc,
-		blockchain: blockAccs,
-	}
-	return cn, nil
-}
-
-// The function loads a controller with a primary account and a list of blockchain accounts from a
-// given DID document.
-func LoadControllerWithDid(doc *types.DidDocument) (Controller, error) {
-	acc, err := vault.GetAccount(doc.Id)
-	if err != nil {
-		return nil, err
-	}
-	blockAccDids := doc.CapabilityDelegation
-	var blockAccs []models.Account
-	for _, did := range blockAccDids {
-		acc, err := vault.GetAccount(did)
-		if err != nil {
-			return nil, err
-		}
-		blockAccs = append(blockAccs, acc)
-	}
-	cn := &didController{
-		primary:    acc,
-		primaryDoc: doc,
-		blockchain: blockAccs,
-	}
-	return cn, nil
-}
+// // The function loads a controller with a primary account and a list of blockchain accounts from a
+// // given identity.
+// func LoadController(doc *types.Identity) (Controller, error) {
+// 	acc, err := vault.GetAccount(doc.Id)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	blockAccDids := doc.CapabilityDelegation
+// 	var blockAccs []models.Account
+// 	for _, did := range blockAccDids {
+// 		acc, err := vault.GetAccount(did)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		blockAccs = append(blockAccs, acc)
+// 	}
+// 	cn := &didController{
+// 		primary:    acc,
+// 		identity:   doc,
+// 		blockchain: blockAccs,
+// 	}
+// 	return cn, nil
+// }
 
 // The `Address()` function is a method of the `didController` struct that returns the address of the
 // primary account associated with the controller. It takes a pointer to the `didController` struct as
@@ -151,7 +125,7 @@ func (dc *didController) Address() string {
 // Identifier) associated with the controller's primary account. It takes a pointer to the
 // `didController` struct as its receiver and returns a string representing the DID.
 func (dc *didController) Did() string {
-	return dc.primaryDoc.Id
+	return dc.identity.Id
 }
 
 // The `PrimaryIdentity()` function is a method of the `didController` struct that returns the DID
@@ -166,8 +140,8 @@ func (dc *didController) GetIdentity() *types.Identity {
 // array of `*types.DidDocument` representing the DID documents of all the blockchain identities
 // associated with the controller. It takes a pointer to the `didController` struct as its receiver and
 // returns an array of pointers to `types.DidDocument`.
-func (dc *didController) BlockchainIdentities() []*types.DidDocument {
-	var docs []*types.DidDocument
+func (dc *didController) BlockchainIdentities() []*types.Identity {
+	var docs []*types.Identity
 	for _, acc := range dc.blockchain {
 		fmt.Println(acc)
 	}
@@ -178,14 +152,14 @@ func (dc *didController) BlockchainIdentities() []*types.DidDocument {
 // returns an array of `models.Account` and an error. The method first checks if the primary account
 // exists and then appends it to the list of blockchain accounts associated with the controller.
 // Finally, it returns the list of accounts.
-func (dc *didController) ListAccounts() ([]models.Account, error) {
+func (dc *didController) ListAccounts() ([]vaulttypes.Account, error) {
 	if dc.primary == nil {
 		return nil, fmt.Errorf("no Primary Account found")
 	}
-	return append([]models.Account{dc.primary}, dc.blockchain...), nil
+	return append([]vaulttypes.Account{dc.primary}, dc.blockchain...), nil
 }
 
-func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (models.Account, error) {
+func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (vaulttypes.Account, error) {
 	ctCount := 0
 	for _, acc := range dc.blockchain {
 		if acc.CoinType() == coinType {
@@ -197,13 +171,13 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (m
 		return nil, err
 	}
 
-	// Add account to the vault
-	if !dc.disableIPFS {
-		err = vault.InsertAccount(newAcc)
-		if err != nil {
-			return nil, err
-		}
-	}
+	// // Add account to the vault
+	// if !dc.disableIPFS {
+	// 	err = vault.InsertAccount(newAcc)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// }
 
 	// Add the new models.Account to the controller
 	dc.blockchain = append(dc.blockchain, newAcc)
@@ -211,7 +185,7 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (m
 }
 
 // Getmodels.Account returns the controller's models.Account from the Address
-func (dc *didController) GetAccount(address string) (models.Account, error) {
+func (dc *didController) GetAccount(address string) (vaulttypes.Account, error) {
 	if strings.Contains(address, "did:") {
 		return dc.GetAccountByDid(address)
 	}
@@ -224,8 +198,8 @@ func (dc *didController) GetAccount(address string) (models.Account, error) {
 }
 
 // GetAccountByDid returns the controller's models.Account from the DID
-func (dc *didController) GetAccountByDid(did string) (models.Account, error) {
-	if dc.primaryDoc.Id == did {
+func (dc *didController) GetAccountByDid(did string) (vaulttypes.Account, error) {
+	if dc.identity.Id == did {
 		return dc.primary, nil
 	}
 	for _, acc := range dc.blockchain {
@@ -257,68 +231,31 @@ func (dc *didController) Verify(address string, msg []byte, sig []byte) (bool, e
 
 // SendMail sends a mail from the controller's selected models.Account
 func (dc *didController) SendMail(address string, to string, body string) error {
-	acc, err := dc.GetAccount(address)
-	if err != nil {
-		return err
-	}
-	msg, err := acc.CreateInboxMessage(to, body)
-	if err != nil {
-		return err
-	}
-	err = vault.WriteInbox(to, msg)
-	if err != nil {
-		return err
-	}
-	return nil
+	// acc, err := dc.GetAccount(address)
+	// if err != nil {
+	// 	return err
+	// }
+	// msg, err := acc.CreateInboxMessage(to, body)
+	// if err != nil {
+	// 	return err
+	// }
+	// err = vault.WriteInbox(to, msg)
+	// if err != nil {
+	// 	return err
+	// }
+	return fmt.Errorf("not implemented")
 }
 
 // ReadMail reads a mail from the controller's selected models.Account
-func (dc *didController) ReadMail(address string) ([]*models.InboxMessage, error) {
-	acc, err := dc.GetAccount(address)
-	if err != nil {
-		return nil, err
-	}
-	return vault.ReadInbox(acc.Address())
+func (dc *didController) ReadMail(address string) ([]*vaulttypes.InboxMessage, error) {
+	// acc, err := dc.GetAccount(address)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return vault.ReadInbox(acc.Address())
+	return nil, fmt.Errorf("not implemented")
 }
 
-// ! ||--------------------------------------------------------------------------------||
-// ! ||                         Blockchain Transaction Methods                         ||
-// ! ||--------------------------------------------------------------------------------||
-// CreatePrimaryIdentity sends a transaction to create a new DID document with the provided account
-func (c *didController) CreatePrimaryIdentity(doc *types.DidDocument, acc models.Account, alias string, wallet_id uint32) {
-	go func() {
-		msg := types.NewMsgCreateDidDocument(acc.Address(), wallet_id, alias, doc)
-		resp, err := c.primary.SendSonrTx(msg)
-		if err != nil {
-			return
-		}
-		c.broadcastChan <- resp
-	}()
-}
-
-// UpdatePrimaryIdentity sends a transaction to update an existing DID document with the provided account
-func (c *didController) UpdatePrimaryIdentity(docs ...*types.DidDocument) {
-	go func() {
-		msg := types.NewMsgUpdateDidDocument(c.primary.Address(), c.primaryDoc, docs...)
-		resp, err := c.primary.SendSonrTx(msg)
-		if err != nil {
-			return
-		}
-		c.broadcastChan <- resp
-	}()
-}
-
-// RegisterIdentity sends a transaction to register a new identity with the provided account
-func (c *didController) RegisterIdentity(id *types.Identity, alias string, wallet_id uint32, relationships ...*types.VerificationRelationship) {
-	go func() {
-		msg := types.NewMsgRegisterIdentity(c.primary.Address(), wallet_id, alias, id, relationships...)
-		resp, err := c.primary.SendSonrTx(msg)
-		if err != nil {
-			return
-		}
-		c.broadcastChan <- resp
-	}()
-}
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                                  Configuration                                 ||
@@ -392,7 +329,7 @@ func WithBroadcastTx(brdcastChan chan *local.BroadcastTxResponse) ControllerOpti
 // ! ||                          Helper Methods for Controller                         ||
 // ! ||--------------------------------------------------------------------------------||
 
-func generateInitialAccount(ctx context.Context, credential *servicetypes.WebauthnCredential, doneCh chan models.Account, errChan chan error, opts *ControllerOptions) {
+func generateInitialAccount(ctx context.Context, credential *servicetypes.WebauthnCredential, doneCh chan vaulttypes.Account, errChan chan error, opts *ControllerOptions) {
 	shardName := crypto.PartyID(base64.RawStdEncoding.EncodeToString(credential.Id))
 	// Call Handler for keygen
 	confs, err := mpc.Keygen(shardName, mpc.WithHandlers(opts.OnConfigGenerated...))
@@ -406,42 +343,32 @@ func generateInitialAccount(ctx context.Context, credential *servicetypes.Webaut
 	}
 
 	rootDid, _ := crypto.SONRCoinType.FormatDID(pubKey)
-	var kss []models.KeyShare
+	var kss []vaulttypes.KeyShare
 	for _, conf := range confs {
 		ksb, err := conf.MarshalBinary()
 		if err != nil {
 			errChan <- err
 		}
 		ksDid := fmt.Sprintf("%s#%s", rootDid, conf.ID)
-		ks, err := models.NewKeyshare(ksDid, ksb, crypto.SONRCoinType)
+		ks, err := vaulttypes.NewKeyshare(ksDid, ksb, crypto.SONRCoinType)
 		if err != nil {
 			errChan <- err
 		}
 		kss = append(kss, ks)
 	}
-	doneCh <- models.NewAccount(kss, crypto.SONRCoinType)
+	doneCh <- vaulttypes.NewAccount(kss, crypto.SONRCoinType)
 }
 
-func setupController(ctx context.Context, primary models.Account, opts *ControllerOptions) (Controller, error) {
-	if !opts.DisableIPFS {
-		err := vault.InsertAccount(primary)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	doc := types.NewPrimaryIdentity(primary.Did(), primary.PubKey(), nil)
+func setupController(ctx context.Context, primary vaulttypes.Account, opts *ControllerOptions) (Controller, error) {
+	doc := types.NewSonrIdentity(primary.Address())
 	if opts.WebauthnCredential != nil {
 		cred, err := servicetypes.ValidateWebauthnCredential(opts.WebauthnCredential, primary.Did())
 		if err != nil {
 			return nil, err
 		}
-		doc = types.NewPrimaryIdentity(primary.Did(), primary.PubKey(), cred.ToVerificationMethod())
-		if !opts.DisableIPFS {
-			err = vault.StoreCredential(cred)
-			if err != nil {
-				return nil, err
-			}
+		_, ok := doc.AddAuthenticationMethod(cred.ToVerificationMethod())
+		if !ok {
+			return nil, fmt.Errorf("could not add verification method")
 		}
 	}
 
@@ -451,10 +378,10 @@ func setupController(ctx context.Context, primary models.Account, opts *Controll
 
 	cont := &didController{
 		primary:     primary,
-		blockchain:  []models.Account{},
-		primaryDoc:  doc,
+		blockchain:  []vaulttypes.Account{},
+		identity:    doc,
 		disableIPFS: opts.DisableIPFS,
-		aka:         doc.FindUsername(),
+		aka:         doc.PrimaryAlias,
 	}
 	return cont, nil
 }

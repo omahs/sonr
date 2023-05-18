@@ -24,14 +24,14 @@ func (k Keeper) DidAll(c context.Context, req *types.QueryAllDidRequest) (*types
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var didDocuments []types.DidDocument
+	var didDocuments []types.Identity
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
 	didDocumentStore := prefix.NewStore(store, types.KeyPrefix(types.PrimaryIdentityPrefix))
 
 	pageRes, err := query.Paginate(didDocumentStore, req.Pagination, func(key []byte, value []byte) error {
-		var didDocument types.DidDocument
+		var didDocument types.Identity
 		if err := k.cdc.Unmarshal(value, &didDocument); err != nil {
 			return err
 		}
@@ -153,34 +153,6 @@ func containsAny(s1 []string, s2 []string) bool {
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                                  Wallet Claims                                 ||
 // ! ||--------------------------------------------------------------------------------||
-
-func (k Keeper) ClaimableWalletAll(goCtx context.Context, req *types.QueryAllClaimableWalletRequest) (*types.QueryAllClaimableWalletResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-
-	var claimableWallets []types.ClaimableWallet
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	store := ctx.KVStore(k.storeKey)
-	claimableWalletStore := prefix.NewStore(store, types.KeyPrefix(types.ClaimableWalletKey))
-
-	pageRes, err := query.Paginate(claimableWalletStore, req.Pagination, func(key []byte, value []byte) error {
-		var claimableWallet types.ClaimableWallet
-		if err := k.cdc.Unmarshal(value, &claimableWallet); err != nil {
-			return err
-		}
-
-		claimableWallets = append(claimableWallets, claimableWallet)
-		return nil
-	})
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	return &types.QueryAllClaimableWalletResponse{ClaimableWallet: claimableWallets, Pagination: pageRes}, nil
-}
 
 func (k Keeper) ClaimableWallet(goCtx context.Context, req *types.QueryGetClaimableWalletRequest) (*types.QueryGetClaimableWalletResponse, error) {
 	if req == nil {

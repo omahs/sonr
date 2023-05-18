@@ -27,6 +27,7 @@ type (
 		accountKeeper types.AccountKeeper
 		bankKeeper    types.BankKeeper
 		groupKeeper   types.GroupKeeper
+		vaultKeeper  types.VaultKeeper
 	}
 )
 
@@ -37,6 +38,7 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 
 	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, groupKeeper types.GroupKeeper,
+	vaultKeeper types.VaultKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -48,6 +50,7 @@ func NewKeeper(
 		memKey:        memKey,
 		paramstore:    ps,
 		accountKeeper: accountKeeper, bankKeeper: bankKeeper, groupKeeper: groupKeeper,
+		vaultKeeper: vaultKeeper,
 	}
 	return k
 }
@@ -200,7 +203,7 @@ func (k Keeper) HasIdentity(ctx sdk.Context, did string) bool {
 }
 
 // SetDidDocument set a specific didDocument in the store from its index
-func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.DidDocument) {
+func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.Identity) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 
 	ptrs := strings.Split(didDocument.Id, ":")
@@ -217,7 +220,7 @@ func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.DidDocument) {
 func (k Keeper) GetDidDocument(
 	ctx sdk.Context,
 	did string,
-) (val types.DidDocument, found bool) {
+) (val types.Identity, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 	b := store.Get(types.DidDocumentKey(
 		did,
@@ -233,13 +236,13 @@ func (k Keeper) GetDidDocument(
 func (k Keeper) GetDidDocumentByAlsoKnownAs(
 	ctx sdk.Context,
 	alias string,
-) (val types.DidDocument, found bool) {
+) (val types.Identity, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var doc types.DidDocument
+		var doc types.Identity
 		k.cdc.MustUnmarshal(iterator.Value(), &doc)
 		if doc.AlsoKnownAs[0] == alias {
 			val = doc
@@ -253,13 +256,13 @@ func (k Keeper) GetDidDocumentByAlsoKnownAs(
 func (k Keeper) GetDidDocumentByOwner(
 	ctx sdk.Context,
 	addr string,
-) (val types.DidDocument, found bool) {
+) (val types.Identity, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var doc types.DidDocument
+		var doc types.Identity
 		k.cdc.MustUnmarshal(iterator.Value(), &doc)
 		if doc.Owner == addr {
 			val = doc
@@ -270,14 +273,14 @@ func (k Keeper) GetDidDocumentByOwner(
 }
 
 // GetAllDidDocument returns all didDocument
-func (k Keeper) GetAllPrimaryIdentities(ctx sdk.Context) (list []types.DidDocument) {
+func (k Keeper) GetAllPrimaryIdentities(ctx sdk.Context) (list []types.Identity) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.DidDocument
+		var val types.Identity
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}

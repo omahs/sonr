@@ -104,14 +104,18 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/sonrhq/core/internal/gateway"
 	identitymodule "github.com/sonrhq/core/x/identity"
+	"github.com/sonrhq/core/x/identity/client/gateway"
 	identitymodulekeeper "github.com/sonrhq/core/x/identity/keeper"
 	identitymoduletypes "github.com/sonrhq/core/x/identity/types"
 
 	servicemodule "github.com/sonrhq/core/x/service"
 	servicemodulekeeper "github.com/sonrhq/core/x/service/keeper"
 	servicemoduletypes "github.com/sonrhq/core/x/service/types"
+
+	vaultmodule "github.com/sonrhq/core/x/vault"
+	vaultmodulekeeper "github.com/sonrhq/core/x/vault/keeper"
+	vaultmoduletypes "github.com/sonrhq/core/x/vault/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
@@ -173,6 +177,7 @@ var (
 		vesting.AppModuleBasic{},
 		identitymodule.AppModuleBasic{},
 		servicemodule.AppModuleBasic{},
+		vaultmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -251,6 +256,7 @@ type App struct {
 
 	ServiceKeeper servicemodulekeeper.Keeper
 
+	VaultKeeper vaultmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -280,6 +286,7 @@ func New(
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
+
 	bApp := baseapp.NewBaseApp(
 		Name,
 		logger,
@@ -299,6 +306,7 @@ func New(
 		icacontrollertypes.StoreKey,
 		identitymoduletypes.StoreKey,
 		servicemoduletypes.StoreKey,
+		vaultmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -516,6 +524,13 @@ func New(
 		app.MsgServiceRouter(),
 		govConfig,
 	)
+	app.VaultKeeper = *vaultmodulekeeper.NewKeeper(
+		appCodec,
+		keys[vaultmoduletypes.StoreKey],
+		keys[vaultmoduletypes.MemStoreKey],
+		app.GetSubspace(vaultmoduletypes.ModuleName),
+	)
+	vaultModule := vaultmodule.NewAppModule(appCodec, app.VaultKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.IdentityKeeper = *identitymodulekeeper.NewKeeper(
 		appCodec,
@@ -526,8 +541,9 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.GroupKeeper,
+		app.VaultKeeper,
 	)
-	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper)
+	identityModule := identitymodule.NewAppModule(appCodec, app.IdentityKeeper, app.AccountKeeper, app.BankKeeper, app.VaultKeeper)
 
 	app.ServiceKeeper = *servicemodulekeeper.NewKeeper(
 		appCodec,
@@ -585,6 +601,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		icaModule,
+		vaultModule,
 		identityModule,
 		serviceModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
@@ -616,6 +633,7 @@ func New(
 		group.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
+		vaultmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
@@ -642,6 +660,7 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		vaultmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
@@ -673,6 +692,7 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		vaultmoduletypes.ModuleName,
 		identitymoduletypes.ModuleName,
 		servicemoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
@@ -704,8 +724,10 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
+		vaultModule,
 		identityModule,
 		serviceModule,
+
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -908,6 +930,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(identitymoduletypes.ModuleName)
 	paramsKeeper.Subspace(servicemoduletypes.ModuleName)
+	paramsKeeper.Subspace(vaultmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

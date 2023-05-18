@@ -50,14 +50,12 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 	identityGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
-		DidDocuments: []types.DidDocument{
+		DidDocuments: []types.Identity{
 			{
-				Controller: []string{types.ConvertAccAddressToDid(sample.AccAddress())},
-				Id:         types.ConvertAccAddressToDid(sample.AccAddress()),
+				Id: types.ConvertAccAddressToDid(sample.AccAddress()),
 			},
 			{
-				Controller: []string{types.ConvertAccAddressToDid(sample.AccAddress())},
-				Id:         types.ConvertAccAddressToDid(sample.AccAddress()),
+				Id: types.ConvertAccAddressToDid(sample.AccAddress()),
 			},
 		},
 		ClaimableWalletList: []types.ClaimableWallet{

@@ -39,7 +39,6 @@ func TestMsgRegisterUserEntity_ValidateBasic(t *testing.T) {
 	}
 }
 
-
 func TestMsgAuthenticateUserEntity_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string

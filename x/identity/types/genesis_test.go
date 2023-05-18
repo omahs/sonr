@@ -21,7 +21,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-				DidDocuments: []types.DidDocument{
+				DidDocuments: []types.Identity{
 					{
 						Id: "0",
 					},

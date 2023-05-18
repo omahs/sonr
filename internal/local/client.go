@@ -21,7 +21,7 @@ type BroadcastTxResponse = txtypes.BroadcastTxResponse
 // ! ||--------------------------------------------------------------------------------||
 
 // CheckAlias checks if the alias is available and returns the existing DID if it's not
-func (c LocalContext) CheckAlias(ctx context.Context, alias string) (bool, *identitytypes.DidDocument, error) {
+func (c LocalContext) CheckAlias(ctx context.Context, alias string) (bool, *identitytypes.Identity, error) {
 	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
 		return false, nil, errors.New("failed to connect to grpc server: " + err.Error())
@@ -34,7 +34,7 @@ func (c LocalContext) CheckAlias(ctx context.Context, alias string) (bool, *iden
 }
 
 // GetDID returns the DID document with the given id
-func (c LocalContext) GetDID(ctx context.Context, id string) (*identitytypes.DidDocument, error) {
+func (c LocalContext) GetDID(ctx context.Context, id string) (*identitytypes.Identity, error) {
 	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
@@ -47,7 +47,7 @@ func (c LocalContext) GetDID(ctx context.Context, id string) (*identitytypes.Did
 }
 
 // GetDIDByAlias returns the DID document with the given alias
-func (c LocalContext) GetDIDByAlias(ctx context.Context, alias string) (*identitytypes.DidDocument, error) {
+func (c LocalContext) GetDIDByAlias(ctx context.Context, alias string) (*identitytypes.Identity, error) {
 	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
@@ -60,7 +60,7 @@ func (c LocalContext) GetDIDByAlias(ctx context.Context, alias string) (*identit
 }
 
 // GetDIDByAlias returns the DID document with the given alias
-func (c LocalContext) GetDIDByOwner(ctx context.Context, owner string) (*identitytypes.DidDocument, error) {
+func (c LocalContext) GetDIDByOwner(ctx context.Context, owner string) (*identitytypes.Identity, error) {
 	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
 		return nil, errors.New("failed to connect to grpc server: " + err.Error())
@@ -73,7 +73,7 @@ func (c LocalContext) GetDIDByOwner(ctx context.Context, owner string) (*identit
 }
 
 // GetAllDIDs returns all DID documents
-func (c LocalContext) GetAllDIDs(ctx context.Context) ([]*identitytypes.DidDocument, error) {
+func (c LocalContext) GetAllDIDs(ctx context.Context) ([]*identitytypes.Identity, error) {
 	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
 	if err != nil {
 
@@ -84,7 +84,7 @@ func (c LocalContext) GetAllDIDs(ctx context.Context) ([]*identitytypes.DidDocum
 
 		return nil, err
 	}
-	list := make([]*identitytypes.DidDocument, len(resp.DidDocument))
+	list := make([]*identitytypes.Identity, len(resp.DidDocument))
 	for i, d := range resp.DidDocument {
 		list[i] = &d
 	}
@@ -102,35 +102,6 @@ func (c LocalContext) GetUnclaimedWallet(ctx context.Context, id uint64) (*ident
 		return nil, err
 	}
 	return &resp.ClaimableWallet, nil
-}
-
-// GetUnclaimedWallets returns all unclaimed wallets
-func (c LocalContext) GetUnclaimedWallets(ctx context.Context) ([]identitytypes.ClaimableWallet, error) {
-	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
-	if err != nil {
-		return nil, errors.New("failed to connect to grpc server: " + err.Error())
-	}
-	resp, err := identitytypes.NewQueryClient(conn).ClaimableWalletAll(ctx, &identitytypes.QueryAllClaimableWalletRequest{})
-	if err != nil {
-		return nil, err
-	}
-	return resp.ClaimableWallet, nil
-}
-
-// OldestUnclaimedWallet returns the oldest unclaimed wallet
-func (c LocalContext) OldestUnclaimedWallet(ctx context.Context) (*identitytypes.ClaimableWallet, error) {
-	conn, err := grpc.Dial(c.GrpcEndpoint(), grpc.WithInsecure())
-	if err != nil {
-		return nil, errors.New("failed to connect to grpc server: " + err.Error())
-	}
-	resp, err := identitytypes.NewQueryClient(conn).ClaimableWalletAll(ctx, &identitytypes.QueryAllClaimableWalletRequest{})
-	if err != nil {
-		return nil, err
-	}
-	if len(resp.ClaimableWallet) == 0 {
-		return nil, errors.New("no unclaimed wallets")
-	}
-	return &resp.ClaimableWallet[0], nil
 }
 
 // GetService returns the service with the given id

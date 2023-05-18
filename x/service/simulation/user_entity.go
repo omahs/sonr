@@ -28,7 +28,6 @@ func SimulateMsgRegisterUserEntity(
 	}
 }
 
-
 func SimulateMsgAuthenticateUserEntity(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
