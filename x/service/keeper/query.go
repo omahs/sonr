@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/sonrhq/core/x/service/types"
 	"google.golang.org/grpc/codes"
@@ -56,4 +57,19 @@ func (k Keeper) ServiceRecord(goCtx context.Context, req *types.QueryGetServiceR
 	}
 
 	return &types.QueryGetServiceRecordResponse{ServiceRecord: val}, nil
+}
+
+
+func (k Keeper) ServiceRelationship(goCtx context.Context, req *types.QueryGetServiceRelationshipRequest) (*types.QueryGetServiceRelationshipResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	serviceRelationships, found := k.GetServiceRelationship(ctx, req.Id)
+	if !found {
+		return nil, sdkerrors.ErrKeyNotFound
+	}
+
+	return &types.QueryGetServiceRelationshipResponse{ServiceRelationships: serviceRelationships}, nil
 }

@@ -11,10 +11,9 @@ import (
 )
 
 type serviceProvider struct {
-	cache *cache.Cache
+	cache  *cache.Cache
 	record *types.ServiceRecord
 }
-
 
 func (sp *serviceProvider) CredentialEntity() protocol.CredentialEntity {
 	return protocol.CredentialEntity{
@@ -66,7 +65,7 @@ func (sp *serviceProvider) GetCredentialAssertionOptions(alias string, allowedCr
 // RelyingPartyEntity is a struct that represents a Relying Party entity.
 func (sp *serviceProvider) RelyingPartyEntity() protocol.RelyingPartyEntity {
 	return protocol.RelyingPartyEntity{
-		ID: sp.record.Origin,
+		ID:               sp.record.Origin,
 		CredentialEntity: sp.CredentialEntity(),
 	}
 }

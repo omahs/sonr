@@ -11,6 +11,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateServiceRecord{}, "service/CreateServiceRecord", nil)
 	cdc.RegisterConcrete(&MsgUpdateServiceRecord{}, "service/UpdateServiceRecord", nil)
 	cdc.RegisterConcrete(&MsgDeleteServiceRecord{}, "service/DeleteServiceRecord", nil)
+
 	// this line is used by starport scaffolding # 2
 }
 
@@ -20,6 +21,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgUpdateServiceRecord{},
 		&MsgDeleteServiceRecord{},
 	)
+
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

@@ -12,3 +12,9 @@ message ServiceRecord {
   repeated string service_endpoints = 6; // optional, the set of service endpoints associated with the service
   string metadata = 7; // optional, additional metadata related to the Service
 }
+
+message ServiceRelationship {
+  string reference = 1;
+  string did = 2;
+  uint32 count = 3;
+}

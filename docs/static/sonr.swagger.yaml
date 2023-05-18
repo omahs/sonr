@@ -362,6 +362,26 @@ paths:
             $ref: '#/definitions/rpcStatus'
       tags:
         - Query
+  /sonrhq/core/service/service_relationships/{id}:
+    get:
+      summary: Queries a list of ServiceRelationships items.
+      operationId: Query_ServiceRelationship
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/serviceQueryGetServiceRelationshipResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
 definitions:
   coreidentityParams:
     type: object
@@ -419,6 +439,61 @@ definitions:
         format: int32
       claimed:
         type: boolean
+  identityDIDDocument:
+    type: object
+    properties:
+      context:
+        type: array
+        items:
+          type: string
+        title: The JSON-LD context(s) used in the document
+      id:
+        type: string
+        title: The identifier for the DID subject
+      controller:
+        type: array
+        items:
+          type: string
+        title: optional, the entity/entities controlling the DID subject
+      authentication:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/identityVerificationRelationship'
+        title: optional, the set of authentication methods associated with the DID subject
+      assertionMethod:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/identityVerificationRelationship'
+        title: optional, the set of assertion methods associated with the DID subject
+      capabilityInvocation:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/identityVerificationRelationship'
+        title: optional, the set of capability invocation methods associated with the DID subject
+      capabilityDelegation:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/identityVerificationRelationship'
+        title: optional, the set of capability delegation methods associated with the DID subject
+      keyAgreement:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/identityVerificationRelationship'
+        title: optional, the set of key agreement methods associated with the DID subject
+      alsoKnownAs:
+        type: array
+        items:
+          type: string
+        title: optional, the set of identifiers for other personas or identities related to the DID subject
+      metadata:
+        type: string
+        title: optional, additional metadata related to the DID document
+    description: DIDDocument represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
   identityDidDocument:
     type: object
     properties:
@@ -478,10 +553,61 @@ definitions:
         type: string
         title: The idx address of the owner of the DID document
     description: DidDocument represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
+  identityIdentity:
+    type: object
+    properties:
+      id:
+        type: string
+        title: The identifier for the DID subject
+      owner:
+        type: string
+        title: optional, the entity/entities controlling the DID subject
+      primaryAlias:
+        type: string
+        title: optional, the primary alias for the DID subject
+      authentication:
+        type: array
+        items:
+          type: string
+        title: optional, the set of authentication methods associated with the DID subject
+      assertionMethod:
+        type: array
+        items:
+          type: string
+        title: optional, the set of assertion methods associated with the DID subject
+      capabilityInvocation:
+        type: array
+        items:
+          type: string
+        title: optional, the set of capability invocation methods associated with the DID subject
+      capabilityDelegation:
+        type: array
+        items:
+          type: string
+        title: optional, the set of capability delegation methods associated with the DID subject
+      keyAgreement:
+        type: array
+        items:
+          type: string
+        title: optional, the set of key agreement methods associated with the DID subject
+      alsoKnownAs:
+        type: array
+        items:
+          type: string
+        title: optional, the set of identifiers for other personas or identities related to the DID subject
+      metadata:
+        type: string
+        title: optional, additional metadata related to the DID document
+    description: Identity represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
   identityMsgCreateDidDocumentResponse:
     type: object
   identityMsgRegisterIdentityResponse:
     type: object
+    properties:
+      success:
+        type: boolean
+      didDocument:
+        $ref: '#/definitions/identityDIDDocument'
   identityMsgUpdateDidDocumentResponse:
     type: object
     properties:
@@ -567,6 +693,22 @@ definitions:
         type: string
         title: additional metadata related to the verification method
     description: VerificationMethod represents a verification method that can be used to authenticate the DID subject or perform other cryptographic operations.
+  identityVerificationRelationship:
+    type: object
+    properties:
+      verificationMethod:
+        $ref: '#/definitions/identityVerificationMethod'
+        title: The verification method associated with the relationship
+      reference:
+        type: string
+        title: The reference identifier for the relationship
+      type:
+        type: string
+        title: The type of the verification relationship
+      owner:
+        type: string
+        title: The idx address of the owner of the verification relationship
+    description: VerificationRelationship represents a relationship between a verification method and a specific verification purpose (e.g., authentication, assertion, etc.).
   protobufAny:
     type: object
     properties:
@@ -607,6 +749,11 @@ definitions:
     properties:
       serviceRecord:
         $ref: '#/definitions/serviceServiceRecord'
+  serviceQueryGetServiceRelationshipResponse:
+    type: object
+    properties:
+      ServiceRelationships:
+        $ref: '#/definitions/serviceServiceRelationship'
   serviceServiceRecord:
     type: object
     properties:
@@ -632,6 +779,16 @@ definitions:
       metadata:
         type: string
         title: optional, additional metadata related to the Service
+  serviceServiceRelationship:
+    type: object
+    properties:
+      reference:
+        type: string
+      did:
+        type: string
+      count:
+        type: integer
+        format: int64
   v1beta1PageRequest:
     type: object
     properties:

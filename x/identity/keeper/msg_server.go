@@ -74,3 +74,98 @@ func (k msgServer) UpdateDidDocument(goCtx context.Context, msg *types.MsgUpdate
 	)
 	return &types.MsgUpdateDidDocumentResponse{}, nil
 }
+
+// RegisterIdentity registers a new identity with the provided Identity and Verification Relationships. Fails if not at least one Authentication relationship is provided.
+func (k Keeper) RegisterIdentity(goCtx context.Context, msg *types.MsgRegisterIdentity) (*types.MsgRegisterIdentityResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if len(msg.Authentication) == 0 {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "at least one authentication relationship must be provided")
+	}
+
+	// Check if the value already exists
+	if ok := k.HasIdentity(ctx, msg.Identity.Id); ok {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "identity already registered")
+	}
+	if msg.Creator != msg.Identity.Owner {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "identity owner does not match creator")
+	}
+
+	// Remove the unclaimed wallet
+	ucw, found := k.GetClaimableWallet(ctx, uint64(msg.WalletId))
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "unclaimed wallet index not set")
+	}
+	ucw.Claimed = true
+	k.RemoveClaimableWallet(ctx, uint64(msg.WalletId))
+
+	// Set the identity
+	err := k.SetIdentity(ctx, *msg.Identity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Iteratively set authentication relations
+	for _, auth := range msg.Authentication {
+		auth.Owner = msg.Identity.Owner
+		auth.Reference = auth.VerificationMethod.Id
+		auth.Type = "Authentication"
+		k.SetAuthentication(ctx, *auth)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Iteratively set assertion relations
+	for _, assertion := range msg.Assertion {
+		assertion.Owner = msg.Identity.Owner
+		assertion.Reference = assertion.VerificationMethod.Id
+		assertion.Type = "AssertionMethod"
+		k.SetAssertion(ctx, *assertion)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Iteratively set capability delegation relations
+	for _, capability := range msg.CapabilityDelegation {
+		capability.Owner = msg.Identity.Owner
+		capability.Reference = capability.VerificationMethod.Id
+		capability.Type = "CapabilityDelegation"
+		k.SetCapabilityDelegation(ctx, *capability)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Iteratively set capability invocation relations
+	for _, capability := range msg.CapabilityInvocation {
+		capability.Owner = msg.Identity.Owner
+		capability.Reference = capability.VerificationMethod.Id
+		capability.Type = "CapabilityInvocation"
+		k.SetCapabilityInvocation(ctx, *capability)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Iteratively set key agreement relations
+	for _, keyAgreement := range msg.KeyAgreement {
+		keyAgreement.Owner = msg.Identity.Owner
+		k.SetKeyAgreement(ctx, *keyAgreement)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &types.MsgRegisterIdentityResponse{
+		Success: true,
+		DidDocument: &types.DIDDocument{
+			Context:              []string{types.DefaultParams().DidBaseContext, types.DefaultParams().AccountDidMethodContext},
+			Id:                   msg.Identity.Id,
+			Authentication:       msg.Authentication,
+			AssertionMethod:      msg.Assertion,
+			CapabilityDelegation: msg.CapabilityDelegation,
+			CapabilityInvocation: msg.CapabilityInvocation,
+			Metadata:             msg.Identity.Metadata,
+		},
+	}, nil
+}

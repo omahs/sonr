@@ -31,6 +31,7 @@ var (
 	ErrParseInvalid              = errors.New("Unable to parse string into DID, invalid format.")
 	DidForbiddenSymbolsRegexp, _ = regexp.Compile(`^[^&\\]+$`)
 )
+
 func ToIdentifier(str string) string {
 	if str[len(str)-1] == ':' {
 		return str[:len(str)-1] + "/"

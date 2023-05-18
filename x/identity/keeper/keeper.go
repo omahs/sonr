@@ -79,6 +79,106 @@ func (k Keeper) CheckAlsoKnownAs(ctx sdk.Context, alias string) error {
 	return nil
 }
 
+// ResolveIdentity resolves a DID to a DIDDocument and returns it
+func (k Keeper) ResolveIdentity(ctx sdk.Context, did string) (val types.DIDDocument, err error) {
+	ptrs := strings.Split(did, ":")
+	method := ptrs[1]
+	addr := ptrs[len(ptrs)-1]
+	params := types.DefaultParams()
+	if ok := params.IsSupportedDidMethod(method); !ok {
+		return val, status.Error(codes.InvalidArgument, "Unsupported DID method")
+	}
+	keyPrefix, ok := types.DidMethodKeyMap[method]
+	if !ok {
+		return val, status.Error(codes.InvalidArgument, "Unsupported DID method")
+	}
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(keyPrefix))
+	b := store.Get(types.DidDocumentKey(did))
+	if b == nil {
+		return val, status.Error(codes.NotFound, "Account Identity not found")
+	}
+	var identity types.Identity
+	k.cdc.MustUnmarshal(b, &identity)
+	if identity.Owner != addr {
+		return val, status.Error(codes.NotFound, "Account Identity not found")
+	}
+	for _, rel := range identity.Authentication {
+		authRelation, found := k.GetAuthentication(ctx, rel)
+		if found {
+			val.Authentication = append(val.Authentication, &authRelation)
+		}
+	}
+	for _, rel := range identity.AssertionMethod {
+		assertionRelation, found := k.GetAssertion(ctx, rel)
+		if found {
+			val.AssertionMethod = append(val.AssertionMethod, &assertionRelation)
+		}
+	}
+	for _, rel := range identity.CapabilityDelegation {
+		capabilityRelation, found := k.GetCapabilityDelegation(ctx, rel)
+		if found {
+			val.CapabilityDelegation = append(val.CapabilityDelegation, &capabilityRelation)
+		}
+	}
+	for _, rel := range identity.CapabilityInvocation {
+		invocationRelation, found := k.GetCapabilityInvocation(ctx, rel)
+		if found {
+			val.CapabilityDelegation = append(val.CapabilityInvocation, &invocationRelation)
+		}
+	}
+	for _, rel := range identity.KeyAgreement {
+		keyAgreementRelation, found := k.GetKeyAgreement(ctx, rel)
+		if found {
+			val.KeyAgreement = append(val.KeyAgreement, &keyAgreementRelation)
+		}
+	}
+	return val, nil
+}
+
+// SetIdentity checks the validity of the identity and set it in the store based off its did method
+func (k Keeper) SetIdentity(ctx sdk.Context, identity types.Identity) error {
+	ptrs := strings.Split(identity.Id, ":")
+	addr := ptrs[len(ptrs)-1]
+	method := ptrs[1]
+	params := types.DefaultParams()
+	if ok := params.IsSupportedDidMethod(method); !ok {
+		return status.Error(codes.InvalidArgument, "Unsupported DID method")
+	}
+	keyPrefix, ok := types.DidMethodKeyMap[method]
+	if !ok {
+		return status.Error(codes.InvalidArgument, "Unsupported DID method")
+	}
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(keyPrefix))
+	b := k.cdc.MustMarshal(&identity)
+	store.Set(types.DidDocumentKey(
+		identity.Id,
+	), b)
+	// Set the owner of the identity
+	owner, err := sdk.AccAddressFromBech32(addr)
+	if err != nil {
+		return status.Error(codes.InvalidArgument, "Invalid address")
+	}
+	k.accountKeeper.SetAccount(ctx, k.accountKeeper.NewAccountWithAddress(ctx, owner))
+	return nil
+}
+
+// HasIdentity checks if an identity exists in the store across all did methods
+func (k Keeper) HasIdentity(ctx sdk.Context, did string) bool {
+	ptrs := strings.Split(did, ":")
+	method := ptrs[1]
+	params := types.DefaultParams()
+	if ok := params.IsSupportedDidMethod(method); !ok {
+		return false
+	}
+	keyPrefix, ok := types.DidMethodKeyMap[method]
+	if !ok {
+		return false
+	}
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(keyPrefix))
+	b := store.Get(types.DidDocumentKey(did))
+	return b != nil
+}
+
 // SetDidDocument set a specific didDocument in the store from its index
 func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.DidDocument) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))

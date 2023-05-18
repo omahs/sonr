@@ -36,6 +36,18 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteServiceRecord int = 100
 
+	opWeightMsgCreateServiceRelationships = "op_weight_msg_service_relationships"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateServiceRelationships int = 100
+
+	opWeightMsgUpdateServiceRelationships = "op_weight_msg_service_relationships"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateServiceRelationships int = 100
+
+	opWeightMsgDeleteServiceRelationships = "op_weight_msg_service_relationships"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteServiceRelationships int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -69,7 +81,6 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 
 // RandomizedParams creates randomized  param changes for the simulator
 func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-
 	return []simtypes.ParamChange{}
 }
 
@@ -112,7 +123,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgDeleteServiceRecord,
 		servicesimulation.SimulateMsgDeleteServiceRecord(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
-
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations

@@ -9,7 +9,7 @@ import (
 	"github.com/sonrhq/core/internal/node"
 )
 
-func RegisterHighway(ctx client.Context) {
+func RegisterGateway(ctx client.Context) {
 	conf := config.NewConfig(ctx)
 	routes.SetupRoutes(conf)
 	node.StartLocalIPFS()

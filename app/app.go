@@ -863,7 +863,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// If found, register swagger UI and swagger.json.
 	apiSvr.Router.Handle("/static/openapi.yml", http.FileServer(http.FS(docs.Docs)))
 	apiSvr.Router.HandleFunc("/", openapiconsole.Handler(Name, "/static/openapi.yml"))
-	gateway.RegisterHighway(clientCtx)
+	gateway.RegisterGateway(clientCtx)
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.

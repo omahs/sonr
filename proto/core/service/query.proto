@@ -18,7 +18,6 @@ service Query {
     option (google.api.http).get = "/sonrhq/core/service/params";
 
   }
-
   // Queries a list of ServiceRecord items.
   rpc ServiceRecord    (QueryGetServiceRecordRequest) returns (QueryGetServiceRecordResponse) {
     option (google.api.http).get = "/sonr/core/service/record/{id}";
@@ -26,6 +25,12 @@ service Query {
   }
   rpc ServiceRecordAll (QueryAllServiceRecordRequest) returns (QueryAllServiceRecordResponse) {
     option (google.api.http).get = "/sonr/core/service/record";
+
+  }
+
+  // Queries a list of ServiceRelationships items.
+  rpc ServiceRelationship (QueryGetServiceRelationshipRequest) returns (QueryGetServiceRelationshipResponse) {
+    option (google.api.http).get = "/sonrhq/core/service/service_relationships/{id}";
 
   }
 }
@@ -56,3 +61,10 @@ message QueryAllServiceRecordResponse {
            cosmos.base.query.v1beta1.PageResponse pagination    = 2;
 }
 
+message QueryGetServiceRelationshipRequest {
+  string id = 1;
+}
+
+message QueryGetServiceRelationshipResponse {
+  ServiceRelationship ServiceRelationships = 1 [(gogoproto.nullable) = false];
+}

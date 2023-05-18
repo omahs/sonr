@@ -45,3 +45,12 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 func (p Params) Validate() error {
 	return nil
 }
+
+func (p Params) IsSupportedDidMethod(method string) bool {
+	for _, m := range p.SupportedDidMethods {
+		if m == method {
+			return true
+		}
+	}
+	return false
+}
