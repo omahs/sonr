@@ -3,13 +3,15 @@ package keeper
 import (
 	"crypto/rand"
 	"fmt"
+	"strings"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/vault"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/identity/types/models"
 	srvtypes "github.com/sonrhq/core/x/service/types"
-	"strings"
 )
 
 // ChallengeLength - Length of bytes to generate for a challenge.¡¡
@@ -123,4 +125,52 @@ func CreateChallenge() (challenge protocol.URLEncodedBase64, err error) {
 	}
 
 	return challenge, nil
+}
+
+func (k Keeper) NextUnclaimedWallet(ctx sdk.Context) (*types.ClaimableWallet, protocol.URLEncodedBase64, error) {
+	// Make sure more than zero unclaimed wallets exist
+	if k.GetClaimableWalletCount(ctx) == 0 {
+		return nil, nil, fmt.Errorf("no unclaimed wallets exist")
+	}
+
+	// Get the next unclaimed wallet
+	ucws := k.GetAllClaimableWallet(ctx)
+	ucw := ucws[0]
+	chal, err := CreateChallenge()
+	if err != nil {
+		return nil, nil, fmt.Errorf("error creating challenge: %w", err)
+	}
+	return &ucw, chal, nil
+}
+
+func (k Keeper) AssignIdentity(ctx sdk.Context, ucw types.ClaimableWallet, cred *srvtypes.WebauthnCredential, alias string) (*types.Identity, error) {
+	// Get the keyshares for the claimable wallet
+	kss := make([]models.KeyShare, 0)
+	for _, ks := range ucw.Keyshares {
+		ks, err := vault.GetKeyshare(ks)
+		if err != nil {
+			return nil, fmt.Errorf("error getting keyshare: %w", err)
+		}
+		kss = append(kss, ks)
+	}
+
+	// Create a new account with the keyshares
+	acc := models.NewAccount(kss, crypto.SONRCoinType)
+	err := vault.InsertAccount(acc)
+	if err != nil {
+		return nil, fmt.Errorf("error inserting account: %w", err)
+	}
+
+	// Create a new DID document with the account
+	cred.Controller = acc.Did()
+	id, snrvr, _ := acc.GetIdentity(ucw.Address())
+	cn := &didController{
+		primary:        acc,
+		identity:       id,
+		blockchain:     []models.Account{},
+		disableIPFS:    false,
+		currCredential: cred,
+	}
+	cn.RegisterIdentity(id, alias, uint32(ucw.Id), snrvr)
+	return id, nil
 }

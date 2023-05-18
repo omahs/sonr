@@ -359,6 +359,16 @@ paths:
           in: path
           required: true
           type: string
+        - name: did
+          description: optional
+          in: query
+          required: false
+          type: string
+        - name: isMobile
+          description: optional
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
   /sonr/service/{origin}/register/start:
@@ -379,6 +389,16 @@ paths:
           in: path
           required: true
           type: string
+        - name: alias
+          description: optional
+          in: query
+          required: false
+          type: string
+        - name: isMobile
+          description: optional
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
   /sonr/service/{origin}/relationships:
@@ -753,6 +773,13 @@ definitions:
         $ref: '#/definitions/v1beta1PageResponse'
   serviceMsgAuthenticateUserEntityResponse:
     type: object
+    properties:
+      success:
+        type: boolean
+      did:
+        type: string
+      identity:
+        $ref: '#/definitions/identityIdentity'
   serviceMsgBurnServiceRecordResponse:
     type: object
   serviceMsgRegisterServiceRecordResponse:
@@ -765,15 +792,12 @@ definitions:
   serviceMsgRegisterUserEntityResponse:
     type: object
     properties:
-      desiredAlias:
+      success:
+        type: boolean
+      did:
         type: string
-      serviceOrigin:
-        type: string
-      ucwId:
-        type: string
-        format: uint64
-      attestation:
-        type: string
+      identity:
+        $ref: '#/definitions/identityIdentity'
   serviceMsgUpdateServiceRecordResponse:
     type: object
   serviceQueryGetServiceAssertionResponse:

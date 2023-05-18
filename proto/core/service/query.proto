@@ -79,6 +79,8 @@ message QueryGetServiceRelationshipResponse {
 
 message QueryGetServiceAttestionRequest {
   string origin = 1;
+  string alias = 2; //optional
+  bool is_mobile = 3; //optional
 }
 
 message QueryGetServiceAttestionResponse {
@@ -91,6 +93,8 @@ message QueryGetServiceAttestionResponse {
 
 message QueryGetServiceAssertionRequest {
   string origin = 1;
+  string did = 2; //optional
+  bool is_mobile = 3; //optional
 }
 
 message QueryGetServiceAssertionResponse {
