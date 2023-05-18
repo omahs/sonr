@@ -16,7 +16,7 @@ type Controller = keeper.Controller
 type WalletClaims = keeper.WalletClaims
 
 // NewController creates a new identity controller
-type ControllerOption = keeper.Option
+type ControllerOption = keeper.ControllerOption
 
 // NewController creates a new identity controller
 func NewController(options ...ControllerOption) (Controller, error) {
@@ -35,7 +35,7 @@ func LoadControllerWithDid(doc *types.DidDocument) (Controller, error) {
 
 // The function WithUsername sets the username option for a controller.
 func WithUsername(username string) ControllerOption {
-	return func(o *keeper.Options) {
+	return func(o *keeper.ControllerOptions) {
 		o.Username = username
 	}
 }
@@ -43,28 +43,28 @@ func WithUsername(username string) ControllerOption {
 // The function WithConfigHandlers sets the OnConfigGenerated field of a controller.Options struct to a
 // list of handlers.
 func WithConfigHandlers(handlers ...mpc.OnConfigGenerated) ControllerOption {
-	return func(o *keeper.Options) {
+	return func(o *keeper.ControllerOptions) {
 		o.OnConfigGenerated = handlers
 	}
 }
 
 // The function sets a Webauthn credential as an option for a controller.
 func WithWebauthnCredential(cred *servicetypes.WebauthnCredential) ControllerOption {
-	return func(o *keeper.Options) {
+	return func(o *keeper.ControllerOptions) {
 		o.WebauthnCredential = cred
 	}
 }
 
 // The function returns a ControllerOption that disables IPFS in the options of a controller.
 func WithIPFSDisabled() ControllerOption {
-	return func(o *keeper.Options) {
+	return func(o *keeper.ControllerOptions) {
 		o.DisableIPFS = true
 	}
 }
 
 // WithBroadcastTx returns a ControllerOption that enables broadcasting of transactions in the options of a controller.
 func WithBroadcastTx() ControllerOption {
-	return func(o *keeper.Options) {
+	return func(o *keeper.ControllerOptions) {
 		o.BroadcastTx = true
 	}
 }

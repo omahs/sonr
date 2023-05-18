@@ -70,7 +70,7 @@ type didController struct {
 	broadcastChan  chan *local.BroadcastTxResponse
 }
 
-func NewController(options ...Option) (Controller, error) {
+func NewController(options ...ControllerOption) (Controller, error) {
 	opts := defaultOptions()
 	for _, option := range options {
 		option(opts)
@@ -326,7 +326,7 @@ func (c *didController) RegisterIdentity(id *types.Identity, alias string, walle
 // ! ||                                  Configuration                                 ||
 // ! ||--------------------------------------------------------------------------------||
 
-type Options struct {
+type ControllerOptions struct {
 	// The controller's on config generated handler
 	OnConfigGenerated []mpc.OnConfigGenerated
 
@@ -346,8 +346,8 @@ type Options struct {
 	broadcastChan chan *local.BroadcastTxResponse
 }
 
-func defaultOptions() *Options {
-	return &Options{
+func defaultOptions() *ControllerOptions {
+	return &ControllerOptions{
 		OnConfigGenerated: []mpc.OnConfigGenerated{},
 		DisableIPFS:       false,
 		BroadcastTx:       false,
@@ -357,34 +357,34 @@ func defaultOptions() *Options {
 	}
 }
 
-type Option func(*Options)
+type ControllerOption func(*ControllerOptions)
 
-func WithUsername(username string) Option {
-	return func(o *Options) {
+func WithUsername(username string) ControllerOption {
+	return func(o *ControllerOptions) {
 		o.Username = username
 	}
 }
 
-func WithConfigHandlers(handlers ...mpc.OnConfigGenerated) Option {
-	return func(o *Options) {
+func WithConfigHandlers(handlers ...mpc.OnConfigGenerated) ControllerOption {
+	return func(o *ControllerOptions) {
 		o.OnConfigGenerated = handlers
 	}
 }
 
-func WithWebauthnCredential(cred *servicetypes.WebauthnCredential) Option {
-	return func(o *Options) {
+func WithWebauthnCredential(cred *servicetypes.WebauthnCredential) ControllerOption {
+	return func(o *ControllerOptions) {
 		o.WebauthnCredential = cred
 	}
 }
 
-func WithIPFSDisabled() Option {
-	return func(o *Options) {
+func WithIPFSDisabled() ControllerOption {
+	return func(o *ControllerOptions) {
 		o.DisableIPFS = true
 	}
 }
 
-func WithBroadcastTx(brdcastChan chan *local.BroadcastTxResponse) Option {
-	return func(o *Options) {
+func WithBroadcastTx(brdcastChan chan *local.BroadcastTxResponse) ControllerOption {
+	return func(o *ControllerOptions) {
 		o.BroadcastTx = true
 		o.broadcastChan = brdcastChan
 	}
@@ -394,7 +394,7 @@ func WithBroadcastTx(brdcastChan chan *local.BroadcastTxResponse) Option {
 // ! ||                          Helper Methods for Controller                         ||
 // ! ||--------------------------------------------------------------------------------||
 
-func generateInitialAccount(ctx context.Context, credential *servicetypes.WebauthnCredential, doneCh chan models.Account, errChan chan error, opts *Options) {
+func generateInitialAccount(ctx context.Context, credential *servicetypes.WebauthnCredential, doneCh chan models.Account, errChan chan error, opts *ControllerOptions) {
 	shardName := crypto.PartyID(base64.RawStdEncoding.EncodeToString(credential.Id))
 	// Call Handler for keygen
 	confs, err := mpc.Keygen(shardName, mpc.WithHandlers(opts.OnConfigGenerated...))
@@ -424,7 +424,7 @@ func generateInitialAccount(ctx context.Context, credential *servicetypes.Webaut
 	doneCh <- models.NewAccount(kss, crypto.SONRCoinType)
 }
 
-func setupController(ctx context.Context, primary models.Account, opts *Options) (Controller, error) {
+func setupController(ctx context.Context, primary models.Account, opts *ControllerOptions) (Controller, error) {
 	if !opts.DisableIPFS {
 		err := vault.InsertAccount(primary)
 		if err != nil {
