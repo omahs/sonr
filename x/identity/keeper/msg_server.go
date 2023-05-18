@@ -101,7 +101,7 @@ func (k Keeper) RegisterIdentity(goCtx context.Context, msg *types.MsgRegisterId
 	// Set the identity
 	err := k.SetIdentity(ctx, *msg.Identity)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "failed to set identity, sequence cannot proceed.")
 	}
 
 	// Iteratively set authentication relations
@@ -111,7 +111,7 @@ func (k Keeper) RegisterIdentity(goCtx context.Context, msg *types.MsgRegisterId
 		auth.Type = "Authentication"
 		k.SetAuthentication(ctx, *auth)
 		if err != nil {
-			return nil, err
+			k.Logger(ctx).Error("failed to set authentication", "error", err)
 		}
 	}
 
@@ -122,7 +122,7 @@ func (k Keeper) RegisterIdentity(goCtx context.Context, msg *types.MsgRegisterId
 		assertion.Type = "AssertionMethod"
 		k.SetAssertion(ctx, *assertion)
 		if err != nil {
-			return nil, err
+			k.Logger(ctx).Error("failed to set assertion", "error", err)
 		}
 	}
 
@@ -133,7 +133,7 @@ func (k Keeper) RegisterIdentity(goCtx context.Context, msg *types.MsgRegisterId
 		capability.Type = "CapabilityDelegation"
 		k.SetCapabilityDelegation(ctx, *capability)
 		if err != nil {
-			return nil, err
+			k.Logger(ctx).Error("failed to set capability delegation", "error", err)
 		}
 	}
 
@@ -144,7 +144,7 @@ func (k Keeper) RegisterIdentity(goCtx context.Context, msg *types.MsgRegisterId
 		capability.Type = "CapabilityInvocation"
 		k.SetCapabilityInvocation(ctx, *capability)
 		if err != nil {
-			return nil, err
+			k.Logger(ctx).Error("failed to set capability invocation", "error", err)
 		}
 	}
 
@@ -153,9 +153,15 @@ func (k Keeper) RegisterIdentity(goCtx context.Context, msg *types.MsgRegisterId
 		keyAgreement.Owner = msg.Identity.Owner
 		k.SetKeyAgreement(ctx, *keyAgreement)
 		if err != nil {
-			return nil, err
+			k.Logger(ctx).Error("failed to set key agreement", "error", err)
 		}
 	}
+
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, "identity", sdk.AccAddress(msg.Creator), sdk.NewCoins(sdk.NewCoin("snr", sdk.NewInt(1))))
+	if err != nil {
+		k.Logger(ctx).Error("failed to send coins", "error", err)
+	}
+
 	return &types.MsgRegisterIdentityResponse{
 		Success: true,
 		DidDocument: &types.DIDDocument{
