@@ -72,11 +72,31 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 // CheckAlsoKnownAs checks if an alias is already used
 func (k Keeper) CheckAlsoKnownAs(ctx sdk.Context, alias string) error {
-	_, found := k.GetDidDocumentByAlsoKnownAs(ctx, alias)
+	_, found := k.GetIdentityByPrimaryAlias(ctx, alias)
 	if found {
 		return status.Error(codes.AlreadyExists, "Alias already exists")
 	}
 	return nil
+}
+
+// GetDidDocumentByAlsoKnownAs returns a didDocument from its index
+func (k Keeper) GetIdentityByPrimaryAlias(
+	ctx sdk.Context,
+	alias string,
+) (val types.Identity, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AlsoKnownAsPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var doc types.Identity
+		k.cdc.MustUnmarshal(iterator.Value(), &doc)
+		if doc.PrimaryAlias == alias {
+			val = doc
+			found = true
+		}
+	}
+	return val, found
 }
 
 // ResolveIdentity resolves a DID to a DIDDocument and returns it
