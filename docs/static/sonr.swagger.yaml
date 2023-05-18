@@ -751,9 +751,9 @@ definitions:
           $ref: '#/definitions/serviceServiceRecord'
       pagination:
         $ref: '#/definitions/v1beta1PageResponse'
-  serviceMsgCreateServiceRecordResponse:
+  serviceMsgBurnServiceRecordResponse:
     type: object
-  serviceMsgDeleteServiceRecordResponse:
+  serviceMsgRegisterServiceRecordResponse:
     type: object
   serviceMsgUpdateServiceRecordResponse:
     type: object

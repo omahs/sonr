@@ -21,7 +21,7 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-func (k msgServer) CreateServiceRecord(goCtx context.Context, msg *types.MsgCreateServiceRecord) (*types.MsgCreateServiceRecordResponse, error) {
+func (k msgServer) RegisterServiceRecord(goCtx context.Context, msg *types.MsgRegisterServiceRecord) (*types.MsgRegisterServiceRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Check if the value already exists
@@ -36,7 +36,7 @@ func (k msgServer) CreateServiceRecord(goCtx context.Context, msg *types.MsgCrea
 		ctx,
 		*msg.Record,
 	)
-	return &types.MsgCreateServiceRecordResponse{}, nil
+	return &types.MsgRegisterServiceRecordResponse{}, nil
 }
 
 func (k msgServer) UpdateServiceRecord(goCtx context.Context, msg *types.MsgUpdateServiceRecord) (*types.MsgUpdateServiceRecordResponse, error) {
@@ -59,7 +59,7 @@ func (k msgServer) UpdateServiceRecord(goCtx context.Context, msg *types.MsgUpda
 	return &types.MsgUpdateServiceRecordResponse{}, nil
 }
 
-func (k msgServer) DeleteServiceRecord(goCtx context.Context, msg *types.MsgDeleteServiceRecord) (*types.MsgDeleteServiceRecordResponse, error) {
+func (k msgServer) BurnServiceRecord(goCtx context.Context, msg *types.MsgBurnServiceRecord) (*types.MsgBurnServiceRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Check if the value exists
@@ -81,5 +81,5 @@ func (k msgServer) DeleteServiceRecord(goCtx context.Context, msg *types.MsgDele
 		msg.Id,
 	)
 
-	return &types.MsgDeleteServiceRecordResponse{}, nil
+	return &types.MsgBurnServiceRecordResponse{}, nil
 }

@@ -42,8 +42,18 @@ type BankKeeper interface {
 
 // IdentityKeeper defines the expected interface needed to retrieve account balances.
 type IdentityKeeper interface {
-	GetDidDocument(ctx sdk.Context, did string) (identitytypes.DidDocument, bool)
-	HasAuthentication(ctx sdk.Context, reference string) bool
 	GetAuthentication(ctx sdk.Context, reference string) (identitytypes.VerificationRelationship, bool)
+	GetAssertion(ctx sdk.Context, reference string) (identitytypes.VerificationRelationship, bool)
+	GetCapabilityInvocation(ctx sdk.Context, reference string) (invocation identitytypes.VerificationRelationship, found bool)
+	GetCapabilityDelegation(ctx sdk.Context, reference string) (delegation identitytypes.VerificationRelationship, found bool)
+	GetKeyAgreement(ctx sdk.Context, reference string) (agreement identitytypes.VerificationRelationship, found bool)
+
+	RegisterIdentity(goCtx context.Context, msg *identitytypes.MsgRegisterIdentity) (*identitytypes.MsgRegisterIdentityResponse, error)
 	ResolveIdentity(ctx sdk.Context, did string) (identitytypes.DIDDocument, error)
+
+	SetAuthentication(ctx sdk.Context, authentication identitytypes.VerificationRelationship)
+	SetAssertion(ctx sdk.Context, assertion identitytypes.VerificationRelationship)
+	SetCapabilityDelegation(ctx sdk.Context, delegation identitytypes.VerificationRelationship)
+	SetCapabilityInvocation(ctx sdk.Context, invocation identitytypes.VerificationRelationship)
+	SetKeyAgreement(ctx sdk.Context, agreement identitytypes.VerificationRelationship)
 }

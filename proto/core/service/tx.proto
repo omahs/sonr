@@ -8,16 +8,16 @@ option go_package = "github.com/sonrhq/core/x/service/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc CreateServiceRecord        (MsgCreateServiceRecord       ) returns (MsgCreateServiceRecordResponse       );
+  rpc RegisterServiceRecord        (MsgRegisterServiceRecord       ) returns (MsgRegisterServiceRecordResponse       );
   rpc UpdateServiceRecord        (MsgUpdateServiceRecord       ) returns (MsgUpdateServiceRecordResponse       );
-  rpc DeleteServiceRecord        (MsgDeleteServiceRecord       ) returns (MsgDeleteServiceRecordResponse       );
+  rpc BurnServiceRecord        (MsgBurnServiceRecord       ) returns (MsgBurnServiceRecordResponse       );
 }
-message MsgCreateServiceRecord {
+message MsgRegisterServiceRecord {
   string        controller = 1;
   ServiceRecord record     = 2;
 }
 
-message MsgCreateServiceRecordResponse {}
+message MsgRegisterServiceRecordResponse {}
 
 message MsgUpdateServiceRecord {
   string        controller = 1;
@@ -26,9 +26,9 @@ message MsgUpdateServiceRecord {
 
 message MsgUpdateServiceRecordResponse {}
 
-message MsgDeleteServiceRecord {
+message MsgBurnServiceRecord {
   string controller = 1;
   string id         = 2;
 }
 
-message MsgDeleteServiceRecordResponse {}
+message MsgBurnServiceRecordResponse {}
