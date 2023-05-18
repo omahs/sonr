@@ -24,9 +24,15 @@ func NewController(options ...ControllerOption) (Controller, error) {
 }
 
 // LoadController loads an identity controller
-func LoadController(doc *types.DidDocument) (Controller, error) {
+func LoadController(doc *types.Identity) (Controller, error) {
 	return controller.LoadController(doc)
 }
+
+// LoadControllerWithDid loads an identity controller with a did document
+func LoadControllerWithDid(doc *types.DidDocument) (Controller, error) {
+	return controller.LoadControllerWithDid(doc)
+}
+
 
 // The function WithUsername sets the username option for a controller.
 func WithUsername(username string) ControllerOption {

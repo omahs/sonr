@@ -148,7 +148,6 @@ func setupController(ctx context.Context, primary models.Account, opts *Options)
 		blockchain:  []models.Account{},
 		primaryDoc:  doc,
 		disableIPFS: opts.DisableIPFS,
-		txHash:      "",
 		aka:         doc.FindUsername(),
 	}
 	return cont, nil

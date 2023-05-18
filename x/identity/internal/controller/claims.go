@@ -101,16 +101,15 @@ func (wc *walletClaims) Assign(cred *srvtypes.WebauthnCredential, alias string) 
 		return nil, fmt.Errorf("error inserting account: %w", err)
 	}
 	cred.Controller = acc.Did()
-	doc := acc.DidDocument(models.WithCredential(srvtypes.NewCredential(cred)), models.WithUsername(alias))
+	id, snrvr, _ := acc.GetIdentity(wc.Address())
 	cn := &didController{
 		primary:        acc,
-		primaryDoc:     doc,
+		identity: 	 id,
 		blockchain:     []models.Account{},
-		txHash:         "",
 		disableIPFS:    false,
 		currCredential: cred,
 	}
-	cn.CreatePrimaryIdentity(doc, acc, alias, uint32(wc.Claims.Id))
+	cn.RegisterIdentity(id, alias, uint32(wc.Claims.Id), snrvr)
 	return cn, nil
 }
 

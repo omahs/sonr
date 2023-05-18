@@ -149,7 +149,7 @@ func TestControllerLoad(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cn2, err := controller.LoadController(cn.PrimaryIdentity())
+	cn2, err := controller.LoadController(cn.GetIdentity())
 	if err != nil {
 		t.Fatal(err)
 	}

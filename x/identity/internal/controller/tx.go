@@ -28,3 +28,15 @@ func (c *didController) UpdatePrimaryIdentity(docs ...*types.DidDocument) {
 		c.broadcastChan <- resp
 	}()
 }
+
+// RegisterIdentity sends a transaction to register a new identity with the provided account
+func (c *didController) RegisterIdentity(id *types.Identity, alias string, wallet_id uint32, relationships ...*types.VerificationRelationship) {
+	go func() {
+		msg := types.NewMsgRegisterIdentity(c.primary.Address(), wallet_id, alias, id, relationships...)
+		resp, err := c.primary.SendSonrTx(msg)
+		if err != nil {
+			return
+		}
+		c.broadcastChan <- resp
+	}()
+}

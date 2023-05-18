@@ -34,11 +34,14 @@ type Account interface {
 	// DID returns the DID of the account
 	Did() string
 
-	// Get the controller's DID document
-	DidDocument(opts ...DIDOption) *types.DidDocument
-
 	// GetAuthInfo creates an AuthInfo for a transaction
 	GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error)
+
+	// GetIdentity returns the identity of the account
+	GetIdentity(owner string) (*types.Identity, *types.VerificationRelationship, bool)
+
+	// GetVerificationMethod returns the verification relationship between this account and a controller
+	GetVerificationMethod(controller string) (*types.VerificationMethod)
 
 	// ListKeyShares returns the list of keyshares of the account as a list of string dids
 	ListKeyShares() []string
@@ -218,13 +221,26 @@ func (wa *account) Did() string {
 	return fmt.Sprintf("did:%s:%s", wa.CoinType().DidMethod(), wa.Address())
 }
 
-// DidDocument returns the DID document of the account
-func (wa *account) DidDocument(opts ...DIDOption) *types.DidDocument {
-	doc := types.NewBlockchainIdentity(wa.cont, wa.CoinType(), wa.PubKey())
-	for _, opt := range opts {
-		opt(doc)
+// GetIdentity returns the identity of the account
+func (wa *account) GetIdentity(owner string) (*types.Identity, *types.VerificationRelationship, bool) {
+	identity := types.NewWalletIdentity(owner, wa.Address(), wa.CoinType())
+	vm := wa.GetVerificationMethod(identity.Id)
+	vr, ok := identity.AddCapabilityDelegation(vm)
+	return identity, vr, ok
+}
+
+// GetVerificationRelationship returns the verification relationship of the account
+func (wa *account) GetVerificationMethod(c string) *types.VerificationMethod {
+	method := wa.CoinType().DidMethod()
+	addr := wa.CoinType().FormatAddress(wa.PubKey())
+	did := fmt.Sprintf("did:%s:%s", method, addr)
+	pkmb := wa.PubKey().Multibase()
+	return &types.VerificationMethod{
+		Id:			  did,
+		Controller:   c,
+		PublicKeyMultibase: pkmb,
+		BlockchainAccountId: addr,
 	}
-	return doc
 }
 
 // Type returns the type of the account

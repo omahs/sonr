@@ -132,8 +132,7 @@ func VerifyServiceAttestion(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"success":  true,
 		"did":      cont.Did(),
-		"primary":  cont.PrimaryIdentity(),
-		"tx_hash":  cont.PrimaryTxHash(),
+		"identity":  cont.GetIdentity(),
 		"jwt":      jwt,
 		"address":  cont.Address(),
 		"accounts": accs,
@@ -195,7 +194,7 @@ func VerifyServiceAssertion(c *fiber.Ctx) error {
 	// 	return c.Status(403).SendString(err.Error())
 	// }
 
-	cont, err := identity.LoadController(doc)
+	cont, err := identity.LoadControllerWithDid(doc)
 	if err != nil {
 		return c.Status(412).SendString(err.Error())
 	}

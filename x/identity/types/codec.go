@@ -10,6 +10,24 @@ import (
 	crypto "github.com/sonrhq/core/internal/crypto"
 )
 
+const (
+	AuthenticationRelationshipName = "Authentication"
+	AssertionRelationshipName = "AssertionMethod"
+	KeyAgreementRelationshipName = "KeyAgreement"
+	CapabilityInvocationRelationshipName = "CapabilityInvocation"
+	CapabilityDelegationRelationshipName = "CapabilityDelegation"
+)
+
+var (
+	VerificationRelationshipNames = []string{
+		AuthenticationRelationshipName,
+		AssertionRelationshipName,
+		KeyAgreementRelationshipName,
+		CapabilityInvocationRelationshipName,
+		CapabilityDelegationRelationshipName,
+	}
+)
+
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateDidDocument{}, "identity/CreateDidDocument", nil)
 	cdc.RegisterConcrete(&MsgUpdateDidDocument{}, "identity/UpdateDidDocument", nil)

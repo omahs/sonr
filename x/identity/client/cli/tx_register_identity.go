@@ -25,7 +25,10 @@ func CmdRegisterIdentity() *cobra.Command {
 			}
 
 			msg := types.NewMsgRegisterIdentity(
-				clientCtx.GetFromAddress().String(),
+				clientCtx.FromAddress.String(),
+				0,
+				"",
+				nil,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

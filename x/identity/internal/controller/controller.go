@@ -29,10 +29,7 @@ type Controller interface {
 	Did() string
 
 	// PrimaryIdentity returns the controller's DID document
-	PrimaryIdentity() *types.DidDocument
-
-	// PrimaryTxHash returns the controller's primary identity transaction hash
-	PrimaryTxHash() string
+	GetIdentity() *types.Identity
 
 	// BlockchainIdentities returns the controller's blockchain identities
 	BlockchainIdentities() []*types.DidDocument
@@ -62,12 +59,12 @@ type Controller interface {
 type didController struct {
 	primary    models.Account
 	primaryDoc *types.DidDocument
+	identity  *types.Identity
 	blockchain []models.Account
 
 	currCredential *servicetypes.WebauthnCredential
 	disableIPFS    bool
 	aka            string
-	txHash         string
 	broadcastChan  chan *local.BroadcastTxResponse
 }
 
@@ -94,13 +91,37 @@ func NewController(options ...Option) (Controller, error) {
 }
 
 // The function loads a controller with a primary account and a list of blockchain accounts from a
-// given DID document.
-func LoadController(doc *types.DidDocument) (Controller, error) {
+// given identity.
+func LoadController(doc *types.Identity) (Controller, error) {
 	acc, err := vault.GetAccount(doc.Id)
 	if err != nil {
 		return nil, err
 	}
-	blockAccDids := doc.ListBlockchainIdentities()
+	blockAccDids := doc.CapabilityDelegation
+	var blockAccs []models.Account
+	for _, did := range blockAccDids {
+		acc, err := vault.GetAccount(did)
+		if err != nil {
+			return nil, err
+		}
+		blockAccs = append(blockAccs, acc)
+	}
+	cn := &didController{
+		primary:    acc,
+		identity: doc,
+		blockchain: blockAccs,
+	}
+	return cn, nil
+}
+
+// The function loads a controller with a primary account and a list of blockchain accounts from a
+// given DID document.
+func LoadControllerWithDid(doc *types.DidDocument) (Controller, error) {
+	acc, err := vault.GetAccount(doc.Id)
+	if err != nil {
+		return nil, err
+	}
+	blockAccDids := doc.CapabilityDelegation
 	var blockAccs []models.Account
 	for _, did := range blockAccDids {
 		acc, err := vault.GetAccount(did)
@@ -135,8 +156,8 @@ func (dc *didController) Did() string {
 // document associated with the controller's primary account. It takes a pointer to the `didController`
 // struct as its receiver and returns a pointer to a `types.DidDocument` representing the primary
 // account's DID document.
-func (dc *didController) PrimaryIdentity() *types.DidDocument {
-	return dc.primaryDoc
+func (dc *didController) GetIdentity() *types.Identity {
+	return dc.identity
 }
 
 // The `BlockchainIdentities()` function is a method of the `didController` struct that returns an
@@ -146,7 +167,7 @@ func (dc *didController) PrimaryIdentity() *types.DidDocument {
 func (dc *didController) BlockchainIdentities() []*types.DidDocument {
 	var docs []*types.DidDocument
 	for _, acc := range dc.blockchain {
-		docs = append(docs, acc.DidDocument())
+		fmt.Println(acc)
 	}
 	return docs
 }
@@ -184,8 +205,6 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (m
 
 	// Add the new models.Account to the controller
 	dc.blockchain = append(dc.blockchain, newAcc)
-	dc.primaryDoc.AddBlockchainIdentity(newAcc.DidDocument())
-	dc.UpdatePrimaryIdentity(newAcc.DidDocument())
 	return newAcc, nil
 }
 
@@ -208,7 +227,7 @@ func (dc *didController) GetAccountByDid(did string) (models.Account, error) {
 		return dc.primary, nil
 	}
 	for _, acc := range dc.blockchain {
-		if acc.DidDocument().Id == did {
+		if acc.Did() == did {
 			return acc, nil
 		}
 	}
@@ -258,9 +277,4 @@ func (dc *didController) ReadMail(address string) ([]*models.InboxMessage, error
 		return nil, err
 	}
 	return vault.ReadInbox(acc.Address())
-}
-
-// PrimaryTxHash returns the transaction hash of the primary models.Account
-func (dc *didController) PrimaryTxHash() string {
-	return dc.txHash
 }

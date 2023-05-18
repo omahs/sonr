@@ -82,7 +82,7 @@ func FetchUser(c *fiber.Ctx) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	cont, err := identity.LoadController(primary)
+	cont, err := identity.LoadControllerWithDid(primary)
 	if err != nil {
 		return nil, err
 	}
