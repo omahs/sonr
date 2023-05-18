@@ -18,49 +18,47 @@ service Query {
 
   // Parameters for the identity module.
   rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/sonr/core/identity/params";
+    option (google.api.http).get = "/sonr/params/identity";
 
   }
 
   // Get a DIDDocument by DID
   rpc Did (QueryGetDidRequest) returns (QueryGetDidResponse) {
-    option (google.api.http).get = "/sonr/core/identity/did/{did}";
+    option (google.api.http).get = "/sonr/id/{did}";
 
   }
 
   // Get a DIDDocument from an Alias
   rpc DidByAlsoKnownAs (QueryDidByAlsoKnownAsRequest) returns (QueryDidByAlsoKnownAsResponse) {
-    option (google.api.http).get = "/sonr/core/identity/did/aka/{aka_id}";
+    option (google.api.http).get = "/sonr/id/alias/{aka_id}";
 
   }
-
-  // Get All DIDDocuments
-  rpc DidAll (QueryAllDidRequest) returns (QueryAllDidResponse) {
-    option (google.api.http).get = "/sonr/core/identity/did";
-
-  }
-
-  // this line is used by starport scaffolding # 2
 
   // Queries a list of AliasAvailable items.
   rpc AliasAvailable (QueryAliasAvailableRequest) returns (QueryAliasAvailableResponse) {
-    option (google.api.http).get = "/sonr/core/identity/alias/{alias}";
+    option (google.api.http).get = "/sonr/id/alias/{alias}/check";
 
   }
 
   // Queries a list of DidByOwner items.
   rpc DidByOwner (QueryDidByOwnerRequest) returns (QueryDidByOwnerResponse) {
-    option (google.api.http).get = "/sonrhq/core/identity/did/owner/{owner}";
+    option (google.api.http).get = "/sonr/id/owner/{owner}";
 
   }
 
+  // Get All DIDDocuments
+  rpc DidAll (QueryAllDidRequest) returns (QueryAllDidResponse) {
+    option (google.api.http).get = "/sonr/id";
+
+  }
+  
   // Queries a list of ClaimableWallet items.
   rpc ClaimableWallet    (QueryGetClaimableWalletRequest) returns (QueryGetClaimableWalletResponse) {
-    option (google.api.http).get = "/sonrhq/core/identity/claimable_wallet/{id}";
+    option (google.api.http).get = "/sonr/id/claims/{id}";
 
   }
   rpc ClaimableWalletAll (QueryAllClaimableWalletRequest) returns (QueryAllClaimableWalletResponse) {
-    option (google.api.http).get = "/sonrhq/core/identity/claimable_wallet";
+    option (google.api.http).get = "/sonr/id/claims";
 
   }
 }

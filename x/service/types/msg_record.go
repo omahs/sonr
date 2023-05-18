@@ -7,8 +7,8 @@ import (
 
 const (
 	TypeMsgRegisterServiceRecord = "register_service_record"
-	TypeMsgUpdateServiceRecord = "update_service_record"
-	TypeMsgBurnServiceRecord = "burn_service_record"
+	TypeMsgUpdateServiceRecord   = "update_service_record"
+	TypeMsgBurnServiceRecord     = "burn_service_record"
 )
 
 var _ sdk.Msg = &MsgRegisterServiceRecord{}

@@ -12,6 +12,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateServiceRecord{}, "service/UpdateServiceRecord", nil)
 	cdc.RegisterConcrete(&MsgBurnServiceRecord{}, "service/BurnServiceRecord", nil)
 
+	cdc.RegisterConcrete(&MsgRegisterUserEntity{}, "service/RegisterUserEntity", nil)
+	cdc.RegisterConcrete(&MsgAuthenticateUserEntity{}, "service/AuthenticateUserEntity", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -22,6 +24,12 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgBurnServiceRecord{},
 	)
 
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgRegisterUserEntity{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgAuthenticateUserEntity{},
+	)
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

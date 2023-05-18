@@ -8,16 +8,21 @@ option go_package = "github.com/sonrhq/core/x/service/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc RegisterServiceRecord        (MsgRegisterServiceRecord       ) returns (MsgRegisterServiceRecordResponse       );
-  rpc UpdateServiceRecord        (MsgUpdateServiceRecord       ) returns (MsgUpdateServiceRecordResponse       );
-  rpc BurnServiceRecord        (MsgBurnServiceRecord       ) returns (MsgBurnServiceRecordResponse       );
+  rpc RegisterServiceRecord  (MsgRegisterServiceRecord ) returns (MsgRegisterServiceRecordResponse );
+  rpc UpdateServiceRecord    (MsgUpdateServiceRecord   ) returns (MsgUpdateServiceRecordResponse   );
+  rpc BurnServiceRecord      (MsgBurnServiceRecord     ) returns (MsgBurnServiceRecordResponse     );
+  rpc RegisterUserEntity     (MsgRegisterUserEntity    ) returns (MsgRegisterUserEntityResponse    );
+  rpc AuthenticateUserEntity (MsgAuthenticateUserEntity) returns (MsgAuthenticateUserEntityResponse);
 }
 message MsgRegisterServiceRecord {
   string        controller = 1;
   ServiceRecord record     = 2;
 }
 
-message MsgRegisterServiceRecordResponse {}
+message MsgRegisterServiceRecordResponse {
+  bool   ok           = 1;
+  string group_address = 2;
+}
 
 message MsgUpdateServiceRecord {
   string        controller = 1;
@@ -32,3 +37,22 @@ message MsgBurnServiceRecord {
 }
 
 message MsgBurnServiceRecordResponse {}
+
+message MsgRegisterUserEntity {
+  string creator = 1;
+}
+
+message MsgRegisterUserEntityResponse {
+  string desired_alias = 1;
+  string service_origin = 2;
+  uint64 ucw_id = 3;
+  string attestation = 4;
+  
+}
+
+message MsgAuthenticateUserEntity {
+  string creator = 1;
+}
+
+message MsgAuthenticateUserEntityResponse {}
+

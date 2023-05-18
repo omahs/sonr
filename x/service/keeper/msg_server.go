@@ -83,3 +83,21 @@ func (k msgServer) BurnServiceRecord(goCtx context.Context, msg *types.MsgBurnSe
 
 	return &types.MsgBurnServiceRecordResponse{}, nil
 }
+
+func (k msgServer) RegisterUserEntity(goCtx context.Context, msg *types.MsgRegisterUserEntity) (*types.MsgRegisterUserEntityResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// TODO: Handling the message
+	_ = ctx
+
+	return &types.MsgRegisterUserEntityResponse{}, nil
+}
+
+func (k msgServer) AuthenticateUserEntity(goCtx context.Context, msg *types.MsgAuthenticateUserEntity) (*types.MsgAuthenticateUserEntityResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// TODO: Handling the message
+	_ = ctx
+
+	return &types.MsgAuthenticateUserEntityResponse{}, nil
+}
