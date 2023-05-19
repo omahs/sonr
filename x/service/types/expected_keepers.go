@@ -44,7 +44,7 @@ type BankKeeper interface {
 // IdentityKeeper defines the expected interface needed to retrieve account balances.
 type IdentityKeeper interface {
 	CheckAlsoKnownAs(ctx sdk.Context, alias string) error
-	AssignIdentity(ctx sdk.Context, ucw identitytypes.ClaimableWallet, cred *WebauthnCredential, alias string) (*identitytypes.Identity, error)
+	AssignIdentity(ctx sdk.Context, ucw identitytypes.ClaimableWallet, cred *WebauthnCredential, alias string) (*identitytypes.Identification, error)
 	GetAuthentication(ctx sdk.Context, reference string) (identitytypes.VerificationRelationship, bool)
 	GetAssertion(ctx sdk.Context, reference string) (identitytypes.VerificationRelationship, bool)
 	GetCapabilityInvocation(ctx sdk.Context, reference string) (invocation identitytypes.VerificationRelationship, found bool)

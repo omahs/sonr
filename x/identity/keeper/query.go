@@ -24,14 +24,14 @@ func (k Keeper) DidAll(c context.Context, req *types.QueryAllDidRequest) (*types
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var didDocuments []types.Identity
+	var didDocuments []types.Identification
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
 	didDocumentStore := prefix.NewStore(store, types.KeyPrefix(types.PrimaryIdentityPrefix))
 
 	pageRes, err := query.Paginate(didDocumentStore, req.Pagination, func(key []byte, value []byte) error {
-		var didDocument types.Identity
+		var didDocument types.Identification
 		if err := k.cdc.Unmarshal(value, &didDocument); err != nil {
 			return err
 		}

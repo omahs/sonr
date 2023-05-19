@@ -64,7 +64,7 @@ func WithBroadcastTx() ControllerOption {
 // }
 
 // // FetchCredentials fetches all credentials from a DidDocument
-// func FetchCredentials(doc *types.Identity) ([]servicetypes.Credential, error) {
+// func FetchCredentials(doc *types.Identification) ([]servicetypes.Credential, error) {
 // 	var creds []servicetypes.Credential
 // 	for _, vm := range doc.Authentication {
 // 		c, err := vault.FetchCredential(vm)
@@ -77,7 +77,7 @@ func WithBroadcastTx() ControllerOption {
 // }
 
 // // FetchWebauthnCredentialDescriptors fetches all webauthn credential descriptors from a DidDocument
-// func FetchWebauthnCredentialDescriptors(doc *types.Identity) ([]protocol.CredentialDescriptor, error) {
+// func FetchWebauthnCredentialDescriptors(doc *types.Identification) ([]protocol.CredentialDescriptor, error) {
 // 	var creds []servicetypes.Credential
 // 	for _, vm := range doc.Authentication {
 // 		c, err := vault.FetchCredential(vm)

@@ -86,7 +86,7 @@ func (k Keeper) NextUnclaimedWallet(ctx sdk.Context) (*types.ClaimableWallet, pr
 	return &ucw, chal, nil
 }
 
-func (k Keeper) AssignIdentity(ctx sdk.Context, ucw types.ClaimableWallet, cred *srvtypes.WebauthnCredential, alias string) (*types.Identity, error) {
+func (k Keeper) AssignIdentity(ctx sdk.Context, ucw types.ClaimableWallet, cred *srvtypes.WebauthnCredential, alias string) (*types.Identification, error) {
 	// Get the keyshares for the claimable wallet
 	kss := make([]vaulttypes.KeyShare, 0)
 	for _, ks := range ucw.Keyshares {

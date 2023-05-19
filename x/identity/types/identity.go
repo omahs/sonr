@@ -9,8 +9,8 @@ import (
 )
 
 // BlankIdentity returns a blank Identity
-func BlankIdentity() *Identity {
-	return &Identity{
+func BlankIdentity() *Identification {
+	return &Identification{
 		Id:                   "",
 		Owner:                "",
 		PrimaryAlias:         "",
@@ -24,7 +24,7 @@ func BlankIdentity() *Identity {
 }
 
 // NewIdentityFromVaultAccount returns a new Identity from a VaultAccount
-func NewIdentityFromVaultAccount(va vaulttypes.Account, controller string) (*Identity, *VerificationRelationship, bool) {
+func NewIdentityFromVaultAccount(va vaulttypes.Account, controller string) (*Identification, *VerificationRelationship, bool) {
 	method := va.CoinType().DidMethod()
 	addr := va.CoinType().FormatAddress(va.PubKey())
 	did := fmt.Sprintf("did:%s:%s", method, addr)
@@ -44,7 +44,7 @@ func NewIdentityFromVaultAccount(va vaulttypes.Account, controller string) (*Ide
 
 // NewSonrIdentity returns a new Identity with the given owner address and constructs
 // the DID from the owner address
-func NewSonrIdentity(ownerAddress string) *Identity {
+func NewSonrIdentity(ownerAddress string) *Identification {
 	did := fmt.Sprintf("did:sonr:%s", ownerAddress)
 	identity := BlankIdentity()
 	identity.Id = did
@@ -54,7 +54,7 @@ func NewSonrIdentity(ownerAddress string) *Identity {
 
 // NewWalletIdentity takes an ownerAddress, walletAddress, and CoinType and returns a new Identity
 // with the given owner address and constructs the DID from the wallet address
-func NewWalletIdentity(ownerAddress, walletAddress string, coinType crypto.CoinType) *Identity {
+func NewWalletIdentity(ownerAddress, walletAddress string, coinType crypto.CoinType) *Identification {
 	did := fmt.Sprintf("did:%s:%s", coinType.DidMethod(), walletAddress)
 	identity := BlankIdentity()
 	identity.Id = did
@@ -64,7 +64,7 @@ func NewWalletIdentity(ownerAddress, walletAddress string, coinType crypto.CoinT
 
 // AddAuthenticationMethod adds a VerificationMethod to the Authentication list of the DID Document and returns the VerificationRelationship
 // Returns nil if the VerificationMethod is already in the Authentication list
-func (id *Identity) AddAuthenticationMethod(vm *VerificationMethod) (*VerificationRelationship, bool) {
+func (id *Identification) AddAuthenticationMethod(vm *VerificationMethod) (*VerificationRelationship, bool) {
 	for _, auth := range id.Authentication {
 		if auth == vm.Id {
 			return nil, false
@@ -82,7 +82,7 @@ func (id *Identity) AddAuthenticationMethod(vm *VerificationMethod) (*Verificati
 
 // AddAssertionMethod adds a VerificationMethod to the AssertionMethod list of the DID Document and returns the VerificationRelationship
 // Returns nil if the VerificationMethod is already in the AssertionMethod list
-func (id *Identity) AddAssertionMethod(vm *VerificationMethod) (*VerificationRelationship, bool) {
+func (id *Identification) AddAssertionMethod(vm *VerificationMethod) (*VerificationRelationship, bool) {
 	for _, auth := range id.AssertionMethod {
 		if auth == vm.Id {
 			return nil, false
@@ -100,7 +100,7 @@ func (id *Identity) AddAssertionMethod(vm *VerificationMethod) (*VerificationRel
 
 // AddCapabilityDelegation adds a VerificationMethod to the CapabilityDelegation list of the DID Document and returns the VerificationRelationship
 // Returns nil if the VerificationMethod is already in the CapabilityDelegation list
-func (id *Identity) AddCapabilityDelegation(vm *VerificationMethod) (*VerificationRelationship, bool) {
+func (id *Identification) AddCapabilityDelegation(vm *VerificationMethod) (*VerificationRelationship, bool) {
 	for _, auth := range id.CapabilityDelegation {
 		if auth == vm.Id {
 			return nil, false
@@ -118,7 +118,7 @@ func (id *Identity) AddCapabilityDelegation(vm *VerificationMethod) (*Verificati
 
 // AddCapabilityInvocation adds a VerificationMethod to the CapabilityInvocation list of the DID Document and returns the VerificationRelationship
 // Returns nil if the VerificationMethod is already in the CapabilityInvocation list
-func (id *Identity) AddCapabilityInvocation(vm *VerificationMethod) (*VerificationRelationship, bool) {
+func (id *Identification) AddCapabilityInvocation(vm *VerificationMethod) (*VerificationRelationship, bool) {
 	for _, auth := range id.CapabilityInvocation {
 		if auth == vm.Id {
 			return nil, false
@@ -136,7 +136,7 @@ func (id *Identity) AddCapabilityInvocation(vm *VerificationMethod) (*Verificati
 
 // AddKeyAgreement adds a VerificationMethod to the KeyAgreement list of the DID Document and returns the VerificationRelationship
 // Returns nil if the VerificationMethod is already in the KeyAgreement list
-func (id *Identity) AddKeyAgreement(vm *VerificationMethod) (*VerificationRelationship, bool) {
+func (id *Identification) AddKeyAgreement(vm *VerificationMethod) (*VerificationRelationship, bool) {
 	for _, auth := range id.KeyAgreement {
 		if auth == vm.Id {
 			return nil, false
@@ -154,7 +154,7 @@ func (id *Identity) AddKeyAgreement(vm *VerificationMethod) (*VerificationRelati
 
 // SetPrimaryAlias sets the PrimaryAlias of the DID Document to the given alias and appends the alias to the AlsoKnownAs list
 // Returns false if the alias is already the AlsoKnownAs list.
-func (id *Identity) SetPrimaryAlias(alias string) bool {
+func (id *Identification) SetPrimaryAlias(alias string) bool {
 	for _, aka := range id.AlsoKnownAs {
 		if aka == alias {
 			id.PrimaryAlias = alias

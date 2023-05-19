@@ -7,8 +7,8 @@ package sonrhq.core.identity;
 
 option go_package = "github.com/sonrhq/core/x/identity/types";
 
-// Identity represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
-message Identity {
+// Identification represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
+message Identification {
   string id = 1; // The identifier for the DID subject
   string owner = 2; //optional, the entity/entities controlling the DID subject
   string primary_alias = 3; // optional, the primary alias for the DID subject

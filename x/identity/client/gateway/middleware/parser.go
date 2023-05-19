@@ -125,7 +125,7 @@ func (q *QueryOptions) GetService() (*srvtypes.ServiceRecord, error) {
 	return nil, fmt.Errorf("no origin provided as parameter")
 }
 
-func (q *QueryOptions) GetDID() (*idtypes.Identity, error) {
+func (q *QueryOptions) GetDID() (*idtypes.Identification, error) {
 	if q.HasDID() {
 		return local.Context().GetDID(context.Background(), q.DID())
 	}

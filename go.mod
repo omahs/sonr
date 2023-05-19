@@ -55,6 +55,7 @@ require (
 	github.com/gofiber/jwt/v3 v3.3.7
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/yoseplee/vrf v0.0.0-20210814110709-d1caf509310b
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -366,7 +367,6 @@ require (
 	github.com/whyrusleeping/multiaddr-filter v0.0.0-20160516205228-e903e4adabd7 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xanzy/ssh-agent v0.3.2 // indirect
-	github.com/yoseplee/vrf v0.0.0-20210814110709-d1caf509310b // indirect
 	github.com/zeebo/blake3 v0.2.0 // indirect
 	github.com/zondax/hid v0.9.1 // indirect
 	github.com/zondax/ledger-go v0.14.0 // indirect

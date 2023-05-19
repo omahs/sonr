@@ -86,13 +86,13 @@ func (k Keeper) CheckAlsoKnownAs(ctx sdk.Context, alias string) error {
 func (k Keeper) GetIdentityByPrimaryAlias(
 	ctx sdk.Context,
 	alias string,
-) (val types.Identity, found bool) {
+) (val types.Identification, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AlsoKnownAsPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var doc types.Identity
+		var doc types.Identification
 		k.cdc.MustUnmarshal(iterator.Value(), &doc)
 		if doc.PrimaryAlias == alias {
 			val = doc
@@ -120,7 +120,7 @@ func (k Keeper) ResolveIdentity(ctx sdk.Context, did string) (val types.DIDDocum
 	if b == nil {
 		return val, status.Error(codes.NotFound, "Account Identity not found")
 	}
-	var identity types.Identity
+	var identity types.Identification
 	k.cdc.MustUnmarshal(b, &identity)
 	if identity.Owner != addr {
 		return val, status.Error(codes.NotFound, "Account Identity not found")
@@ -159,7 +159,7 @@ func (k Keeper) ResolveIdentity(ctx sdk.Context, did string) (val types.DIDDocum
 }
 
 // SetIdentity checks the validity of the identity and set it in the store based off its did method
-func (k Keeper) SetIdentity(ctx sdk.Context, identity types.Identity) error {
+func (k Keeper) SetIdentity(ctx sdk.Context, identity types.Identification) error {
 	ptrs := strings.Split(identity.Id, ":")
 	addr := ptrs[len(ptrs)-1]
 	method := ptrs[1]
@@ -203,7 +203,7 @@ func (k Keeper) HasIdentity(ctx sdk.Context, did string) bool {
 }
 
 // SetDidDocument set a specific didDocument in the store from its index
-func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.Identity) {
+func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.Identification) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 
 	ptrs := strings.Split(didDocument.Id, ":")
@@ -220,7 +220,7 @@ func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.Identity) {
 func (k Keeper) GetDidDocument(
 	ctx sdk.Context,
 	did string,
-) (val types.Identity, found bool) {
+) (val types.Identification, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 	b := store.Get(types.DidDocumentKey(
 		did,
@@ -236,13 +236,13 @@ func (k Keeper) GetDidDocument(
 func (k Keeper) GetDidDocumentByAlsoKnownAs(
 	ctx sdk.Context,
 	alias string,
-) (val types.Identity, found bool) {
+) (val types.Identification, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var doc types.Identity
+		var doc types.Identification
 		k.cdc.MustUnmarshal(iterator.Value(), &doc)
 		if doc.AlsoKnownAs[0] == alias {
 			val = doc
@@ -256,13 +256,13 @@ func (k Keeper) GetDidDocumentByAlsoKnownAs(
 func (k Keeper) GetDidDocumentByOwner(
 	ctx sdk.Context,
 	addr string,
-) (val types.Identity, found bool) {
+) (val types.Identification, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var doc types.Identity
+		var doc types.Identification
 		k.cdc.MustUnmarshal(iterator.Value(), &doc)
 		if doc.Owner == addr {
 			val = doc
@@ -273,14 +273,14 @@ func (k Keeper) GetDidDocumentByOwner(
 }
 
 // GetAllDidDocument returns all didDocument
-func (k Keeper) GetAllPrimaryIdentities(ctx sdk.Context) (list []types.Identity) {
+func (k Keeper) GetAllPrimaryIdentities(ctx sdk.Context) (list []types.Identification) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.Identity
+		var val types.Identification
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}

@@ -17,12 +17,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func RemoveIndex(s []types.Identity, index int) []types.Identity {
+func RemoveIndex(s []types.Identification, index int) []types.Identification {
 	return append(s[:index], s[index+1:]...)
 }
 
-func createDidDocumentsWithPrefix(keeper *keeper.Keeper, ctx sdk.Context, prefix string, n int) []types.Identity {
-	items := make([]types.Identity, n)
+func createDidDocumentsWithPrefix(keeper *keeper.Keeper, ctx sdk.Context, prefix string, n int) []types.Identification {
+	items := make([]types.Identification, n)
 	for i := range items {
 		id := fmt.Sprintf("did:snr:%s%d", prefix, i)
 		items[i].Id = id
@@ -42,7 +42,7 @@ type KeeperTestSuite struct {
 	ctx       sdk.Context
 	wCtx      context.Context
 	keeper    *keeper.Keeper
-	docs      []types.Identity
+	docs      []types.Identification
 	msgServer types.MsgServer
 }
 
@@ -58,8 +58,8 @@ func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
 }
 
-func createNDidDocument(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Identity {
-	items := make([]types.Identity, n)
+func createNDidDocument(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Identification {
+	items := make([]types.Identification, n)
 	for i := range items {
 		items[i].Id = strconv.Itoa(i)
 		items[i].AlsoKnownAs = []string{strconv.Itoa(i)}

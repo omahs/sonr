@@ -77,7 +77,7 @@ message QueryGetDidRequest {
 message QueryGetDidResponse {
 
   // A DIDDocument is a JSON-LD object that contains a set of public keys
-  Identity didDocument = 1 [(gogoproto.nullable) = false];
+  Identification didDocument = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryDidByAlsoKnownAsRequest {
@@ -89,7 +89,7 @@ message QueryDidByAlsoKnownAsRequest {
 message QueryDidByAlsoKnownAsResponse {
 
   // A DIDDocument is a JSON-LD object that contains a set of public keys
-  Identity didDocument = 1 [(gogoproto.nullable) = false];
+  Identification didDocument = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryAllDidRequest {
@@ -97,7 +97,7 @@ message QueryAllDidRequest {
 }
 
 message QueryAllDidResponse {
-  repeated Identity                            didDocument = 1 [(gogoproto.nullable) = false];
+  repeated Identification                            didDocument = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination  = 2;
 }
 
@@ -109,7 +109,7 @@ message QueryAliasAvailableRequest {
 
 message QueryAliasAvailableResponse {
   bool        available         = 1;
-  Identity existing_document = 2 [(gogoproto.nullable) = true];
+  Identification existing_document = 2 [(gogoproto.nullable) = true];
 }
 
 message QueryDidByOwnerRequest {
@@ -117,7 +117,7 @@ message QueryDidByOwnerRequest {
 }
 
 message QueryDidByOwnerResponse {
-  Identity didDocument = 1 [(gogoproto.nullable) = false];
+  Identification didDocument = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryGetClaimableWalletRequest {

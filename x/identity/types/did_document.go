@@ -7,12 +7,12 @@ import (
 )
 
 // AccAddress returns the SONR address of the DID
-func (d *Identity) AccAddress() (sdk.AccAddress, error) {
+func (d *Identification) AccAddress() (sdk.AccAddress, error) {
 	return sdk.AccAddressFromBech32(d.Owner)
 }
 
 // CheckAccAddress checks if the provided sdk.AccAddress or string matches the DID ID
-func (d *Identity) CheckAccAddress(t interface{}) bool {
+func (d *Identification) CheckAccAddress(t interface{}) bool {
 	docAccAddr, err := d.AccAddress()
 	if err != nil {
 		return false

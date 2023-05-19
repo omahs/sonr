@@ -17,8 +17,8 @@ service Msg {
 }
 message MsgCreateDidDocument {
            string      creator     = 1;
-           Identity primary     = 2;
-  repeated Identity blockchains = 3;
+           Identification primary     = 2;
+  repeated Identification blockchains = 3;
            string      alias       = 4;
            uint32      wallet_id   = 5;
 }
@@ -27,8 +27,8 @@ message MsgCreateDidDocumentResponse {}
 
 message MsgUpdateDidDocument {
            string      creator     = 1;
-           Identity primary     = 2;
-  repeated Identity blockchains = 3;
+           Identification primary     = 2;
+  repeated Identification blockchains = 3;
 }
 
 message MsgUpdateDidDocumentResponse {
@@ -37,7 +37,7 @@ message MsgUpdateDidDocumentResponse {
 
 message MsgRegisterIdentity {
   string creator = 1;
-  Identity identity = 2;
+  Identification identity = 2;
   string alias = 3;
   uint32 wallet_id = 4;
   repeated VerificationRelationship authentication = 5;

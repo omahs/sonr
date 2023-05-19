@@ -30,10 +30,10 @@ type Controller interface {
 	Did() string
 
 	// PrimaryIdentity returns the controller's DID document
-	GetIdentity() *types.Identity
+	GetIdentity() *types.Identification
 
 	// BlockchainIdentities returns the controller's blockchain identities
-	BlockchainIdentities() []*types.Identity
+	BlockchainIdentities() []*types.Identification
 
 	// Createmodels.Account creates a new models.Account for the controller
 	CreateAccount(name string, coinType crypto.CoinType) (vaulttypes.Account, error)
@@ -59,7 +59,7 @@ type Controller interface {
 
 type didController struct {
 	primary    vaulttypes.Account
-	identity   *types.Identity
+	identity   *types.Identification
 	blockchain []vaulttypes.Account
 
 	currCredential *servicetypes.WebauthnCredential
@@ -92,7 +92,7 @@ func NewController(options ...ControllerOption) (Controller, error) {
 
 // // The function loads a controller with a primary account and a list of blockchain accounts from a
 // // given identity.
-// func LoadController(doc *types.Identity) (Controller, error) {
+// func LoadController(doc *types.Identification) (Controller, error) {
 // 	acc, err := vault.GetAccount(doc.Id)
 // 	if err != nil {
 // 		return nil, err
@@ -132,7 +132,7 @@ func (dc *didController) Did() string {
 // document associated with the controller's primary account. It takes a pointer to the `didController`
 // struct as its receiver and returns a pointer to a `types.DidDocument` representing the primary
 // account's DID document.
-func (dc *didController) GetIdentity() *types.Identity {
+func (dc *didController) GetIdentity() *types.Identification {
 	return dc.identity
 }
 
@@ -140,8 +140,8 @@ func (dc *didController) GetIdentity() *types.Identity {
 // array of `*types.DidDocument` representing the DID documents of all the blockchain identities
 // associated with the controller. It takes a pointer to the `didController` struct as its receiver and
 // returns an array of pointers to `types.DidDocument`.
-func (dc *didController) BlockchainIdentities() []*types.Identity {
-	var docs []*types.Identity
+func (dc *didController) BlockchainIdentities() []*types.Identification {
+	var docs []*types.Identification
 	for _, acc := range dc.blockchain {
 		fmt.Println(acc)
 	}

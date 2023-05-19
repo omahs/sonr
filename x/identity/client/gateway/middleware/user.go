@@ -58,7 +58,7 @@ func (u *User) JWTClaims() jwt.MapClaims {
 		"username": u.Username,
 	}
 }
-func (u *User) PrimaryIdentity() (*types.Identity, error) {
+func (u *User) PrimaryIdentity() (*types.Identification, error) {
 	return local.Context().GetDID(context.Background(), u.Did)
 }
 
