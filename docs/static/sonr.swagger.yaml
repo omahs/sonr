@@ -678,7 +678,7 @@ definitions:
       did:
         type: string
       identity:
-        $ref: '#/definitions/identityIdentification'
+        $ref: '#/definitions/identityDIDDocument'
   serviceMsgBurnServiceRecordResponse:
     type: object
   serviceMsgRegisterServiceRecordResponse:
@@ -696,7 +696,7 @@ definitions:
       did:
         type: string
       identity:
-        $ref: '#/definitions/identityIdentification'
+        $ref: '#/definitions/identityDIDDocument'
   serviceMsgUpdateServiceRecordResponse:
     type: object
   serviceQueryGetServiceAssertionResponse:

@@ -71,6 +71,7 @@ func (vm *VerificationMethod) ToVerificationRelationship(controller string) Veri
 	}
 }
 
+// WebauthnCredentialID returns the webauthn credential id of the verification method
 func (d *VerificationMethod) WebauthnCredentialID() protocol.URLEncodedBase64 {
 	ptrs := strings.Split(d.Id, ":")
 	id := ptrs[len(ptrs)-1]
