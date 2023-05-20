@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/internal/crypto"
-	"github.com/sonrhq/core/types/common"
+	vaulttypes "github.com/sonrhq/core/x/vault/types"
 	"github.com/sonrhq/core/x/identity/client/gateway/middleware"
 )
 
@@ -37,12 +37,12 @@ func ListAccounts(c *fiber.Ctx) error {
 	}
 
 	// Initialize an empty map where the key is the coin type and the value is a slice of associated accounts
-	accMap := make(map[string][]*common.AccountInfo)
+	accMap := make(map[string][]*vaulttypes.AccountInfo)
 
 	for _, acc := range accs {
 		// If the coin type is not yet in the map, initialize an empty slice for it
 		if _, ok := accMap[acc.CoinType]; !ok {
-			accMap[acc.CoinType] = make([]*common.AccountInfo, 0)
+			accMap[acc.CoinType] = make([]*vaulttypes.AccountInfo, 0)
 		}
 		// Append the account to the slice associated with its coin type
 		accMap[acc.CoinType] = append(accMap[acc.CoinType], acc)

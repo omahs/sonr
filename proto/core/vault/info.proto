@@ -1,7 +1,8 @@
 syntax = "proto3";
-package sonrhq.sonr.common;
+package sonrhq.core.vault;
 
-option go_package = "github.com/sonrhq/core/types/common";
+option go_package = "github.com/sonrhq/core/x/vault/types";
+
 
 
 // Account represents a user's account on a blockchain or network. It contains the user's address, name, DID, and other information that is used to identify and manage the account.

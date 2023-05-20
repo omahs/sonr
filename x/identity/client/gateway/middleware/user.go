@@ -5,7 +5,7 @@ import (
 
 	"fmt"
 
-	v1 "github.com/sonrhq/core/types/common"
+	v1 "github.com/sonrhq/core/x/vault/types"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -34,7 +34,7 @@ type User struct {
 
 func NewUser(c identity.Controller, username string) *User {
 	return &User{
-		Did:        c.Did(),
+	//		Did:        c.Did(),
 		Username:   username,
 		Controller: c,
 	}
