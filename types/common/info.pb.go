@@ -191,122 +191,34 @@ func (m *PeerInfo) GetMultiaddr() string {
 	return ""
 }
 
-type WalletInfo struct {
-	// Controller is the associated Sonr address.
-	Controller string `protobuf:"bytes,1,opt,name=controller,proto3" json:"controller,omitempty"`
-	// DiscoverPaths is a list of all known hardened coin type paths.
-	DiscoveredPaths []int32 `protobuf:"varint,2,rep,packed,name=discovered_paths,json=discoveredPaths,proto3" json:"discovered_paths,omitempty"`
-	// Algorithm is the algorithm of the wallet. CMP is the default.
-	Algorithm string `protobuf:"bytes,3,opt,name=algorithm,proto3" json:"algorithm,omitempty"`
-	// CreatedAt is the time the wallet was created.
-	CreatedAt int64 `protobuf:"varint,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	// LastUpdated is the last time the wallet was updated.
-	LastUpdated int64 `protobuf:"varint,5,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
-}
-
-func (m *WalletInfo) Reset()         { *m = WalletInfo{} }
-func (m *WalletInfo) String() string { return proto.CompactTextString(m) }
-func (*WalletInfo) ProtoMessage()    {}
-func (*WalletInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_117f1cca4f9b8f25, []int{2}
-}
-func (m *WalletInfo) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *WalletInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_WalletInfo.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *WalletInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WalletInfo.Merge(m, src)
-}
-func (m *WalletInfo) XXX_Size() int {
-	return m.Size()
-}
-func (m *WalletInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_WalletInfo.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_WalletInfo proto.InternalMessageInfo
-
-func (m *WalletInfo) GetController() string {
-	if m != nil {
-		return m.Controller
-	}
-	return ""
-}
-
-func (m *WalletInfo) GetDiscoveredPaths() []int32 {
-	if m != nil {
-		return m.DiscoveredPaths
-	}
-	return nil
-}
-
-func (m *WalletInfo) GetAlgorithm() string {
-	if m != nil {
-		return m.Algorithm
-	}
-	return ""
-}
-
-func (m *WalletInfo) GetCreatedAt() int64 {
-	if m != nil {
-		return m.CreatedAt
-	}
-	return 0
-}
-
-func (m *WalletInfo) GetLastUpdated() int64 {
-	if m != nil {
-		return m.LastUpdated
-	}
-	return 0
-}
-
 func init() {
 	proto.RegisterType((*AccountInfo)(nil), "sonrhq.sonr.common.AccountInfo")
 	proto.RegisterType((*PeerInfo)(nil), "sonrhq.sonr.common.PeerInfo")
-	proto.RegisterType((*WalletInfo)(nil), "sonrhq.sonr.common.WalletInfo")
 }
 
 func init() { proto.RegisterFile("sonr/common/info.proto", fileDescriptor_117f1cca4f9b8f25) }
 
 var fileDescriptor_117f1cca4f9b8f25 = []byte{
-	// 398 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x92, 0xb1, 0xae, 0xd3, 0x30,
-	0x14, 0x86, 0x9b, 0xe4, 0xde, 0xb6, 0x39, 0x17, 0xc1, 0x95, 0x07, 0x30, 0x02, 0xa2, 0x4b, 0x59,
-	0xca, 0xd2, 0x0c, 0xcc, 0x0c, 0x65, 0xab, 0x58, 0xaa, 0x08, 0x84, 0xc4, 0x12, 0xb9, 0xf6, 0x69,
-	0x63, 0xe1, 0xd8, 0xc1, 0x71, 0x90, 0xf2, 0x16, 0xbc, 0x0d, 0x3c, 0x02, 0x63, 0x47, 0x46, 0xd4,
-	0xbe, 0x08, 0xb2, 0x13, 0x28, 0x03, 0x53, 0xce, 0xf9, 0x2c, 0x9d, 0xff, 0xcf, 0xaf, 0x1f, 0x1e,
-	0xb6, 0x46, 0xdb, 0x9c, 0x9b, 0xba, 0x36, 0x3a, 0x97, 0x7a, 0x6f, 0x56, 0x8d, 0x35, 0xce, 0x10,
-	0xe2, 0x79, 0xf5, 0x79, 0xe5, 0x3f, 0xab, 0xe1, 0x79, 0xf1, 0x3d, 0x82, 0x9b, 0x35, 0xe7, 0xa6,
-	0xd3, 0x6e, 0xa3, 0xf7, 0x86, 0x50, 0x98, 0x31, 0x21, 0x2c, 0xb6, 0x2d, 0x8d, 0xee, 0xa2, 0x65,
-	0x5a, 0xfc, 0x59, 0x09, 0x81, 0x2b, 0xcd, 0x6a, 0xa4, 0x71, 0xc0, 0x61, 0x26, 0xb7, 0x90, 0x08,
-	0x29, 0x68, 0x12, 0x90, 0x1f, 0xc9, 0x13, 0x48, 0xb9, 0x91, 0xba, 0x74, 0x7d, 0x83, 0xf4, 0x2a,
-	0xf0, 0xb9, 0x07, 0xef, 0xfa, 0x06, 0xc9, 0x63, 0x98, 0xf3, 0x8a, 0x49, 0x5d, 0x4a, 0x41, 0xaf,
-	0x87, 0xeb, 0x61, 0xdf, 0x08, 0xf2, 0x0c, 0xa0, 0xe9, 0x76, 0x4a, 0xf2, 0xf2, 0x13, 0xf6, 0x74,
-	0x1a, 0x1e, 0xd3, 0x81, 0xbc, 0xc5, 0xde, 0x8b, 0x87, 0x8b, 0xb3, 0x41, 0xdc, 0xcf, 0x0b, 0x84,
-	0xf9, 0x16, 0xd1, 0x06, 0xdb, 0xf7, 0x21, 0x96, 0x62, 0x74, 0x1c, 0x4b, 0xf1, 0x5f, 0xb3, 0x8f,
-	0x60, 0xd6, 0x20, 0xda, 0xf2, 0xaf, 0xe1, 0xa9, 0x5f, 0x37, 0x82, 0x3c, 0x85, 0xb4, 0xee, 0x94,
-	0x93, 0xfe, 0x4f, 0x47, 0xcf, 0x17, 0xb0, 0xf8, 0x16, 0x01, 0x7c, 0x60, 0x4a, 0xe1, 0x10, 0x50,
-	0x06, 0xc0, 0x8d, 0x76, 0xd6, 0x28, 0x85, 0x76, 0x54, 0xfc, 0x87, 0x90, 0x97, 0x70, 0x2b, 0x64,
-	0xcb, 0xcd, 0x17, 0xb4, 0x28, 0xca, 0x86, 0xb9, 0xaa, 0xa5, 0xf1, 0x5d, 0xb2, 0xbc, 0x2e, 0x1e,
-	0x5c, 0xf8, 0xd6, 0x63, 0xaf, 0xcb, 0xd4, 0xc1, 0x58, 0xe9, 0xaa, 0x7a, 0xb4, 0x74, 0x01, 0x3e,
-	0x11, 0x6e, 0x91, 0x39, 0x14, 0x25, 0x73, 0xc1, 0x56, 0x52, 0xa4, 0x23, 0x59, 0x3b, 0xf2, 0x1c,
-	0xee, 0x29, 0xd6, 0xba, 0xb2, 0x6b, 0x84, 0x27, 0x21, 0xcf, 0xa4, 0xb8, 0xf1, 0xec, 0xfd, 0x80,
-	0xde, 0xbc, 0xfe, 0x71, 0xca, 0xa2, 0xe3, 0x29, 0x8b, 0x7e, 0x9d, 0xb2, 0xe8, 0xeb, 0x39, 0x9b,
-	0x1c, 0xcf, 0xd9, 0xe4, 0xe7, 0x39, 0x9b, 0x7c, 0x7c, 0x71, 0x90, 0xae, 0xea, 0x76, 0xbe, 0x04,
-	0xf9, 0x50, 0x8a, 0x9c, 0x1b, 0x8b, 0xb9, 0xcf, 0xb5, 0x1d, 0x9b, 0xb3, 0x9b, 0x86, 0xd6, 0xbc,
-	0xfa, 0x1d, 0x00, 0x00, 0xff, 0xff, 0x4a, 0x89, 0x8a, 0x22, 0x4f, 0x02, 0x00, 0x00,
+	// 299 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x90, 0xb1, 0x4e, 0xf3, 0x30,
+	0x10, 0xc7, 0xeb, 0xb6, 0x5f, 0xdb, 0xdc, 0x27, 0x21, 0xe4, 0x01, 0x8c, 0x00, 0x0b, 0x95, 0x85,
+	0x29, 0x19, 0x98, 0x19, 0x60, 0x8b, 0x58, 0x10, 0x62, 0x62, 0x89, 0x12, 0xfb, 0x4a, 0x2c, 0x1a,
+	0x3b, 0x38, 0xc9, 0x90, 0xb7, 0xe0, 0x71, 0x78, 0x04, 0xc6, 0x8e, 0x8c, 0x28, 0x79, 0x11, 0x64,
+	0x27, 0xc0, 0xc2, 0xe4, 0xbb, 0xdf, 0x49, 0x77, 0x3f, 0xff, 0xe1, 0xa0, 0x32, 0xda, 0x46, 0xc2,
+	0x14, 0x85, 0xd1, 0x91, 0xd2, 0x1b, 0x13, 0x96, 0xd6, 0xd4, 0x86, 0x52, 0xc7, 0xf3, 0x97, 0xd0,
+	0x3d, 0xe1, 0x30, 0x5e, 0xbf, 0x11, 0xf8, 0x7f, 0x2d, 0x84, 0x69, 0x74, 0x1d, 0xeb, 0x8d, 0xa1,
+	0x0c, 0x96, 0xa9, 0x94, 0x16, 0xab, 0x8a, 0x91, 0x33, 0x72, 0x11, 0xdc, 0x7f, 0xb7, 0x94, 0xc2,
+	0x5c, 0xa7, 0x05, 0xb2, 0xa9, 0xc7, 0xbe, 0xa6, 0xfb, 0x30, 0x93, 0x4a, 0xb2, 0x99, 0x47, 0xae,
+	0xa4, 0xc7, 0x10, 0x08, 0xa3, 0x74, 0x52, 0xb7, 0x25, 0xb2, 0xb9, 0xe7, 0x2b, 0x07, 0x1e, 0xda,
+	0x12, 0xe9, 0x11, 0xac, 0x44, 0x9e, 0x2a, 0x9d, 0x28, 0xc9, 0xfe, 0x0d, 0xdb, 0x7d, 0x1f, 0x4b,
+	0x7a, 0x0a, 0x50, 0x36, 0xd9, 0x56, 0x89, 0xe4, 0x19, 0x5b, 0xb6, 0xf0, 0xc3, 0x60, 0x20, 0xb7,
+	0xd8, 0xba, 0xe3, 0x7e, 0xe3, 0x72, 0x38, 0xee, 0xea, 0x35, 0xc2, 0xea, 0x0e, 0xd1, 0x7a, 0xed,
+	0x3d, 0x98, 0x2a, 0x39, 0x1a, 0x4f, 0x95, 0xfc, 0x53, 0xf6, 0x10, 0x96, 0x25, 0xa2, 0x4d, 0x7e,
+	0x84, 0x17, 0xae, 0x8d, 0x25, 0x3d, 0x81, 0xa0, 0x68, 0xb6, 0xb5, 0x72, 0x3f, 0x1d, 0x9d, 0x7f,
+	0xc1, 0xcd, 0xd5, 0x7b, 0xc7, 0xc9, 0xae, 0xe3, 0xe4, 0xb3, 0xe3, 0xe4, 0xb5, 0xe7, 0x93, 0x5d,
+	0xcf, 0x27, 0x1f, 0x3d, 0x9f, 0x3c, 0x9e, 0x3f, 0xa9, 0x3a, 0x6f, 0x32, 0x17, 0x65, 0x34, 0x44,
+	0x1b, 0x09, 0x63, 0x31, 0x72, 0x76, 0xd5, 0x98, 0x7f, 0xb6, 0xf0, 0xd9, 0x5f, 0x7e, 0x05, 0x00,
+	0x00, 0xff, 0xff, 0x4a, 0xcc, 0x16, 0x3f, 0x95, 0x01, 0x00, 0x00,
 }
 
 func (m *AccountInfo) Marshal() (dAtA []byte, err error) {
@@ -432,72 +344,6 @@ func (m *PeerInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *WalletInfo) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *WalletInfo) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *WalletInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.LastUpdated != 0 {
-		i = encodeVarintInfo(dAtA, i, uint64(m.LastUpdated))
-		i--
-		dAtA[i] = 0x28
-	}
-	if m.CreatedAt != 0 {
-		i = encodeVarintInfo(dAtA, i, uint64(m.CreatedAt))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.Algorithm) > 0 {
-		i -= len(m.Algorithm)
-		copy(dAtA[i:], m.Algorithm)
-		i = encodeVarintInfo(dAtA, i, uint64(len(m.Algorithm)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.DiscoveredPaths) > 0 {
-		dAtA2 := make([]byte, len(m.DiscoveredPaths)*10)
-		var j1 int
-		for _, num1 := range m.DiscoveredPaths {
-			num := uint64(num1)
-			for num >= 1<<7 {
-				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j1++
-			}
-			dAtA2[j1] = uint8(num)
-			j1++
-		}
-		i -= j1
-		copy(dAtA[i:], dAtA2[:j1])
-		i = encodeVarintInfo(dAtA, i, uint64(j1))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Controller) > 0 {
-		i -= len(m.Controller)
-		copy(dAtA[i:], m.Controller)
-		i = encodeVarintInfo(dAtA, i, uint64(len(m.Controller)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintInfo(dAtA []byte, offset int, v uint64) int {
 	offset -= sovInfo(v)
 	base := offset
@@ -567,36 +413,6 @@ func (m *PeerInfo) Size() (n int) {
 	l = len(m.Multiaddr)
 	if l > 0 {
 		n += 1 + l + sovInfo(uint64(l))
-	}
-	return n
-}
-
-func (m *WalletInfo) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Controller)
-	if l > 0 {
-		n += 1 + l + sovInfo(uint64(l))
-	}
-	if len(m.DiscoveredPaths) > 0 {
-		l = 0
-		for _, e := range m.DiscoveredPaths {
-			l += sovInfo(uint64(e))
-		}
-		n += 1 + sovInfo(uint64(l)) + l
-	}
-	l = len(m.Algorithm)
-	if l > 0 {
-		n += 1 + l + sovInfo(uint64(l))
-	}
-	if m.CreatedAt != 0 {
-		n += 1 + sovInfo(uint64(m.CreatedAt))
-	}
-	if m.LastUpdated != 0 {
-		n += 1 + sovInfo(uint64(m.LastUpdated))
 	}
 	return n
 }
@@ -1038,234 +854,6 @@ func (m *PeerInfo) Unmarshal(dAtA []byte) error {
 			}
 			m.Multiaddr = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipInfo(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthInfo
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *WalletInfo) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowInfo
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: WalletInfo: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: WalletInfo: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Controller", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInfo
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInfo
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInfo
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Controller = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType == 0 {
-				var v int32
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowInfo
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= int32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.DiscoveredPaths = append(m.DiscoveredPaths, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowInfo
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthInfo
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthInfo
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.DiscoveredPaths) == 0 {
-					m.DiscoveredPaths = make([]int32, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v int32
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowInfo
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= int32(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.DiscoveredPaths = append(m.DiscoveredPaths, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field DiscoveredPaths", wireType)
-			}
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Algorithm", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInfo
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInfo
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInfo
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Algorithm = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
-			}
-			m.CreatedAt = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInfo
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.CreatedAt |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LastUpdated", wireType)
-			}
-			m.LastUpdated = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInfo
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.LastUpdated |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipInfo(dAtA[iNdEx:])

@@ -19,19 +19,6 @@ import (
 var PrimaryAccountaddress string = "primary"
 
 type Controller interface {
-	// The `Address()` function is a method of the `didController` struct that returns the address of the
-	// primary account associated with the controller. It takes a pointer to the `didController` struct as
-	// its receiver and returns a string representing the address of the primary account.
-	Address() string
-
-	// The `Did()` function is a method of the `didController` struct that returns the DID (Decentralized
-	// Identifier) associated with the controller's primary account. It takes a pointer to the
-	// `didController` struct as its receiver and returns a string representing the DID.
-	Did() string
-
-	// PrimaryIdentity returns the controller's DID document
-	GetIdentity() *types.Identification
-
 	// BlockchainIdentities returns the controller's blockchain identities
 	BlockchainIdentities() []*types.Identification
 
@@ -114,27 +101,6 @@ func NewController(options ...ControllerOption) (Controller, error) {
 // 	return cn, nil
 // }
 
-// The `Address()` function is a method of the `didController` struct that returns the address of the
-// primary account associated with the controller. It takes a pointer to the `didController` struct as
-// its receiver and returns a string representing the address of the primary account.
-func (dc *didController) Address() string {
-	return dc.primary.Address()
-}
-
-// The `Did()` function is a method of the `didController` struct that returns the DID (Decentralized
-// Identifier) associated with the controller's primary account. It takes a pointer to the
-// `didController` struct as its receiver and returns a string representing the DID.
-func (dc *didController) Did() string {
-	return dc.identity.Id
-}
-
-// The `PrimaryIdentity()` function is a method of the `didController` struct that returns the DID
-// document associated with the controller's primary account. It takes a pointer to the `didController`
-// struct as its receiver and returns a pointer to a `types.DidDocument` representing the primary
-// account's DID document.
-func (dc *didController) GetIdentity() *types.Identification {
-	return dc.identity
-}
 
 // The `BlockchainIdentities()` function is a method of the `didController` struct that returns an
 // array of `*types.DidDocument` representing the DID documents of all the blockchain identities
