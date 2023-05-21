@@ -33,7 +33,6 @@ type Account interface {
 	// GetAuthInfo creates an AuthInfo for a transaction
 	GetAuthInfo(gas sdk.Coins) (*txtypes.AuthInfo, error)
 
-
 	// ListKeyShares returns the list of keyshares of the account as a list of string dids
 	ListKeyShares() []string
 

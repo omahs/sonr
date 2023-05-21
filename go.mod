@@ -54,7 +54,9 @@ require (
 	github.com/gofiber/helmet/v2 v2.2.25
 	github.com/gofiber/jwt/v3 v3.3.7
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/kataras/go-sessions/v3 v3.3.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/valyala/fasthttp v1.46.0
 	github.com/yoseplee/vrf v0.0.0-20210814110709-d1caf509310b
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -358,7 +360,6 @@ require (
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.46.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/whyrusleeping/base32 v0.0.0-20170828182744-c30ac30633cc // indirect
 	github.com/whyrusleeping/cbor-gen v0.0.0-20230126041949-52956bd4c9aa // indirect

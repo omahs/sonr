@@ -23,8 +23,6 @@ func SetupRoutes(c *config.ProtocolConfig) {
 	}))
 
 	// Account Methods
-	c.Get("/accounts", timeout.New(handler.ListAccounts, time.Second*5))
-	c.Get("/accounts/:address", timeout.New(handler.GetAccount, time.Second*5))
 	c.Get("/accounts/create/:coin_type/:name", timeout.New(handler.CreateAccount, time.Second*5))
 	c.Post("/accounts/:address/sign", timeout.New(handler.SignWithAccount, time.Second*5))
 	c.Post("/accounts/:address/verify", timeout.New(handler.VerifyWithAccount, time.Second*5))

@@ -6,53 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/x/identity/client/gateway/middleware"
-	vaulttypes "github.com/sonrhq/core/x/vault/types"
 )
-
-func GetAccount(c *fiber.Ctx) error {
-	usr, err := middleware.FetchUser(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	acc, err := usr.GetAccount(c.Params("address", ""))
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	return c.JSON(fiber.Map{
-		"success":   true,
-		"account":   acc.ToProto(),
-		"coin_type": acc.CoinType().Ticker(),
-		"address":   c.Params("address"),
-	})
-}
-
-func ListAccounts(c *fiber.Ctx) error {
-	usr, err := middleware.FetchUser(c)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-	accs, err := usr.ListAccounts()
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-
-	// Initialize an empty map where the key is the coin type and the value is a slice of associated accounts
-	accMap := make(map[string][]*vaulttypes.AccountInfo)
-
-	for _, acc := range accs {
-		// If the coin type is not yet in the map, initialize an empty slice for it
-		if _, ok := accMap[acc.CoinType]; !ok {
-			accMap[acc.CoinType] = make([]*vaulttypes.AccountInfo, 0)
-		}
-		// Append the account to the slice associated with its coin type
-		accMap[acc.CoinType] = append(accMap[acc.CoinType], acc)
-	}
-
-	return c.JSON(fiber.Map{
-		"success":  true,
-		"accounts": accMap,
-	})
-}
 
 func CreateAccount(c *fiber.Ctx) error {
 	usr, err := middleware.FetchUser(c)
@@ -116,8 +70,4 @@ func VerifyWithAccount(c *fiber.Ctx) error {
 		"signature": c.Query("signature"),
 		"address":   c.Params("address"),
 	})
-}
-
-func SendTransaction(c *fiber.Ctx) error {
-	return nil
 }

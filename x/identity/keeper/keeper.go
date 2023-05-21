@@ -220,9 +220,6 @@ func (k Keeper) GetAllIdentities(ctx sdk.Context) (list []types.Identification) 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                 Relationships - Authentication Keeper Functions                ||
 // ! ||--------------------------------------------------------------------------------  ||
-func (k Keeper) SetVerificationRelationship(ctx sdk.Context, VerificationRelationship types.VerificationRelationship) {
-}
-
 // HasAuthentication checks if the element exists in the store
 func (k Keeper) HasAuthentication(ctx sdk.Context, reference string) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuthenticationKeyPrefix))
