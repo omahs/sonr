@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/sonrhq/core/pkg/gateway"
 	"github.com/sonrhq/core/x/service/types"
 )
 
@@ -27,6 +28,7 @@ type (
 		groupKeeper    types.GroupKeeper
 		identityKeeper types.IdentityKeeper
 		vaultKeeper    types.VaultKeeper
+		authenticator gateway.Authenticator
 	}
 )
 
@@ -39,13 +41,14 @@ func NewKeeper(
 	groupKeeper types.GroupKeeper,
 	identityKeeper types.IdentityKeeper,
 	vaultKeeper types.VaultKeeper,
+	authenticator gateway.Authenticator,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
 
-	return &Keeper{
+	k := &Keeper{
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
@@ -54,7 +57,10 @@ func NewKeeper(
 		groupKeeper:    groupKeeper,
 		identityKeeper: identityKeeper,
 		vaultKeeper:   vaultKeeper,
+		authenticator: authenticator,
 	}
+
+	return k
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {

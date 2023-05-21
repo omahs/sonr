@@ -558,6 +558,7 @@ func New(
 		app.GroupKeeper,
 		app.IdentityKeeper,
 		app.VaultKeeper,
+		app.Authenticator,
 	)
 	serviceModule := servicemodule.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper, app.IdentityKeeper, app.VaultKeeper)
 
