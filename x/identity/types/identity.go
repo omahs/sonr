@@ -25,17 +25,8 @@ func BlankIdentity() *Identification {
 
 // NewIdentityFromVaultAccount returns a new Identity from a VaultAccount
 func NewIdentityFromVaultAccount(va vaulttypes.Account, controller string) (*Identification, *VerificationRelationship, bool) {
-	method := va.CoinType().DidMethod()
-	addr := va.CoinType().FormatAddress(va.PubKey())
-	did := fmt.Sprintf("did:%s:%s", method, addr)
-	pkmb := va.PubKey().Multibase()
-	vm := &VerificationMethod{
-		Id:                  did,
-		Controller:          controller,
-		PublicKeyMultibase:  pkmb,
-		BlockchainAccountId: addr,
-	}
-	wi := NewWalletIdentity(controller, addr, va.CoinType())
+	vm := NewVerificationMethodFromVaultAccount(va, controller)
+	wi := NewWalletIdentity(controller, vm.BlockchainAccountId, va.CoinType())
 	wi.AddAuthenticationMethod(vm)
 	vr, ok := wi.AddCapabilityDelegation(vm)
 	return wi, vr, ok

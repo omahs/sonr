@@ -31,12 +31,6 @@ type Controller interface {
 	// Listmodels.Accounts returns the controller's models.Accounts
 	ListAccounts() ([]vaulttypes.Account, error)
 
-	// SendMail sends a message between two Controllers
-	SendMail(address string, to string, body string) error
-
-	// ReadMail reads the controller's inbox
-	ReadMail(address string) ([]*vaulttypes.InboxMessage, error)
-
 	// Sign signs a message with the controller's models.Account
 	Sign(address string, msg []byte) ([]byte, error)
 
@@ -137,14 +131,6 @@ func (dc *didController) CreateAccount(name string, coinType crypto.CoinType) (v
 		return nil, err
 	}
 
-	// // Add account to the vault
-	// if !dc.disableIPFS {
-	// 	err = vault.InsertAccount(newAcc)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// }
-
 	// Add the new models.Account to the controller
 	dc.blockchain = append(dc.blockchain, newAcc)
 	return newAcc, nil
@@ -193,33 +179,6 @@ func (dc *didController) Verify(address string, msg []byte, sig []byte) (bool, e
 		return false, err
 	}
 	return acc.Verify(msg, sig)
-}
-
-// SendMail sends a mail from the controller's selected models.Account
-func (dc *didController) SendMail(address string, to string, body string) error {
-	// acc, err := dc.GetAccount(address)
-	// if err != nil {
-	// 	return err
-	// }
-	// msg, err := acc.CreateInboxMessage(to, body)
-	// if err != nil {
-	// 	return err
-	// }
-	// err = vault.WriteInbox(to, msg)
-	// if err != nil {
-	// 	return err
-	// }
-	return fmt.Errorf("not implemented")
-}
-
-// ReadMail reads a mail from the controller's selected models.Account
-func (dc *didController) ReadMail(address string) ([]*vaulttypes.InboxMessage, error) {
-	// acc, err := dc.GetAccount(address)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return vault.ReadInbox(acc.Address())
-	return nil, fmt.Errorf("not implemented")
 }
 
 

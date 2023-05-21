@@ -34,7 +34,7 @@ func (gs GenesisState) Validate() error {
 	// Check for duplicated index in primary identities
 	didDocumentIndexMap := make(map[string]struct{})
 	for _, elem := range gs.DidDocuments {
-		index := string(DidDocumentKey(elem.Id))
+		index := string(IdentificationKey(elem.Id))
 		if _, ok := didDocumentIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for did")
 		}

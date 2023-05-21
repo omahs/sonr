@@ -286,7 +286,6 @@ func New(
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
-
 	bApp := baseapp.NewBaseApp(
 		Name,
 		logger,
@@ -553,8 +552,9 @@ func New(
 
 		app.GroupKeeper,
 		app.IdentityKeeper,
+		app.VaultKeeper,
 	)
-	serviceModule := servicemodule.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper, app.IdentityKeeper)
+	serviceModule := servicemodule.NewAppModule(appCodec, app.ServiceKeeper, app.AccountKeeper, app.BankKeeper, app.IdentityKeeper, app.VaultKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
@@ -967,7 +967,10 @@ func shouldAllowGasless(tx sdk.Tx) bool {
 	// Iterate through the messages in the transaction
 	for _, msg := range tx.GetMsgs() {
 		// Check if the message is of type MsgCreateDidDocument
-		if _, ok := msg.(*identitymoduletypes.MsgCreateDidDocument); ok {
+		if _, ok := msg.(*identitymoduletypes.MsgRegisterIdentity); ok {
+			return true
+		}
+		if _, ok := msg.(*servicemoduletypes.MsgRegisterUserEntity); ok {
 			return true
 		}
 	}

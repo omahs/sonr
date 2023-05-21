@@ -105,18 +105,13 @@ func (k Keeper) GetIdentityByPrimaryAlias(
 // ResolveIdentity resolves a DID to a DIDDocument and returns it
 func (k Keeper) ResolveIdentity(ctx sdk.Context, did string) (val types.DIDDocument, err error) {
 	ptrs := strings.Split(did, ":")
-	method := ptrs[1]
 	addr := ptrs[len(ptrs)-1]
-	params := types.DefaultParams()
-	if ok := params.IsSupportedDidMethod(method); !ok {
-		return val, status.Error(codes.InvalidArgument, "Unsupported DID method")
-	}
-	keyPrefix, ok := types.DidMethodKeyMap[method]
+	keyPrefix, ok := types.IdentificationKeyPrefix(did)
 	if !ok {
-		return val, status.Error(codes.InvalidArgument, "Unsupported DID method")
+		return val, status.Error(codes.NotFound, "Account Identity not found")
 	}
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(keyPrefix))
-	b := store.Get(types.DidDocumentKey(did))
+	b := store.Get(types.IdentificationKey(did))
 	if b == nil {
 		return val, status.Error(codes.NotFound, "Account Identity not found")
 	}
@@ -162,18 +157,13 @@ func (k Keeper) ResolveIdentity(ctx sdk.Context, did string) (val types.DIDDocum
 func (k Keeper) SetIdentity(ctx sdk.Context, identity types.Identification) error {
 	ptrs := strings.Split(identity.Id, ":")
 	addr := ptrs[len(ptrs)-1]
-	method := ptrs[1]
-	params := types.DefaultParams()
-	if ok := params.IsSupportedDidMethod(method); !ok {
-		return status.Error(codes.InvalidArgument, "Unsupported DID method")
-	}
-	keyPrefix, ok := types.DidMethodKeyMap[method]
+	keyPrefix, ok := types.IdentificationKeyPrefix(identity.Id)
 	if !ok {
-		return status.Error(codes.InvalidArgument, "Unsupported DID method")
+		return status.Error(codes.NotFound, "Account Identity not found")
 	}
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(keyPrefix))
 	b := k.cdc.MustMarshal(&identity)
-	store.Set(types.DidDocumentKey(
+	store.Set(types.IdentificationKey(
 		identity.Id,
 	), b)
 	// Set the owner of the identity
@@ -187,44 +177,23 @@ func (k Keeper) SetIdentity(ctx sdk.Context, identity types.Identification) erro
 
 // HasIdentity checks if an identity exists in the store across all did methods
 func (k Keeper) HasIdentity(ctx sdk.Context, did string) bool {
-	ptrs := strings.Split(did, ":")
-	method := ptrs[1]
-	params := types.DefaultParams()
-	if ok := params.IsSupportedDidMethod(method); !ok {
-		return false
-	}
-	keyPrefix, ok := types.DidMethodKeyMap[method]
+	keyPrefix, ok := types.IdentificationKeyPrefix(did)
 	if !ok {
 		return false
 	}
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(keyPrefix))
-	b := store.Get(types.DidDocumentKey(did))
+	b := store.Get(types.IdentificationKey(did))
 	return b != nil
 }
 
-// SetDidDocument set a specific didDocument in the store from its index
-func (k Keeper) SetDidDocument(ctx sdk.Context, didDocument types.Identification) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
-
-	ptrs := strings.Split(didDocument.Id, ":")
-	addr := ptrs[len(ptrs)-1]
-	didDocument.Owner = addr
-
-	b := k.cdc.MustMarshal(&didDocument)
-	store.Set(types.DidDocumentKey(
-		didDocument.Id,
-	), b)
-}
-
-// GetDidDocument returns a didDocument from its index
-func (k Keeper) GetDidDocument(
-	ctx sdk.Context,
-	did string,
-) (val types.Identification, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
-	b := store.Get(types.DidDocumentKey(
-		did,
-	))
+// GetIdentity returns the identity from the store
+func (k Keeper) GetIdentity(ctx sdk.Context, did string) (val types.Identification, found bool) {
+	keyPrefix, ok := types.IdentificationKeyPrefix(did)
+	if !ok {
+		return val, false
+	}
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(keyPrefix))
+	b := store.Get(types.IdentificationKey(did))
 	if b == nil {
 		return val, false
 	}
@@ -232,49 +201,10 @@ func (k Keeper) GetDidDocument(
 	return val, true
 }
 
-// GetDidDocumentByAlsoKnownAs returns a didDocument from its index
-func (k Keeper) GetDidDocumentByAlsoKnownAs(
-	ctx sdk.Context,
-	alias string,
-) (val types.Identification, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var doc types.Identification
-		k.cdc.MustUnmarshal(iterator.Value(), &doc)
-		if doc.AlsoKnownAs[0] == alias {
-			val = doc
-			found = true
-		}
-	}
-	return val, found
-}
-
-// GetDidDocumentByOwner iterates over all didDocuments and returns the first one that matches the address
-func (k Keeper) GetDidDocumentByOwner(
-	ctx sdk.Context,
-	addr string,
-) (val types.Identification, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var doc types.Identification
-		k.cdc.MustUnmarshal(iterator.Value(), &doc)
-		if doc.Owner == addr {
-			val = doc
-			found = true
-		}
-	}
-	return val, found
-}
 
 // GetAllDidDocument returns all didDocument
-func (k Keeper) GetAllPrimaryIdentities(ctx sdk.Context) (list []types.Identification) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryIdentityPrefix))
+func (k Keeper) GetAllIdentities(ctx sdk.Context) (list []types.Identification) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AlsoKnownAsPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
@@ -284,13 +214,15 @@ func (k Keeper) GetAllPrimaryIdentities(ctx sdk.Context) (list []types.Identific
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
-
 	return
 }
 
 // ! ||--------------------------------------------------------------------------------||
 // ! ||                 Relationships - Authentication Keeper Functions                ||
 // ! ||--------------------------------------------------------------------------------  ||
+func (k Keeper) SetVerificationRelationship(ctx sdk.Context, VerificationRelationship types.VerificationRelationship) {
+}
+
 // HasAuthentication checks if the element exists in the store
 func (k Keeper) HasAuthentication(ctx sdk.Context, reference string) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuthenticationKeyPrefix))

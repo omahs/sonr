@@ -547,8 +547,6 @@ definitions:
         type: string
         title: optional, additional metadata related to the DID document
     description: Identification represents a Decentralized Identifier (DID) document that contains information about the DID subject, such as public keys, verification methods, and services.
-  identityMsgCreateDidDocumentResponse:
-    type: object
   identityMsgRegisterIdentityResponse:
     type: object
     properties:
@@ -556,11 +554,6 @@ definitions:
         type: boolean
       didDocument:
         $ref: '#/definitions/identityDIDDocument'
-  identityMsgUpdateDidDocumentResponse:
-    type: object
-    properties:
-      creator:
-        type: string
   identityQueryAliasAvailableResponse:
     type: object
     properties:

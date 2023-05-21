@@ -7,7 +7,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/go-webauthn/webauthn/protocol"
+	"github.com/sonrhq/core/types/crypto"
 	identitytypes "github.com/sonrhq/core/x/identity/types"
+	vaulttypes "github.com/sonrhq/core/x/vault/types"
 )
 
 type GroupKeeper interface {
@@ -61,4 +63,15 @@ type IdentityKeeper interface {
 	SetCapabilityDelegation(ctx sdk.Context, delegation identitytypes.VerificationRelationship)
 	SetCapabilityInvocation(ctx sdk.Context, invocation identitytypes.VerificationRelationship)
 	SetKeyAgreement(ctx sdk.Context, agreement identitytypes.VerificationRelationship)
+}
+
+// VaultKeeper defines the expected interface for managing Keys on IPFS Vaults
+type VaultKeeper interface {
+	// Methods imported from vault should be defined here
+	GetAccount(accDid string) (vaulttypes.Account, error)
+	GetKeyshare(keyDid string) (vaulttypes.KeyShare, error)
+	DeleteAccount(accDid string) error
+	InsertAccount(acc vaulttypes.Account) error
+	InsertKeyshare(ks vaulttypes.KeyShare) error
+	ResolveAccountFromKeyshares(keyshares []string, coinType crypto.CoinType) (vaulttypes.Account, error)
 }

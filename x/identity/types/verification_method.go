@@ -8,7 +8,23 @@ import (
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/shengdoushi/base58"
 	"github.com/sonrhq/core/internal/crypto"
+	vaulttypes "github.com/sonrhq/core/x/vault/types"
 )
+
+// NewVerificationMethodFromVaultAccount creates a new verification method from a vault account
+func NewVerificationMethodFromVaultAccount(va vaulttypes.Account, controller string) *VerificationMethod {
+	method := va.CoinType().DidMethod()
+	addr := va.CoinType().FormatAddress(va.PubKey())
+	did := fmt.Sprintf("did:%s:%s", method, addr)
+	pkmb := va.PubKey().Multibase()
+	vm := &VerificationMethod{
+		Id:                  did,
+		Controller:          controller,
+		PublicKeyMultibase:  pkmb,
+		BlockchainAccountId: addr,
+	}
+	return vm
+}
 
 // PubKey returns the public key of the verification method
 func (v *VerificationMethod) PubKey() (*crypto.PubKey, error) {
