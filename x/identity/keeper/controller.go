@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/sonrhq/core/internal/crypto"
+	"github.com/sonrhq/core/pkg/crypto"
 	vaulttypes "github.com/sonrhq/core/x/vault/types"
 )
 

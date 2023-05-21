@@ -1,7 +1,7 @@
 package identity
 
 import (
-	"github.com/sonrhq/core/internal/crypto/mpc"
+	"github.com/sonrhq/core/internal/mpc"
 	"github.com/sonrhq/core/x/identity/keeper"
 	servicetypes "github.com/sonrhq/core/x/service/types"
 )

@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/go-webauthn/webauthn/protocol"
-	"github.com/sonrhq/core/internal/crypto"
+	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/x/identity/types"
 	srvtypes "github.com/sonrhq/core/x/service/types"
 	vaulttypes "github.com/sonrhq/core/x/vault/types"

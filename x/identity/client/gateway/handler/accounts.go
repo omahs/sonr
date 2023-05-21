@@ -4,9 +4,9 @@ import (
 	"encoding/base64"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sonrhq/core/internal/crypto"
-	vaulttypes "github.com/sonrhq/core/x/vault/types"
+	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/x/identity/client/gateway/middleware"
+	vaulttypes "github.com/sonrhq/core/x/vault/types"
 )
 
 func GetAccount(c *fiber.Ctx) error {

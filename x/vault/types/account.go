@@ -8,8 +8,8 @@ import (
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/google/uuid"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
-	"github.com/sonrhq/core/internal/crypto"
-	"github.com/sonrhq/core/internal/crypto/mpc"
+	"github.com/sonrhq/core/pkg/crypto"
+	"github.com/sonrhq/core/internal/mpc"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 )
 

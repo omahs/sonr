@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	crypto "github.com/sonrhq/core/internal/crypto"
+	crypto "github.com/sonrhq/core/pkg/crypto"
 	vaulttypes "github.com/sonrhq/core/x/vault/types"
 )
 
