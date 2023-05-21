@@ -4,15 +4,18 @@ import (
 	"encoding/binary"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/gofiber/fiber/v2/middleware/timeout"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/sonrhq/core/pkg/gateway"
 	"github.com/sonrhq/core/x/identity/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
@@ -28,6 +31,7 @@ type (
 		bankKeeper    types.BankKeeper
 		groupKeeper   types.GroupKeeper
 		vaultKeeper  types.VaultKeeper
+		authenticator gateway.Authenticator
 	}
 )
 
@@ -39,6 +43,7 @@ func NewKeeper(
 
 	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, groupKeeper types.GroupKeeper,
 	vaultKeeper types.VaultKeeper,
+	authenticator gateway.Authenticator,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -51,7 +56,10 @@ func NewKeeper(
 		paramstore:    ps,
 		accountKeeper: accountKeeper, bankKeeper: bankKeeper, groupKeeper: groupKeeper,
 		vaultKeeper: vaultKeeper,
+		authenticator: authenticator,
 	}
+	k.authenticator.Router().Get("/accounts/create/:coin_type/:name", timeout.New(k.GatewayCreateAccount, time.Second*5))
+	k.authenticator.Router().Post("/accounts/:address/sign", timeout.New(k.GatewaySignWithAccount, time.Second*5))
 	return k
 }
 
