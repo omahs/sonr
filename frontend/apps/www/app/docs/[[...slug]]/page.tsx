@@ -21,6 +21,7 @@ import { DashboardTableOfContents } from "@/components/toc"
 
 interface DocPageProps {
     params: {
+        isReference: boolean
         slug: string[]
     }
 }
@@ -28,7 +29,7 @@ interface DocPageProps {
 async function getDocFromParams({ params }: DocPageProps) {
     const slug = params.slug?.join("/") || ""
     const doc = allDocs.find((doc) => doc.slugAsParams === slug)
-
+    params.isReference = slug.includes("reference")
     if (!doc) {
         null
     }
@@ -77,6 +78,7 @@ export async function generateStaticParams(): Promise<
 > {
     return allDocs.map((doc) => ({
         slug: doc.slugAsParams.split("/"),
+        isReference: doc.slugAsParams.includes("reference"),
     }))
 }
 
@@ -91,20 +93,20 @@ export default async function DocPage({ params }: DocPageProps) {
 
     return (
         <main className="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
-            <div className="mx-auto w-full min-w-0">
-                <div className="mb-4 flex items-center space-x-1 text-sm text-muted-foreground">
+            <div className="mx-auto w-full min-w-0 ">
+                <div className="text-muted-foreground mb-4 flex items-center space-x-1 text-sm">
                     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                         Docs
                     </div>
                     <ChevronRight className="h-4 w-4" />
-                    <div className="font-medium text-foreground">{doc.title}</div>
+                    <div className="text-foreground font-medium">{doc.title}</div>
                 </div>
                 <div className="space-y-2">
                     <h1 className={cn("scroll-m-20 text-4xl font-bold tracking-tight")}>
                         {doc.title}
                     </h1>
                     {doc.description && (
-                        <p className="text-lg text-muted-foreground">
+                        <p className="text-muted-foreground text-lg">
                             <Balancer>{doc.description}</Balancer>
                         </p>
                     )}
@@ -139,7 +141,7 @@ export default async function DocPage({ params }: DocPageProps) {
                 <Separator className="my-4 md:my-6" />
                 <DocsPager doc={doc} />
             </div>
-            <div className="hidden text-sm xl:block">
+            <div className={cn("text-sm sm:hidden md:hidden xl:block", params.isReference ? "hidden xl:hidden" : "visible")}>
                 <div className="sticky top-16 -mt-10 h-[calc(100vh-3.5rem)] overflow-hidden pt-6">
                     <ScrollArea className="pb-10">
                         <DashboardTableOfContents toc={toc} />

@@ -1,5 +1,7 @@
-export const description =
-  "Welcome to our DID Document guide! We know DID documents can be complex, but we're here to help. On this page, we'll walk you through the key concepts and components of DID documents in a simple, friendly, and approachable manner. Let's explore and learn together!"
+---
+title: Identities
+description: Every component recreated in Figma. With customizable props, typography and icons.
+---
 
 # Identities
 
@@ -63,7 +65,7 @@ The DID document model contains all the essential information about an identity,
 
 ---
 
-## List Identities {{ tag: 'GET', label: '/did' }}
+## List Identities
 
 <Row>
   <Col>
@@ -119,7 +121,7 @@ await client.did.list()
 </Row>
 ---
 
-## Get Identity {{ tag: 'GET', label: '/id/:did' }}
+## Get Identity
 
 <Row>
   <Col>
@@ -172,7 +174,7 @@ await client.did.get(did:sonr:idx1abc123)
 </Row>
 ---
 
-## Get Identity by Alias {{ tag: 'GET', label: '/id/alias/:alias' }}
+## Get Identity by Alias
 
 <Row>
   <Col>
@@ -225,7 +227,7 @@ await client.did.get(example.snr)
 </Row>
 ---
 
-## Get Identity by Owner {{ tag: 'GET', label: '/id/owner/:owner' }}
+## Get Identity by Owner
 
 <Row>
   <Col>

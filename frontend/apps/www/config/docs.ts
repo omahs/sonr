@@ -36,7 +36,7 @@ export const docsConfig: DocsConfig = {
     ],
     sidebarNav: [
         {
-            title: "Getting Started",
+            title: "Guides",
             items: [
                 {
                     title: "Introduction",
@@ -44,52 +44,69 @@ export const docsConfig: DocsConfig = {
                     items: [],
                 },
                 {
-                    title: "Installation",
+                    title: "Quickstart",
                     href: "/docs/installation",
                     items: [],
                 },
                 {
-                    title: "Theming",
+                    title: "SDKs",
                     href: "/docs/theming",
                     items: [],
                 },
                 {
-                    title: "CLI",
+                    title: "Authentication",
                     href: "/docs/cli",
                     items: [],
                 },
                 {
-                    title: "Typography",
+                    title: "Pagination",
+                    href: "/docs/components/typography",
+                    items: [],
+                },
+                {
+                    title: "Errors",
+                    href: "/docs/components/typography",
+                    items: [],
+                },
+                {
+                    title: "Webhooks",
                     href: "/docs/components/typography",
                     items: [],
                 },
             ],
         },
         {
-            title: "Community",
+            title: "Run Nodes",
             items: [
                 {
-                    title: "Figma",
-                    href: "/docs/figma",
+                    title: "Token Economics",
+                    href: "/docs/token",
+                    items: [],
+                },
+                {
+                    title: "Join Testnet",
+                    href: "/docs/join-network",
                     items: [],
                 },
             ],
         },
         {
-            title: "Forms",
+            title: "Build Apps",
             items: [
                 {
-                    title: "React Hook Form",
-                    href: "/docs/forms/react-hook-form",
-                    label: "New",
+                    title: "Identities",
+                    href: "/docs/reference/identity",
                     items: [],
                 },
                 {
-                    title: "TanStack Form",
-                    href: "#",
+                    title: "Services",
+                    href: "/docs/reference/services",
                     items: [],
-                    label: "Soon",
-                    disabled: true,
+                },
+                {
+                    title: "Wallets & Accounts",
+                    href: "/docs/reference/services",
+                    items: [],
                 },
             ],
         },

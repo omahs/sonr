@@ -17,14 +17,20 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Callout } from "@/components/callout"
 import { CodeBlockWrapper } from "@/components/code-block-wrapper"
-import { ComponentExample } from "@/components/component-example"
 import { ComponentSource } from "@/components/component-source"
 import { CopyButton, CopyNpmCommandButton } from "@/components/copy-button"
+import { CodeGroup } from "@/components/code"
+import { Col, Properties, Property, Row, Note } from "@/components/mdx"
 
 const components = {
     Accordion,
     AccordionContent,
     AccordionItem,
+    Col,
+    Properties,
+    Row,
+    Property,
+    Note,
     AccordionTrigger,
     Alert,
     AlertTitle,
@@ -207,9 +213,9 @@ const components = {
     ),
     Image,
     Callout,
-    ComponentExample,
     ComponentSource,
     AspectRatio,
+    CodeGroup,
     CodeBlockWrapper: ({ ...props }) => (
         <CodeBlockWrapper className="rounded-md border" {...props} />
     ),
