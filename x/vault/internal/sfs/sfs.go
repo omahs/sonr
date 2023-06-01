@@ -65,12 +65,12 @@ func InsertSonrAccount(acc types.Account, cred *servicetypes.WebauthnCredential)
 	if err != nil {
 		return err
 	}
-	secKey, err := acc.GenerateSecretKey(string(cred.PublicKey))
-	if err != nil {
-		return err
-	}
+	// _, err = acc.GenerateSecretKey(string(cred.PublicKey))
+	// if err != nil {
+	// 	return err
+	// }
 	acc.MapKeyShare(func(ks types.KeyShare) types.KeyShare {
-		go insertAESKeyshare(ks, secKey)
+		go InsertKeyshare(ks)
 		return ks
 	})
 	return nil
