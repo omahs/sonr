@@ -15,8 +15,6 @@ func (k Keeper) AssignIdentity(credential *identity.VerificationMethod, account 
 	avr, _ := idef.LinkAccountFromVault(account)
 	didDoc := identity.NewDIDDocument(idef, cvr, avr)
 
-
-
 	// Return the identity
 	return didDoc, nil
 }

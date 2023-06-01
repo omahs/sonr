@@ -72,6 +72,7 @@
     "**/.trunk/*plugins/": true,
     "**/**/*.pb.go": true,
     "**/**/*.pb.gw.go": true,
+    "**/**/types/*_test.go": true,
     "LICENSE": true,
     "proto/buf.lock": true,
     "go.sum": true,
