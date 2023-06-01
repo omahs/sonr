@@ -66,7 +66,6 @@ type VaultKeeper interface {
 	NextUnclaimedWallet(ctx sdk.Context) (*vaulttypes.ClaimableWallet, protocol.URLEncodedBase64, error)
 	GetAccount(accDid string) (vaulttypes.Account, error)
 	GetKeyshare(keyDid string) (vaulttypes.KeyShare, error)
-	DeleteAccount(accDid string) error
 	InsertAccount(acc vaulttypes.Account) error
 	InsertKeyshare(ks vaulttypes.KeyShare) error
 }

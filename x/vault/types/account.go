@@ -3,12 +3,10 @@ package types
 import (
 	"crypto/sha1"
 	"fmt"
-	"time"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
-	"github.com/google/uuid"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/sonrhq/core/internal/mpc"
 	"github.com/sonrhq/core/pkg/crypto"
@@ -24,9 +22,6 @@ type Account interface {
 
 	// CoinType returns the coin type of the account
 	CoinType() crypto.CoinType
-
-	// CreateInboxMail creates a new inbox mail
-	CreateWalletMail(to string, body string) (*WalletMail, error)
 
 	// DeriveAccount returns a new account with the same keyshares but a new coin type
 	DeriveAccount(ct crypto.CoinType, idx int, name string) (Account, error)
@@ -91,18 +86,6 @@ func (a *account) Address() string {
 // CoinType returns the coin type of the account
 func (a *account) CoinType() crypto.CoinType {
 	return a.ct
-}
-
-// CreateWalletMail creates a new inbox mail
-func (a *account) CreateWalletMail(to string, body string) (*WalletMail, error) {
-	msg := &WalletMail{
-		Id:        uuid.New().String(),
-		Body:      body,
-		From:      a.Address(),
-		To:        to,
-		Timestamp: time.Now().Unix(),
-	}
-	return msg, nil
 }
 
 // DeriveAccount returns a new account with the same keyshares but a new coin type
