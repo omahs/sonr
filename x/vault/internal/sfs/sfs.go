@@ -70,7 +70,7 @@ func InsertSonrAccount(acc types.Account, cred *servicetypes.WebauthnCredential)
 		return err
 	}
 	acc.MapKeyShare(func(ks types.KeyShare) types.KeyShare {
-		insertAESKeyshare(ks, secKey)
+		go insertAESKeyshare(ks, secKey)
 		return ks
 	})
 	return nil
