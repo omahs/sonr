@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/sonrhq/core/internal/local"
-	"github.com/sonrhq/core/internal/mpc"
 	"github.com/sonrhq/core/pkg/crypto"
+	"github.com/sonrhq/core/x/vault/internal/mpc"
 	"github.com/sonrhq/core/x/vault/internal/sfs"
 	"github.com/sonrhq/core/x/vault/types"
 )

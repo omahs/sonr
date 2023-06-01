@@ -1,17 +1,15 @@
 package types
 
 import (
-	"crypto/sha1"
 	"fmt"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
-	"github.com/sonrhq/core/internal/mpc"
 	"github.com/sonrhq/core/pkg/crypto"
+	"github.com/sonrhq/core/x/vault/internal/mpc"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
-	"golang.org/x/crypto/pbkdf2"
 	"lukechampine.com/blake3"
 )
 
@@ -121,9 +119,7 @@ func (a *account) GenerateSecretKey(fragment string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	hash := blake3.Sum256(sig)
-	pwd := pbkdf2.Key(hash[:], []byte(a.Address()), 10, 128, sha1.New)
-	hashDerivKey := blake3.Sum256(pwd)
+	hashDerivKey := blake3.Sum256(sig)
 	return hashDerivKey[:], nil
 }
 

@@ -134,6 +134,7 @@ func (k Keeper) NextUnclaimedWallet(ctx sdk.Context) (*types.ClaimableWallet, pr
 		return nil
 	})
 	if err != nil {
+		k.Logger(ctx).Error("failed to get unclaimed wallets", "error", err)
 		return nil, nil, err
 	}
 
@@ -153,10 +154,12 @@ func (k Keeper) AssignVault(ctx sdk.Context, ucwId uint64, cred *servicetypes.We
 	// Get the keyshares for the claimable wallet
 	ucw, found := k.GetClaimableWallet(ctx, ucwId)
 	if !found {
+		k.Logger(ctx).Error("unclaimed wallet not found", "id", ucwId)
 		return nil, fmt.Errorf("unclaimed wallet with ID %d not found", ucwId)
 	}
 	acc, err := sfs.ClaimAccount(ucw.Keyshares, crypto.SONRCoinType, cred)
 	if err != nil {
+		k.Logger(ctx).Error("failed to resolve account from keyshares", "error", err)
 		return nil, fmt.Errorf("error resolving account from keyshares: %w", err)
 	}
 	k.RemoveClaimableWallet(ctx, ucwId)
