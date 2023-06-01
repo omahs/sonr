@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/sonrhq/core/pkg/crypto"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/sonrhq/core/x/vault/internal/node"
 	"github.com/sonrhq/core/x/vault/types"
 )
@@ -39,10 +40,10 @@ func Init() error {
 }
 
 // Resolve account takes a list of key shares and a coin type and returns an account.
-func ClaimAccount(ksDidList []string, coinType crypto.CoinType) (types.Account, error) {
+func ClaimAccount(ksDidList []string, coinType crypto.CoinType, cred *servicetypes.WebauthnCredential) (types.Account, error) {
 	kss := make([]types.KeyShare, 0)
 	for _, ks := range ksDidList {
-		ks, err := GetKeyshare( ks)
+		ks, err := GetKeyshare(ks)
 		if err != nil {
 			return nil, err
 		}
@@ -50,8 +51,28 @@ func ClaimAccount(ksDidList []string, coinType crypto.CoinType) (types.Account, 
 	}
 
 	acc := types.NewAccount(kss, coinType)
-	go InsertAccount(acc)
+	err := InsertSonrAccount(acc, cred)
+	if err != nil {
+		return nil, err
+	}
 	return acc, nil
+}
+
+// The function inserts a Sonr account with a webauthn credential.
+func InsertSonrAccount(acc types.Account, cred *servicetypes.WebauthnCredential) error {
+	ksAccListVal := strings.Join(acc.ListKeyShares(), ",")
+	_, err := ksTable.Put(ctx, types.AccountPrefix(acc.Did()), []byte(ksAccListVal))
+	if err != nil {
+		return err
+	}
+	acc.MapKeyShare(func(ks types.KeyShare) types.KeyShare {
+		err := insertECIESKeyshare(ks, cred)
+		if err != nil {
+			return ks
+		}
+		return ks
+	})
+	return nil
 }
 
 // The function inserts an account and its associated key shares into a vault.
@@ -61,12 +82,15 @@ func InsertAccount(acc types.Account) {
 	if err != nil {
 		return
 	}
+	if acc.CoinType().IsSonr() {
+
+	}
 	secKey, err := acc.GenerateSecretKey(types.DefaultParams().KeyshareSeedFragment)
 	if err != nil {
 		return
 	}
 	acc.MapKeyShare(func(ks types.KeyShare) types.KeyShare {
-		go insertEncKeyshare(ks, secKey)
+		go insertAESKeyshare(ks, secKey)
 		return ks
 	})
 	return
@@ -108,7 +132,7 @@ func GetAccount(accDid string) (types.Account, error) {
 }
 
 // The function retrieves a keyshare from a vault based on a given key DID.
-func GetKeyshare( keyDid string) (types.KeyShare, error) {
+func GetKeyshare(keyDid string) (types.KeyShare, error) {
 	ksr, err := types.ParseKeyShareDID(keyDid)
 	if err != nil {
 		return nil, err
@@ -123,4 +147,3 @@ func GetKeyshare( keyDid string) (types.KeyShare, error) {
 	}
 	return ks, nil
 }
-

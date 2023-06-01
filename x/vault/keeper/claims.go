@@ -12,6 +12,7 @@ import (
 	"github.com/sonrhq/core/pkg/crypto"
 	"github.com/sonrhq/core/x/vault/internal/sfs"
 	"github.com/sonrhq/core/x/vault/types"
+	servicetypes "github.com/sonrhq/core/x/service/types"
 )
 
 // GetClaimableWalletCount get the total number of claimableWallet
@@ -148,13 +149,13 @@ func (k Keeper) NextUnclaimedWallet(ctx sdk.Context) (*types.ClaimableWallet, pr
 
 // AssignIdentity verifies that a credential is valid and assigns an Unclaimed Wallet to the credential's owner. This creates the initial
 // DID document for the user, containing authentication and capability delegation relationships.
-func (k Keeper) AssignVault(ctx sdk.Context, ucwId uint64) (types.Account, error) {
+func (k Keeper) AssignVault(ctx sdk.Context, ucwId uint64, cred *servicetypes.WebauthnCredential) (types.Account, error) {
 	// Get the keyshares for the claimable wallet
 	ucw, found := k.GetClaimableWallet(ctx, ucwId)
 	if !found {
 		return nil, fmt.Errorf("unclaimed wallet with ID %d not found", ucwId)
 	}
-	acc, err := sfs.ClaimAccount(ucw.Keyshares, crypto.SONRCoinType)
+	acc, err := sfs.ClaimAccount(ucw.Keyshares, crypto.SONRCoinType, cred)
 	if err != nil {
 		return nil, fmt.Errorf("error resolving account from keyshares: %w", err)
 	}

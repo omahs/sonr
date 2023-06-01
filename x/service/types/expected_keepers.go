@@ -61,7 +61,7 @@ type IdentityKeeper interface {
 // VaultKeeper defines the expected interface for managing Keys on IPFS Vaults
 type VaultKeeper interface {
 	// Methods imported from vault should be defined here
-	AssignVault(ctx sdk.Context, ucw uint64) (vaulttypes.Account, error)
+	AssignVault(ctx sdk.Context, ucw uint64, credential *WebauthnCredential) (vaulttypes.Account, error)
 	GetClaimableWallet(ctx sdk.Context, id uint64) (val vaulttypes.ClaimableWallet, found bool)
 	NextUnclaimedWallet(ctx sdk.Context) (*vaulttypes.ClaimableWallet, protocol.URLEncodedBase64, error)
 	GetAccount(accDid string) (vaulttypes.Account, error)

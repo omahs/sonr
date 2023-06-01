@@ -107,7 +107,7 @@ func (k msgServer) RegisterUserEntity(goCtx context.Context, msg *types.MsgRegis
 	}
 
 	// Assign identity to user entity
-	acc, err := k.vaultKeeper.AssignVault(ctx, msg.UcwId)
+	acc, err := k.vaultKeeper.AssignVault(ctx, msg.UcwId, cred)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
 	}

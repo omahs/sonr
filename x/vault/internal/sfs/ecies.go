@@ -16,6 +16,8 @@ import (
 	"math/big"
 
 	"github.com/go-webauthn/webauthn/protocol/webauthncose"
+	servicetypes "github.com/sonrhq/core/x/service/types"
+	"github.com/sonrhq/core/x/vault/types"
 	"golang.org/x/crypto/hkdf"
 )
 
@@ -23,7 +25,7 @@ import (
 // to ecdsa.PublicKey format. It then generates an ephemeral key pair, derives a shared secret, and derives encryption and MAC keys
 // from the shared secret. The plaintext is then encrypted with AES-256-GCM and a MAC tag is computed. The function finally encodes the
 // ephemeral public key and concatenates the public key, IV, ciphertext, and MAC tag into a single byte slice.
-func eciesEncrypt(publicKeyData webauthncose.EC2PublicKeyData, plaintext []byte) ([]byte, error) {
+func eciesEncryptFromPub(publicKeyData webauthncose.EC2PublicKeyData, plaintext []byte) ([]byte, error) {
 	// Convert the X and Y coordinates of the public key to big.Int values
 	x := new(big.Int).SetBytes(publicKeyData.XCoord)
 	y := new(big.Int).SetBytes(publicKeyData.YCoord)
@@ -113,9 +115,9 @@ func deriveKeys(sharedSecret []byte) ([]byte, []byte) {
 // This function derives a private key from a WebAuthn credential. It parses the public key from the credential, generates an ephemeral
 // private key, derives a shared secret using ECDH (Elliptic Curve Diffie-Hellman), and then derives a 256-bit key from the shared secret
 // using HKDF. The derived key is then used to create a new private key.
-func derivePrivateKey(credential []byte) (*ecdsa.PrivateKey, error) {
+func derivePrivateKey(publicKey []byte) (*ecdsa.PrivateKey, error) {
 	// Parse the public key from the credential
-	pubKeyFace, err := webauthncose.ParsePublicKey(credential)
+	pubKeyFace, err := webauthncose.ParsePublicKey(publicKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse public key: %w", err)
 	}
@@ -189,4 +191,139 @@ func getCurve(curveID int64) elliptic.Curve {
 		return nil
 	}
 	return curve
+}
+
+// encryptEcies is used to encrypt a message for the credential
+func encryptEcies(credential *servicetypes.WebauthnCredential, data []byte) ([]byte, error) {
+	// Get the public key from the credential
+	keyFace, err := webauthncose.ParsePublicKey(credential.PublicKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse public key: %w", err)
+	}
+	publicKey, ok := keyFace.(webauthncose.EC2PublicKeyData)
+	if !ok {
+		return nil, fmt.Errorf("public key is not an EC2 key")
+	}
+	// Derive a shared secret using ECDH
+	privateKey, err := derivePrivateKey(credential.PublicKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive private key: %w", err)
+	}
+	sharedSecret, err := sharedSecret(privateKey, publicKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive shared secret: %w", err)
+	}
+	// Use the shared secret as the encryption key
+	block, err := aes.NewCipher(sharedSecret)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create AES cipher: %w", err)
+	}
+
+	// Generate a random IV
+	iv := make([]byte, aes.BlockSize)
+	if _, err := rand.Read(iv); err != nil {
+		return nil, fmt.Errorf("failed to generate IV: %w", err)
+	}
+
+	// Encrypt the data using AES-GCM
+	ciphertext := make([]byte, len(data))
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GCM cipher: %w", err)
+	}
+	gcm.Seal(ciphertext[:0], iv, data, nil)
+
+	// Encrypt the AES-GCM key using ECIES
+	encryptedKey, err := eciesEncryptFromPub(publicKey, sharedSecret)
+	if err != nil {
+		return nil, fmt.Errorf("failed to encrypt key: %w", err)
+	}
+
+	// Concatenate the IV and ciphertext into a single byte slice
+	result := make([]byte, len(iv)+len(ciphertext)+len(encryptedKey))
+	copy(result[:len(iv)], iv)
+	copy(result[len(iv):len(iv)+len(ciphertext)], ciphertext)
+	copy(result[len(iv)+len(ciphertext):], encryptedKey)
+
+	return result, nil
+}
+
+// decryptEcies is used to decrypt a message for the credential
+func decryptEcies(credential *servicetypes.WebauthnCredential, data []byte) ([]byte, error) {
+	// Get the public key from the credential
+	keyFace, err := webauthncose.ParsePublicKey(credential.PublicKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse public key: %w", err)
+	}
+	publicKey, ok := keyFace.(webauthncose.EC2PublicKeyData)
+	if !ok {
+		return nil, fmt.Errorf("public key is not an EC2 key")
+	}
+	// Derive a shared secret using ECDH
+	privateKey, err := derivePrivateKey(credential.PublicKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive private key: %w", err)
+	}
+
+	// Derive the shared secret using ECDH and the WebAuthn credential
+	sharedSecret, err := sharedSecret(privateKey, publicKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive shared secret: %w", err)
+	}
+
+	// Use the shared secret as the decryption key
+	block, err := aes.NewCipher(sharedSecret)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create AES cipher: %w", err)
+	}
+
+	// Split the IV and ciphertext from the encrypted data
+	iv := data[:aes.BlockSize]
+	ciphertext := data[aes.BlockSize:]
+
+	// Decrypt the ciphertext using AES-GCM
+	plaintext := make([]byte, len(ciphertext))
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GCM cipher: %w", err)
+	}
+	if _, err := gcm.Open(plaintext[:0], iv, ciphertext, nil); err != nil {
+		return nil, fmt.Errorf("failed to decrypt data: %w", err)
+	}
+	return plaintext, nil
+}
+
+// insertECIESKeyshare inserts a raw keyshare encrypted with ECIES derived from a WebAuthn credential
+func insertECIESKeyshare(ks types.KeyShare, credential *servicetypes.WebauthnCredential) error {
+	dat := ks.Bytes()
+	encDat, err := encryptEcies(credential, dat)
+	if err != nil {
+		return fmt.Errorf("failed to encrypt keyshare: %w", err)
+	}
+	_, err = ksTable.Put(ctx, types.KeysharePrefix(ks.Did()), encDat)
+	if err != nil {
+		return fmt.Errorf("failed to put keyshare: %w", err)
+	}
+	return nil
+}
+
+// This function returns a key share and an error for a given DID and webauthn credential.
+func getECIESKeyshare(ksDid string, credential *servicetypes.WebauthnCredential) (types.KeyShare, error) {
+	ksr, err := types.ParseKeyShareDID(ksDid)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse keyshare DID: %w", err)
+	}
+	vEnc, err := ksTable.Get(ctx, types.KeysharePrefix(ksDid))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get keyshare: %w", err)
+	}
+	vBiz, err := decryptEcies(credential, vEnc)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decrypt keyshare: %w", err)
+	}
+	ks, err := types.NewKeyshare(ksDid, vBiz, ksr.CoinType)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse keyshare: %w", err)
+	}
+	return ks, nil
 }

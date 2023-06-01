@@ -52,7 +52,7 @@ func decryptAES(key, data []byte) ([]byte, error) {
 }
 
 // The function inserts a keyshare into a table and returns an error if there is one.
-func insertEncKeyshare(ks types.KeyShare, secret_key []byte) {
+func insertAESKeyshare(ks types.KeyShare, secret_key []byte) {
 	dat := ks.Bytes()
 	encDat, err := encryptAES(secret_key, dat)
 	if err != nil {
@@ -62,12 +62,12 @@ func insertEncKeyshare(ks types.KeyShare, secret_key []byte) {
 	if err != nil {
 		return
 	}
-	return 
+	return
 }
 
 // The function retrieves a keyshare from a table using the keyshare's DID and returns it as a
 // model.
-func getEncKeyshare(ksDid string, secret_key []byte) (types.KeyShare, error) {
+func getAESKeyshare(ksDid string, secret_key []byte) (types.KeyShare, error) {
 	ksr, err := types.ParseKeyShareDID(ksDid)
 	if err != nil {
 		return nil, err
