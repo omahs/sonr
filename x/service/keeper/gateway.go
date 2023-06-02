@@ -64,6 +64,8 @@ func (k Keeper) RegisterUser(goCtx context.Context, req *types.RegisterUserReque
 	return &types.RegisterUserResponse{
 		Did:      didDoc.Id,
 		Identity: didDoc,
+		Alias:    req.Alias,
+		Jwt:      "",
 	}, nil
 }
 
@@ -88,5 +90,7 @@ func (k Keeper) AuthenticateUser(goCtx context.Context, req *types.AuthenticateU
 	return &types.AuthenticateUserResponse{
 		Did:      did.Id,
 		Identity: &did,
+		Alias:   req.Alias,
+		Jwt:      "",
 	}, nil
 }
