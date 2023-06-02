@@ -75,13 +75,6 @@
     "**/**/types/*_test.go": true,
     "LICENSE": true,
     "proto/buf.lock": true,
-    "go.sum": true,
-    ".eslintrc.js": true,
-    "buf.work.yaml": true,
-    "Dockerfile": true,
-    "Makefile": true,
-    ".devcontainer": true,
-    "testutil": true
   },
   "svg.preview.background": "custom",
   "typescript.preferences.importModuleSpecifier": "non-relative",
