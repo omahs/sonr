@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/go-webauthn/webauthn/protocol"
-	"github.com/sonrhq/core/pkg/crypto"
+	"github.com/sonrhq/core/internal/crypto"
 	idtypes "github.com/sonrhq/core/x/identity/types"
 	"github.com/yoseplee/vrf"
 )

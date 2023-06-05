@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/sonrhq/core/pkg/crypto"
+	"github.com/sonrhq/core/internal/crypto"
 	servicetypes "github.com/sonrhq/core/x/service/types"
 	"github.com/sonrhq/core/x/vault/internal/node"
 	"github.com/sonrhq/core/x/vault/types"

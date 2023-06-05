@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
-	"github.com/sonrhq/core/pkg/crypto"
+	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/x/vault/internal/mpc"
 	"github.com/taurusgroup/multi-party-sig/protocols/cmp"
 	"lukechampine.com/blake3"
