@@ -9,6 +9,7 @@ import (
 	"github.com/sonrhq/core/internal/local"
 	identitytypes "github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/service/types"
+	"github.com/sonrhq/core/x/vault"
 )
 
 // This function is a method of the `Keeper` struct and is used to register a new user identity. It takes a context and a `RegisterUserRequest` as input and returns a `RegisterUserResponse` and an error. The function first retrieves the service record associated with the request
@@ -16,6 +17,7 @@ import (
 // to the user using the `AssignIdentity` method of the identity keeper and returns the assigned identity and its ID in the response. If any error occurs during the process, the function returns an error.
 func (k Keeper) RegisterUser(goCtx context.Context, req *types.RegisterUserRequest) (*types.RegisterUserResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	didDocChan := make(chan *identitytypes.DIDDocument)
 	service, ok := k.GetServiceRecord(ctx, req.Origin)
 	if !ok {
 		k.Logger(ctx).Error("(Gateway/service) - error getting service record")
@@ -40,36 +42,44 @@ func (k Keeper) RegisterUser(goCtx context.Context, req *types.RegisterUserReque
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
 	}
 
-	// Create btc, eth default accounts
-	btcAcc, err := account.DeriveAccount(crypto.BTCCoinType, 0, "BTC#1")
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BTC account could not be derived")
-	}
+	// Start a go routine to create the identity
+	go func(acc vault.Account) {
+		// Create btc, eth default accounts
+		btcAcc, err := acc.DeriveAccount(crypto.BTCCoinType, 0, "BTC#1")
+		if err != nil {
+			k.Logger(ctx).Error("(Gateway/service) - error deriving BTC account", err)
+			return
+		}
 
-	ethAcc, err := account.DeriveAccount(crypto.ETHCoinType, 0, "ETH#1")
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "ETH account could not be derived")
-	}
+		ethAcc, err := acc.DeriveAccount(crypto.ETHCoinType, 0, "ETH#1")
+		if err != nil {
+			k.Logger(ctx).Error("(Gateway/service) - error deriving ETH account", err)
+			return
+		}
 
-	// Create DID Document
-	didDoc, err := k.identityKeeper.AssignIdentity(credential.ToVerificationMethod(), account, req.Alias, btcAcc, ethAcc)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
-	}
+		// Create DID Document
+		didDoc, err := k.identityKeeper.AssignIdentity(credential.ToVerificationMethod(), account, req.Alias, btcAcc, ethAcc)
+		if err != nil {
+			k.Logger(ctx).Error("(Gateway/service) - error assigning identity", err)
+			return
+		}
+		didDocChan <- didDoc
 
-	// Sign and broadcast identity registration message
-	bz, err := account.SignCosmosTx(identitytypes.NewMsgRegisterIdentity(account.Address(), didDoc))
-	if err != nil {
-		k.Logger(ctx).Error("(Gateway/service) - error signing identity registration message", err)
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
-	}
-	_, err = local.Context().BroadcastTx(bz)
-	if err != nil {
-		k.Logger(ctx).Error("(Gateway/service) - error broadcasting identity registration message", err)
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
-	}
+		// Sign and broadcast identity registration message
+		bz, err := acc.SignCosmosTx(identitytypes.NewMsgRegisterIdentity(acc.Address(), didDoc))
+		if err != nil {
+			k.Logger(ctx).Error("(Gateway/service) - error signing identity registration message", err)
+			return
+		}
+		_, err = local.Context().BroadcastTx(bz)
+		if err != nil {
+			k.Logger(ctx).Error("(Gateway/service) - error broadcasting identity registration message", err)
+			return
+		}
+	}(account)
 
 	// Return the identity
+	didDoc := <-didDocChan
 	return &types.RegisterUserResponse{
 		Did:      didDoc.Id,
 		Identity: didDoc,
