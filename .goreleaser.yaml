@@ -1,0 +1,69 @@
+# Project information.
+project_name: Sonr Core
+release:
+  github:
+    owner: sonrhq
+    name: core
+
+# The builds section.
+builds:
+  - id: "Sonr Core"
+    main: ./cmd/sonrd
+    binary: sonrd
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+    goarm:
+      - "6"
+    flags:
+      - -tags=netgo
+      - -ldflags=-w -s -extldflags "-static"
+    env:
+      - CGO_ENABLED=0
+
+# The archives section.
+archives:
+  - id: "archive"
+    builds:
+      - Sonr Core
+    format: tar.gz
+    files:
+      - licence*
+      - README.md
+      - CHANGELOG.md
+      - scripts/*
+
+# The checksum section.
+checksum:
+  name_template: 'checksums.txt'
+
+# The nfpm section.
+nfpms:
+  - vendor: Sonr Inc.
+    homepage: https://sonr.io
+    maintainer: Prad Nukala <prad@sonr.io>
+    description: Sonr is a peer-to-peer identity and asset management system that leverages DID documents, Webauthn, and IPFS — providing users with a secure, user-friendly way to manage their digital identity and assets.
+    license: Your License
+    formats:
+      - deb
+      - rpm
+    contents:
+      - src: "./**/*.md"
+        dst: "/usr/local/doc/SonrCore/"
+      - src: "./**/*.txt"
+        dst: "/usr/local/doc/SonrCore/"
+
+# The snapcraft section.
+snapcrafts:
+-
+  name_template: '{{ .ProjectName }}_{{ .Version }}'
+  publish: true
+
+# The docker section.
+dockers:
+  - image_templates:
+      - "sonrhq/core:{{ .Tag }}"
+      - "sonrhq/core:{{ .Major }}"
+      - "sonrhq/core:{{ .Env.SHA }}"
