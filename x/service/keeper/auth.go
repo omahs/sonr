@@ -9,7 +9,6 @@ import (
 	"github.com/sonrhq/core/internal/local"
 	identitytypes "github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/service/types"
-	"github.com/sonrhq/core/x/vault"
 )
 
 // This function is a method of the `Keeper` struct and is used to register a new user identity. It takes a context and a `RegisterUserRequest` as input and returns a `RegisterUserResponse` and an error. The function first retrieves the service record associated with the request
@@ -59,18 +58,16 @@ func (k Keeper) RegisterUser(goCtx context.Context, req *types.RegisterUserReque
 	}
 
 	// Sign and broadcast identity registration message
-	go func(did *identitytypes.DIDDocument, acc vault.Account) {
-		bz, err := acc.SignCosmosTx(identitytypes.NewMsgRegisterIdentity(acc.Address(), did))
-		if err != nil {
-			k.Logger(ctx).Error("(Gateway/service) - error signing identity registration message", err)
-			return
-		}
-		_, err = local.Context().BroadcastTx(bz)
-		if err != nil {
-			k.Logger(ctx).Error("(Gateway/service) - error broadcasting identity registration message", err)
-			return
-		}
-	}(didDoc, account)
+	bz, err := account.SignCosmosTx(identitytypes.NewMsgRegisterIdentity(account.Address(), didDoc))
+	if err != nil {
+		k.Logger(ctx).Error("(Gateway/service) - error signing identity registration message", err)
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
+	}
+	_, err = local.Context().BroadcastTx(bz)
+	if err != nil {
+		k.Logger(ctx).Error("(Gateway/service) - error broadcasting identity registration message", err)
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
+	}
 
 	// Return the identity
 	return &types.RegisterUserResponse{
@@ -102,7 +99,7 @@ func (k Keeper) AuthenticateUser(goCtx context.Context, req *types.AuthenticateU
 	return &types.AuthenticateUserResponse{
 		Did:      did.Id,
 		Identity: &did,
-		Alias:   req.Alias,
+		Alias:    req.Alias,
 		Jwt:      "",
 	}, nil
 }
