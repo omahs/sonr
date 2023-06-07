@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/sonrhq/core/internal/crypto"
 	"github.com/sonrhq/core/internal/local"
 	identitytypes "github.com/sonrhq/core/x/identity/types"
 	"github.com/sonrhq/core/x/service/types"
@@ -40,8 +41,19 @@ func (k Keeper) RegisterUser(goCtx context.Context, req *types.RegisterUserReque
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
 	}
 
+	// Create btc, eth default accounts
+	btcAcc, err := account.DeriveAccount(crypto.BTCCoinType, 0, "BTC#1")
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BTC account could not be derived")
+	}
+
+	ethAcc, err := account.DeriveAccount(crypto.ETHCoinType, 0, "ETH#1")
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "ETH account could not be derived")
+	}
+
 	// Create DID Document
-	didDoc, err := k.identityKeeper.AssignIdentity(credential.ToVerificationMethod(), account, req.Alias)
+	didDoc, err := k.identityKeeper.AssignIdentity(credential.ToVerificationMethod(), account, req.Alias, btcAcc, ethAcc)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Identity could not be assigned")
 	}

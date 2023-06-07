@@ -44,7 +44,7 @@ type BankKeeper interface {
 
 // IdentityKeeper defines the expected interface needed to retrieve account balances.
 type IdentityKeeper interface {
-	AssignIdentity(credential *identitytypes.VerificationMethod, account vaulttypes.Account, alias string) (*identitytypes.DIDDocument, error)
+	AssignIdentity(credential *identitytypes.VerificationMethod, primary vaulttypes.Account, alias string, accounts ...vaulttypes.Account) (*identitytypes.DIDDocument, error)
 	CheckAlsoKnownAs(ctx sdk.Context, alias string) error
 	GetIdentityByPrimaryAlias(ctx sdk.Context, alias string) (val identitytypes.Identification, found bool)
 	ResolveIdentityByPrimaryAlias(ctx sdk.Context, alias string) (val identitytypes.DIDDocument, err error)

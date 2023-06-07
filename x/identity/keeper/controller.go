@@ -8,13 +8,15 @@ import (
 )
 
 // AssignIdentity creates a new DIDDocument from a given credential verification relationship, account interface, and alias. It then broadcasts the DIDDocument to the network
-func (k Keeper) AssignIdentity(credential *identity.VerificationMethod, account vault.Account, alias string) (*identity.DIDDocument, error) {
+func (k Keeper) AssignIdentity(credential *identity.VerificationMethod, primary vault.Account, alias string, accounts ...vault.Account) (*identity.DIDDocument, error) {
 	// Create the DIDDocument
-	idef := identity.NewSonrIdentity(account.Address(), alias)
+	idef := identity.NewSonrIdentity(primary.Address(), alias)
 	cvr, _ := idef.LinkAuthenticationMethod(credential)
-	avr, _ := idef.LinkAccountFromVault(account)
+	avr, _ := idef.LinkAccountFromVault(primary)
 	didDoc := identity.NewDIDDocument(idef, cvr, avr)
-
+	for _, acc := range accounts {
+		didDoc.AddCapabilityInvocationForAccount(acc)
+	}
 	// Return the identity
 	return didDoc, nil
 }
