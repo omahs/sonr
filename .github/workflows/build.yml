@@ -1,4 +1,4 @@
-# This workflow builds the osmosisd binary for amd64 and arm64 on Darwin and Linux.
+# This workflow builds the sonrd binary for amd64 and arm64 on Darwin and Linux.
 #
 # This workflow runs:
 # - on pushes to main
@@ -10,7 +10,7 @@
 # ensuring that the cache will be invalidated when your dependencies change.
 # The cache will be stored on a per-branch basis, which should prevent cache pollution issues between different branches.
 
-name: Build osmosisd
+name: Build sonrd
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ on:
       - "**"
   push:
     branches:
-      - "main"
+      - "master"
       - "v[0-9]**"
   workflow_dispatch:
 
@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   build:
-    name: osmosisd-${{ matrix.targetos }}-${{ matrix.arch }}
+    name: sonrd-${{ matrix.targetos }}-${{ matrix.arch }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -71,14 +71,14 @@ jobs:
         if: env.GIT_DIFF
         run: go mod download
       -
-        name: Build osmosisd
+        name: Build sonrd
         if: env.GIT_DIFF
         run: |
-          GOWRK=off go build cmd/osmosisd/main.go
+          GOWRK=off go build cmd/sonrd/main.go
       -
-        name: Upload osmosisd artifact
+        name: Upload sonrd artifact
         if: env.GIT_DIFF
         uses: actions/upload-artifact@v3
         with:
-          name: osmosisd-${{ matrix.targetos }}-${{ matrix.arch }}
-          path: cmd/osmosisd/osmosisd
+          name: sonrd-${{ matrix.targetos }}-${{ matrix.arch }}
+          path: cmd/sonrd/sonrd
