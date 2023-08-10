@@ -60,19 +60,10 @@ COPY sonr.docker.yml sonr.yml
 COPY scripts scripts
 ENV SONR_LAUNCH_CONFIG=/sonr.yml
 
-# Copy IceFire binaries and config
-COPY build/bin/IceFireDB /usr/local/bin/icefirekv
-COPY build/bin/IceFireDB-SQLite /usr/local/bin/icefiresql
-COPY build/config/config.sql.yaml config.sql.yaml
-COPY build/db/read.txt /db/read.txt
-
 # Expose ports
 EXPOSE 26657
 EXPOSE 1317
 EXPOSE 26656
 EXPOSE 8000
-EXPOSE 9090
-EXPOSE 6001
-EXPOSE 23667
 
 ENTRYPOINT ["/usr/local/bin/sonrd"]
