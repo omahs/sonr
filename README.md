@@ -1,6 +1,4 @@
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/sonrhq/core)
-
 <div style="text-align: center;">
 
 [![Sonr Logo Banner](.github/images/banner.png)](https://snr.la/h)
@@ -16,6 +14,8 @@
 </p>
 
 ## Getting Started
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/sonrhq/core)
 
 You can setup your macOS or Linux machine to be ready for local development with these steps:
 
