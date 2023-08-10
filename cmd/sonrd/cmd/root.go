@@ -359,6 +359,15 @@ func (a appCreator) appExport(
 func initAppConfig() (string, interface{}) {
 	// The following code snippet is just for reference.
 
+	// WASMConfig defines configuration for the wasm module.
+	type WASMConfig struct {
+		// This is the maximum sdk gas (wasm and storage) that we allow for any x/wasm "smart" queries
+		QueryGasLimit uint64 `mapstructure:"query_gas_limit"`
+
+		// Address defines the gRPC-web server to listen on
+		LruSize uint64 `mapstructure:"lru_size"`
+	}
+
 	type CustomAppConfig struct {
 		serverconfig.Config
 
@@ -372,8 +381,13 @@ func initAppConfig() (string, interface{}) {
 		Config: *srvCfg,
 		Wasm:   wasmtypes.DefaultWasmConfig(),
 	}
-	customAppTemplate := serverconfig.DefaultConfigTemplate +
-		wasmtypes.DefaultConfigTemplate()
+	customAppTemplate := serverconfig.DefaultConfigTemplate + `
+	[wasm]
+	# This is the maximum sdk gas (wasm and storage) that we allow for any x/wasm "smart" queries
+	query_gas_limit = 300000
+	# This is the number of wasm vm instances we keep cached in memory for speed-up
+	# Warning: this is currently unstable and may lead to crashes, best to keep for 0 unless testing locally
+	lru_size = 0`
 
 	return customAppTemplate, customAppConfig
 }
