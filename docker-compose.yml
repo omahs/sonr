@@ -3,7 +3,7 @@ networks:
   sonr-net:
 services:
   node:
-    image: sonr-devnet-val
+    image: sonrd
     init: true
     container_name: validator
     networks:
@@ -13,7 +13,7 @@ services:
       - 26656:26656 # p2p
       - 26657:26657 # rpc
       - 9090:9090 # grpc
-      - 8080:8080 # highway
+      - 8000:8000 # highway
     restart: always
   faucet:
     image: sonrhq/sonr-faucet:latest
