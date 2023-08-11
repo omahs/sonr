@@ -6,8 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	highlightGin "github.com/highlight/highlight/sdk/highlight-go/middleware/gin"
-	swaggerFiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
+
 	timeout "github.com/vearne/gin-timeout"
 
 	"github.com/sonrhq/core/config"
@@ -41,6 +40,5 @@ func initGin() *gin.Engine {
 		})))
 	r.Use(highlightGin.Middleware())
 	routes.RegisterRoutes(r)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r
 }
