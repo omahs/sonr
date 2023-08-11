@@ -13,7 +13,7 @@ services:
       - 26656:26656 # p2p
       - 26657:26657 # rpc
       - 9090:9090 # grpc
-      - 8000:8000 # highway
+      - 8000:8080 # highway
     restart: always
   faucet:
     image: sonrhq/sonr-faucet:latest

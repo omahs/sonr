@@ -19,7 +19,7 @@ type highway struct {
 
 func (p highway) Start(s service.Service) error {
 	fmt.Printf("Starting Highway at %s", config.HighwayHostAddress())
-	return p.r.Run()
+	return p.r.Run(":8080")
 }
 
 func (p highway) Stop(s service.Service) error {

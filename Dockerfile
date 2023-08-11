@@ -28,7 +28,7 @@ RUN set -eux; \
     export ARCH=$(uname -m); \
     WASM_VERSION=$(go list -m all | grep github.com/CosmWasm/wasmvm | awk '{print $2}'); \
     if [ ! -z "${WASM_VERSION}" ]; then \
-      wget -O /lib/libwasmvm_muslc.a https://github.com/CosmWasm/wasmvm/releases/download/${WASM_VERSION}/libwasmvm_muslc.${ARCH}.a; \
+    wget -O /lib/libwasmvm_muslc.a https://github.com/CosmWasm/wasmvm/releases/download/${WASM_VERSION}/libwasmvm_muslc.${ARCH}.a; \
     fi; \
     go mod download;
 
@@ -37,17 +37,17 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/root/go/pkg/mod \
     GOWORK=off go build \
-        -mod=readonly \
-        -tags "netgo,ledger,muslc" \
-        -ldflags \
-            "-X github.com/cosmos/cosmos-sdk/version.Name="sonr" \
-            -X github.com/cosmos/cosmos-sdk/version.AppName="sonrd" \
-            -X github.com/cosmos/cosmos-sdk/version.Version=${GIT_VERSION} \
-            -X github.com/cosmos/cosmos-sdk/version.Commit=${GIT_COMMIT} \
-            -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc \
-            -w -s -linkmode=external -extldflags '-Wl,-z,muldefs -static'" \
-        -trimpath \
-        -o /root/sonr/build/sonrd ./cmd/sonrd/main.go
+    -mod=readonly \
+    -tags "netgo,ledger,muslc" \
+    -ldflags \
+    "-X github.com/cosmos/cosmos-sdk/version.Name="sonr" \
+    -X github.com/cosmos/cosmos-sdk/version.AppName="sonrd" \
+    -X github.com/cosmos/cosmos-sdk/version.Version=${GIT_VERSION} \
+    -X github.com/cosmos/cosmos-sdk/version.Commit=${GIT_COMMIT} \
+    -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc \
+    -w -s -linkmode=external -extldflags '-Wl,-z,muldefs -static'" \
+    -trimpath \
+    -o /root/sonr/build/sonrd ./cmd/sonrd/main.go
 
 # ! ||--------------------------------------------------------------------------------||
 # ! ||                               Sonr in Production                               ||
@@ -64,4 +64,4 @@ ENV SONR_LAUNCH_CONFIG=/sonr.yml
 EXPOSE 26657
 EXPOSE 1317
 EXPOSE 26656
-EXPOSE 8000
+EXPOSE 8080
