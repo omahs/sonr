@@ -18,7 +18,7 @@ services:
   faucet:
     image: sonrhq/sonr-faucet:latest
     init: true
-    command: ["start", "http://validator:26657"]
+    command: [ "start", "http://validator:26657" ]
     networks:
       - sonr-net
     depends_on:
