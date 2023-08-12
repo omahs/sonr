@@ -26,3 +26,20 @@ services:
     ports:
       - 4500:4500
     restart: always
+  db:
+    image: ghcr.io/sonrhq/icefiredb:latest
+    init: true
+    container_name: db
+    networks:
+      - sonr-net
+    ports:
+      - 6001:6001
+    restart: always
+  sql:
+    image: ghcr.io/sonrhq/icefiresql:latest
+    init: true
+    container_name: sql
+    networks:
+      - sonr-net
+    ports:
+      - 23367:23367
