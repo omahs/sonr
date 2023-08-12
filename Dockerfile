@@ -84,7 +84,7 @@ FROM alpine AS sonr-base
 LABEL org.opencontainers.image.source https://github.com/sonrhq/core
 
 # Copy sonrd binary and config
-COPY --from=builder /root/sonr/build/sonrd /usr/local/bin/sonrd
+COPY --from=sonr-builder /root/sonr/build/sonrd /usr/local/bin/sonrd
 COPY sonr.yml sonr.yml
 COPY scripts scripts
 ENV SONR_LAUNCH_CONFIG=/sonr.yml
@@ -105,7 +105,7 @@ FROM alpine AS sonr-node
 LABEL org.opencontainers.image.source https://github.com/sonrhq/core
 
 # Copy sonrd binary and config
-COPY --from=builder /root/sonr/build/sonrd /usr/local/bin/sonrd
+COPY --from=sonr-builder /root/sonr/build/sonrd /usr/local/bin/sonrd
 COPY sonr.yml sonr.yml
 COPY scripts scripts
 ENV SONR_LAUNCH_CONFIG=/sonr.yml
