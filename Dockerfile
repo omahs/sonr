@@ -135,7 +135,7 @@ CMD [ "sonrd", "start" ]
 # ! ||                               Sonr Operator Node                               ||
 # ! ||--------------------------------------------------------------------------------||
 
-FROM alpine AS operator
+FROM sonr-base AS operator
 
 LABEL org.opencontainers.image.source https://github.com/sonrhq/core
 
