@@ -19,7 +19,7 @@ vars:
 # ----------------------------------------------------------------------------
 tasks:
   default:
-    desc: Build the binary for docker
+    desc: Build the binary for mac, linux
     cmds:
       - task: go-build
         vars:
@@ -41,17 +41,14 @@ tasks:
       - task: docker-tag-push
         vars:
           IMAGE: sonr-faucet
-          TARGET: faucet
           REGISTRY: ghcr.io/sonrhq
       - task: docker-tag-push
         vars:
           IMAGE: sonr-base
-          TARGET: base
           REGISTRY: ghcr.io/sonrhq
       - task: docker-tag-push
         vars:
           IMAGE: sonr-node
-          TARGET: node
           REGISTRY: ghcr.io/sonrhq
 # ------------------------------------------------------------------------------
 # -- Internal Tasks ------------------------------------------------------------
@@ -61,7 +58,7 @@ tasks:
     internal: true
     desc: Build, tag and push the docker image
     cmds:
-      - docker build -f ./Dockerfile . --no-cache --target {{.TARGET}} -t {{.IMAGE}}
+      - docker build -f ./Dockerfile . --no-cache --target {{.IMAGE}} -t {{.IMAGE}}
       - docker tag {{.IMAGE}} {{.REGISTRY}}/{{.IMAGE}}:latest
       - docker tag {{.IMAGE}} {{.REGISTRY}}/{{.IMAGE}}:{{.VERSION}}
       - docker tag {{.IMAGE}} {{.REGISTRY}}/{{.IMAGE}}:{{.COMMIT}}
@@ -69,7 +66,7 @@ tasks:
       - docker push {{.REGISTRY}}/{{.IMAGE}}:{{.VERSION}}
       - docker push {{.REGISTRY}}/{{.IMAGE}}:{{.COMMIT}}
     requires:
-      vars: [IMAGE, TARGET, REGISTRY]
+      vars: [IMAGE, REGISTRY]
 
   go-build:
     silent: true

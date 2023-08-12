@@ -3,7 +3,7 @@ ARG RUNNER_IMAGE="gcr.io/distroless/static-debian11"
 # ! ||--------------------------------------------------------------------------------||
 # ! ||                                  Cosmjs Faucet                                 ||
 # ! ||--------------------------------------------------------------------------------||
-FROM --platform=linux node:18.7-alpine AS faucet
+FROM --platform=linux node:18.7-alpine AS sonr-faucet
 
 LABEL org.opencontainers.image.source https://github.com/sonrhq/core
 
@@ -29,7 +29,7 @@ ENTRYPOINT [ "cosmos-faucet" ]
 # ! ||--------------------------------------------------------------------------------||
 # ! ||                                  Sonrd Builder                                 ||
 # ! ||--------------------------------------------------------------------------------||
-FROM --platform=linux golang:1.19-alpine AS builder
+FROM --platform=linux golang:1.19-alpine AS sonr-builder
 ARG arch=x86_64
 
 
@@ -79,7 +79,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 # ! ||-----------------------------------------------------------------------------||
 # ! ||                               Sonr Base Image                               ||
 # ! ||-----------------------------------------------------------------------------||
-FROM alpine AS base
+FROM alpine AS sonr-base
 
 LABEL org.opencontainers.image.source https://github.com/sonrhq/core
 
@@ -100,7 +100,7 @@ EXPOSE 8080
 # ! ||                               Sonr Standalone Node                               ||
 # ! ||----------------------------------------------------------------------------------||
 
-FROM alpine AS node
+FROM alpine AS sonr-node
 
 LABEL org.opencontainers.image.source https://github.com/sonrhq/core
 

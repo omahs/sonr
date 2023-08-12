@@ -34,3 +34,8 @@ tasks:
       - echo -----------------------------------------------
       - echo "{{.VERSION}}   |  {{.COMMIT}}  |   {{.DATE}}"
       - task -l
+
+  db:
+    desc: Install the database
+    cmds:
+      - git clone https://github.com/sonrhq/icefire.git .tmp/icefire
