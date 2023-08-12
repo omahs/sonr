@@ -6,11 +6,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	highlightGin "github.com/highlight/highlight/sdk/highlight-go/middleware/gin"
+	"github.com/kardianos/service"
 
 	timeout "github.com/vearne/gin-timeout"
 
 	"github.com/sonrhq/core/config"
 	"github.com/sonrhq/core/internal/highway/routes"
+	"github.com/sonrhq/core/internal/highway/types"
 )
 
 // @title           Sonr Highway Protocol API
@@ -41,4 +43,39 @@ func initGin() *gin.Engine {
 	r.Use(highlightGin.Middleware())
 	routes.RegisterRoutes(r)
 	return r
+}
+
+type highway struct {
+	r    *gin.Engine
+	conf *service.Config
+}
+
+func (p highway) Start(s service.Service) error {
+	fmt.Printf("Starting Highway at %s", config.HighwayHostAddress())
+	return p.r.Run(":8080")
+}
+
+func (p highway) Stop(s service.Service) error {
+	return s.Stop()
+}
+
+func runHighway() error {
+	h := &highway{
+		r: initGin(),
+		conf: &service.Config{
+			Name:        types.HighwayServiceName,
+			DisplayName: types.HighwayServiceDisplayName,
+			Description: types.HighwayServiceDescription,
+		},
+	}
+
+	s, err := service.New(h, h.conf)
+	if err != nil {
+		return err
+	}
+	err = s.Run()
+	if err != nil {
+		return err
+	}
+	return nil
 }
