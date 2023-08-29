@@ -32,6 +32,12 @@ tasks:
     cmds:
       - docker compose up
 
+
+  build:
+    desc: Build the binary
+    cmds:
+      - go build -o ./bin/sonr ./cmd/sonrd
+
   generate:
     desc: Generate the protobuf files
     cmds:
@@ -57,7 +63,7 @@ tasks:
     internal: true
     desc: Build, tag and push the docker image
     cmds:
-      - docker build -f ./Dockerfile.dev . -t {{.IMAGE}}
+      - docker build -f ./Dockerfile . -t {{.IMAGE}}
       - docker tag {{.IMAGE}} {{.REGISTRY}}/{{.IMAGE}}:latest
       - docker tag {{.IMAGE}} {{.REGISTRY}}/{{.IMAGE}}:{{.VERSION}}
       - docker tag {{.IMAGE}} {{.REGISTRY}}/{{.IMAGE}}:{{.COMMIT}}

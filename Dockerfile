@@ -63,13 +63,6 @@ COPY sonr.yml sonr.yml
 COPY scripts scripts
 ENV SONR_LAUNCH_CONFIG=/sonr.yml
 
-# Download, extract, and install the toml-cli binary
-RUN wget https://github.com/gnprice/toml-cli/releases/latest/download/toml-0.2.3-x86_64-linux.tar.gz && \
-    tar -xvf toml-0.2.3-x86_64-linux.tar.gz && \
-    mv toml-0.2.3-x86_64-linux/toml /usr/local/bin && \
-    rm toml-0.2.3-x86_64-linux.tar.gz && \
-    rm -rf toml-0.2.3-x86_64-linux
-
 # Setup localnet environment
 RUN sh scripts/localnet.sh
 
@@ -86,7 +79,7 @@ CMD [ "sonrd", "start" ]
 # ! ||-----------------------------------------------------------------------------||
 # ! ||                               Sonr Base Image                               ||
 # ! ||-----------------------------------------------------------------------------||
-FROM ${RUNNER_IMAGE} AS sonr-base
+FROM ${RUNNER_IMAGE}
 
 LABEL org.opencontainers.image.source https://github.com/sonrhq/core
 LABEL org.opencontainers.image.description "Default node image for sonr"
