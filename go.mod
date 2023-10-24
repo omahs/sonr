@@ -42,7 +42,10 @@ require (
 	lukechampine.com/blake3 v1.2.1
 )
 
-require google.golang.org/protobuf v1.31.0
+require (
+	github.com/btcsuite/btcd v0.21.0-beta.0.20201114000516-e9c7a5ac6401
+	google.golang.org/protobuf v1.31.0
+)
 
 require (
 	cloud.google.com/go v0.110.4 // indirect
@@ -69,7 +72,6 @@ require (
 	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 // indirect
 	github.com/bits-and-blooms/bitset v1.7.0 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
-	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1 // indirect
 	github.com/bwesterb/go-ristretto v1.2.0 // indirect
 	github.com/bytedance/sonic v1.9.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
